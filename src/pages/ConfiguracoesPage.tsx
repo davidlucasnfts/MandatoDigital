@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, User, Bell, Shield, Mail } from 'lucide-react';
+import { Settings, User, Bell, Shield, Mail, Gift, Save, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useConfiguracoes } from '@/hooks/useSupabaseData';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -30,6 +31,18 @@ export default function ConfiguracoesPage() {
     tarefas: true,
   });
 
+  const { data: configs, set: setConfig, loading: saving } = useConfiguracoes();
+  const [templateLocal, setTemplateLocal] = useState('');
+  const [saved, setSaved] = useState(false);
+
+  const templateAtual = configs['template_aniversario'] || 'Olá {{nome}}! 🎉\n\nDesejo um feliz aniversário! Muita saúde, paz e conquistas.\n\nConte comigo sempre!\n\nAbraço,';
+
+  const handleSaveTemplate = async () => {
+    await setConfig('template_aniversario', templateLocal || templateAtual);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
   return (
     <div className="space-y-6">
       <motion.div custom={0} variants={fadeIn} initial="hidden" animate="visible">
@@ -40,12 +53,15 @@ export default function ConfiguracoesPage() {
       </motion.div>
 
       <Tabs defaultValue="perfil" className="space-y-6">
-        <TabsList className="bg-white border">
+        <TabsList className="bg-white border flex-wrap h-auto">
           <TabsTrigger value="perfil">
             <User className="w-4 h-4 mr-1.5" /> Perfil
           </TabsTrigger>
           <TabsTrigger value="notificacoes">
             <Bell className="w-4 h-4 mr-1.5" /> Notificações
+          </TabsTrigger>
+          <TabsTrigger value="aniversario">
+            <Gift className="w-4 h-4 mr-1.5" /> Aniversário
           </TabsTrigger>
           <TabsTrigger value="seguranca">
             <Shield className="w-4 h-4 mr-1.5" /> Segurança
@@ -130,6 +146,47 @@ export default function ConfiguracoesPage() {
           </motion.div>
         </TabsContent>
 
+        <TabsContent value="aniversario" className="space-y-4">
+          <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Gift className="w-4 h-4 text-pink-500" />
+                  Template de Mensagem de Aniversário
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-500">Mensagem padrão enviada via WhatsApp</label>
+                  <p className="text-[10px] text-slate-400">
+                    Variáveis disponíveis: {'{{nome}}'} (primeiro nome), {'{{nome_completo}}'}, {'{{cidade}}'}
+                  </p>
+                  <textarea
+                    defaultValue={templateAtual}
+                    onChange={e => setTemplateLocal(e.target.value)}
+                    rows={6}
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  />
+                </div>
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-[10px] font-medium text-slate-500 mb-1">Preview</p>
+                  <p className="text-xs text-slate-700 whitespace-pre-wrap">
+                    {montarPreview(templateLocal || templateAtual)}
+                  </p>
+                </div>
+                <Button
+                  className="bg-pink-600 hover:bg-pink-700"
+                  onClick={handleSaveTemplate}
+                  disabled={saving}
+                >
+                  {saved ? <Check className="w-4 h-4 mr-1" /> : <Save className="w-4 h-4 mr-1" />}
+                  {saved ? 'Salvo!' : 'Salvar Template'}
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </TabsContent>
+
         <TabsContent value="seguranca" className="space-y-4">
           <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
             <Card>
@@ -188,4 +245,11 @@ export default function ConfiguracoesPage() {
       </Tabs>
     </div>
   );
+}
+
+function montarPreview(template: string): string {
+  return template
+    .replace(/{{nome}}/g, 'Maria')
+    .replace(/{{nome_completo}}/g, 'Maria Aparecida Santos')
+    .replace(/{{cidade}}/g, 'São Paulo');
 }

@@ -218,3 +218,54 @@ export function useStats() {
   useEffect(() => { fetch(); }, [fetch]);
   return { stats, fetch };
 }
+
+// ===================== CONFIGURACOES =====================
+export function useConfiguracoes() {
+  const [data, setData] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    const { data: rows } = await supabase.from('configuracoes').select('*');
+    const map: Record<string, string> = {};
+    (rows || []).forEach(r => { map[r.chave] = r.valor; });
+    setData(map);
+    setLoading(false);
+  }, []);
+
+  const set = async (chave: string, valor: string) => {
+    const { data: upserted } = await supabase.from('configuracoes').upsert({ chave, valor }).select().single();
+    if (upserted) setData(prev => ({ ...prev, [chave]: valor }));
+    return upserted;
+  };
+
+  useEffect(() => { fetch(); }, [fetch]);
+  return { data, loading, fetch, set };
+}
+
+// ===================== ENVIOS ANIVERSARIO =====================
+export function useEnviosAniversario() {
+  const [data, setData] = useState<EnvioAniversario[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    const { data: rows } = await supabase.from('envios_aniversario').select('*');
+    setData(rows || []);
+    setLoading(false);
+  }, []);
+
+  const insert = async (eleitor_id: string, ano: number) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const { data: inserted } = await supabase.from('envios_aniversario').insert({ eleitor_id, ano, user_id: userData.user?.id }).select().single();
+    if (inserted) setData(prev => [...prev, inserted]);
+    return inserted;
+  };
+
+  const jaEnviouEsteAno = (eleitor_id: string, ano: number) => {
+    return data.some(e => e.eleitor_id === eleitor_id && e.ano === ano);
+  };
+
+  useEffect(() => { fetch(); }, [fetch]);
+  return { data, loading, fetch, insert, jaEnviouEsteAno };
+}

@@ -100,6 +100,20 @@ CREATE TABLE IF NOT EXISTS comunicacoes (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS configuracoes (
+  chave TEXT PRIMARY KEY,
+  valor TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS envios_aniversario (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  eleitor_id UUID REFERENCES eleitores(id) ON DELETE CASCADE,
+  ano INTEGER NOT NULL,
+  data_envio TIMESTAMPTZ DEFAULT NOW(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE
+);
+
 -- RLS (seguranca) - idempotent
 ALTER TABLE comunidades ENABLE ROW LEVEL SECURITY;
 ALTER TABLE eleitores ENABLE ROW LEVEL SECURITY;
@@ -108,6 +122,8 @@ ALTER TABLE tarefas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE eventos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE documentos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comunicacoes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE envios_aniversario ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies to avoid conflicts, then recreate
 DROP POLICY IF EXISTS "comunidades_own" ON comunidades;
@@ -117,6 +133,8 @@ DROP POLICY IF EXISTS "tarefas_own" ON tarefas;
 DROP POLICY IF EXISTS "eventos_own" ON eventos;
 DROP POLICY IF EXISTS "documentos_own" ON documentos;
 DROP POLICY IF EXISTS "comunicacoes_own" ON comunicacoes;
+DROP POLICY IF EXISTS "configuracoes_own" ON configuracoes;
+DROP POLICY IF EXISTS "envios_aniversario_own" ON envios_aniversario;
 DROP POLICY IF EXISTS "storage_own" ON storage.objects;
 
 CREATE POLICY "comunidades_own" ON comunidades FOR ALL USING (auth.uid() = user_id);
@@ -126,6 +144,8 @@ CREATE POLICY "tarefas_own" ON tarefas FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "eventos_own" ON eventos FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "documentos_own" ON documentos FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "comunicacoes_own" ON comunicacoes FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "configuracoes_own" ON configuracoes FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "envios_aniversario_own" ON envios_aniversario FOR ALL USING (auth.uid() = user_id);
 
 -- Storage bucket
 INSERT INTO storage.buckets (id, name, public)

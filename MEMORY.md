@@ -1,6 +1,6 @@
 # MandatoDigital — Check-in
 
-CRM para gestão de mandatos políticos. Stack: React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle.
+CRM para gestão de mandatos políticos. Stack: React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (PostgreSQL).
 Deploy: Vercel (serverless).
 
 ## ✅ Pronto
@@ -18,6 +18,7 @@ Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-
 ## 📝 Última Sessão
 04/05/2026 — Commit `b9a1992`. Entregou: painéis do dashboard, kanban, exportação CSV, importação CSV inteligente, CRUD com dialogs, melhorias nas páginas.
 04/05/2026 — Commit `b68364d`. Removeu toda dependência do Kimi OAuth. Projeto 100% independente da IA geradora.
+04/05/2026 — Commit `7d7f036`. Migrou banco de MySQL para PostgreSQL. Deploy na Vercel concluído. Supabase Auth configurado sem confirmação de e-mail.
 
 ## ⚡ Regras
 - 400 linhas máx por arquivo (exceto shadcn/ui)

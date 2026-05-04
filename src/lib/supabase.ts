@@ -89,3 +89,17 @@ export type Interacao = {
   user_id: string;
   created_at: string;
 };
+
+export type Configuracao = {
+  chave: string;
+  valor: string;
+  updated_at: string;
+};
+
+export type EnvioAniversario = {
+  id: string;
+  eleitor_id: string;
+  ano: number;
+  data_envio: string;
+  user_id: string;
+};
