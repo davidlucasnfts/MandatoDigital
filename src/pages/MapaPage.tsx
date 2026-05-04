@@ -1,34 +1,40 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Filter, Users, Building2, ChevronRight, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MapPin, Filter, Users, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { getCoordenadasCidade } from '@/data/coordenadasCidades';
 import type { Eleitor } from '@/lib/supabase';
+
+// react-leaflet imports (dynamic to avoid SSR issues)
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
 
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }) };
 
-function agruparPorBairro(eleitores: Eleitor[]) {
-  const map = new Map<string, Eleitor[]>();
-  eleitores.forEach(e => {
-    const chave = e.bairro || 'Sem bairro';
-    const lista = map.get(chave) || [];
-    lista.push(e);
-    map.set(chave, lista);
-  });
-  return Array.from(map.entries())
-    .map(([bairro, lista]) => ({ bairro, count: lista.length, eleitores: lista }))
-    .sort((a, b) => b.count - a.count);
-}
+// Fix default marker icon
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const customIcon = new L.Icon({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 
 function agruparPorCidade(eleitores: Eleitor[]) {
-  const map = new Map<string, number>();
+  const map = new Map<string, Eleitor[]>();
   eleitores.forEach(e => {
-    const chave = e.cidade || 'Sem cidade';
-    map.set(chave, (map.get(chave) || 0) + 1);
+    const cidade = e.cidade || 'Sem cidade';
+    const lista = map.get(cidade) || [];
+    lista.push(e);
+    map.set(cidade, lista);
   });
   return Array.from(map.entries())
-    .map(([cidade, count]) => ({ cidade, count }))
+    .map(([cidade, lista]) => ({ cidade, count: lista.length, eleitores: lista, coords: getCoordenadasCidade(cidade) }))
+    .filter(c => c.coords !== null)
     .sort((a, b) => b.count - a.count);
 }
 
@@ -37,7 +43,7 @@ export default function MapaPage() {
   const { data: comunidades, loading: loadingComunidades } = useComunidades();
   const [filtroComunidade, setFiltroComunidade] = useState<string | null>(null);
   const [filtroNivel, setFiltroNivel] = useState<string | null>(null);
-  const [bairroSelecionado, setBairroSelecionado] = useState<string | null>(null);
+  const [cidadeSelecionada, setCidadeSelecionada] = useState<string | null>(null);
 
   const niveis = ['lider', 'influenciador', 'apoiador', 'eleitor'];
 
@@ -49,16 +55,15 @@ export default function MapaPage() {
     });
   }, [eleitores, filtroComunidade, filtroNivel]);
 
-  const porBairro = useMemo(() => agruparPorBairro(eleitoresFiltrados), [eleitoresFiltrados]);
   const porCidade = useMemo(() => agruparPorCidade(eleitoresFiltrados), [eleitoresFiltrados]);
-  const totalCidades = porCidade.length;
 
-  const maxCount = porBairro[0]?.count || 1;
+  const eleitoresDaCidade = useMemo(() => {
+    if (!cidadeSelecionada) return [];
+    return porCidade.find(c => c.cidade === cidadeSelecionada)?.eleitores || [];
+  }, [cidadeSelecionada, porCidade]);
 
-  const eleitoresDoBairro = useMemo(() => {
-    if (!bairroSelecionado) return [];
-    return porBairro.find(b => b.bairro === bairroSelecionado)?.eleitores || [];
-  }, [bairroSelecionado, porBairro]);
+  // Centro do mapa: Brasil
+  const centroBrasil: [number, number] = [-14.2350, -51.9253];
 
   const loading = loadingEleitores || loadingComunidades;
 
@@ -67,39 +72,34 @@ export default function MapaPage() {
       <motion.div custom={0} variants={fadeIn} initial="hidden" animate="visible">
         <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
           <MapPin className="w-5 h-5 text-blue-600" />
-          Mapa Territorial
+          Mapa de Eleitores
         </h2>
-        <p className="text-sm text-slate-500 mt-1">Distribuição de eleitores por cidade e bairro</p>
+        <p className="text-sm text-slate-500 mt-1">Distribuição geográfica por cidade</p>
       </motion.div>
 
       <div className="grid lg:grid-cols-4 gap-6">
-        {/* Sidebar Filtros */}
+        {/* Sidebar */}
         <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-1 space-y-4">
           <Card>
             <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-slate-500" />
-                <h3 className="font-semibold text-sm text-slate-700">Filtros</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-slate-500" />
+                  <h3 className="font-semibold text-sm text-slate-700">Filtros</h3>
+                </div>
+                {(filtroComunidade || filtroNivel) && (
+                  <button onClick={() => { setFiltroComunidade(null); setFiltroNivel(null); }} className="text-xs text-red-500 hover:underline flex items-center gap-1">
+                    <X className="w-3 h-3" /> Limpar
+                  </button>
+                )}
               </div>
-
-              {(filtroComunidade || filtroNivel) && (
-                <button
-                  onClick={() => { setFiltroComunidade(null); setFiltroNivel(null); }}
-                  className="text-xs text-red-500 hover:underline flex items-center gap-1"
-                >
-                  <X className="w-3 h-3" /> Limpar filtros
-                </button>
-              )}
 
               <div>
                 <h4 className="text-xs font-semibold text-slate-500 uppercase mb-2">Comunidades</h4>
                 <div className="space-y-1">
                   {comunidades.map(c => (
-                    <button
-                      key={c.id}
-                      onClick={() => setFiltroComunidade(filtroComunidade === c.id ? null : c.id)}
-                      className={`w-full flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-colors ${filtroComunidade === c.id ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}
-                    >
+                    <button key={c.id} onClick={() => setFiltroComunidade(filtroComunidade === c.id ? null : c.id)}
+                      className={`w-full flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-colors ${filtroComunidade === c.id ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: c.cor }} />
                       <span className="flex-1 truncate">{c.nome}</span>
                     </button>
@@ -111,11 +111,8 @@ export default function MapaPage() {
                 <h4 className="text-xs font-semibold text-slate-500 uppercase mb-2">Nível</h4>
                 <div className="space-y-1">
                   {niveis.map(n => (
-                    <button
-                      key={n}
-                      onClick={() => setFiltroNivel(filtroNivel === n ? null : n)}
-                      className={`w-full flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-colors capitalize ${filtroNivel === n ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}
-                    >
+                    <button key={n} onClick={() => setFiltroNivel(filtroNivel === n ? null : n)}
+                      className={`w-full flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-colors capitalize ${filtroNivel === n ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
                       {n}
                     </button>
                   ))}
@@ -123,35 +120,26 @@ export default function MapaPage() {
               </div>
 
               <div className="pt-3 border-t border-slate-100 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Eleitores</span>
-                  <span className="font-semibold text-slate-800">{eleitoresFiltrados.length}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Cidades</span>
-                  <span className="font-semibold text-slate-800">{totalCidades}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Bairros</span>
-                  <span className="font-semibold text-slate-800">{porBairro.length}</span>
-                </div>
+                <div className="flex justify-between text-sm"><span className="text-slate-500">Eleitores</span><span className="font-semibold text-slate-800">{eleitoresFiltrados.length}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-slate-500">Cidades no mapa</span><span className="font-semibold text-slate-800">{porCidade.length}</span></div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Top Cidades */}
+          {/* Lista de cidades */}
           <Card>
-            <CardContent className="p-4">
-              <h4 className="text-xs font-semibold text-slate-500 uppercase mb-3">Top Cidades</h4>
+            <CardContent className="p-4 max-h-[400px] overflow-y-auto">
+              <h4 className="text-xs font-semibold text-slate-500 uppercase mb-3">Cidades</h4>
               {loading ? (
-                <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-6 bg-slate-100 rounded animate-pulse" />)}</div>
+                <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-6 bg-slate-100 rounded animate-pulse" />)}</div>
               ) : (
-                <div className="space-y-2">
-                  {porCidade.slice(0, 5).map(c => (
-                    <div key={c.cidade} className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600 truncate">{c.cidade}</span>
-                      <span className="font-semibold text-slate-800">{c.count}</span>
-                    </div>
+                <div className="space-y-1.5">
+                  {porCidade.map(c => (
+                    <button key={c.cidade} onClick={() => setCidadeSelecionada(c.cidade)}
+                      className={`w-full flex items-center justify-between p-2 rounded-lg text-left text-sm transition-colors ${cidadeSelecionada === c.cidade ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
+                      <span className="truncate">{c.cidade}</span>
+                      <span className="text-xs font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">{c.count}</span>
+                    </button>
                   ))}
                 </div>
               )}
@@ -159,83 +147,50 @@ export default function MapaPage() {
           </Card>
         </motion.div>
 
-        {/* Mapa de Bairros */}
+        {/* Mapa Leaflet */}
         <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-3">
-          <Card className="h-full">
-            <CardContent className="p-0">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Building2 className="w-4 h-4 text-slate-500" />
-                  <span className="text-sm font-medium text-slate-700">Distribuição por Bairro</span>
+          <Card className="h-full min-h-[500px] overflow-hidden">
+            <CardContent className="p-0 h-full">
+              {loading ? (
+                <div className="h-[500px] bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">
+                  <MapPin className="w-8 h-8 mr-2" /> Carregando mapa...
                 </div>
-                <span className="text-xs text-slate-400">{porBairro.length} bairros</span>
-              </div>
-
-              <div className="p-4">
-                {loading ? (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {Array.from({ length: 9 }).map((_, i) => (
-                      <div key={i} className="h-24 bg-slate-100 rounded-lg animate-pulse" />
-                    ))}
-                  </div>
-                ) : porBairro.length === 0 ? (
-                  <div className="text-center py-12 text-slate-400">
-                    <MapPin className="w-10 h-10 mx-auto mb-2 opacity-40" />
-                    <p className="text-sm">Nenhum eleitor encontrado com os filtros selecionados</p>
-                  </div>
-                ) : (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <AnimatePresence>
-                      {porBairro.map((item, i) => {
-                        const intensidade = item.count / maxCount;
-                        return (
-                          <motion.button
-                            key={item.bairro}
-                            custom={i}
-                            variants={fadeIn}
-                            initial="hidden"
-                            animate="visible"
-                            onClick={() => setBairroSelecionado(item.bairro)}
-                            className="text-left p-4 rounded-lg border transition-all hover:shadow-md hover:border-blue-300"
-                            style={{ backgroundColor: `rgba(37, 99, 235, ${0.03 + intensidade * 0.12})` }}
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm font-semibold text-slate-800 truncate">{item.bairro}</span>
-                              <ChevronRight className="w-4 h-4 text-slate-300" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-600 rounded-full" style={{ width: `${intensidade * 100}%` }} />
-                              </div>
-                              <span className="text-xs font-medium text-slate-600">{item.count}</span>
-                            </div>
-                          </motion.button>
-                        );
-                      })}
-                    </AnimatePresence>
-                  </div>
-                )}
-              </div>
+              ) : (
+                <MapContainer center={centroBrasil} zoom={4} scrollWheelZoom={true} style={{ height: '100%', minHeight: '500px', width: '100%' }}>
+                  <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  {porCidade.map(c => (
+                    <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }}>
+                      <Popup>
+                        <div className="text-sm">
+                          <p className="font-semibold">{c.cidade}</p>
+                          <p className="text-xs text-slate-500">{c.count} eleitor{c.count > 1 ? 'es' : ''}</p>
+                          <button onClick={() => setCidadeSelecionada(c.cidade)} className="text-xs text-blue-600 hover:underline mt-1">Ver lista</button>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+                </MapContainer>
+              )}
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
-      {/* Dialog Eleitores do Bairro */}
-      <Dialog open={!!bairroSelecionado} onOpenChange={() => setBairroSelecionado(null)}>
+      {/* Dialog */}
+      <Dialog open={!!cidadeSelecionada} onOpenChange={() => setCidadeSelecionada(null)}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-blue-600" />
-              {bairroSelecionado} — {eleitoresDoBairro.length} eleitor{eleitoresDoBairro.length > 1 ? 'es' : ''}
+              {cidadeSelecionada} — {eleitoresDaCidade.length} eleitor{eleitoresDaCidade.length > 1 ? 'es' : ''}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-2">
-            {eleitoresDoBairro.map(e => (
+            {eleitoresDaCidade.map(e => (
               <div key={e.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <div>
                   <p className="text-sm font-medium text-slate-800">{e.nome}</p>
-                  <p className="text-xs text-slate-500">{e.telefone} · {e.endereco}</p>
+                  <p className="text-xs text-slate-500">{e.telefone} · {e.bairro}</p>
                 </div>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium capitalize ${
                   e.nivel === 'lider' ? 'bg-purple-100 text-purple-700' :
