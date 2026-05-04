@@ -17,6 +17,7 @@ Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-
 ## ✅ Entregues
 - Automação de Aniversário MVP (WhatsApp em massa, template configurável, registro de envios)
 - Mapa Territorial por Cidade/Bairro (distribuição real, filtros, heatmap visual)
+- Landing Page redesenhada com foco em conversão política (hero com dor, antes/depois, prova social, depoimentos com resultados)
 
 ## 📝 Última Sessão
 04/05/2026 — Commit `b9a1992`. Entregou: painéis do dashboard, kanban, exportação CSV, importação CSV inteligente, CRUD com dialogs, melhorias nas páginas.
