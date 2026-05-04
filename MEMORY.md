@@ -38,6 +38,18 @@ Variáveis de ambiente necessárias:
 - **Deploy padrão: Vercel** — todos os projetos devem ser adaptados para Vercel (serverless)
 - **Independência de IA** — nunca deixar dependência de plataforma/oauth do gerador de código
 
+## 🎨 Regras de Design UX/UI (aplicáveis a todos os projetos)
+- **Zero espaços vazios sem função** — todo espaço deve ter propósito: conteúdo, respiro proporcional ou separação visual
+- **Paddings proporcionais** — nunca usar py-20/py-28 sem necessidade; preferir py-10/py-14
+- **Hero compacto** — remover min-h-screen; altura definida pelo conteúdo
+- **CTA sempre visível** — botões principais nunca sumir da tela
+- **Prova social no hero** — números, avatares, cargos reais para credibilidade imediata
+- **Headline na dor** — falar o problema que resolve, não o recurso
+- **Antes vs Depois** — mostrar transformação real, não só listar features
+- **Depoimentos com resultados** — números concretos ("15% mais votos", "10h economizadas")
+- **Cores distintas por card** — facilita scan visual e memorização
+- **Placeholder visual** — quando não há imagem, usar ícone grande com cor de fundo
+
 ## 💰 Economia de Tokens
 Regras para reduzir consumo de tokens em todas as sessões:
 - **Leitura única** — ler arquivo 1x, fazer todas as mudanças na memória, escrever 1x
