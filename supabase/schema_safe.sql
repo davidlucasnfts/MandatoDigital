@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS comunicacoes (
 CREATE TABLE IF NOT EXISTS configuracoes (
   chave TEXT PRIMARY KEY,
   valor TEXT NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 

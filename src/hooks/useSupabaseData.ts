@@ -234,7 +234,8 @@ export function useConfiguracoes() {
   }, []);
 
   const set = async (chave: string, valor: string) => {
-    const { data: upserted } = await supabase.from('configuracoes').upsert({ chave, valor }).select().single();
+    const { data: userData } = await supabase.auth.getUser();
+    const { data: upserted } = await supabase.from('configuracoes').upsert({ chave, valor, user_id: userData.user?.id }).select().single();
     if (upserted) setData(prev => ({ ...prev, [chave]: valor }));
     return upserted;
   };
