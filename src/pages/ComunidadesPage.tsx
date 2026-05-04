@@ -1,20 +1,31 @@
 import { motion } from 'framer-motion';
-import { Users, MapPin, Plus } from 'lucide-react';
+import { Users, MapPin, Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useComunidades } from '@/hooks/useSupabaseData';
+import NovaComunidadeDialog from '@/components/NovaComunidadeDialog';
+import type { Comunidade } from '@/lib/supabase';
+import { useState } from 'react';
 
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.4 } }) };
 
 export default function ComunidadesPage() {
-  const { data: comunidades, loading } = useComunidades();
+  const { data: comunidades, loading, fetch, remove } = useComunidades();
+  const [novaOpen, setNovaOpen] = useState(false);
+  const [editComunidade, setEditComunidade] = useState<Comunidade | null>(null);
 
   return (
     <div className="space-y-6">
       <motion.div custom={0} variants={fadeIn} initial="hidden" animate="visible">
         <div className="flex items-center justify-between">
           <div><h2 className="text-xl font-bold text-slate-800">Comunidades</h2><p className="text-sm text-slate-500 mt-1">{comunidades.length} comunidades cadastradas</p></div>
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-1.5"/>Nova Comunidade</Button>
+          <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => setNovaOpen(true)}><Plus className="w-4 h-4 mr-1.5"/>Nova Comunidade</Button>
         </div>
       </motion.div>
 
@@ -26,6 +37,15 @@ export default function ComunidadesPage() {
               <CardContent className="p-5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor:(c.cor||'#2563EB')+'20'}}><Users className="w-5 h-5" style={{color:c.cor||'#2563EB'}}/></div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-1 hover:bg-slate-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"><MoreHorizontal className="w-4 h-4 text-slate-400"/></button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setEditComunidade(c)} className="text-xs cursor-pointer"><Pencil className="w-3.5 h-3.5 mr-2" /> Editar</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => { if (confirm('Excluir esta comunidade?')) { remove(c.id); fetch(); } }} className="text-xs cursor-pointer text-red-600"><Trash2 className="w-3.5 h-3.5 mr-2" /> Excluir</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <h3 className="font-semibold text-slate-800 mb-1">{c.nome}</h3>
                 <p className="text-xs text-slate-500 mb-3 line-clamp-2">{c.descricao}</p>
@@ -38,6 +58,7 @@ export default function ComunidadesPage() {
           </motion.div>
         ))}
       </div>}
+      <NovaComunidadeDialog open={novaOpen || !!editComunidade} onClose={() => { setNovaOpen(false); setEditComunidade(null); }} onSuccess={fetch} comunidade={editComunidade} />
     </div>
   );
 }

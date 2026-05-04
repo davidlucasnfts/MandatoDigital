@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { Eleitor, Comunidade, Solicitacao, Tarefa, Evento } from '@/lib/supabase';
+import type { Eleitor, Comunidade, Solicitacao, Tarefa, Evento, Interacao } from '@/lib/supabase';
 
 // ===================== ELEITORES =====================
 export function useEleitores() {
@@ -56,7 +56,18 @@ export function useComunidades() {
   };
 
   useEffect(() => { fetch(); }, [fetch]);
-  return { data, loading, fetch, insert };
+  const update = async (id: string, changes: Partial<Comunidade>) => {
+    const { data: updated } = await supabase.from('comunidades').update(changes).eq('id', id).select().single();
+    if (updated) setData(prev => prev.map(c => c.id === id ? updated : c));
+    return updated;
+  };
+
+  const remove = async (id: string) => {
+    await supabase.from('comunidades').delete().eq('id', id);
+    setData(prev => prev.filter(c => c.id !== id));
+  };
+
+  return { data, loading, fetch, insert, update, remove };
 }
 
 // ===================== SOLICITACOES =====================
@@ -84,8 +95,13 @@ export function useSolicitacoes() {
     return updated;
   };
 
+  const remove = async (id: string) => {
+    await supabase.from('solicitacoes').delete().eq('id', id);
+    setData(prev => prev.filter(s => s.id !== id));
+  };
+
   useEffect(() => { fetch(); }, [fetch]);
-  return { data, loading, fetch, insert, update };
+  return { data, loading, fetch, insert, update, remove };
 }
 
 // ===================== TAREFAS =====================
@@ -113,8 +129,13 @@ export function useTarefas() {
     return updated;
   };
 
+  const remove = async (id: string) => {
+    await supabase.from('tarefas').delete().eq('id', id);
+    setData(prev => prev.filter(t => t.id !== id));
+  };
+
   useEffect(() => { fetch(); }, [fetch]);
-  return { data, loading, fetch, insert, update };
+  return { data, loading, fetch, insert, update, remove };
 }
 
 // ===================== EVENTOS =====================
@@ -137,7 +158,48 @@ export function useEventos() {
   };
 
   useEffect(() => { fetch(); }, [fetch]);
-  return { data, loading, fetch, insert };
+  const update = async (id: string, changes: Partial<Evento>) => {
+    const { data: updated } = await supabase.from('eventos').update(changes).eq('id', id).select().single();
+    if (updated) setData(prev => prev.map(e => e.id === id ? updated : e));
+    return updated;
+  };
+
+  const remove = async (id: string) => {
+    await supabase.from('eventos').delete().eq('id', id);
+    setData(prev => prev.filter(e => e.id !== id));
+  };
+
+  return { data, loading, fetch, insert, update, remove };
+}
+
+// ===================== INTERACOES =====================
+export function useInteracoes(eleitorId?: string) {
+  const [data, setData] = useState<Interacao[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    let query = supabase.from('interacoes').select('*').order('data', { ascending: false });
+    if (eleitorId) query = query.eq('eleitor_id', eleitorId);
+    const { data: rows } = await query;
+    setData(rows || []);
+    setLoading(false);
+  }, [eleitorId]);
+
+  const insert = async (row: Omit<Interacao, 'id' | 'created_at' | 'user_id'>) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const { data: inserted } = await supabase.from('interacoes').insert({ ...row, user_id: userData.user?.id }).select().single();
+    if (inserted) setData(prev => [inserted, ...prev]);
+    return inserted;
+  };
+
+  const remove = async (id: string) => {
+    await supabase.from('interacoes').delete().eq('id', id);
+    setData(prev => prev.filter(i => i.id !== id));
+  };
+
+  useEffect(() => { fetch(); }, [fetch]);
+  return { data, loading, fetch, insert, remove };
 }
 
 // ===================== STATS =====================

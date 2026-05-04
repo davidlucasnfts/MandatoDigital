@@ -79,3 +79,13 @@ export type Evento = {
   user_id: string;
   created_at: string;
 };
+
+export type Interacao = {
+  id: string;
+  eleitor_id: string;
+  tipo: 'ligacao' | 'reuniao' | 'whatsapp' | 'visita' | 'email' | 'outro';
+  descricao: string;
+  data: string;
+  user_id: string;
+  created_at: string;
+};

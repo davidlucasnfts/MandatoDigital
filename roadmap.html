@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MandatoDigital - Roadmap</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; }
+    .container { max-width: 800px; margin: 0 auto; padding: 24px; }
+    .header { background: linear-gradient(135deg, #1e3a5f 0%, #2563EB 100%); border-radius: 16px; padding: 32px; color: white; margin-bottom: 24px; }
+    .header h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+    .header p { color: #bfdbfe; font-size: 14px; }
+    .badges { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+    .section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .icon-box { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .icon-green { background: #dcfce7; color: #16a34a; }
+    .icon-blue { background: #dbeafe; color: #2563eb; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+    .item { display: flex; gap: 10px; padding: 12px; background: #f8fafc; border-radius: 8px; }
+    .dot { color: #22c55e; font-size: 10px; margin-top: 5px; flex-shrink: 0; }
+    .item-title { font-size: 13px; font-weight: 600; color: #334155; }
+    .item-desc { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .priority { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 8px; }
+    .priority-high { border-left: 3px solid #2563eb; background: #eff6ff; }
+    .priority-med { border-left: 3px solid #d97706; background: #fffbeb; }
+    .priority-low { border-left: 3px solid #64748b; background: #f8fafc; }
+    .priority-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+    .tag-high { background: #dbeafe; color: #2563eb; }
+    .tag-med { background: #fef3c7; color: #d97706; }
+    .tag-low { background: #e2e8f0; color: #64748b; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 11px; text-transform: uppercase; }
+    td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; }
+    .center { text-align: center; }
+    .green { color: #16a34a; }
+    .gray { color: #94a3b8; }
+    .amber { color: #d97706; }
+    .footer { text-align: center; font-size: 11px; color: #94a3b8; padding: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🏛️ MandatoDigital</h1>
+      <p>CRM completo para gestão de mandatos políticos</p>
+      <div class="badges">
+        <span class="badge">Status: Em desenvolvimento</span>
+        <span class="badge">Atualizado: 03/05/2026</span>
+      </div>
+    </div>
+
+    <!-- Funcionalidades Prontas -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon-box icon-green">✓</span>
+        Funcionalidades Prontas
+      </div>
+      <div class="grid-2">
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Cadastro de Eleitores</div>
+            <div class="item-desc">Níveis, tags, comunidades, status, CPF</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Importação CSV Inteligente</div>
+            <div class="item-desc">Mapeamento auto, preview, validação</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Exportação CSV</div>
+            <div class="item-desc">Escolhe colunas, preview, filtra</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Kanban com Drag-and-Drop</div>
+            <div class="item-desc">Tarefas e Solicitações movendo cards</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">CRUD Completo</div>
+            <div class="item-desc">Criar, editar, excluir em todas as telas</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Registro de Interações</div>
+            <div class="item-desc">Ligação, reunião, WhatsApp, visita</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Dashboard com Dados Reais</div>
+            <div class="item-desc">Gráficos de crescimento, alertas</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Comunicação E-mail/SMS</div>
+            <div class="item-desc">Envio com variáveis personalizadas</div>
+          </div>
+        </div>
+        <div class="item">
+          <span class="dot">●</span>
+          <div>
+            <div class="item-title">Agenda e Documentos</div>
+            <div class="item-desc">Calendário e pasta virtual</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Próximas Melhorias -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon-box icon-blue">→</span>
+        Próximas Melhorias
+      </div>
+      <div class="priority priority-high">
+        <span class="priority-tag tag-high">ALTA</span>
+        <div>
+          <div class="item-title">Automação de Aniversário</div>
+          <div class="item-desc">Envio automático de mensagens no aniversário do eleitor</div>
+        </div>
+      </div>
+      <div class="priority priority-high">
+        <span class="priority-tag tag-high">ALTA</span>
+        <div>
+          <div class="item-title">Mapa com Geolocalização Real</div>
+          <div class="item-desc">Visualizar eleitores no mapa interativo com filtros</div>
+        </div>
+      </div>
+      <div class="priority priority-med">
+        <span class="priority-tag tag-med">MÉDIA</span>
+        <div>
+          <div class="item-title">Multi-usuário com Permissões</div>
+          <div class="item-desc">Níveis de acesso: admin, assessor, voluntário</div>
+        </div>
+      </div>
+      <div class="priority priority-med">
+        <span class="priority-tag tag-med">MÉDIA</span>
+        <div>
+          <div class="item-title">Etiquetas para Mala Direta</div>
+          <div class="item-desc">PDF com etiquetas para correspondência física</div>
+        </div>
+      </div>
+      <div class="priority priority-low">
+        <span class="priority-tag tag-low">BAIXA</span>
+        <div>
+          <div class="item-title">Website Integrado</div>
+          <div class="item-desc">Landing page do candidato na plataforma</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparativo -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon-box icon-blue">⚡</span>
+        Comparativo com Concorrente (O Assessor)
+      </div>
+      <table>
+        <thead>
+          <tr><th>Funcionalidade</th><th class="center">O Assessor</th><th class="center">MandatoDigital</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Eleitores, Comunidades, Solicitações</td><td class="center green">✓</td><td class="center green">✓</td></tr>
+          <tr><td>Kanban com Drag-and-Drop</td><td class="center gray">—</td><td class="center green">✓</td></tr>
+          <tr><td>Importar/Exportar CSV</td><td class="center gray">—</td><td class="center green">✓</td></tr>
+          <tr><td>Registro de Interações</td><td class="center green">✓</td><td class="center green">✓</td></tr>
+          <tr><td>Dashboard + Alertas</td><td class="center green">✓</td><td class="center green">✓</td></tr>
+          <tr><td>Automação Aniversário</td><td class="center green">✓</td><td class="center amber">Em breve</td></tr>
+          <tr><td>Mapa Geolocalizado</td><td class="center green">✓</td><td class="center amber">Em breve</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">MandatoDigital · CRM para Gestão Política · 2026</div>
+  </div>
+</body>
+</html>
