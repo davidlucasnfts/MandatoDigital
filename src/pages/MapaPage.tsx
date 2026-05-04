@@ -8,7 +8,7 @@ import { getCoordenadasCidade } from '@/data/coordenadasCidades';
 import type { Eleitor } from '@/lib/supabase';
 
 // react-leaflet imports (dynamic to avoid SSR issues)
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }) };
@@ -159,15 +159,7 @@ export default function MapaPage() {
                 <MapContainer center={centroBrasil} zoom={4} scrollWheelZoom={true} style={{ height: '100%', minHeight: '500px', width: '100%' }}>
                   <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   {porCidade.map(c => (
-                    <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }}>
-                      <Popup autoPan={true} autoPanPadding={[50, 50]}>
-                        <div className="text-sm">
-                          <p className="font-semibold">{c.cidade}</p>
-                          <p className="text-xs text-slate-500">{c.count} eleitor{c.count > 1 ? 'es' : ''}</p>
-                          <button onClick={() => setCidadeSelecionada(c.cidade)} className="text-xs text-blue-600 hover:underline mt-1">Ver lista</button>
-                        </div>
-                      </Popup>
-                    </Marker>
+                    <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }} />
                   ))}
                 </MapContainer>
               )}
