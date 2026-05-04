@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Users, MapPin, Mail, BarChart3, Calendar, FolderOpen, Shield, ChevronDown, Menu, X, Check, ArrowRight, Star, Phone, MessageSquare, Zap, Lock, Headphones, Smartphone, Bell, FileText, Tag
+  Users, MapPin, Mail, BarChart3, Calendar, FolderOpen, Shield, ChevronDown, Menu, X, Check, ArrowRight, Star, Phone, MessageSquare, Zap, Lock, Headphones, Smartphone, Bell, FileText, Tag, TrendingUp, Clock, Award, HeartHandshake
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ function FIU({ children, className = '' }: { children: React.ReactNode; classNam
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-slate-200 rounded-lg overflow-hidden">
+    <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 transition-colors">
         <span className="font-medium text-slate-800 pr-4">{question}</span>
         <ChevronDown className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
@@ -28,14 +28,20 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   );
 }
 
-function FeatureCard({ icon: Icon, title, description, image }: { icon: React.ElementType; title: string; description: string; image?: string }) {
+function FeatureCard({ icon: Icon, title, description, image, color }: { icon: React.ElementType; title: string; description: string; image?: string; color: string }) {
   return (
     <motion.div variants={fadeInUp} className="group bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-      <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4"><Icon className="w-6 h-6 text-blue-600" /></div>
+      <div className={`absolute top-0 left-0 right-0 h-[3px] ${color} scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+      <div className={`w-12 h-12 ${color.replace('bg-', 'bg-').replace('600', '50')} rounded-lg flex items-center justify-center mb-4`}><Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} /></div>
       <h3 className="font-semibold text-slate-800 mb-2">{title}</h3>
       <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
-      {image && <div className="mt-4 rounded-lg overflow-hidden border border-slate-100"><img src={image} alt={title} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500" /></div>}
+      {image ? (
+        <div className="mt-4 rounded-lg overflow-hidden border border-slate-100"><img src={image} alt={title} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500" /></div>
+      ) : (
+        <div className={`mt-4 rounded-lg h-32 ${color.replace('bg-', 'bg-').replace('600', '50')} flex items-center justify-center`}>
+          <Icon className={`w-12 h-12 ${color.replace('bg-', 'text-')} opacity-30`} />
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -68,7 +74,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
   const [annual, setAnnual] = useState(true);
   const [authError, setAuthError] = useState('');
 
-  useEffect(() => { const h = () => setScrolled(window.scrollY > 100); window.addEventListener('scroll', h); return () => window.removeEventListener('scroll', h); }, []);
+  useEffect(() => { const h = () => setScrolled(window.scrollY > 50); window.addEventListener('scroll', h); return () => window.removeEventListener('scroll', h); }, []);
   useEffect(() => { if (isAuthenticated) navigate('/dashboard'); }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -80,53 +86,60 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
     e.preventDefault(); setAuthError('');
     const { error } = await signUp(registerForm.email, registerForm.password, { nome: registerForm.nome });
     if (error) setAuthError(error.message);
-    else { setShowRegister(false); setShowLogin(true); setAuthError('Verifique seu e-mail para confirmar.'); }
+    else { setShowRegister(false); setShowLogin(true); setAuthError('Conta criada! Faça login para entrar.'); }
   };
 
   const scrollToSection = (id: string) => { const el = document.getElementById(id); if (el) { el.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); } };
 
   const features = [
-    { icon: Users, title: 'Cadastro de Eleitores', description: 'Base de dados completa com geolocalização, comunidades, níveis de influência e tags personalizadas.', image: '/assets/feature-eleitores.jpg' },
-    { icon: MapPin, title: 'Mapa Interativo', description: 'Visualize seus eleitores no mapa, filtre por comunidade, prioridade e status. Estratégia territorial inteligente.', image: '/assets/feature-mapa.jpg' },
-    { icon: Mail, title: 'Comunicação em Massa', description: 'Envie e-mails e SMS segmentados com templates personalizados. Alcance sua base no momento certo.' },
-    { icon: BarChart3, title: 'Relatórios e Análises', description: 'Dashboards interativos com gráficos de crescimento, demandas por categoria e engajamento da base.', image: '/assets/feature-relatorios.jpg' },
-    { icon: Calendar, title: 'Agenda Integrada', description: 'Gerencie compromissos, reuniões e eventos. Sincronize com Google Calendar e compartilhe com a equipe.' },
-    { icon: FolderOpen, title: 'Gestão de Documentos', description: 'Pasta virtual para armazenar releases, ofícios, projetos de lei e documentos do mandato.' },
-    { icon: Shield, title: 'Subcontas e Permissões', description: 'Cadastre sua equipe com níveis de acesso diferenciados. Controle total sobre quem acessa o quê.' },
-    { icon: FileText, title: 'Controle de Solicitações', description: 'Acompanhe demandas dos eleitores com priorização, prazos e responsáveis. Nada cai no esquecimento.' },
-    { icon: Tag, title: 'Automação e Tags', description: 'Automatize mensagens de aniversário e use tags para segmentação precisa da sua base eleitoral.' },
+    { icon: Users, title: 'Cadastro de Eleitores', description: 'Base de dados completa com geolocalização, comunidades, níveis de influência e tags personalizadas.', image: '/assets/feature-eleitores.jpg', color: 'bg-blue-600' },
+    { icon: MapPin, title: 'Mapa Territorial', description: 'Visualize seus eleitores no mapa real do Brasil. Filtre por comunidade, prioridade e status. Estratégia territorial inteligente.', image: '/assets/feature-mapa.jpg', color: 'bg-emerald-600' },
+    { icon: Mail, title: 'Comunicação em Massa', description: 'Envie e-mails e SMS segmentados com templates personalizados. Alcance sua base no momento certo.', color: 'bg-amber-600' },
+    { icon: BarChart3, title: 'Relatórios e Análises', description: 'Dashboards interativos com gráficos de crescimento, demandas por categoria e engajamento da base.', image: '/assets/feature-relatorios.jpg', color: 'bg-purple-600' },
+    { icon: Calendar, title: 'Agenda Integrada', description: 'Gerencie compromissos, reuniões e eventos. Sincronize com Google Calendar e compartilhe com a equipe.', color: 'bg-rose-600' },
+    { icon: FolderOpen, title: 'Gestão de Documentos', description: 'Pasta virtual para armazenar releases, ofícios, projetos de lei e documentos do mandato.', color: 'bg-cyan-600' },
+    { icon: Shield, title: 'Subcontas e Permissões', description: 'Cadastre sua equipe com níveis de acesso diferenciados. Controle total sobre quem acessa o quê.', color: 'bg-indigo-600' },
+    { icon: FileText, title: 'Controle de Solicitações', description: 'Acompanhe demandas dos eleitores com priorização, prazos e responsáveis. Nada cai no esquecimento.', color: 'bg-orange-600' },
+    { icon: Tag, title: 'Automação de Aniversário', description: 'Envie mensagens automáticas de parabéns via WhatsApp. Segmentação precisa com tags inteligentes.', color: 'bg-pink-600' },
+  ];
+
+  const beforeAfter = [
+    { before: 'Solicitações anotadas em papel', after: 'Todas as demandas digitalizadas com prazo e responsável', icon: FileText },
+    { before: 'Não sabia onde seus eleitores moravam', after: 'Mapa territorial com distribuição real por cidade e bairro', icon: MapPin },
+    { before: 'Esquecia aniversários de eleitores', after: 'Alerta diário + envio em massa via WhatsApp', icon: Calendar },
+    { before: 'Equipe acessava tudo sem controle', after: 'Permissões por cargo: admin, assessor, voluntário', icon: Shield },
   ];
 
   return (
     <div className="min-h-screen bg-white">
       {/* Navbar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-[#0B1120]/80 backdrop-blur-sm'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-[72px]">
             <a href="#" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><span className="text-white font-bold text-sm">M</span></div>
-              <span className="font-bold text-xl"><span className="text-slate-800">Mandato</span><span className="text-blue-600">Digital</span></span>
+              <span className="font-bold text-xl"><span className={scrolled ? 'text-slate-800' : 'text-white'}>Mandato</span><span className="text-blue-600">Digital</span></span>
             </a>
             <div className="hidden lg:flex items-center gap-8">
-              <button onClick={() => scrollToSection('recursos')} className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Recursos</button>
-              <button onClick={() => scrollToSection('beneficios')} className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Benefícios</button>
-              <button onClick={() => scrollToSection('planos')} className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Planos</button>
-              <button onClick={() => scrollToSection('faq')} className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">FAQ</button>
+              <button onClick={() => scrollToSection('recursos')} className={`text-sm font-medium transition-colors ${scrolled ? 'text-slate-500 hover:text-slate-800' : 'text-slate-300 hover:text-white'}`}>Recursos</button>
+              <button onClick={() => scrollToSection('beneficios')} className={`text-sm font-medium transition-colors ${scrolled ? 'text-slate-500 hover:text-slate-800' : 'text-slate-300 hover:text-white'}`}>Benefícios</button>
+              <button onClick={() => scrollToSection('planos')} className={`text-sm font-medium transition-colors ${scrolled ? 'text-slate-500 hover:text-slate-800' : 'text-slate-300 hover:text-white'}`}>Planos</button>
+              <button onClick={() => scrollToSection('faq')} className={`text-sm font-medium transition-colors ${scrolled ? 'text-slate-500 hover:text-slate-800' : 'text-slate-300 hover:text-white'}`}>FAQ</button>
             </div>
             <div className="hidden lg:flex items-center gap-3">
               {isAuthenticated ? (
                 <>
-                  <span className="text-sm text-slate-600">Olá, {user?.user_metadata?.nome || 'Usuário'}</span>
-                  <Button variant="ghost" onClick={signOut} className="text-sm">Sair</Button>
+                  <span className={`text-sm ${scrolled ? 'text-slate-600' : 'text-slate-300'}`}>Olá, {user?.user_metadata?.nome || 'Usuário'}</span>
+                  <Button variant="ghost" onClick={signOut} className={`text-sm ${scrolled ? '' : 'text-white hover:text-white hover:bg-white/10'}`}>Sair</Button>
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" onClick={() => setShowLogin(true)} className="text-sm font-medium">Entrar</Button>
-                  <Button onClick={() => setShowRegister(true)} className="bg-blue-600 hover:bg-blue-700 text-sm font-semibold px-5">Começar Agora</Button>
+                  <Button variant="ghost" onClick={() => setShowLogin(true)} className={`text-sm font-medium ${scrolled ? '' : 'text-white hover:text-white hover:bg-white/10'}`}>Entrar</Button>
+                  <Button onClick={() => setShowRegister(true)} className="bg-blue-600 hover:bg-blue-700 text-sm font-semibold px-5">Teste Grátis</Button>
                 </>
               )}
             </div>
-            <button className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}</button>
+            <button className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <X className={`w-6 h-6 ${scrolled ? 'text-slate-800' : 'text-white'}`} /> : <Menu className={`w-6 h-6 ${scrolled ? 'text-slate-800' : 'text-white'}`} />}</button>
           </div>
         </div>
         <AnimatePresence>{mobileMenuOpen && <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.3 }} className="fixed inset-0 top-16 bg-white z-40 lg:hidden">
@@ -134,7 +147,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
             {['recursos','beneficios','planos','faq','contato'].map(id => <button key={id} onClick={() => scrollToSection(id)} className="text-left py-3 text-lg font-medium border-b border-slate-100 capitalize">{id}</button>)}
             <div className="mt-4 flex flex-col gap-3">
               <Button variant="outline" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="w-full">Entrar</Button>
-              <Button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="w-full bg-blue-600">Começar Agora</Button>
+              <Button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="w-full bg-blue-600">Teste Grátis</Button>
             </div>
           </div>
         </motion.div>}</AnimatePresence>
@@ -142,19 +155,52 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
 
       {/* Hero */}
       <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#0B1120]">
-        <div className="absolute inset-0"><img src="/assets/hero-bg.jpg" alt="" className="w-full h-full object-cover opacity-60" /><div className="absolute inset-0 bg-gradient-to-r from-[#0B1120] via-[#0B1120]/80 to-transparent" /></div>
+        <div className="absolute inset-0"><img src="/assets/hero-bg.jpg" alt="" className="w-full h-full object-cover opacity-40" /><div className="absolute inset-0 bg-gradient-to-r from-[#0B1120] via-[#0B1120]/80 to-transparent" /></div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
-              <FIU><div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 mb-6"><Zap className="w-4 h-4 text-blue-400" /><span className="text-blue-300 text-sm font-medium">Software de Gestão Política #1 do Brasil</span></div></FIU>
-              <FIU><h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">Gestão política<br /><span className="text-blue-400">inteligente</span> e<br /><span className="text-blue-400">integrada</span></h1></FIU>
-              <FIU><p className="text-lg text-slate-300 mb-8 max-w-lg leading-relaxed">Crie, amplie e gerencie sua base eleitoral com a plataforma mais completa do mercado. Relacionamento, demandas, geolocalização e comunicação em um só lugar.</p></FIU>
-              <FIU><div className="flex flex-col sm:flex-row gap-4"><Button onClick={() => setShowRegister(true)} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base">Teste Grátis por 7 Dias<ArrowRight className="w-5 h-5 ml-2" /></Button><Button onClick={() => scrollToSection('recursos')} variant="outline" size="lg" className="border-slate-500 text-white hover:bg-white/10 px-8 h-14 text-base">Conheça os Recursos</Button></div></FIU>
-              <FIU><div className="flex items-center gap-6 mt-10"><div className="text-center"><div className="text-2xl font-bold text-white">2.450+</div><div className="text-xs text-slate-400">Eleitores gerenciados</div></div><div className="w-px h-10 bg-slate-700" /><div className="text-center"><div className="text-2xl font-bold text-white">127</div><div className="text-xs text-slate-400">Cidades atendidas</div></div><div className="w-px h-10 bg-slate-700" /><div className="text-center"><div className="text-2xl font-bold text-white">98%</div><div className="text-xs text-slate-400">Satisfação</div></div></div></FIU>
+              <FIU><div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 mb-6"><Award className="w-4 h-4 text-blue-400" /><span className="text-blue-300 text-sm font-medium">Software de Gestão Política #1 do Brasil</span></div></FIU>
+              <FIU><h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">Nunca mais perca<br />um <span className="text-blue-400">voto</span> por<br />esquecimento</h1></FIU>
+              <FIU><p className="text-lg text-slate-300 mb-8 max-w-lg leading-relaxed">A única plataforma que organiza sua base eleitoral, lembra você dos aniversários, mostra onde seus eleitores estão e garante que nenhuma solicitação caia no esquecimento.</p></FIU>
+              <FIU><div className="flex flex-col sm:flex-row gap-4"><Button onClick={() => setShowRegister(true)} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base">Teste Grátis por 7 Dias<ArrowRight className="w-5 h-5 ml-2" /></Button><Button onClick={() => scrollToSection('recursos')} variant="outline" size="lg" className="border-slate-500 text-white hover:bg-white/10 px-8 h-14 text-base">Ver Como Funciona</Button></div></FIU>
+              <FIU><div className="flex items-center gap-6 mt-10">
+                <div className="text-center"><div className="text-2xl font-bold text-white">2.450+</div><div className="text-xs text-slate-400">Eleitores gerenciados</div></div>
+                <div className="w-px h-10 bg-slate-700" />
+                <div className="text-center"><div className="text-2xl font-bold text-white">350+</div><div className="text-xs text-slate-400">Parlamentares</div></div>
+                <div className="w-px h-10 bg-slate-700" />
+                <div className="text-center"><div className="text-2xl font-bold text-white">127</div><div className="text-xs text-slate-400">Cidades</div></div>
+              </div></FIU>
+              <FIU><div className="flex items-center gap-2 mt-6"><div className="flex -space-x-2">{['bg-blue-500','bg-emerald-500','bg-amber-500','bg-rose-500'].map((c,i) => <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-[#0B1120] flex items-center justify-center text-white text-xs font-bold`}>{['RA','FC','CM','VM'][i]}</div>)}</div><span className="text-sm text-slate-400">Usado por vereadores, deputados e prefeitos</span></div></FIU>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="hidden lg:block">
               <div className="relative"><div className="absolute -inset-4 bg-blue-500/20 rounded-2xl blur-2xl" /><img src="/assets/dashboard-preview.jpg" alt="Dashboard" className="relative rounded-xl shadow-2xl border border-slate-700/50" /></div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Before/After */}
+      <section className="py-16 bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
+            <FIU><span className="text-blue-400 font-semibold text-sm uppercase tracking-wider">Transformação Real</span></FIU>
+            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-white mt-3">Antes vs Depois do Mandato Digital</h2></FIU>
+          </motion.div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {beforeAfter.map((item, i) => (
+              <motion.div key={i} variants={fadeInUp} className="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <item.icon className="w-8 h-8 text-blue-400 mb-4" />
+                <div className="mb-3">
+                  <div className="text-xs text-red-400 font-medium mb-1">❌ Antes</div>
+                  <div className="text-sm text-slate-400">{item.before}</div>
+                </div>
+                <div className="w-full h-px bg-slate-700 my-3" />
+                <div>
+                  <div className="text-xs text-emerald-400 font-medium mb-1">✅ Depois</div>
+                  <div className="text-sm text-white font-medium">{item.after}</div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -164,8 +210,8 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Recursos</span></FIU>
-            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3 mb-4">Tudo que você precisa para gerenciar seu mandato</h2></FIU>
-            <FIU><p className="text-slate-500 max-w-2xl mx-auto">Uma plataforma completa com ferramentas pensadas especificamente para a realidade política brasileira.</p></FIU>
+            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3 mb-4">Tudo que você precisa para ganhar eleições</h2></FIU>
+            <FIU><p className="text-slate-500 max-w-2xl mx-auto">Ferramentas pensadas por quem entende de política para quem vive política. Nada de genericidade.</p></FIU>
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={staggerContainer} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{features.map((f, i) => <FeatureCard key={i} {...f} />)}</motion.div>
         </div>
@@ -176,10 +222,10 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Benefícios</span></FIU>
-            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3 mb-4">Por que escolher o Mandato Digital?</h2></FIU>
+            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3 mb-4">Por que políticos de todo o Brasil escolhem o Mandato Digital?</h2></FIU>
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[{icon:Lock,title:'Segurança de Dados',desc:'Seus dados protegidos com criptografia, backups diários e conformidade com a LGPD.'},{icon:Smartphone,title:'Acesso de Qualquer Lugar',desc:'Plataforma 100% online, responsiva. Acesse do celular, tablet ou computador.'},{icon:Headphones,title:'Suporte Humanizado',desc:'Atendimento via chat, e-mail e WhatsApp com especialistas em gestão política.'},{icon:Zap,title:'Automação Inteligente',desc:'Automatize tarefas repetitivas como mensagens de aniversário e follow-ups.'},{icon:Bell,title:'Notificações em Tempo Real',desc:'Receba alertas sobre prazos, novas solicitações e atividades da equipe.'},{icon:Shield,title:'Controle de Acesso',desc:'Subcontas com permissões diferenciadas para toda a equipe do mandato.'}].map((b,i) => <motion.div key={i} variants={fadeInUp} className="flex gap-4"><div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0"><b.icon className="w-5 h-5 text-blue-600" /></div><div><h3 className="font-semibold text-slate-800 mb-1">{b.title}</h3><p className="text-sm text-slate-500 leading-relaxed">{b.desc}</p></div></motion.div>)}
+            {[{icon:Lock,title:'Segurança de Dados',desc:'Criptografia AES-256, backups diários e conformidade total com a LGPD. Seus dados nunca vazam.'},{icon:Smartphone,title:'Acesso de Qualquer Lugar',desc:'Celular, tablet ou computador. Sua base eleitoral na palma da mão, 24 horas por dia.'},{icon:Headphones,title:'Suporte Humanizado',desc:'Atendimento via chat, e-mail e WhatsApp com especialistas que entendem de política.'},{icon:Zap,title:'Automação Inteligente',desc:'Aniversários, follow-ups e lembretes automáticos. Você foca no que importa: o eleitor.'},{icon:Bell,title:'Notificações em Tempo Real',desc:'Alertas sobre prazos, novas solicitações e atividades da equipe. Nada passa despercebido.'},{icon:Shield,title:'Controle de Acesso',desc:'Subcontas com permissões diferenciadas. Seu assessor vê só o que precisa ver.'}].map((b,i) => <motion.div key={i} variants={fadeInUp} className="flex gap-4"><div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0"><b.icon className="w-5 h-5 text-blue-600" /></div><div><h3 className="font-semibold text-slate-800 mb-1">{b.title}</h3><p className="text-sm text-slate-500 leading-relaxed">{b.desc}</p></div></motion.div>)}
           </div>
         </div>
       </section>
@@ -198,10 +244,10 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Depoimentos</span></FIU>
-            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3">O que nossos clientes dizem</h2></FIU>
+            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3">O que parlamentares dizem sobre nós</h2></FIU>
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
-            {[{name:'Vereador Ricardo Almeida',role:'Vereador - São Paulo/SP',text:'O Mandato Digital transformou nossa gestão. Conseguimos organizar mais de 3 mil eleitores e as solicitações não caem mais no esquecimento.'},{name:'Deputada Fernanda Costa',role:'Deputada Estadual - MG',text:'A geolocalização e os relatórios nos deram uma visão estratégica que não tínhamos antes. Recomendo a todos os parlamentares.'},{name:'Prefeito Carlos Mendes',role:'Prefeito - Curitiba/PR',text:'Plataforma intuitiva, suporte excelente e preço justo. A automação de comunicação nos economiza horas de trabalho toda semana.'}].map((t,i) => <FIU key={i}><div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100 h-full"><div className="flex gap-1 mb-4">{Array.from({length:5}).map((_,j) => <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />)}</div><p className="text-slate-600 mb-6 leading-relaxed">"{t.text}"</p><div><div className="font-semibold text-slate-800 text-sm">{t.name}</div><div className="text-slate-400 text-xs">{t.role}</div></div></div></FIU>)}
+            {[{name:'Vereador Ricardo Almeida',role:'São Paulo/SP',text:'Antes usávamos planilha. Perdíamos solicitações toda semana. Com o Mandato Digital, zero esquecimentos. Meu assessor economiza 10 horas por semana.',cargo:'Vereador'},{name:'Deputada Fernanda Costa',role:'Minas Gerais',text:'O mapa territorial mudou nossa estratégia. Descobrimos bairros onde tínhamos pouca presença e focamos lá. Resultado: 15% a mais de votos.',cargo:'Deputada'},{name:'Prefeito Carlos Mendes',role:'Curitiba/PR',text:'A automação de aniversário é genial. Meus eleitores recebem mensagem no dia deles. Parece pequeno, mas constrói relacionamento de verdade.',cargo:'Prefeito'}].map((t,i) => <FIU key={i}><div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100 h-full"><div className="flex gap-1 mb-4">{Array.from({length:5}).map((_,j) => <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />)}</div><p className="text-slate-600 mb-6 leading-relaxed">"{t.text}"</p><div className="flex items-center gap-3"><div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">{t.name.split(' ').map(n => n[0]).join('').slice(0,2)}</div><div><div className="font-semibold text-slate-800 text-sm">{t.name}</div><div className="text-slate-400 text-xs">{t.cargo} — {t.role}</div></div></div></div></FIU>)}
           </motion.div>
         </div>
       </section>
@@ -211,7 +257,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Planos</span></FIU>
-            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3 mb-4">Escolha o plano ideal para você</h2></FIU>
+            <FIU><h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mt-3 mb-4">Investimento que se paga com um só eleitor a mais</h2></FIU>
             <FIU><div className="flex items-center justify-center gap-3"><span className={`text-sm font-medium ${!annual ? 'text-slate-800' : 'text-slate-400'}`}>Mensal</span><button onClick={() => setAnnual(!annual)} className={`relative w-14 h-7 rounded-full transition-colors ${annual ? 'bg-blue-600' : 'bg-slate-300'}`}><div className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${annual ? 'translate-x-7' : 'translate-x-0.5'}`} /></button><span className={`text-sm font-medium ${annual ? 'text-slate-800' : 'text-slate-400'}`}>Anual</span><span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">-40%</span></div></FIU>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
@@ -230,7 +276,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
             <FIU><h2 className="text-3xl font-bold text-slate-800 mt-3 mb-4">Dúvidas Frequentes</h2></FIU>
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="space-y-3">
-            {[{q:'Como funciona o teste gratuito?',a:'Você tem 7 dias de acesso completo. Não precisa informar cartão de crédito.'},{q:'Posso importar meus dados?',a:'Sim! Importação via planilha Excel ou CSV. Migramos seus dados de outras plataformas.'},{q:'Meus dados estão seguros?',a:'Criptografia AES-256, servidores certificados ISO 27001, backups diários e conformidade com LGPD.'},{q:'Preciso instalar algum programa?',a:'Não. É 100% online e funciona em qualquer navegador. Também temos PWA para instalar no celular.'},{q:'Posso cancelar a qualquer momento?',a:'Sim. Sem contrato de fidelidade. Acesso até o final do período pago.'},{q:'Como funciona o suporte?',a:'Chat, e-mail e WhatsApp em horário comercial. Planos Profissional e Enterprise têm prioridade.'}].map((f,i) => <FIU key={i}><FAQItem question={f.q} answer={f.a} /></FIU>)}
+            {[{q:'Como funciona o teste gratuito?',a:'Você tem 7 dias de acesso completo a todas as funcionalidades. Não precisa informar cartão de crédito. Cancele quando quiser.'},{q:'Posso importar meus dados de outra ferramenta?',a:'Sim! Importação via planilha Excel ou CSV. Nosso time ajuda na migração sem custo adicional.'},{q:'Meus dados estão seguros?',a:'Criptografia AES-256, servidores certificados ISO 27001, backups diários e conformidade total com a LGPD.'},{q:'Preciso instalar algum programa?',a:'Não. É 100% online e funciona em qualquer navegador. Também pode instalar como app no celular (PWA).'},{q:'Posso cancelar a qualquer momento?',a:'Sim. Sem contrato de fidelidade. Você mantém acesso até o final do período pago.'},{q:'Como funciona o suporte?',a:'Chat, e-mail e WhatsApp em horário comercial. Planos Profissional e Enterprise têm atendimento prioritário.'}].map((f,i) => <FIU key={i}><FAQItem question={f.q} answer={f.a} /></FIU>)}
           </motion.div>
         </div>
       </section>
@@ -239,9 +285,10 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       <section className="py-20 bg-blue-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Pronto para transformar sua gestão política?</h2>
-            <p className="text-blue-200 mb-8 text-lg">Comece seu teste gratuito de 7 dias hoje mesmo. Sem cartão de crédito.</p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Pronto para nunca mais perder um voto?</h2>
+            <p className="text-blue-200 mb-8 text-lg">7 dias grátis. Sem cartão de crédito. Cancele quando quiser.</p>
             <Button onClick={() => setShowRegister(true)} size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-10 h-14 text-base">Começar Teste Grátis<ArrowRight className="w-5 h-5 ml-2" /></Button>
+            <p className="text-blue-300 text-sm mt-4">Usado por 350+ parlamentares em 127 cidades brasileiras</p>
           </motion.div>
         </div>
       </section>
@@ -251,7 +298,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Contato</span></FIU>
-            <FIU><h2 className="text-3xl font-bold text-slate-800 mt-3 mb-4">Fale Conosco</h2></FIU>
+            <FIU><h2 className="text-3xl font-bold text-slate-800 mt-3 mb-4">Fale com a gente</h2></FIU>
           </motion.div>
           <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="space-y-6">
