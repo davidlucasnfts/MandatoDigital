@@ -100,6 +100,12 @@ CREATE TABLE IF NOT EXISTS comunicacoes (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============================================================
+-- ALTERACAO: 04/05/2026 — Automação de Aniversário MVP
+-- Autor: Kimi Code
+-- Descricao: Cria tabelas para template de mensagem e registro
+-- de envios de aniversario via WhatsApp
+-- ============================================================
 CREATE TABLE IF NOT EXISTS configuracoes (
   chave TEXT PRIMARY KEY,
   valor TEXT NOT NULL,
