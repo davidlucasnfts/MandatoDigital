@@ -154,23 +154,23 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </nav>
 
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#0B1120]">
+      <section className="relative flex items-center pt-20 overflow-hidden bg-[#0B1120]">
         <div className="absolute inset-0"><img src="/assets/hero-bg.jpg" alt="" className="w-full h-full object-cover opacity-40" /><div className="absolute inset-0 bg-gradient-to-r from-[#0B1120] via-[#0B1120]/80 to-transparent" /></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
-              <FIU><div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 mb-6"><Award className="w-4 h-4 text-blue-400" /><span className="text-blue-300 text-sm font-medium">Software de Gestão Política #1 do Brasil</span></div></FIU>
-              <FIU><h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">Nunca mais perca<br />um <span className="text-blue-400">voto</span> por<br />esquecimento</h1></FIU>
-              <FIU><p className="text-lg text-slate-300 mb-8 max-w-lg leading-relaxed">A única plataforma que organiza sua base eleitoral, lembra você dos aniversários, mostra onde seus eleitores estão e garante que nenhuma solicitação caia no esquecimento.</p></FIU>
+              <FIU><div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 mb-4"><Award className="w-4 h-4 text-blue-400" /><span className="text-blue-300 text-sm font-medium">Software de Gestão Política #1 do Brasil</span></div></FIU>
+              <FIU><h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-4">Nunca mais perca<br />um <span className="text-blue-400">voto</span> por<br />esquecimento</h1></FIU>
+              <FIU><p className="text-lg text-slate-300 mb-6 max-w-lg leading-relaxed">A única plataforma que organiza sua base eleitoral, lembra você dos aniversários, mostra onde seus eleitores estão e garante que nenhuma solicitação caia no esquecimento.</p></FIU>
               <FIU><div className="flex flex-col sm:flex-row gap-4"><Button onClick={() => setShowRegister(true)} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base">Teste Grátis por 7 Dias<ArrowRight className="w-5 h-5 ml-2" /></Button><Button onClick={() => scrollToSection('recursos')} variant="outline" size="lg" className="border-white/30 text-white bg-white/10 hover:bg-white/20 px-8 h-14 text-base">Ver Como Funciona</Button></div></FIU>
-              <FIU><div className="flex items-center gap-6 mt-10">
+              <FIU><div className="flex items-center gap-6 mt-6">
                 <div className="text-center"><div className="text-2xl font-bold text-white">2.450+</div><div className="text-xs text-slate-400">Eleitores gerenciados</div></div>
                 <div className="w-px h-10 bg-slate-700" />
                 <div className="text-center"><div className="text-2xl font-bold text-white">350+</div><div className="text-xs text-slate-400">Parlamentares</div></div>
                 <div className="w-px h-10 bg-slate-700" />
                 <div className="text-center"><div className="text-2xl font-bold text-white">127</div><div className="text-xs text-slate-400">Cidades</div></div>
               </div></FIU>
-              <FIU><div className="flex items-center gap-2 mt-6"><div className="flex -space-x-2">{['bg-blue-500','bg-emerald-500','bg-amber-500','bg-rose-500'].map((c,i) => <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-[#0B1120] flex items-center justify-center text-white text-xs font-bold`}>{['RA','FC','CM','VM'][i]}</div>)}</div><span className="text-sm text-slate-400">Usado por vereadores, deputados e prefeitos</span></div></FIU>
+              <FIU><div className="flex items-center gap-2 mt-4"><div className="flex -space-x-2">{['bg-blue-500','bg-emerald-500','bg-amber-500','bg-rose-500'].map((c,i) => <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-[#0B1120] flex items-center justify-center text-white text-xs font-bold`}>{['RA','FC','CM','VM'][i]}</div>)}</div><span className="text-sm text-slate-400">Usado por vereadores, deputados e prefeitos</span></div></FIU>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="hidden lg:block">
               <div className="relative"><div className="absolute -inset-4 bg-blue-500/20 rounded-2xl blur-2xl" /><img src="/assets/dashboard-preview.jpg" alt="Dashboard" className="relative rounded-xl shadow-2xl border border-slate-700/50" /></div>
