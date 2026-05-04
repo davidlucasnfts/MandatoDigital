@@ -7,7 +7,7 @@ Deploy: Vercel (serverless).
 Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-drop, CRUD completo, Interações, Dashboard real, Comunicação e-mail/SMS, Agenda e documentos.
 
 ## 🎯 Próxima Tarefa
-**Automação de Aniversário** — envio automático de mensagens no aniversário do eleitor (prioridade ALTA).
+**Mapa com Geolocalização Real** — visualizar eleitores no mapa interativo com filtros (prioridade ALTA).
 
 ## 📋 Backlog
 - Mapa com geolocalização real (ALTA)
@@ -15,10 +15,14 @@ Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-
 - Etiquetas para mala direta (MÉDIA)
 - Website integrado (BAIXA)
 
+## ✅ Entregues
+- Automação de Aniversário MVP (WhatsApp em massa, template configurável, registro de envios)
+
 ## 📝 Última Sessão
 04/05/2026 — Commit `b9a1992`. Entregou: painéis do dashboard, kanban, exportação CSV, importação CSV inteligente, CRUD com dialogs, melhorias nas páginas.
 04/05/2026 — Commit `b68364d`. Removeu toda dependência do Kimi OAuth. Projeto 100% independente da IA geradora.
 04/05/2026 — Commit `7d7f036`. Migrou banco de MySQL para PostgreSQL. Deploy na Vercel concluído. Supabase Auth configurado sem confirmação de e-mail.
+04/05/2026 — Commit `0f31817`. Automação de Aniversário MVP: envio em massa via WhatsApp, template salvo no banco, registro de envios, painel no dashboard.
 
 ## ⚡ Regras
 - 400 linhas máx por arquivo (exceto shadcn/ui)
