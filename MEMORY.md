@@ -21,3 +21,4 @@ Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-
 - 400 linhas máx por arquivo (exceto shadcn/ui)
 - Sempre em português, modo direto
 - Atualizar este arquivo e o roadmap.html ao final de cada sessão
+- **Deploy padrão: Vercel** — todos os projetos devem ser adaptados para Vercel (serverless)
