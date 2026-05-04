@@ -7,16 +7,16 @@ Deploy: Vercel (serverless).
 Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-drop, CRUD completo, Interações, Dashboard real, Comunicação e-mail/SMS, Agenda e documentos.
 
 ## 🎯 Próxima Tarefa
-**Mapa com Geolocalização Real** — visualizar eleitores no mapa interativo com filtros (prioridade ALTA).
+**Multi-usuário com Permissões** — níveis de acesso: admin, assessor, voluntário (prioridade MÉDIA).
 
 ## 📋 Backlog
-- Mapa com geolocalização real (ALTA)
 - Multi-usuário com permissões (MÉDIA)
 - Etiquetas para mala direta (MÉDIA)
 - Website integrado (BAIXA)
 
 ## ✅ Entregues
 - Automação de Aniversário MVP (WhatsApp em massa, template configurável, registro de envios)
+- Mapa Territorial por Cidade/Bairro (distribuição real, filtros, heatmap visual)
 
 ## 📝 Última Sessão
 04/05/2026 — Commit `b9a1992`. Entregou: painéis do dashboard, kanban, exportação CSV, importação CSV inteligente, CRUD com dialogs, melhorias nas páginas.
