@@ -162,7 +162,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
               <FIU><div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 mb-6"><Award className="w-4 h-4 text-blue-400" /><span className="text-blue-300 text-sm font-medium">Software de Gestão Política #1 do Brasil</span></div></FIU>
               <FIU><h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">Nunca mais perca<br />um <span className="text-blue-400">voto</span> por<br />esquecimento</h1></FIU>
               <FIU><p className="text-lg text-slate-300 mb-8 max-w-lg leading-relaxed">A única plataforma que organiza sua base eleitoral, lembra você dos aniversários, mostra onde seus eleitores estão e garante que nenhuma solicitação caia no esquecimento.</p></FIU>
-              <FIU><div className="flex flex-col sm:flex-row gap-4"><Button onClick={() => setShowRegister(true)} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base">Teste Grátis por 7 Dias<ArrowRight className="w-5 h-5 ml-2" /></Button><Button onClick={() => scrollToSection('recursos')} variant="outline" size="lg" className="border-slate-500 text-white hover:bg-white/10 px-8 h-14 text-base">Ver Como Funciona</Button></div></FIU>
+              <FIU><div className="flex flex-col sm:flex-row gap-4"><Button onClick={() => setShowRegister(true)} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base">Teste Grátis por 7 Dias<ArrowRight className="w-5 h-5 ml-2" /></Button><Button onClick={() => scrollToSection('recursos')} variant="outline" size="lg" className="border-white/30 text-white bg-white/10 hover:bg-white/20 px-8 h-14 text-base">Ver Como Funciona</Button></div></FIU>
               <FIU><div className="flex items-center gap-6 mt-10">
                 <div className="text-center"><div className="text-2xl font-bold text-white">2.450+</div><div className="text-xs text-slate-400">Eleitores gerenciados</div></div>
                 <div className="w-px h-10 bg-slate-700" />
@@ -180,7 +180,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* Before/After */}
-      <section className="py-16 bg-slate-900">
+      <section className="py-10 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
             <FIU><span className="text-blue-400 font-semibold text-sm uppercase tracking-wider">Transformação Real</span></FIU>
@@ -206,7 +206,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* Features */}
-      <section id="recursos" className="py-20 lg:py-28 bg-slate-50">
+      <section id="recursos" className="py-14 lg:py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Recursos</span></FIU>
@@ -218,7 +218,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* Benefits */}
-      <section id="beneficios" className="py-20 lg:py-28">
+      <section id="beneficios" className="py-14 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Benefícios</span></FIU>
@@ -231,7 +231,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* Stats */}
-      <section className="py-16 bg-blue-600">
+      <section className="py-10 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {[{value:'2.450+',label:'Eleitores Gerenciados'},{value:'350+',label:'Políticos Atendidos'},{value:'127',label:'Cidades Atendidas'},{value:'98%',label:'Taxa de Satisfação'}].map((s,i) => <FIU key={i} className="text-center"><div className="text-3xl lg:text-4xl font-bold text-white mb-2">{s.value}</div><div className="text-blue-200 text-sm">{s.label}</div></FIU>)}
@@ -240,7 +240,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 lg:py-28 bg-slate-50">
+      <section className="py-14 lg:py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Depoimentos</span></FIU>
@@ -253,7 +253,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* Pricing */}
-      <section id="planos" className="py-20 lg:py-28">
+      <section id="planos" className="py-14 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Planos</span></FIU>
@@ -269,7 +269,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-20 lg:py-28 bg-slate-50">
+      <section id="faq" className="py-14 lg:py-20 bg-slate-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">FAQ</span></FIU>
@@ -282,7 +282,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-14 bg-blue-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Pronto para nunca mais perder um voto?</h2>
@@ -294,7 +294,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
       </section>
 
       {/* Contact */}
-      <section id="contato" className="py-20 lg:py-28">
+      <section id="contato" className="py-14 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-16">
             <FIU><span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">Contato</span></FIU>
