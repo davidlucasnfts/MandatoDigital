@@ -160,7 +160,7 @@ export default function MapaPage() {
                   <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   {porCidade.map(c => (
                     <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }}>
-                      <Popup>
+                      <Popup autoPan={true} autoPanPadding={[50, 50]}>
                         <div className="text-sm">
                           <p className="font-semibold">{c.cidade}</p>
                           <p className="text-xs text-slate-500">{c.count} eleitor{c.count > 1 ? 'es' : ''}</p>
