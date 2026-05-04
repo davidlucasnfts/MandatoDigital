@@ -142,11 +142,11 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
             <button className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <X className={`w-6 h-6 ${scrolled ? 'text-slate-800' : 'text-white'}`} /> : <Menu className={`w-6 h-6 ${scrolled ? 'text-slate-800' : 'text-white'}`} />}</button>
           </div>
         </div>
-        <AnimatePresence>{mobileMenuOpen && <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.3 }} className="fixed inset-0 top-16 bg-white z-40 lg:hidden">
+        <AnimatePresence>{mobileMenuOpen && <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.3 }} className="fixed inset-0 top-16 bg-slate-900 z-40 lg:hidden">
           <div className="flex flex-col p-6 gap-4">
-            {['recursos','beneficios','planos','faq','contato'].map(id => <button key={id} onClick={() => scrollToSection(id)} className="text-left py-3 text-lg font-medium border-b border-slate-100 capitalize">{id}</button>)}
+            {['recursos','beneficios','planos','faq','contato'].map(id => <button key={id} onClick={() => scrollToSection(id)} className="text-left py-3 text-lg font-medium text-white border-b border-slate-700 capitalize">{id}</button>)}
             <div className="mt-4 flex flex-col gap-3">
-              <Button variant="outline" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="w-full">Entrar</Button>
+              <Button variant="outline" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="w-full border-slate-600 text-white hover:bg-slate-800">Entrar</Button>
               <Button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="w-full bg-blue-600">Teste Grátis</Button>
             </div>
           </div>
