@@ -17,43 +17,16 @@ Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-
 ## ✅ Entregues
 - Automação de Aniversário MVP (WhatsApp em massa, template configurável, registro de envios)
 - Mapa Territorial por Cidade/Bairro (distribuição real, filtros, heatmap visual)
-- Landing Page redesenhada com foco em conversão política (hero com dor, antes/depois, prova social, depoimentos com resultados)
+- Landing Page redesenhada com foco em conversão política
 
 ## 📝 Última Sessão
 04/05/2026 — Commit `b9a1992`. Entregou: painéis do dashboard, kanban, exportação CSV, importação CSV inteligente, CRUD com dialogs, melhorias nas páginas.
 04/05/2026 — Commit `b68364d`. Removeu toda dependência do Kimi OAuth. Projeto 100% independente da IA geradora.
-04/05/2026 — Commit `7d7f036`. Migrou banco de MySQL para PostgreSQL. Deploy na Vercel concluído. Supabase Auth configurado sem confirmação de e-mail.
-04/05/2026 — Commit `0f31817`. Automação de Aniversário MVP: envio em massa via WhatsApp, template salvo no banco, registro de envios, painel no dashboard.
+04/05/2026 — Commit `7d7f036`. Migrou banco de MySQL para PostgreSQL. Deploy na Vercel concluído.
+04/05/2026 — Commit `0f31817`. Automação de Aniversário MVP: envio em massa via WhatsApp, template salvo no banco, registro de envios.
+04/05/2026 — Commit `6f18401`. Landing page redesenhada com foco em conversão política.
+04/05/2026 — Commit `21418c1`. Centralizou regras globais no AGENTS.md.
 
 ## ⚡ Regras
-- 400 linhas máx por arquivo (exceto shadcn/ui)
-- Sempre em português, modo direto
+- Ver `AGENTS.md` para todas as regras globais (design, deploy, tokens, código)
 - Atualizar este arquivo e o roadmap.html ao final de cada sessão
-
-## 🚀 Deploy na Vercel
-Variáveis de ambiente necessárias:
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `DATABASE_URL`
-- **Deploy padrão: Vercel** — todos os projetos devem ser adaptados para Vercel (serverless)
-- **Independência de IA** — nunca deixar dependência de plataforma/oauth do gerador de código
-
-## 🎨 Regras de Design UX/UI (aplicáveis a todos os projetos)
-- **Zero espaços vazios sem função** — todo espaço deve ter propósito: conteúdo, respiro proporcional ou separação visual
-- **Paddings proporcionais** — nunca usar py-20/py-28 sem necessidade; preferir py-10/py-14
-- **Hero compacto** — remover min-h-screen; altura definida pelo conteúdo
-- **CTA sempre visível** — botões principais nunca sumir da tela
-- **Prova social no hero** — números, avatares, cargos reais para credibilidade imediata
-- **Headline na dor** — falar o problema que resolve, não o recurso
-- **Antes vs Depois** — mostrar transformação real, não só listar features
-- **Depoimentos com resultados** — números concretos ("15% mais votos", "10h economizadas")
-- **Cores distintas por card** — facilita scan visual e memorização
-- **Placeholder visual** — quando não há imagem, usar ícone grande com cor de fundo
-
-## 💰 Economia de Tokens
-Regras para reduzir consumo de tokens em todas as sessões:
-- **Leitura única** — ler arquivo 1x, fazer todas as mudanças na memória, escrever 1x
-- **StrReplaceFile preferido** — só substituir o trecho que muda, não reescrever arquivo inteiro
-- **Commits agrupados** — uma única chamada de commit com todas as mudanças
-- **Sem prints desnecessários** — resultado direto, sem mostrar código que já foi visto
-- **Schema SQL** — sempre usar `schema_safe.sql` (nunca `schema.sql`), comentar data+descricao no topo de cada alteração
