@@ -149,8 +149,8 @@ export default function MapaPage() {
 
         {/* Mapa Leaflet */}
         <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-3">
-          <Card className="h-full min-h-[500px] overflow-hidden">
-            <CardContent className="p-0 h-full">
+          <Card className="h-full min-h-[500px]">
+            <CardContent className="p-0 h-full overflow-visible">
               {loading ? (
                 <div className="h-[500px] bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">
                   <MapPin className="w-8 h-8 mr-2" /> Carregando mapa...
