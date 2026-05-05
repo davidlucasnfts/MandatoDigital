@@ -4,28 +4,23 @@ CRM para gestão de mandatos políticos. Stack: React + TS + Vite + Tailwind + s
 Deploy: Vercel (serverless).
 
 ## ✅ Pronto
-Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-drop, CRUD completo, Interações, Dashboard real, Comunicação e-mail/SMS, Agenda e documentos.
+Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-drop, CRUD completo, Interações, Dashboard real, Comunicação e-mail/SMS, Agenda e documentos, Automação de Aniversário, Mapa Territorial, Landing Page, Multi-usuário com Permissões (RBAC).
 
 ## 🎯 Próxima Tarefa
-**Multi-usuário com Permissões** — níveis de acesso: admin, assessor, voluntário (prioridade MÉDIA).
+**Etiquetas para Mala Direta** — geração de PDF com etiquetas para correspondência física (prioridade ALTA).
 
 ## 📋 Backlog
-- Multi-usuário com permissões (MÉDIA)
-- Etiquetas para mala direta (MÉDIA)
+- Etiquetas para mala direta (ALTA)
 - Website integrado (BAIXA)
 
 ## ✅ Entregues
 - Automação de Aniversário MVP (WhatsApp em massa, template configurável, registro de envios)
 - Mapa Territorial por Cidade/Bairro (distribuição real, filtros, heatmap visual)
 - Landing Page redesenhada com foco em conversão política
+- Multi-usuário com Permissões RBAC (3 roles: admin/editor/visualizador, convite de equipe, RLS compartilhado, proteção de rotas)
 
 ## 📝 Última Sessão
-04/05/2026 — Commit `b9a1992`. Entregou: painéis do dashboard, kanban, exportação CSV, importação CSV inteligente, CRUD com dialogs, melhorias nas páginas.
-04/05/2026 — Commit `b68364d`. Removeu toda dependência do Kimi OAuth. Projeto 100% independente da IA geradora.
-04/05/2026 — Commit `7d7f036`. Migrou banco de MySQL para PostgreSQL. Deploy na Vercel concluído.
-04/05/2026 — Commit `0f31817`. Automação de Aniversário MVP: envio em massa via WhatsApp, template salvo no banco, registro de envios.
-04/05/2026 — Commit `6f18401`. Landing page redesenhada com foco em conversão política.
-04/05/2026 — Commit `21418c1`. Centralizou regras globais no AGENTS.md.
+05/05/2026 — Multi-usuário com Permissões RBAC. Schema com tabela equipe + owner_id em todas as tabelas, RLS com user_has_access(), backend auth context integrado com Supabase, router equipe (CRUD), hook usePermissions, RoleGuard, EquipePage funcional.
 
 ## ⚡ Regras
 - Ver `AGENTS.md` para todas as regras globais (design, deploy, tokens, código)

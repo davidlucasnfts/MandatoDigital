@@ -11,12 +11,20 @@ export function useSupabaseAuth() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.access_token) {
+        localStorage.setItem("sb-access-token", session.access_token);
+      }
       setIsLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.access_token) {
+        localStorage.setItem("sb-access-token", session.access_token);
+      } else {
+        localStorage.removeItem("sb-access-token");
+      }
     });
 
     return () => subscription.unsubscribe();

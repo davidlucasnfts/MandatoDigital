@@ -14,6 +14,7 @@ import DocumentosPage from '@/pages/DocumentosPage';
 import RelatoriosPage from '@/pages/RelatoriosPage';
 import EquipePage from '@/pages/EquipePage';
 import ConfiguracoesPage from '@/pages/ConfiguracoesPage';
+import { RoleGuard } from '@/components/RoleGuard';
 
 function App() {
   const auth = useSupabaseAuth();
@@ -35,8 +36,8 @@ function App() {
         <Route path="tarefas" element={<TarefasPage />} />
         <Route path="documentos" element={<DocumentosPage />} />
         <Route path="relatorios" element={<RelatoriosPage />} />
-        <Route path="equipe" element={<EquipePage />} />
-        <Route path="configuracoes" element={<ConfiguracoesPage />} />
+        <Route path="equipe" element={<RoleGuard require="admin"><EquipePage /></RoleGuard>} />
+        <Route path="configuracoes" element={<RoleGuard require="admin"><ConfiguracoesPage /></RoleGuard>} />
       </Route>
     </Routes>
   );

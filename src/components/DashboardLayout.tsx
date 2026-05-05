@@ -9,10 +9,45 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import type { User } from '@supabase/supabase-js';
+import { usePermissions } from '@/hooks/usePermissions';
 
 interface DashboardLayoutProps {
   user: User | null;
   signOut: () => Promise<void>;
+}
+
+function useNavGroups() {
+  const { can } = usePermissions();
+
+  return [
+    {
+      label: 'Principal',
+      items: [
+        { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
+        { to: '/dashboard/eleitores', icon: Users, label: 'Eleitores' },
+        { to: '/dashboard/comunidades', icon: Tag, label: 'Comunidades' },
+        { to: '/dashboard/solicitacoes', icon: ClipboardList, label: 'Solicitações' },
+        { to: '/dashboard/comunicacao', icon: MessageSquare, label: 'Comunicação' },
+        { to: '/dashboard/mapa', icon: MapPin, label: 'Mapa' },
+      ],
+    },
+    {
+      label: 'Gestão',
+      items: [
+        { to: '/dashboard/agenda', icon: Calendar, label: 'Agenda' },
+        { to: '/dashboard/tarefas', icon: FileText, label: 'Tarefas' },
+        { to: '/dashboard/documentos', icon: FolderOpen, label: 'Documentos' },
+        { to: '/dashboard/relatorios', icon: BarChart3, label: 'Relatórios' },
+      ],
+    },
+    ...(can.manageTeam ? [{
+      label: 'Configurações' as const,
+      items: [
+        { to: '/dashboard/equipe', icon: Shield, label: 'Equipe' },
+        { to: '/dashboard/configuracoes', icon: Settings, label: 'Configurações' },
+      ],
+    }] : []),
+  ];
 }
 
 const navGroups = [
@@ -50,6 +85,7 @@ export default function DashboardLayout({ user, signOut }: DashboardLayoutProps)
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const navGroups = useNavGroups();
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 

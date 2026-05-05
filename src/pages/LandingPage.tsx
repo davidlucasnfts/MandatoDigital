@@ -142,16 +142,39 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
             <button className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <X className={`w-6 h-6 ${scrolled ? 'text-slate-800' : 'text-white'}`} /> : <Menu className={`w-6 h-6 ${scrolled ? 'text-slate-800' : 'text-white'}`} />}</button>
           </div>
         </div>
-        <AnimatePresence>{mobileMenuOpen && <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.3 }} className="fixed inset-0 z-40 lg:hidden bg-slate-100">
-          <div className="flex flex-col p-6 pt-20 gap-4 h-full">
-            {['recursos','beneficios','planos','faq','contato'].map(id => <button key={id} onClick={() => scrollToSection(id)} className="text-left py-3 text-lg font-medium text-slate-800 border-b border-slate-300 capitalize">{id}</button>)}
-            <div className="mt-4 flex flex-col gap-3">
-              <Button variant="outline" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="w-full bg-white">Entrar</Button>
-              <Button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="w-full bg-blue-600">Teste Grátis</Button>
-            </div>
-          </div>
-        </motion.div>}</AnimatePresence>
       </nav>
+
+      {/* Mobile Menu - outside nav to avoid z-index conflict */}
+      <AnimatePresence>{mobileMenuOpen && <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.3 }} className="fixed top-0 right-0 h-auto max-h-[90vh] w-[280px] z-50 lg:hidden shadow-2xl rounded-bl-2xl" style={{ backgroundColor: '#f1f5f9' }}>
+        <div className="flex flex-col p-5 pt-5">
+          {/* Header com X */}
+          <div className="flex items-center justify-between mb-6">
+            <span className="font-bold text-lg text-slate-800">Menu</span>
+            <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 transition-colors">
+              <X className="w-5 h-5 text-slate-700" />
+            </button>
+          </div>
+          {/* Links */}
+          <div className="flex flex-col gap-1">
+            {[
+              { id: 'recursos', label: 'Recursos' },
+              { id: 'beneficios', label: 'Benefícios' },
+              { id: 'planos', label: 'Planos' },
+              { id: 'faq', label: 'FAQ' },
+              { id: 'contato', label: 'Contato' },
+            ].map(item => (
+              <button key={item.id} onClick={() => scrollToSection(item.id)} className="text-left py-3 px-3 text-base font-medium text-slate-700 hover:bg-slate-200 rounded-lg transition-colors">
+                {item.label}
+              </button>
+            ))}
+          </div>
+          {/* Botões */}
+          <div className="mt-6 flex flex-col gap-3">
+            <Button variant="outline" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="w-full bg-white h-11">Entrar</Button>
+            <Button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="w-full bg-blue-600 h-11">Teste Grátis</Button>
+          </div>
+        </div>
+      </motion.div>}</AnimatePresence>
 
       {/* Hero */}
       <section className="relative flex items-center pt-20 overflow-hidden bg-[#0B1120]">
