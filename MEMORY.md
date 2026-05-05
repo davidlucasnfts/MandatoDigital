@@ -19,13 +19,18 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | Relatórios PDF/CSV (6 gráficos, KPIs, filtros) | 06/05 |
 
 ## 🎯 Próxima
-Website Integrado (BAIXA) — landing page do candidato dentro da plataforma.
+**Painel de Produção Legislativa** — controle de projetos, emendas, indicações, requerimentos e pareceres (ALTA)
 
 ## 📋 Backlog
-- Website integrado (BAIXA)
+- Painel de Produção Legislativa (ALTA) — acompanhamento de tramitação, relatório de produtividade
+- Pesquisa de Opinião / Enquetes para base eleitoral (ALTA) — nenhum concorrente brasileiro tem isso integrado
+- Prestação de Contas Pública (MÉDIA) — página pública de transparência via QR Code
+- App mobile / PWA para campo (MÉDIA) — cadastro offline, sincronização automática
+- Integração WhatsApp API oficial (MÉDIA) — envio massa para qualquer segmento
+- Website integrado (BAIXA) — landing page do candidato dentro da plataforma
 
 ## 📝 Última Sessão
-06/05/2026 — Relatórios PDF/CSV finalizados.
+06/05/2026 — Relatórios PDF/CSV finalizados. Análise de mercado realizada: identificadas 5 melhorias estratégicas (Produção Legislativa, Pesquisa de Opinião, Prestação de Contas, PWA, WhatsApp API).
 
 ## ⚡ Regras
 Ver `AGENTS.md`.
