@@ -39,6 +39,12 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Sempre atualizar arquivos mencionados** quando o usuário pedir remoção, alteração ou renomeação de qualquer item
 - Nunca deixar arquivo de documentação desatualizado após mudanças no projeto
 
+### Datas em Funcionalidades
+- **Sempre incluir a data de entrega** ao lado do nome da funcionalidade em MEMORY.md e roadmap.html
+- Formato: `Funcionalidade — DD/MM` (ex: `Relatórios PDF/CSV — 06/05`)
+- Funcionalidades antigas sem data definida podem ficar sem data
+- Atualizar datas ao concluir novas melhorias
+
 ---
 
 ## 🎨 Regras de Design UX/UI (aplicáveis a todos os projetos)
