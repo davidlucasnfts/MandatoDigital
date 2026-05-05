@@ -20,7 +20,7 @@ Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-
 - Multi-usuário com Permissões RBAC (3 roles: admin/editor/visualizador, convite de equipe, RLS compartilhado, proteção de rotas)
 
 ## 📝 Última Sessão
-05/05/2026 — Multi-usuário com Permissões RBAC. Schema com tabela equipe + owner_id em todas as tabelas, RLS com user_has_access(), backend auth context integrado com Supabase, router equipe (CRUD), hook usePermissions, RoleGuard, EquipePage funcional.
+05/05/2026 — Multi-usuário com Permissões RBAC + Relatórios PDF/CSV. Schema com tabela equipe + owner_id em todas as tabelas, RLS com user_has_access(), backend auth context integrado com Supabase, router equipe (CRUD), hook usePermissions, RoleGuard, EquipePage funcional. Relatórios com 6 gráficos reais do Supabase, KPIs, filtros de período, exportação PDF (A4 landscape com html2canvas) e CSV com seleção de dados e nome customizado.
 
 ## ⚡ Regras
 - Ver `AGENTS.md` para todas as regras globais (design, deploy, tokens, código)
