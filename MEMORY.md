@@ -7,10 +7,9 @@ Deploy: Vercel (serverless).
 Eleitores (tags, níveis, comunidades, CPF), Import/Export CSV, Kanban drag-and-drop, CRUD completo, Interações, Dashboard real, Comunicação e-mail/SMS, Agenda e documentos, Automação de Aniversário, Mapa Territorial, Landing Page, Multi-usuário com Permissões (RBAC), Relatórios PDF/CSV com dados reais.
 
 ## 🎯 Próxima Tarefa
-**Etiquetas para Mala Direta** — geração de PDF com etiquetas para correspondência física (prioridade ALTA).
+**Website Integrado** — landing page do candidato dentro da plataforma (prioridade BAIXA).
 
 ## 📋 Backlog
-- Etiquetas para mala direta (ALTA)
 - Website integrado (BAIXA)
 
 ## ✅ Entregues

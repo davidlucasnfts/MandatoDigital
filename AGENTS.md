@@ -34,6 +34,11 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Commits agrupados** — uma única chamada de commit com todas as mudanças
 - **Sem prints desnecessários** — resultado direto, sem mostrar código que já foi visto
 
+### Sincronização de Arquivos de Projeto
+- **Sempre atualizar MEMORY.md e roadmap.html** quando uma funcionalidade for adicionada, removida ou concluída
+- **Sempre atualizar arquivos mencionados** quando o usuário pedir remoção, alteração ou renomeação de qualquer item
+- Nunca deixar arquivo de documentação desatualizado após mudanças no projeto
+
 ---
 
 ## 🎨 Regras de Design UX/UI (aplicáveis a todos os projetos)
