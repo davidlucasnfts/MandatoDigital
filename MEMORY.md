@@ -34,11 +34,15 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | Frontend: lista, form, detalhe com timeline, dashboard produtividade | 07/05 |
 | Melhorias cadastro eleitores: nome_mãe, CEP ViaCEP, hierarquia, convites, preview | 07/05 |
 | Schema versionado em migrations (001-007) + schema_safe.sql consolidado | 07/05 |
+| Abas no modal de eleitor (Eleitor/Apoiador/Influenciador/Líder) com títulos e cores | 07/05 |
+| Comunidades: ícone dinâmico por comunidade (lucide-react) | 07/05 |
+| Mapa: bounds limitado ao Brasil, tiles CARTO light | 07/05 |
+| Aniversariantes: filtros dia/semana/mês + data visível | 07/05 |
+| Solicitações: data_solicitacao/data_evento, toggle rápido status na tabela | 07/05 |
 
 ---
 
 ## 📋 Backlog Histórico
-- Painel de Produção Legislativa (ALTA)
 - Pesquisa de Opinião / Enquetes para base eleitoral (ALTA)
 - Prestação de Contas Pública (MÉDIA)
 - App mobile / PWA para campo (MÉDIA)
