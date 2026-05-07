@@ -31,7 +31,7 @@ export default function EquipePage() {
   const [search, setSearch] = useState('');
   const [showAdd, setShowAdd] = useState(false);
   const [showDelete, setShowDelete] = useState<number | null>(null);
-  const [form, setForm] = useState({ nome: '', email: '', cargo: '', role: 'editor' as const, password: '' });
+  const [form, setForm] = useState({ nome: '', email: '', cargo: '', role: 'editor' as 'admin' | 'editor' | 'visualizador', password: '' });
   const [error, setError] = useState('');
 
   const utils = trpc.useUtils();

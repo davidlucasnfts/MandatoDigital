@@ -144,9 +144,28 @@ export default function SolicitacoesPage() {
                           <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${prioridadeColors[s.prioridade || 'media']}`}>{s.prioridade}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${statusColors[s.status || 'pendente']}`}>{s.status}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${statusColors[s.status || 'pendente']}`}>{s.status}</span>
+                            {/* Toggle rápido de status */}
+                            <div className="flex gap-0.5">
+                              {s.status !== 'pendente' && (
+                                <button onClick={() => update(s.id, { status: 'pendente' })} className="w-5 h-5 rounded bg-amber-100 text-amber-600 text-[10px] hover:bg-amber-200 transition-colors" title="Pendente">P</button>
+                              )}
+                              {s.status !== 'andamento' && (
+                                <button onClick={() => update(s.id, { status: 'andamento' })} className="w-5 h-5 rounded bg-blue-100 text-blue-600 text-[10px] hover:bg-blue-200 transition-colors" title="Em Andamento">A</button>
+                              )}
+                              {s.status !== 'concluido' && (
+                                <button onClick={() => update(s.id, { status: 'concluido' })} className="w-5 h-5 rounded bg-green-100 text-green-600 text-[10px] hover:bg-green-200 transition-colors" title="Concluído">C</button>
+                              )}
+                              {s.status !== 'cancelado' && (
+                                <button onClick={() => update(s.id, { status: 'cancelado' })} className="w-5 h-5 rounded bg-red-100 text-red-600 text-[10px] hover:bg-red-200 transition-colors" title="Cancelado">X</button>
+                              )}
+                            </div>
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-xs text-slate-500">{s.data_prazo || '—'}</td>
+                        <td className="py-3 px-4 text-xs text-slate-500">
+                          <div>{s.data_evento ? <span className="text-blue-600">📅 {new Date(s.data_evento).toLocaleDateString('pt-BR')}</span> : (s.data_prazo || '—')}</div>
+                        </td>
                         <td className="py-3 px-4">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

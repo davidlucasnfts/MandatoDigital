@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Gift, MessageCircle, Check, ExternalLink, Send, PartyPopper } from 'lucide-react';
+import { Gift, MessageCircle, Check, ExternalLink, Send, PartyPopper, CalendarDays, Calendar, CalendarRange } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEleitores, useConfiguracoes, useEnviosAniversario } from '@/hooks/useSupabaseData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { Eleitor } from '@/lib/supabase';
+
+type FiltroPeriodo = 'dia' | 'semana' | 'mes';
 
 function formatarDataNascimento(data: string | null): { dia: number; mes: number } | null {
   if (!data) return null;
@@ -16,6 +18,10 @@ function formatarDataNascimento(data: string | null): { dia: number; mes: number
 function hoje(): { dia: number; mes: number } {
   const d = new Date();
   return { dia: d.getDate(), mes: d.getMonth() + 1 };
+}
+
+function diasNoMes(mes: number, ano: number) {
+  return new Date(ano, mes, 0).getDate();
 }
 
 function montarMensagem(template: string, eleitor: Eleitor): string {
@@ -33,18 +39,37 @@ export default function AniversariantesPanel() {
   const { data: envios, loading: loadingEnvios, insert, jaEnviouEsteAno } = useEnviosAniversario();
   const [selected, setSelected] = useState<Eleitor | null>(null);
   const [showMassModal, setShowMassModal] = useState(false);
+  const [periodo, setPeriodo] = useState<FiltroPeriodo>('dia');
   const anoAtual = new Date().getFullYear();
 
   const template = configs['template_aniversario'] || DEFAULT_TEMPLATE;
-
   const hojeData = hoje();
 
   const aniversariantes = useMemo(() => {
     return eleitores.filter(e => {
       const dn = formatarDataNascimento(e.data_nascimento);
-      return dn && dn.dia === hojeData.dia && dn.mes === hojeData.mes;
+      if (!dn) return false;
+      if (periodo === 'dia') {
+        return dn.dia === hojeData.dia && dn.mes === hojeData.mes;
+      }
+      if (periodo === 'semana') {
+        const hojeObj = new Date();
+        const inicioSemana = new Date(hojeObj);
+        inicioSemana.setDate(hojeObj.getDate() - hojeObj.getDay());
+        const fimSemana = new Date(inicioSemana);
+        fimSemana.setDate(inicioSemana.getDate() + 6);
+        // Comparar dia/mes aproximado (simplificado: próximos 7 dias)
+        for (let i = 0; i <= 6; i++) {
+          const d = new Date();
+          d.setDate(d.getDate() + i);
+          if (dn.dia === d.getDate() && dn.mes === d.getMonth() + 1) return true;
+        }
+        return false;
+      }
+      // mes
+      return dn.mes === hojeData.mes;
     });
-  }, [eleitores, hojeData.dia, hojeData.mes]);
+  }, [eleitores, hojeData.dia, hojeData.mes, periodo]);
 
   const pendentes = useMemo(() => {
     return aniversariantes.filter(a => !jaEnviouEsteAno(a.id, anoAtual));
@@ -78,12 +103,18 @@ export default function AniversariantesPanel() {
 
   const loading = loadingEleitores || loadingConfigs || loadingEnvios;
 
+  const periodoLabels: Record<FiltroPeriodo, { label: string; icon: React.ElementType }> = {
+    dia: { label: 'Hoje', icon: CalendarDays },
+    semana: { label: 'Semana', icon: CalendarRange },
+    mes: { label: 'Mês', icon: Calendar },
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Gift className="w-5 h-5 text-pink-500" />
-          <h3 className="text-lg font-bold text-slate-800">Aniversariantes do Dia</h3>
+          <h3 className="text-lg font-bold text-slate-800">Aniversariantes</h3>
           <span className="bg-pink-100 text-pink-700 text-xs px-2 py-0.5 rounded-full font-semibold">
             {aniversariantes.length}
           </span>
@@ -91,9 +122,22 @@ export default function AniversariantesPanel() {
         {pendentes.length > 0 && (
           <Button size="sm" className="bg-green-600 hover:bg-green-700 text-xs h-8" onClick={() => setShowMassModal(true)}>
             <Send className="w-3.5 h-3.5 mr-1" />
-            Enviar para {pendentes.length}
+            Enviar {pendentes.length}
           </Button>
         )}
+      </div>
+
+      {/* Filtros */}
+      <div className="flex bg-slate-100 rounded-lg p-0.5">
+        {(Object.keys(periodoLabels) as FiltroPeriodo[]).map(p => {
+          const { label, icon: Icon } = periodoLabels[p];
+          return (
+            <button key={p} onClick={() => setPeriodo(p)}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${periodo === p ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'}`}>
+              <Icon className="w-3.5 h-3.5" /> {label}
+            </button>
+          );
+        })}
       </div>
 
       {loading ? (
@@ -105,13 +149,14 @@ export default function AniversariantesPanel() {
       ) : aniversariantes.length === 0 ? (
         <div className="text-center py-8 text-slate-400">
           <Gift className="w-10 h-10 mx-auto mb-2 opacity-40" />
-          <p className="text-sm">Nenhum aniversariante hoje</p>
+          <p className="text-sm">Nenhum aniversariante {periodo === 'dia' ? 'hoje' : periodo === 'semana' ? 'esta semana' : 'este mês'}</p>
           <p className="text-xs mt-1">Cadastre a data de nascimento dos eleitores</p>
         </div>
       ) : (
         <div className="space-y-2">
           {aniversariantes.map(e => {
             const enviado = jaEnviouEsteAno(e.id, anoAtual);
+            const dn = formatarDataNascimento(e.data_nascimento);
             return (
               <Card key={e.id} className={`hover:shadow-sm transition-shadow ${enviado ? 'opacity-60' : ''}`}>
                 <CardContent className="p-3">
@@ -122,7 +167,7 @@ export default function AniversariantesPanel() {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-slate-800">{e.nome}</p>
-                        <p className="text-xs text-slate-500">{e.telefone} · {e.cidade}</p>
+                        <p className="text-xs text-slate-500">{e.telefone} · {e.cidade} {dn && <span className="text-pink-500 font-medium">· {String(dn.dia).padStart(2,'0')}/{String(dn.mes).padStart(2,'0')}</span>}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

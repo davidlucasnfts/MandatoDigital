@@ -1,6 +1,12 @@
-# MandatoDigital
+# MandatoDigital — Histórico de Entregas
 
 CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (PostgreSQL). Vercel.
+
+> **Para contexto da sessão atual, ver `SESSION-CONTEXT.md`**
+> **Para regras de desenvolvimento, ver `AGENTS.md`**
+> **Para referência técnica completa, ver `docs/mandato-digital-guia.md`**
+
+---
 
 ## ✅ Entregues
 | Funcionalidade | Data |
@@ -17,20 +23,24 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | Landing Page (foco conversão) | 04/05 |
 | Multi-usuário RBAC (admin/editor/visualizador) | 05/05 |
 | Relatórios PDF/CSV (6 gráficos, KPIs, filtros) | 06/05 |
+| Documentação toolkit + guia do projeto | 07/05 |
+| TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
+| Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
+| CI/CD GitHub Actions + Vercel deploy | 07/05 |
+| Logs de auditoria LGPD + tabela audit_logs | 07/05 |
+| ADRs documentados (4 decisões arquiteturais) | 07/05 |
+| Schema Produção Legislativa (proposições + tramitações) | 07/05 |
+| Router tRPC proposições (CRUD + produtividade + tramitações) | 07/05 |
+| Frontend: lista, form, detalhe com timeline, dashboard produtividade | 07/05 |
+| Melhorias cadastro eleitores: nome_mãe, CEP ViaCEP, hierarquia, convites, preview | 07/05 |
+| Schema versionado em migrations (001-007) + schema_safe.sql consolidado | 07/05 |
 
-## 🎯 Próxima
-**Painel de Produção Legislativa** — controle de projetos, emendas, indicações, requerimentos e pareceres (ALTA)
+---
 
-## 📋 Backlog
-- Painel de Produção Legislativa (ALTA) — acompanhamento de tramitação, relatório de produtividade
-- Pesquisa de Opinião / Enquetes para base eleitoral (ALTA) — nenhum concorrente brasileiro tem isso integrado
-- Prestação de Contas Pública (MÉDIA) — página pública de transparência via QR Code
-- App mobile / PWA para campo (MÉDIA) — cadastro offline, sincronização automática
-- Integração WhatsApp API oficial (MÉDIA) — envio massa para qualquer segmento
-- Website integrado (BAIXA) — landing page do candidato dentro da plataforma
-
-## 📝 Última Sessão
-06/05/2026 — Relatórios PDF/CSV finalizados. Análise de mercado realizada: identificadas 5 melhorias estratégicas (Produção Legislativa, Pesquisa de Opinião, Prestação de Contas, PWA, WhatsApp API).
-
-## ⚡ Regras
-Ver `AGENTS.md`.
+## 📋 Backlog Histórico
+- Painel de Produção Legislativa (ALTA)
+- Pesquisa de Opinião / Enquetes para base eleitoral (ALTA)
+- Prestação de Contas Pública (MÉDIA)
+- App mobile / PWA para campo (MÉDIA)
+- Integração WhatsApp API oficial (MÉDIA)
+- Website integrado (BAIXA)

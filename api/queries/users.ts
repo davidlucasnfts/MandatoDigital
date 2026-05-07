@@ -13,13 +13,21 @@ export async function findUserByUnionId(unionId: string) {
 }
 
 export async function upsertUser(data: InsertUser) {
-  const updateSet: Partial<InsertUser> = {
-    lastSignInAt: new Date(),
-    ...data,
-  };
+  const db = getDb();
+  const existing = await findUserByUnionId(data.unionId);
 
-  await getDb()
-    .insert(schema.users)
-    .values(data)
-    .onDuplicateKeyUpdate({ set: updateSet });
+  if (existing) {
+    await db
+      .update(schema.users)
+      .set({
+        name: data.name,
+        email: data.email,
+        avatar: data.avatar,
+        lastSignInAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.users.unionId, data.unionId));
+  } else {
+    await db.insert(schema.users).values(data);
+  }
 }

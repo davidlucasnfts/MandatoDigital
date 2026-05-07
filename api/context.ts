@@ -39,7 +39,11 @@ export async function createContext(
   }
 
   try {
-    const { data: { user: supabaseUser }, error } = await getSupabaseAdmin().auth.getUser(token);
+    const sb = getSupabaseAdmin();
+    if (!sb) {
+      return { req: opts.req, resHeaders: opts.resHeaders };
+    }
+    const { data: { user: supabaseUser }, error } = await sb.auth.getUser(token);
 
     if (error || !supabaseUser) {
       return { req: opts.req, resHeaders: opts.resHeaders };

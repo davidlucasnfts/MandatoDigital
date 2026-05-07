@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Users, MapPin, Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Users, MapPin, Plus, MoreHorizontal, Pencil, Trash2, icons } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -36,7 +36,10 @@ export default function ComunidadesPage() {
             <Card className="hover:shadow-md transition-shadow group">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor:(c.cor||'#2563EB')+'20'}}><Users className="w-5 h-5" style={{color:c.cor||'#2563EB'}}/></div>
+                  {(() => {
+                    const IconComp = (icons as Record<string, React.ComponentType<{className?: string; style?: React.CSSProperties}> >)[c.icone || 'Users'] || Users;
+                    return <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor:(c.cor||'#2563EB')+'20'}}><IconComp className="w-5 h-5" style={{color:c.cor||'#2563EB'}}/></div>;
+                  })()}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="p-1 hover:bg-slate-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"><MoreHorizontal className="w-4 h-4 text-slate-400"/></button>

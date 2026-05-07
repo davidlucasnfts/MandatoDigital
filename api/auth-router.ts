@@ -1,6 +1,6 @@
-import { createRouter, publicQuery } from "./middleware";
+import { createRouter, publicQuery, authedQuery } from "./middleware";
 
 export const authRouter = createRouter({
-  me: publicQuery.query(() => null),
+  me: authedQuery.query(({ ctx }) => ctx.user),
   logout: publicQuery.mutation(() => ({ success: true })),
 });

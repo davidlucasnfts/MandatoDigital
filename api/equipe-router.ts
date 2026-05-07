@@ -44,7 +44,11 @@ export const equipeRouter = createRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { data, error } = await getSupabaseAdmin().auth.admin.createUser({
+      const sb = getSupabaseAdmin();
+      if (!sb) {
+        throw new Error("Serviço de autenticação indisponível");
+      }
+      const { data, error } = await sb.auth.admin.createUser({
         email: input.email,
         password: input.password,
         email_confirm: true,
@@ -53,6 +57,9 @@ export const equipeRouter = createRouter({
 
       if (error || !data.user) {
         throw new Error(error?.message ?? "Erro ao criar usuário");
+      }
+      if (!data.user) {
+        throw new Error("Erro ao criar usuário: resposta vazia");
       }
 
       const db = getDb();
@@ -108,7 +115,10 @@ export const equipeRouter = createRouter({
           )
         );
 
-      await getSupabaseAdmin().auth.admin.deleteUser(input.userId);
+      const sb = getSupabaseAdmin();
+      if (sb) {
+        await sb.auth.admin.deleteUser(input.userId);
+      }
 
       return { success: true };
     }),

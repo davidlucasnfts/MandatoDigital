@@ -430,7 +430,7 @@ export default function RelatoriosPage() {
             ].map(item => (
               <div key={item.key} className="flex items-center gap-2">
                 <Checkbox
-                  checked={csvConfig[item.key as keyof typeof csvConfig]}
+                  checked={!!csvConfig[item.key as keyof typeof csvConfig]}
                   onCheckedChange={v => setCsvConfig({ ...csvConfig, [item.key]: !!v })}
                 />
                 <span className="text-sm">{item.label}</span>

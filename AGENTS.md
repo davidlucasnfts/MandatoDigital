@@ -45,6 +45,13 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Funcionalidades antigas sem data definida podem ficar sem data
 - Atualizar datas ao concluir novas melhorias
 
+### Ações Manuais — REGRA CRÍTICA
+- **Sempre que uma funcionalidade exigir ação manual** (rodar SQL no Supabase, configurar secret no GitHub/Vercel, criar bucket, env var, etc.), **adicionar em "Decisões pendentes" do `SESSION-CONTEXT.md`**
+- **Sempre avisar David no final da resposta** com destaque em negrito e emoji ⚠️
+- Nunca assumir que ele "já sabe" — ele não escreve código e não acompanha infraestrutura
+- Itens pendentes devem ser claros: **o quê**, **onde fazer**, **como fazer**
+- **Schema:** usar migrations em `supabase/migrations/NNN-descricao.sql`. Nunca editar `schema_safe.sql` manualmente — ele é gerado juntando as migrations.
+
 ---
 
 ## 🎨 Regras de Design UX/UI (aplicáveis a todos os projetos)

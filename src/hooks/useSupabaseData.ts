@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { Eleitor, Comunidade, Solicitacao, Tarefa, Evento, Interacao } from '@/lib/supabase';
+import type { Eleitor, Comunidade, Solicitacao, Tarefa, Evento, Interacao, EnvioAniversario, ConviteEleitor } from '@/lib/supabase';
 
 // ===================== ELEITORES =====================
 export function useEleitores() {
@@ -14,9 +14,10 @@ export function useEleitores() {
     setLoading(false);
   }, []);
 
-  const insert = async (row: Omit<Eleitor, 'id' | 'created_at' | 'user_id'>) => {
+  const insert = async (row: Omit<Eleitor, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
-    const { data: inserted } = await supabase.from('eleitores').insert({ ...row, user_id: userData.user?.id }).select().single();
+    const ownerId = userData.user?.id;
+    const { data: inserted } = await supabase.from('eleitores').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
     if (inserted) setData(prev => [inserted, ...prev]);
     return inserted;
   };
@@ -48,9 +49,10 @@ export function useComunidades() {
     setLoading(false);
   }, []);
 
-  const insert = async (row: Omit<Comunidade, 'id' | 'created_at' | 'user_id'>) => {
+  const insert = async (row: Omit<Comunidade, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
-    const { data: inserted } = await supabase.from('comunidades').insert({ ...row, user_id: userData.user?.id }).select().single();
+    const ownerId = userData.user?.id;
+    const { data: inserted } = await supabase.from('comunidades').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
     if (inserted) setData(prev => [inserted, ...prev]);
     return inserted;
   };
@@ -82,9 +84,10 @@ export function useSolicitacoes() {
     setLoading(false);
   }, []);
 
-  const insert = async (row: Omit<Solicitacao, 'id' | 'created_at' | 'user_id'>) => {
+  const insert = async (row: Omit<Solicitacao, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
-    const { data: inserted } = await supabase.from('solicitacoes').insert({ ...row, user_id: userData.user?.id }).select().single();
+    const ownerId = userData.user?.id;
+    const { data: inserted } = await supabase.from('solicitacoes').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
     if (inserted) setData(prev => [inserted, ...prev]);
     return inserted;
   };
@@ -116,9 +119,10 @@ export function useTarefas() {
     setLoading(false);
   }, []);
 
-  const insert = async (row: Omit<Tarefa, 'id' | 'created_at' | 'user_id'>) => {
+  const insert = async (row: Omit<Tarefa, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
-    const { data: inserted } = await supabase.from('tarefas').insert({ ...row, user_id: userData.user?.id }).select().single();
+    const ownerId = userData.user?.id;
+    const { data: inserted } = await supabase.from('tarefas').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
     if (inserted) setData(prev => [inserted, ...prev]);
     return inserted;
   };
@@ -150,9 +154,10 @@ export function useEventos() {
     setLoading(false);
   }, []);
 
-  const insert = async (row: Omit<Evento, 'id' | 'created_at' | 'user_id'>) => {
+  const insert = async (row: Omit<Evento, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
-    const { data: inserted } = await supabase.from('eventos').insert({ ...row, user_id: userData.user?.id }).select().single();
+    const ownerId = userData.user?.id;
+    const { data: inserted } = await supabase.from('eventos').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
     if (inserted) setData(prev => [...prev, inserted].sort((a, b) => a.data.localeCompare(b.data)));
     return inserted;
   };
@@ -186,9 +191,10 @@ export function useInteracoes(eleitorId?: string) {
     setLoading(false);
   }, [eleitorId]);
 
-  const insert = async (row: Omit<Interacao, 'id' | 'created_at' | 'user_id'>) => {
+  const insert = async (row: Omit<Interacao, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
-    const { data: inserted } = await supabase.from('interacoes').insert({ ...row, user_id: userData.user?.id }).select().single();
+    const ownerId = userData.user?.id;
+    const { data: inserted } = await supabase.from('interacoes').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
     if (inserted) setData(prev => [inserted, ...prev]);
     return inserted;
   };
@@ -244,6 +250,69 @@ export function useConfiguracoes() {
   return { data, loading, fetch, set };
 }
 
+// ===================== CONVITES ELEITORES =====================
+export function useConvitesEleitores() {
+  const [data, setData] = useState<ConviteEleitor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    const { data: rows } = await supabase.from('convites_eleitores').select('*').order('created_at', { ascending: false });
+    setData(rows || []);
+    setLoading(false);
+  }, []);
+
+  const criarConvite = async (indicadorId: string, dados?: { nome?: string; email?: string; telefone?: string }) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const ownerId = userData.user?.id;
+    const token = crypto.randomUUID();
+    const { data: inserted } = await supabase.from('convites_eleitores').insert({
+      indicador_id: indicadorId,
+      owner_id: ownerId,
+      token,
+      nome: dados?.nome || null,
+      email: dados?.email || null,
+      telefone: dados?.telefone || null,
+      data_expiracao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    }).select().single();
+    if (inserted) setData(prev => [inserted, ...prev]);
+    return inserted;
+  };
+
+  const aprovarConvite = async (id: string, eleitorData: Partial<Eleitor>) => {
+    const { data: convite } = await supabase.from('convites_eleitores').select('*').eq('id', id).single();
+    if (!convite) return null;
+
+    const { data: userData } = await supabase.auth.getUser();
+    const ownerId = userData.user?.id;
+
+    const { data: eleitor } = await supabase.from('eleitores').insert({
+      ...eleitorData,
+      nome: convite.nome || eleitorData.nome,
+      email: convite.email || eleitorData.email,
+      telefone: convite.telefone || eleitorData.telefone,
+      indicador_id: convite.indicador_id,
+      status: 'ativo',
+      user_id: ownerId,
+      owner_id: ownerId,
+    }).select().single();
+
+    if (eleitor) {
+      await supabase.from('convites_eleitores').update({ status: 'aprovado' }).eq('id', id);
+      setData(prev => prev.map(c => c.id === id ? { ...c, status: 'aprovado' } : c));
+    }
+    return eleitor;
+  };
+
+  const rejeitarConvite = async (id: string) => {
+    await supabase.from('convites_eleitores').update({ status: 'rejeitado' }).eq('id', id);
+    setData(prev => prev.map(c => c.id === id ? { ...c, status: 'rejeitado' } : c));
+  };
+
+  useEffect(() => { fetch(); }, [fetch]);
+  return { data, loading, fetch, criarConvite, aprovarConvite, rejeitarConvite };
+}
+
 // ===================== ENVIOS ANIVERSARIO =====================
 export function useEnviosAniversario() {
   const [data, setData] = useState<EnvioAniversario[]>([]);
@@ -258,7 +327,8 @@ export function useEnviosAniversario() {
 
   const insert = async (eleitor_id: string, ano: number) => {
     const { data: userData } = await supabase.auth.getUser();
-    const { data: inserted } = await supabase.from('envios_aniversario').insert({ eleitor_id, ano, user_id: userData.user?.id }).select().single();
+    const ownerId = userData.user?.id;
+    const { data: inserted } = await supabase.from('envios_aniversario').insert({ eleitor_id, ano, user_id: ownerId, owner_id: ownerId }).select().single();
     if (inserted) setData(prev => [...prev, inserted]);
     return inserted;
   };

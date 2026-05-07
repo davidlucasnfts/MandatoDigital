@@ -9,6 +9,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export type Eleitor = {
   id: string;
   nome: string;
+  nome_mae: string | null;
   email: string;
   telefone: string;
   cpf: string;
@@ -18,12 +19,27 @@ export type Eleitor = {
   estado: string;
   cep: string;
   comunidade_id: string | null;
+  indicador_id: string | null;
   nivel: 'lider' | 'influenciador' | 'apoiador' | 'eleitor';
   tags: string[];
   status: 'ativo' | 'inativo' | 'pendente';
   observacoes: string;
   data_nascimento: string | null;
   user_id: string;
+  owner_id: string | null;
+  created_at: string;
+};
+
+export type ConviteEleitor = {
+  id: string;
+  indicador_id: string;
+  owner_id: string | null;
+  token: string;
+  nome: string | null;
+  email: string | null;
+  telefone: string | null;
+  status: 'pendente' | 'aprovado' | 'rejeitado' | 'expirado';
+  data_expiracao: string | null;
   created_at: string;
 };
 
@@ -33,8 +49,10 @@ export type Comunidade = {
   descricao: string;
   lider: string;
   cor: string;
+  icone: string;
   bairros: string[];
   user_id: string;
+  owner_id: string | null;
   created_at: string;
   total_eleitores?: number; // virtual
 };
@@ -48,9 +66,12 @@ export type Solicitacao = {
   categoria: string;
   prioridade: 'urgente' | 'alta' | 'media' | 'baixa';
   status: 'pendente' | 'andamento' | 'concluido' | 'cancelado';
+  data_solicitacao: string | null;
+  data_evento: string | null;
   data_prazo: string | null;
   responsavel: string;
   user_id: string;
+  owner_id: string | null;
   created_at: string;
 };
 
@@ -64,6 +85,7 @@ export type Tarefa = {
   data_prazo: string | null;
   tags: string[];
   user_id: string;
+  owner_id: string | null;
   created_at: string;
 };
 
@@ -77,6 +99,7 @@ export type Evento = {
   local: string;
   tipo: 'reuniao' | 'evento' | 'visita' | 'compromisso';
   user_id: string;
+  owner_id: string | null;
   created_at: string;
 };
 

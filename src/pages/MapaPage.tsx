@@ -11,6 +11,12 @@ import type { Eleitor } from '@/lib/supabase';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 
+// Bounds do Brasil
+const BOUNDS_BRASIL = L.latLngBounds(
+  L.latLng(-33.75, -73.99), // sudoeste
+  L.latLng(5.27, -34.79)    // nordeste
+);
+
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }) };
 
 // Fix default marker icon
@@ -156,8 +162,8 @@ export default function MapaPage() {
                   <MapPin className="w-8 h-8 mr-2" /> Carregando mapa...
                 </div>
               ) : (
-                <MapContainer center={centroBrasil} zoom={4} scrollWheelZoom={true} style={{ height: '100%', minHeight: '500px', width: '100%' }}>
-                  <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', minHeight: '500px', width: '100%' }}>
+                  <TileLayer attribution='&copy; <a href="https://carto.com/">CARTO</a>' url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
                   {porCidade.map(c => (
                     <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }} />
                   ))}

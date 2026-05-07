@@ -1,0 +1,44 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate:
+    name: Validar PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run check
+
+      - run: npm run test
+
+      - name: Verificar título do PR
+        uses: amannn/action-semantic-pull-request@v5
+        with:
+          types: |
+            feat
+            fix
+            doc
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            cd
+            chore
+            revert
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

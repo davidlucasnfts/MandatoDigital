@@ -14,6 +14,10 @@ import DocumentosPage from '@/pages/DocumentosPage';
 import RelatoriosPage from '@/pages/RelatoriosPage';
 import EquipePage from '@/pages/EquipePage';
 import ConfiguracoesPage from '@/pages/ConfiguracoesPage';
+import ProposicoesPage from '@/pages/ProposicoesPage';
+import ProposicaoFormPage from '@/pages/ProposicaoFormPage';
+import ProposicaoDetailPage from '@/pages/ProposicaoDetailPage';
+import ProdutividadePage from '@/pages/ProdutividadePage';
 import { RoleGuard } from '@/components/RoleGuard';
 
 function App() {
@@ -36,6 +40,10 @@ function App() {
         <Route path="tarefas" element={<TarefasPage />} />
         <Route path="documentos" element={<DocumentosPage />} />
         <Route path="relatorios" element={<RelatoriosPage />} />
+        <Route path="proposicoes" element={<ProposicoesPage />} />
+        <Route path="proposicoes/:id" element={<ProposicaoDetailPage />} />
+        <Route path="proposicoes/:id/editar" element={<ProposicaoFormPage />} />
+        <Route path="produtividade" element={<ProdutividadePage />} />
         <Route path="equipe" element={<RoleGuard require="admin"><EquipePage /></RoleGuard>} />
         <Route path="configuracoes" element={<RoleGuard require="admin"><ConfiguracoesPage /></RoleGuard>} />
       </Route>
