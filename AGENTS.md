@@ -64,6 +64,11 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ### Botões de Ação — REGRAS OBRIGATÓRIAS
 
+#### PROIBIDO: Dropdown de 3 pontinhos (MoreHorizontal)
+- **NUNCA** usar `<DropdownMenu>` com `<MoreHorizontal>` para esconder ações
+- Todas as ações devem ser botões de ícone visíveis diretamente
+- Sem exceções — mesmo que "fique muitos botões", eles devem estar visíveis
+
 #### Visibilidade
 - **Sempre visíveis** — nunca usar `opacity-0` + `group-hover:opacity-100`
 - Botões de ação devem estar disponíveis imediatamente, sem precisar de hover
@@ -83,11 +88,13 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Padding `p-1.5` para botões de ícone
 - Bordas arredondadas `rounded`
 
-### Tabelas
+### Tabelas — Posicionamento Unificado
 - **Coluna de Ações na primeira posição** (antes do nome)
+- **TODAS as ações na mesma coluna** — não separar em colunas diferentes
 - Pendentes: botões empilhados verticalmente (Aprovar em cima, Recusar embaixo)
-- Normais: botões lado a lado (Editar, Excluir)
+- Normais: botões lado a lado (Editar, Link, Excluir)
 - Status com badges coloridos: `ativo`=verde, `pendente`=âmbar, `inativo`=cinza
+- **NUNCA** deixar coluna vazia no final da tabela
 
 ### Cards (Kanban/Grid)
 - Botões no canto superior direito

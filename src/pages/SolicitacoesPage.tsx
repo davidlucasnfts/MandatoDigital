@@ -17,7 +17,7 @@ const statusColors: Record<string, string> = { pendente: 'bg-amber-100 text-ambe
 const columns = [
   { key: 'pendente' as const, label: 'Pendente', icon: AlertCircle },
   { key: 'andamento' as const, label: 'Em Andamento', icon: Clock },
-  { key: 'concluido' as const, label: 'Concluído', icon: CheckCircle },
+  { key: 'concluido' as const, label: 'Concluï¿½do', icon: CheckCircle },
   { key: 'cancelado' as const, label: 'Cancelado', icon: XCircle },
 ];
 
@@ -37,7 +37,7 @@ function SolicitacaoCard({ solicitacao, onEdit, onDelete }: { solicitacao: Solic
           <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${prioridadeColors[solicitacao.prioridade || 'media']}`}>
             {solicitacao.prioridade}
           </span>
-          <span className="text-[10px] text-slate-400">{solicitacao.data_prazo || '—'}</span>
+          <span className="text-[10px] text-slate-400">{solicitacao.data_prazo || 'ï¿½'}</span>
         </div>
       </CardContent>
     </Card>
@@ -68,9 +68,9 @@ export default function SolicitacoesPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <ClipboardList className="w-5 h-5 text-blue-600"/>Solicitações
+              <ClipboardList className="w-5 h-5 text-blue-600"/>Solicitaï¿½ï¿½es
             </h2>
-            <p className="text-sm text-slate-500 mt-1">{filtered.length} solicitações</p>
+            <p className="text-sm text-slate-500 mt-1">{filtered.length} solicitaï¿½ï¿½es</p>
           </div>
           <div className="flex gap-2">
             <div className="flex bg-slate-100 rounded-lg p-0.5">
@@ -88,13 +88,13 @@ export default function SolicitacoesPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/>
-                <Input placeholder="Buscar solicitação..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10"/>
+                <Input placeholder="Buscar solicitaï¿½ï¿½o..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10"/>
               </div>
               <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="h-10 px-3 rounded-md border border-input bg-background text-sm">
                 <option value="">Todos os status</option>
                 <option value="pendente">Pendente</option>
                 <option value="andamento">Em Andamento</option>
-                <option value="concluido">Concluído</option>
+                <option value="concluido">Concluï¿½do</option>
                 <option value="cancelado">Cancelado</option>
               </select>
             </div>
@@ -110,7 +110,7 @@ export default function SolicitacoesPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50">
-                      {['Título','Eleitor','Categoria','Prioridade','Status','Prazo',''].map(h => (
+                      {['Tï¿½tulo','Eleitor','Categoria','Prioridade','Status','Prazo',''].map(h => (
                         <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">{h}</th>
                       ))}
                     </tr>
@@ -136,7 +136,7 @@ export default function SolicitacoesPage() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${statusColors[s.status || 'pendente']}`}>{s.status}</span>
-                            {/* Toggle rápido de status */}
+                            {/* Toggle rï¿½pido de status */}
                             <div className="flex gap-0.5">
                               {s.status !== 'pendente' && (
                                 <button onClick={() => update(s.id, { status: 'pendente' })} className="w-5 h-5 rounded bg-amber-100 text-amber-600 text-[10px] hover:bg-amber-200 transition-colors" title="Pendente">P</button>
@@ -145,7 +145,7 @@ export default function SolicitacoesPage() {
                                 <button onClick={() => update(s.id, { status: 'andamento' })} className="w-5 h-5 rounded bg-blue-100 text-blue-600 text-[10px] hover:bg-blue-200 transition-colors" title="Em Andamento">A</button>
                               )}
                               {s.status !== 'concluido' && (
-                                <button onClick={() => update(s.id, { status: 'concluido' })} className="w-5 h-5 rounded bg-green-100 text-green-600 text-[10px] hover:bg-green-200 transition-colors" title="Concluído">C</button>
+                                <button onClick={() => update(s.id, { status: 'concluido' })} className="w-5 h-5 rounded bg-green-100 text-green-600 text-[10px] hover:bg-green-200 transition-colors" title="Concluï¿½do">C</button>
                               )}
                               {s.status !== 'cancelado' && (
                                 <button onClick={() => update(s.id, { status: 'cancelado' })} className="w-5 h-5 rounded bg-red-100 text-red-600 text-[10px] hover:bg-red-200 transition-colors" title="Cancelado">X</button>
@@ -154,18 +154,13 @@ export default function SolicitacoesPage() {
                           </div>
                         </td>
                         <td className="py-3 px-4 text-xs text-slate-500">
-                          <div>{s.data_evento ? <span className="text-blue-600">?? {new Date(s.data_evento).toLocaleDateString('pt-BR')}</span> : (s.data_prazo || '—')}</div>
+                          <div>{s.data_evento ? <span className="text-blue-600">?? {new Date(s.data_evento).toLocaleDateString('pt-BR')}</span> : (s.data_prazo || 'ï¿½')}</div>
                         </td>
-                        <td className="py-3 px-4">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <button className="p-1 hover:bg-slate-100 rounded"><MoreHorizontal className="w-4 h-4 text-slate-400"/></button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => setEditSolicitacao(s)} className="text-xs cursor-pointer"><Pencil className="w-3.5 h-3.5 mr-2" /> Editar</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => { if (confirm('Excluir esta solicitação?')) remove(s.id); }} className="text-xs cursor-pointer text-red-600"><Trash2 className="w-3.5 h-3.5 mr-2" /> Excluir</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                                <td className="py-3 px-4">
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => setEditSolicitacao(s)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Editar"><Pencil className="w-3.5 h-3.5"/></button>
+                            <button onClick={() => { if (confirm('Excluir esta solicitacao?')) remove(s.id); }} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Excluir"><Trash2 className="w-3.5 h-3.5"/></button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -180,7 +175,7 @@ export default function SolicitacoesPage() {
           items={filtered}
           columns={columns.map(c => ({ id: c.key, label: c.label, icon: c.icon }))}
           onDragEnd={handleDragEnd}
-          renderCard={(s) => <SolicitacaoCard solicitacao={s} onEdit={() => setEditSolicitacao(s)} onDelete={() => { if (confirm('Excluir esta solicitação?')) remove(s.id); }} />}
+          renderCard={(s) => <SolicitacaoCard solicitacao={s} onEdit={() => setEditSolicitacao(s)} onDelete={() => { if (confirm('Excluir esta solicitaï¿½ï¿½o?')) remove(s.id); }} />}
           getItemStatus={(s) => s.status}
         />
       )}
