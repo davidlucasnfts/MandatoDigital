@@ -6,6 +6,7 @@ interface Props {
   eleitor: Eleitor;
   comunidadeNome?: string;
   indicadorNome?: string;
+  afiliados?: Eleitor[];
   onClose?: () => void;
 }
 
@@ -22,7 +23,7 @@ const statusColors: Record<string, string> = {
   pendente: 'bg-amber-50 text-amber-600',
 };
 
-export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorNome }: Props) {
+export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorNome, afiliados }: Props) {
   return (
     <Card className="border-blue-100">
       <CardContent className="p-5">
@@ -112,6 +113,26 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
           <div className="mt-3 pt-3 border-t border-slate-100">
             <p className="text-xs text-slate-500">Observações</p>
             <p className="text-sm text-slate-700 mt-0.5">{eleitor.observacoes}</p>
+          </div>
+        )}
+
+        {eleitor.nivel === 'lider' && afiliados && afiliados.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-slate-100">
+            <p className="text-xs text-slate-500 mb-2">Eleitores vinculados ({afiliados.length})</p>
+            <div className="space-y-1.5 max-h-40 overflow-y-auto">
+              {afiliados.map(a => (
+                <div key={a.id} className="flex items-center gap-2 p-2 bg-slate-50 rounded">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-blue-600 font-semibold text-[10px]">{a.nome?.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-slate-700 truncate">{a.nome}</p>
+                    <p className="text-[10px] text-slate-400">{a.cidade}/{a.estado}</p>
+                  </div>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusColors[a.status || 'ativo']}`}>{a.status}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>

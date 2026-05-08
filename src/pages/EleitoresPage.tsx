@@ -32,6 +32,7 @@ export default function EleitoresPage() {
   const [comunidadeFilter, setComunidadeFilter] = useState('');
   const [nivelFilter, setNivelFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [liderFilter, setLiderFilter] = useState('');
   const [abaAtiva, setAbaAtiva] = useState<'todos' | 'pendentes'>('todos');
 
   const filtered = useMemo(() => {
@@ -45,9 +46,10 @@ export default function EleitoresPage() {
       const matchComunidade = !comunidadeFilter || e.comunidade_id === comunidadeFilter;
       const matchNivel = !nivelFilter || e.nivel === nivelFilter;
       const matchStatus = !statusFilter || e.status === statusFilter;
-      return matchSearch && matchComunidade && matchNivel && matchStatus;
+      const matchLider = !liderFilter || e.lider_id === liderFilter;
+      return matchSearch && matchComunidade && matchNivel && matchStatus && matchLider;
     });
-  }, [eleitores, search, comunidadeFilter, nivelFilter, statusFilter, abaAtiva]);
+  }, [eleitores, search, comunidadeFilter, nivelFilter, statusFilter, liderFilter, abaAtiva]);
 
   const pendentesCount = eleitores.filter(e => e.status === 'pendente').length;
 
@@ -90,6 +92,7 @@ export default function EleitoresPage() {
             <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/><Input placeholder="Buscar por nome, e-mail ou telefone..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10"/></div>
             <select value={comunidadeFilter} onChange={e => setComunidadeFilter(e.target.value)} className="h-10 px-3 rounded-md border border-input bg-background text-sm"><option value="">Todas as comunidades</option>{comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
             <select value={nivelFilter} onChange={e => setNivelFilter(e.target.value)} className="h-10 px-3 rounded-md border border-input bg-background text-sm"><option value="">Todos os níveis</option><option value="lider">Líder</option><option value="eleitor">Eleitor</option></select>
+            <select value={liderFilter} onChange={e => setLiderFilter(e.target.value)} className="h-10 px-3 rounded-md border border-input bg-background text-sm"><option value="">Todos os líderes</option>{eleitores.filter(e => e.nivel === 'lider').map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}</select>
             {abaAtiva === 'todos' && <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="h-10 px-3 rounded-md border border-input bg-background text-sm"><option value="">Todos os status</option><option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="pendente">Pendente</option></select>}
           </div>
         </CardContent></Card>
@@ -103,6 +106,7 @@ export default function EleitoresPage() {
               eleitor={previewEleitor}
               comunidadeNome={getComunidadeNome(previewEleitor.comunidade_id)}
               indicadorNome={getIndicadorNome(previewEleitor.indicador_id)}
+              afiliados={previewEleitor.nivel === 'lider' ? eleitores.filter(e => e.lider_id === previewEleitor.id) : undefined}
             />
             <div className="flex justify-end mt-2">
               <Button variant="ghost" size="sm" onClick={() => setPreviewEleitor(null)} className="text-slate-400 hover:text-slate-600">
@@ -161,7 +165,16 @@ export default function EleitoresPage() {
                     <td className="py-3 px-4 text-slate-500"><div>{e.email}</div><div className="text-xs">{e.telefone}</div></td>
                     <td className="py-3 px-4 text-slate-500 text-xs">{e.cpf || '—'}</td>
                     <td className="py-3 px-4"><span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{getComunidadeNome(e.comunidade_id) || '—'}</span></td>
-                    <td className="py-3 px-4 text-xs text-slate-500">{e.lider_id ? getLiderNome(e.lider_id) || '—' : '—'}</td>
+                    <td className="py-3 px-4 text-xs text-slate-500">
+                      {e.lider_id ? (
+                        <span className="inline-flex items-center gap-1">
+                          <span className="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
+                            <span className="text-purple-600 font-semibold text-[8px]">{getLiderNome(e.lider_id)?.split(' ').map((n: string) => n[0]).join('').slice(0,2)}</span>
+                          </span>
+                          {getLiderNome(e.lider_id)}
+                        </span>
+                      ) : '—'}
+                    </td>
                     <td className="py-3 px-4"><span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${nivelColors[e.nivel || 'eleitor']}`}>{e.nivel}</span></td>
                     <td className="py-3 px-4"><div className="flex flex-wrap gap-1">{(e.tags || []).slice(0,2).map((t,i) => <span key={i} className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{t}</span>)}{(e.tags || []).length > 2 && <span className="text-[10px] text-slate-400">+{(e.tags || []).length - 2}</span>}</div></td>
                     <td className="py-3 px-4"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${e.status === 'ativo' ? 'bg-green-50 text-green-600' : e.status === 'pendente' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-500'}`}>{e.status}</span></td>
