@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Search, Plus, Download, Upload, Pencil, Trash2, MessageSquare, Link2, Eye, ChevronDown } from 'lucide-react';
+import { Users, Search, Plus, Download, Upload, Pencil, Trash2, MessageSquare, Link2, Eye, ChevronDown, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
