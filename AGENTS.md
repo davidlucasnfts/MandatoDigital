@@ -56,30 +56,82 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ## 🎨 Regras de Design UX/UI (aplicáveis a todos os projetos)
 
-> **Antes de criar ou editar qualquer componente visual, consultar `.kimi/skills/ux-ui-designer/SKILL.md`**
-> Esta skill contém o padrão de cores, tamanhos, visibilidade de botões e regras de layout do projeto.
+### Design System Base
+- **shadcn/ui** como biblioteca principal de componentes
+- **Tailwind CSS** para estilização
+- **Radix UI** como base de acessibilidade
+- **Lucide React** para ícones
+
+### Botões de Ação — REGRAS OBRIGATÓRIAS
+
+#### Visibilidade
+- **Sempre visíveis** — nunca usar `opacity-0` + `group-hover:opacity-100`
+- Botões de ação devem estar disponíveis imediatamente, sem precisar de hover
+
+#### Cores por Ação (sempre com fundo)
+| Ação | Cor de Fundo | Cor do Ícone | Hover |
+|---|---|---|---|
+| Editar | `bg-blue-50` | `text-blue-600` | `hover:bg-blue-100` |
+| Excluir/Recusar | `bg-red-50` | `text-red-600` | `hover:bg-red-100` |
+| Aprovar/Confirmar | `bg-green-50` | `text-green-600` | `hover:bg-green-100` |
+| Visualizar | `bg-slate-50` | `text-slate-600` | `hover:bg-slate-100` |
+| Link/Afiliar | `bg-purple-50` | `text-purple-600` | `hover:bg-purple-100` |
+
+#### Layout
+- Ícones do Lucide React, tamanho `w-3.5 h-3.5` para ações em tabela/card
+- Botões em linha com `gap-1` ou `gap-1.5`
+- Padding `p-1.5` para botões de ícone
+- Bordas arredondadas `rounded`
+
+### Tabelas
+- **Coluna de Ações na primeira posição** (antes do nome)
+- Pendentes: botões empilhados verticalmente (Aprovar em cima, Recusar embaixo)
+- Normais: botões lado a lado (Editar, Excluir)
+- Status com badges coloridos: `ativo`=verde, `pendente`=âmbar, `inativo`=cinza
+
+### Cards (Kanban/Grid)
+- Botões no canto superior direito
+- Sempre visíveis (sem hover)
+- Mesmas cores da tabela
+
+### Abas/Filtros
+- **"Todos"** → mostra todos os itens (incluindo pendentes)
+- **"Pendentes"** → mostra só itens com status pendente
+- Badge com contador quando houver pendentes
+
+### Modal/Dialog
+- Cancelar: `variant="outline"`
+- Confirmar/Salvar: `bg-blue-600 hover:bg-blue-700`
+- Excluir: `bg-red-600 hover:bg-red-700`
+- Aprovar: `bg-green-600 hover:bg-green-700`
+
+### Cores do Projeto (Tailwind)
+| Uso | Cor |
+|---|---|
+| Primária (ações principais) | `blue-600` |
+| Sucesso | `green-600` |
+| Perigo/Excluir | `red-600` |
+| Aviso/Pendente | `amber-600` |
+| Líder | `purple-600` |
+| Texto principal | `slate-800` |
+| Texto secundário | `slate-500` |
+| Fundo página | `slate-50` |
+| Fundo card | `white` |
 
 ### Espaço e Layout
-- **Zero espaços vazios sem função** — todo espaço deve ter propósito: conteúdo, respiro proporcional ou separação visual
-- **Paddings proporcionais** — `py-10` a `py-14` é suficiente; nunca `py-20/py-28` sem necessidade
-- **Hero compacto** — altura definida pelo conteúdo, não pela tela; remover `min-h-screen`
-- **Conteúdo acima do fold** — usuário deve ver valor em 3 segundos, sem rolar
+- **Zero espaços vazios sem função** — todo espaço deve ter propósito
+- **Paddings proporcionais** — `py-10` a `py-14` é suficiente
+- **Hero compacto** — altura definida pelo conteúdo, não pela tela
+- **Conteúdo acima do fold** — usuário deve ver valor em 3 segundos
 
 ### Conversão e Copywriting
-- **Headline na dor** — falar o problema que resolve, não o recurso (ex: "Nunca mais perca um voto" vs "Gestão inteligente")
-- **Antes vs Depois** — mostrar transformação real, não só listar features
-- **Depoimentos com resultados** — números concretos ("15% mais votos", "10h economizadas")
-- **CTA claro e repetido** — botão principal em hero, meio e final da página
-- **Prova social no hero** — números, avatares, cargos reais para credibilidade imediata
-
-### Visual e Componentes
-- **Cores distintas por card** — facilita scan visual e memorização
-- **Placeholder visual** — quando não há imagem, usar ícone grande com cor de fundo
-- **Botões sempre visíveis** — fundo sólido ou transparente com borda, nunca branco sobre branco
-- **Transições suaves** — header que muda de cor ao rolar, cards com hover
+- **Headline na dor** — falar o problema que resolve
+- **Antes vs Depois** — mostrar transformação real
+- **CTA claro e repetido** — botão principal em hero, meio e final
+- **Prova social no hero** — números, avatares, cargos reais
 
 ### Mobile-First
-- **Touch targets mínimos** — botões e links com pelo menos 44px de altura
-- **Stack vertical** — em mobile, tudo empilha: texto acima, imagem abaixo
-- **Menu hambúrguer** — navegação escondida em telas pequenas, nunca quebrada
+- **Touch targets mínimos** — 44px de altura
+- **Stack vertical** — em mobile, tudo empilha
+- **Menu hambúrguer** — navegação escondida em telas pequenas
 - **Fontes legíveis** — mínimo 16px para inputs, 14px para texto corrido
