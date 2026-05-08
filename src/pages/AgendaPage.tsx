@@ -67,7 +67,7 @@ export default function AgendaPage() {
                   <div className="min-w-0 flex-1"><h4 className="text-sm font-medium text-slate-800 truncate">{e.titulo}</h4><div className="flex items-center gap-2 mt-1 text-xs text-slate-500"><span className="flex items-center gap-1"><Clock className="w-3 h-3"/>{e.hora_inicio}</span><span className="flex items-center gap-1"><MapPin className="w-3 h-3"/>{e.local}</span></div><div className="text-xs text-slate-400 mt-1">{e.data}</div></div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1 hover:bg-slate-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"><MoreHorizontal className="w-3.5 h-3.5 text-slate-400"/></button>
+                      <button className="p-1 hover:bg-slate-100 rounded gap-1"><MoreHorizontal className="w-3.5 h-3.5 text-slate-400"/></button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setEditEvento(e)} className="text-xs cursor-pointer"><Pencil className="w-3.5 h-3.5 mr-2" /> Editar</DropdownMenuItem>
@@ -84,3 +84,5 @@ export default function AgendaPage() {
     </div>
   );
 }
+
+

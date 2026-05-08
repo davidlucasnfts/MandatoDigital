@@ -1,4 +1,4 @@
-ï»¿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Plus, Search, AlertCircle, Clock, CheckCircle, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ const prioridadeColors: Record<string, string> = { urgente: 'bg-red-100 text-red
 const columns = [
   { key: 'pendente' as const, label: 'Pendente', icon: AlertCircle },
   { key: 'andamento' as const, label: 'Em Andamento', icon: Clock },
-  { key: 'concluida' as const, label: 'ConcluÃ­da', icon: CheckCircle },
+  { key: 'concluida' as const, label: 'Concluída', icon: CheckCircle },
 ];
 
 function TarefaCard({ tarefa, onEdit, onDelete }: { tarefa: Tarefa; onEdit: () => void; onDelete: () => void }) {
@@ -25,9 +25,9 @@ function TarefaCard({ tarefa, onEdit, onDelete }: { tarefa: Tarefa; onEdit: () =
       <CardContent className="p-3">
         <div className="flex items-start justify-between">
           <h4 className="text-sm font-medium text-slate-800 mb-2 flex-1">{tarefa.titulo}</h4>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar"><Pencil className="w-3.5 h-3.5"/></button>
-            <button onClick={onDelete} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Excluir"><Trash2 className="w-3.5 h-3.5"/></button>
+          <div className="flex items-center gap-1">
+            <button onClick={onEdit} className="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded transition-colors" title="Editar"><Pencil className="w-3.5 h-3.5"/></button>
+            <button onClick={onDelete} className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded transition-colors" title="Excluir"><Trash2 className="w-3.5 h-3.5"/></button>
           </div>
         </div>
         <p className="text-xs text-slate-500 mb-2 line-clamp-2">{tarefa.descricao}</p>
@@ -35,7 +35,7 @@ function TarefaCard({ tarefa, onEdit, onDelete }: { tarefa: Tarefa; onEdit: () =
           <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${prioridadeColors[tarefa.prioridade || 'media']}`}>
             {tarefa.prioridade}
           </span>
-          <span className="text-[10px] text-slate-400">{tarefa.data_prazo || 'â€”'}</span>
+          <span className="text-[10px] text-slate-400">{tarefa.data_prazo || '—'}</span>
         </div>
       </CardContent>
     </Card>
@@ -105,7 +105,7 @@ export default function TarefasPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
-                    {['Tarefa','Prioridade','ResponsÃ¡vel','Prazo','Status',''].map(h => (
+                    {['Tarefa','Prioridade','Responsável','Prazo','Status',''].map(h => (
                       <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">{h}</th>
                     ))}
                   </tr>
@@ -121,7 +121,7 @@ export default function TarefasPage() {
                         <span className={`text-xs px-2 py-1 rounded-full font-medium ${prioridadeColors[t.prioridade || 'media']}`}>{t.prioridade}</span>
                       </td>
                       <td className="py-3 px-4 text-slate-600 text-xs">{t.responsavel}</td>
-                      <td className="py-3 px-4 text-slate-500 text-xs">{t.data_prazo || 'â€”'}</td>
+                      <td className="py-3 px-4 text-slate-500 text-xs">{t.data_prazo || '—'}</td>
                       <td className="py-3 px-4">
                         <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                           t.status==='concluida' ? 'bg-green-100 text-green-700' : 
@@ -141,3 +141,5 @@ export default function TarefasPage() {
     </div>
   );
 }
+
+
