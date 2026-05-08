@@ -158,8 +158,8 @@ export default function SolicitacoesPage() {
                         </td>
                         <td className="py-3 px-2">
                           <div className="flex flex-col gap-1">
-                            <button onClick={() => setEditSolicitacao(s)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
-                            <button onClick={() => { if (confirm('Excluir esta solicitacao?')) remove(s.id); }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
+                            <button onClick={() => setEditSolicitacao(s)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
+                            <button onClick={() => { if (confirm('Excluir esta solicitacao?')) remove(s.id); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
                           </div>
                         </td>
                       </tr>

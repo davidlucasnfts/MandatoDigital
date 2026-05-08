@@ -85,7 +85,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 #### Layout — Botões com Texto (padrão preferido)
 - **Sempre com texto + ícone**, nunca ícone sozinho
 - Empilhados verticalmente (`flex-col gap-1`) na coluna de ações
-- Tamanho compacto: `text-[10px] font-medium`, padding `px-2 py-1`
+- Tamanho compacto: `text-[10px] font-medium`, padding `px-1.5 py-0.5`
 - Ícone `w-3 h-3` à esquerda do texto
 - Exemplo:
   ```tsx

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { trpc } from '@/providers/trpc';
 import { useNavigate } from 'react-router-dom';
 
@@ -178,8 +177,8 @@ export default function ProposicoesPage() {
                         </td>
                         <td className="py-3 px-2">
                           <div className="flex flex-col gap-1">
-                            <button onClick={() => navigate(`/dashboard/proposicoes/${p.id}`)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Eye className="w-3 h-3"/>Ver</button>
-                            <button onClick={() => setShowDelete(p.id)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
+                            <button onClick={() => navigate(`/dashboard/proposicoes/${p.id}`)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Eye className="w-3 h-3"/>Ver</button>
+                            <button onClick={() => setShowDelete(p.id)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
                           </div>
                         </td>
                       </tr>

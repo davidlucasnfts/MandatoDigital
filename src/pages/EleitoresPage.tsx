@@ -4,12 +4,6 @@ import { Users, Search, Plus, Download, Upload, Pencil, Trash2, MessageSquare, L
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useEleitores, useInteracoes, useComunidades } from '@/hooks/useSupabaseData';
 import type { Eleitor } from '@/lib/supabase';
 import ImportarEleitoresDialog from '@/components/import-csv/ImportarEleitoresDialog';
@@ -132,16 +126,16 @@ export default function EleitoresPage() {
                       <div className="flex flex-col gap-1">
                         {e.status === 'pendente' ? (
                           <>
-                            <button onClick={async () => { await update(e.id, { status: 'ativo' }); fetch(); }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100 rounded"><CheckCircle className="w-3 h-3"/>Aprovar</button>
-                            <button onClick={async () => { if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><XCircle className="w-3 h-3"/>Recusar</button>
+                            <button onClick={async () => { await update(e.id, { status: 'ativo' }); fetch(); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100 rounded"><CheckCircle className="w-3 h-3"/>Aprovar</button>
+                            <button onClick={async () => { if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><XCircle className="w-3 h-3"/>Recusar</button>
                           </>
                         ) : (
                           <>
-                            <button onClick={() => setEditEleitor(e)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
+                            <button onClick={() => setEditEleitor(e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
                             {e.nivel === 'lider' && (
-                              <button onClick={() => setConviteLider(e)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded"><Link2 className="w-3 h-3"/>Link</button>
+                              <button onClick={() => setConviteLider(e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded"><Link2 className="w-3 h-3"/>Link</button>
                             )}
-                            <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
+                            <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
                           </>
                         )}
                       </div>
