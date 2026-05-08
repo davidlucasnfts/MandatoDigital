@@ -56,6 +56,9 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ## 🎨 Regras de Design UX/UI (aplicáveis a todos os projetos)
 
+> **Antes de criar ou editar qualquer componente visual, consultar `.kimi/skills/ux-ui-designer/SKILL.md`**
+> Esta skill contém o padrão de cores, tamanhos, visibilidade de botões e regras de layout do projeto.
+
 ### Espaço e Layout
 - **Zero espaços vazios sem função** — todo espaço deve ter propósito: conteúdo, respiro proporcional ou separação visual
 - **Paddings proporcionais** — `py-10` a `py-14` é suficiente; nunca `py-20/py-28` sem necessidade
