@@ -42,7 +42,9 @@ export default function EleitoresPage() {
 
   const filtered = useMemo(() => {
     let rows = eleitores;
-    if (abaAtiva === 'pendentes') {
+    if (abaAtiva === 'todos') {
+      rows = rows.filter(e => e.status !== 'pendente');
+    } else if (abaAtiva === 'pendentes') {
       rows = rows.filter(e => e.status === 'pendente');
     }
     return rows.filter(e => {
