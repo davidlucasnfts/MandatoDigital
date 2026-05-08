@@ -24,7 +24,7 @@ const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: (i: number) => ({ opaci
 const nivelColors: Record<string, string> = { lider: 'bg-purple-100 text-purple-700', eleitor: 'bg-slate-100 text-slate-600' };
 
 export default function EleitoresPage() {
-  const { data: eleitores, loading, fetch, remove } = useEleitores();
+  const { data: eleitores, loading, fetch, remove, update } = useEleitores();
   const { data: comunidades } = useComunidades();
   const { data: todasInteracoes } = useInteracoes();
   const [importOpen, setImportOpen] = useState(false);
@@ -123,11 +123,34 @@ export default function EleitoresPage() {
         <Card><CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-slate-100 bg-slate-50">{['Nome','Contato','CPF','Comunidade','Líder','Nível','Tags','Status','Interações',''].map(h => <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
+              <thead><tr className="border-b border-slate-100 bg-slate-50">{['Ações','Nome','Contato','CPF','Comunidade','Líder','Nível','Tags','Status','Interações',''].map(h => <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
               <tbody>
                 {loading ? Array.from({length:5}).map((_,i) => <tr key={i} className="border-b border-slate-50"><td colSpan={9} className="py-4 px-4"><div className="h-4 bg-slate-100 rounded animate-pulse"/></td></tr>) :
                 filtered.map(e => (
                   <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-2">
+                      {e.status === 'pendente' ? (
+                        <div className="flex flex-col gap-1">
+                          <Button
+                            size="sm"
+                            className="h-7 px-2 text-[10px] bg-green-600 hover:bg-green-700 text-white"
+                            onClick={async () => { await update(e.id, { status: 'ativo' }); fetch(); }}
+                          >
+                            Aprovar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-[10px] border-red-300 text-red-600 hover:bg-red-50"
+                            onClick={async () => { if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }}
+                          >
+                            Recusar
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-300">—</span>
+                      )}
+                    </td>
                     <td className="py-3 px-4">
                       <div 
                         onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)} 
