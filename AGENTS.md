@@ -82,11 +82,21 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | Visualizar | `bg-slate-50` | `text-slate-600` | `hover:bg-slate-100` |
 | Link/Afiliar | `bg-purple-50` | `text-purple-600` | `hover:bg-purple-100` |
 
-#### Layout
-- Ícones do Lucide React, tamanho `w-3.5 h-3.5` para ações em tabela/card
-- Botões em linha com `gap-1` ou `gap-1.5`
-- Padding `p-1.5` para botões de ícone
-- Bordas arredondadas `rounded`
+#### Layout — Botões com Texto (padrão preferido)
+- **Sempre com texto + ícone**, nunca ícone sozinho
+- Empilhados verticalmente (`flex-col gap-1`) na coluna de ações
+- Tamanho compacto: `text-[10px] font-medium`, padding `px-2 py-1`
+- Ícone `w-3 h-3` à esquerda do texto
+- Exemplo:
+  ```tsx
+  <button className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded">
+    <Pencil className="w-3 h-3"/>Editar
+  </button>
+  ```
+
+#### Exceção: Cards Kanban
+- No kanban o espaço é limitado — manter ícones com fundo colorido fixo
+- Mas sempre com `title="Descrição da ação"` para acessibilidade
 
 ### Tabelas — Posicionamento Unificado
 - **Coluna de Ações na primeira posição** (antes do nome)

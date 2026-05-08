@@ -129,19 +129,19 @@ export default function EleitoresPage() {
                 filtered.map(e => (
                   <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                     <td className="py-3 px-2">
-                      <div className="flex items-center gap-1">
+                      <div className="flex flex-col gap-1">
                         {e.status === 'pendente' ? (
                           <>
-                            <button onClick={async () => { await update(e.id, { status: 'ativo' }); fetch(); }} className="p-1 text-green-600 hover:bg-green-50 rounded" title="Aprovar"><CheckCircle className="w-3.5 h-3.5"/></button>
-                            <button onClick={async () => { if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Recusar"><XCircle className="w-3.5 h-3.5"/></button>
+                            <button onClick={async () => { await update(e.id, { status: 'ativo' }); fetch(); }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100 rounded"><CheckCircle className="w-3 h-3"/>Aprovar</button>
+                            <button onClick={async () => { if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><XCircle className="w-3 h-3"/>Recusar</button>
                           </>
                         ) : (
                           <>
-                            <button onClick={() => setEditEleitor(e)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Editar"><Pencil className="w-3.5 h-3.5"/></button>
+                            <button onClick={() => setEditEleitor(e)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
                             {e.nivel === 'lider' && (
-                              <button onClick={() => setConviteLider(e)} className="p-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Link de afiliação"><Link2 className="w-3.5 h-3.5"/></button>
+                              <button onClick={() => setConviteLider(e)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded"><Link2 className="w-3 h-3"/>Link</button>
                             )}
-                            <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(e.id); fetch(); } }} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Excluir"><Trash2 className="w-3.5 h-3.5"/></button>
+                            <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
                           </>
                         )}
                       </div>

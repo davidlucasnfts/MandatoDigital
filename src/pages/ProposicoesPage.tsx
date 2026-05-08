@@ -176,14 +176,10 @@ export default function ProposicoesPage() {
                         <td className="py-3 px-4 text-slate-500 text-xs">
                           {p.dataApresentacao ? new Date(p.dataApresentacao).toLocaleDateString('pt-BR') : '-'}
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-1">
-                            <button onClick={() => navigate(`/dashboard/proposicoes/${p.id}`)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button onClick={() => setShowDelete(p.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                        <td className="py-3 px-2">
+                          <div className="flex flex-col gap-1">
+                            <button onClick={() => navigate(`/dashboard/proposicoes/${p.id}`)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Eye className="w-3 h-3"/>Ver</button>
+                            <button onClick={() => setShowDelete(p.id)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
                           </div>
                         </td>
                       </tr>

@@ -16,7 +16,7 @@ const prioridadeColors: Record<string, string> = { urgente: 'bg-red-100 text-red
 const columns = [
   { key: 'pendente' as const, label: 'Pendente', icon: AlertCircle },
   { key: 'andamento' as const, label: 'Em Andamento', icon: Clock },
-  { key: 'concluida' as const, label: 'Concluída', icon: CheckCircle },
+  { key: 'concluida' as const, label: 'Concluâ€”da', icon: CheckCircle },
 ];
 
 function TarefaCard({ tarefa, onEdit, onDelete }: { tarefa: Tarefa; onEdit: () => void; onDelete: () => void }) {
@@ -35,7 +35,7 @@ function TarefaCard({ tarefa, onEdit, onDelete }: { tarefa: Tarefa; onEdit: () =
           <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${prioridadeColors[tarefa.prioridade || 'media']}`}>
             {tarefa.prioridade}
           </span>
-          <span className="text-[10px] text-slate-400">{tarefa.data_prazo || '—'}</span>
+          <span className="text-[10px] text-slate-400">{tarefa.data_prazo || 'â€”'}</span>
         </div>
       </CardContent>
     </Card>
@@ -105,7 +105,7 @@ export default function TarefasPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
-                    {['Tarefa','Prioridade','Responsável','Prazo','Status',''].map(h => (
+                    {['Tarefa','Prioridade','Responsâ€”vel','Prazo','Status',''].map(h => (
                       <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">{h}</th>
                     ))}
                   </tr>
@@ -121,7 +121,7 @@ export default function TarefasPage() {
                         <span className={`text-xs px-2 py-1 rounded-full font-medium ${prioridadeColors[t.prioridade || 'media']}`}>{t.prioridade}</span>
                       </td>
                       <td className="py-3 px-4 text-slate-600 text-xs">{t.responsavel}</td>
-                      <td className="py-3 px-4 text-slate-500 text-xs">{t.data_prazo || '—'}</td>
+                      <td className="py-3 px-4 text-slate-500 text-xs">{t.data_prazo || 'â€”'}</td>
                       <td className="py-3 px-4">
                         <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                           t.status==='concluida' ? 'bg-green-100 text-green-700' : 
