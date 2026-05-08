@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { UserPlus, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,9 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
 
-export default function ConvitePage() {
-  const { token } = useParams<{ token: string }>();
-  const navigate = useNavigate();
+export default function AfiliarPage() {
+  const { liderId } = useParams<{ liderId: string }>();
   const [loading, setLoading] = useState(true);
   const [valido, setValido] = useState(false);
   const [liderNome, setLiderNome] = useState('');
@@ -29,25 +28,22 @@ export default function ConvitePage() {
 
   useEffect(() => {
     async function validar() {
-      if (!token) { setLoading(false); return; }
-      const { data: convite } = await supabase
-        .from('convites_eleitores')
-        .select('*, lider:indicador_id(nome)')
-        .eq('token', token)
-        .eq('status', 'pendente')
+      if (!liderId) { setLoading(false); return; }
+      const { data: lider } = await supabase
+        .from('eleitores')
+        .select('nome, nivel')
+        .eq('id', liderId)
+        .eq('nivel', 'lider')
         .single();
 
-      if (convite && new Date(convite.data_expiracao) > new Date()) {
+      if (lider) {
         setValido(true);
-        setLiderNome(convite.lider?.nome || 'Líder');
-        if (convite.nome) setForm(prev => ({ ...prev, nome: convite.nome }));
-        if (convite.email) setForm(prev => ({ ...prev, email: convite.email }));
-        if (convite.telefone) setForm(prev => ({ ...prev, telefone: convite.telefone }));
+        setLiderNome(lider.nome);
       }
       setLoading(false);
     }
     validar();
-  }, [token]);
+  }, [liderId]);
 
   const buscarCep = async (cep: string) => {
     const clean = cep.replace(/\D/g, '');
@@ -69,16 +65,14 @@ export default function ConvitePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome.trim() || !token) return;
+    if (!form.nome.trim() || !liderId) return;
 
     setLoading(true);
-    const { data: convite } = await supabase
-      .from('convites_eleitores')
-      .select('*')
-      .eq('token', token)
+    const { data: lider } = await supabase
+      .from('eleitores')
+      .select('user_id')
+      .eq('id', liderId)
       .single();
-
-    if (!convite) { setLoading(false); return; }
 
     const { data: eleitor } = await supabase.from('eleitores').insert({
       nome: form.nome,
@@ -91,15 +85,14 @@ export default function ConvitePage() {
       estado: form.estado || 'SP',
       cep: form.cep || null,
       data_nascimento: form.data_nascimento || null,
-      lider_id: convite.indicador_id,
+      lider_id: liderId,
       nivel: 'eleitor',
-      status: 'ativo',
+      status: 'pendente',
       tags: [],
-      user_id: convite.owner_id,
+      user_id: lider?.user_id,
     }).select().single();
 
     if (eleitor) {
-      await supabase.from('convites_eleitores').update({ status: 'aprovado' }).eq('id', convite.id);
       setSucesso(true);
     }
     setLoading(false);
@@ -108,7 +101,7 @@ export default function ConvitePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-400">Verificando convite...</div>
+        <div className="text-slate-400">Verificando...</div>
       </div>
     );
   }
@@ -119,9 +112,8 @@ export default function ConvitePage() {
         <Card className="max-w-sm w-full">
           <CardContent className="p-6 text-center">
             <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-            <h2 className="text-lg font-semibold text-slate-800">Convite inválido ou expirado</h2>
-            <p className="text-sm text-slate-500 mt-1">Este link não é mais válido. Solicite um novo convite ao líder.</p>
-            <Button className="mt-4 w-full" onClick={() => navigate('/')}>Voltar ao início</Button>
+            <h2 className="text-lg font-semibold text-slate-800">Link inválido</h2>
+            <p className="text-sm text-slate-500 mt-1">Este link de afiliação não é válido.</p>
           </CardContent>
         </Card>
       </div>

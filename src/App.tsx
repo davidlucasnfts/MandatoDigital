@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import LandingPage from '@/pages/LandingPage';
-import ConvitePage from '@/pages/ConvitePage';
+import AfiliarPage from '@/pages/AfiliarPage';
 import DashboardLayout from '@/components/DashboardLayout';
 import DashboardHome from '@/pages/DashboardHome';
 import EleitoresPage from '@/pages/EleitoresPage';
@@ -28,7 +28,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage {...auth} />} />
-      <Route path="/convite/:token" element={<ConvitePage />} />
+      <Route path="/afiliar/:liderId" element={<AfiliarPage />} />
       <Route
         path="/dashboard"
         element={auth.isAuthenticated ? <DashboardLayout {...auth} /> : <Navigate to="/" replace />}
