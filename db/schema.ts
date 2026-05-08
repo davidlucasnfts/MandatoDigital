@@ -34,8 +34,15 @@ export const statusProposicaoEnum = pgEnum("status_proposicao", [
   "rejeitado",
   "sancionado",
   "arquivado",
-  "vetoado",
+  "veteado",
   "retirado",
+]);
+
+export const statusEnqueteEnum = pgEnum("status_enquete", [
+  "rascunho",
+  "publicada",
+  "encerrada",
+  "arquivada",
 ]);
 
 export const equipe = pgTable("equipe", {
@@ -114,12 +121,6 @@ export const tramitacoes = pgTable("tramitacoes", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export type Equipe = typeof equipe.$inferSelect;
-export type InsertEquipe = typeof equipe.$inferInsert;
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-export type AuditLog = typeof auditLogs.$inferSelect;
-export type InsertAuditLog = typeof auditLogs.$inferInsert;
 export const enquetes = pgTable("enquetes", {
   id: uuid("id").primaryKey().defaultRandom(),
   ownerId: uuid("owner_id").notNull(),
@@ -158,6 +159,12 @@ export const enqueteRespostas = pgTable("enquete_respostas", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export type Equipe = typeof equipe.$inferSelect;
+export type InsertEquipe = typeof equipe.$inferInsert;
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = typeof auditLogs.$inferInsert;
 export type Proposicao = typeof proposicoes.$inferSelect;
 export type InsertProposicao = typeof proposicoes.$inferInsert;
 export type Tramitacao = typeof tramitacoes.$inferSelect;

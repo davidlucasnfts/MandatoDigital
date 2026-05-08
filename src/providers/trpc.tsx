@@ -15,9 +15,6 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       headers() {
-        const session = supabase.auth.getSession();
-        // getSession é async, mas o header precisa ser sync.
-        // Usamos o access_token do localStorage como fallback.
         const token = localStorage.getItem("sb-access-token");
         return token ? { Authorization: `Bearer ${token}` } : {};
       },

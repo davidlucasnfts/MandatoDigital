@@ -100,14 +100,19 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
       opcoes: validOpcoes.map((o, i) => ({ id: o.id, texto: o.texto, ordem: i })),
     };
 
-    if (isEdit) {
-      await updateMutation.mutateAsync({ id: enquete.id, data: payload });
-    } else {
-      await createMutation.mutateAsync(payload);
+    try {
+      if (isEdit) {
+        await updateMutation.mutateAsync({ id: enquete.id, data: payload });
+      } else {
+        await createMutation.mutateAsync(payload);
+      }
+      onSuccess?.();
+      onClose();
+    } catch (err: any) {
+      alert(err?.message || 'Erro ao salvar enquete');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-    onSuccess?.();
-    onClose();
   };
 
   return (

@@ -39,7 +39,7 @@ export default function EnquetesPage() {
 
   const utils = trpc.useUtils();
   const { data: enquetes, isLoading } = trpc.enquetes.list.useQuery(
-    { status: statusFilter as any },
+    statusFilter ? { status: statusFilter as any } : {},
     { enabled: true }
   );
   const removeMutation = trpc.enquetes.delete.useMutation({
