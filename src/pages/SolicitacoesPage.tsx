@@ -37,7 +37,7 @@ function SolicitacaoCard({ solicitacao, onEdit, onDelete }: { solicitacao: Solic
           <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${prioridadeColors[solicitacao.prioridade || 'media']}`}>
             {solicitacao.prioridade}
           </span>
-          <span className="text-[10px] text-slate-400">{solicitacao.data_prazo || '�'}</span>
+          <span className="text-[10px] text-slate-400">{solicitacao.data_prazo || '—'}</span>
         </div>
       </CardContent>
     </Card>
@@ -154,7 +154,7 @@ export default function SolicitacoesPage() {
                           </div>
                         </td>
                         <td className="py-3 px-4 text-xs text-slate-500">
-                          <div>{s.data_evento ? <span className="text-blue-600">?? {new Date(s.data_evento).toLocaleDateString('pt-BR')}</span> : (s.data_prazo || '�')}</div>
+                          <div>{s.data_evento ? <span className="text-blue-600">?? {new Date(s.data_evento).toLocaleDateString('pt-BR')}</span> : (s.data_prazo || '—')}</div>
                         </td>
                                                 <td className="py-3 px-4">
                           <div className="flex items-center gap-1">
