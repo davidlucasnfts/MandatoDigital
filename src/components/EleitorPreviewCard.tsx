@@ -1,4 +1,4 @@
-import { User, Mail, Phone, MapPin, Calendar, Tag, Shield, Users, Heart } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Tag, Shield, Users, Heart, Pencil, Trash2, Link2, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Eleitor } from '@/lib/supabase';
 
@@ -8,6 +8,9 @@ interface Props {
   indicadorNome?: string;
   afiliados?: Eleitor[];
   onClose?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onLink?: () => void;
 }
 
 const nivelColors: Record<string, string> = {
@@ -23,18 +26,19 @@ const statusColors: Record<string, string> = {
   pendente: 'bg-amber-50 text-amber-600',
 };
 
-export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorNome, afiliados }: Props) {
+export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorNome, afiliados, onClose, onEdit, onDelete, onLink }: Props) {
   return (
     <Card className="border-blue-100">
       <CardContent className="p-5">
-        <div className="flex items-start gap-4">
-          <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-blue-600 font-bold text-lg">
-              {eleitor.nome?.split(' ').map(n => n[0]).join('').slice(0, 2)}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-slate-800">{eleitor.nome}</h3>
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-4">
+            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-blue-600 font-bold text-lg">
+                {eleitor.nome?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-bold text-slate-800">{eleitor.nome}</h3>
             {eleitor.nome_mae && (
               <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                 <Heart className="w-3 h-3" /> Mãe: {eleitor.nome_mae}
@@ -47,7 +51,22 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[eleitor.status || 'ativo']}`}>
                 {eleitor.status}
               </span>
+              </div>
             </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            {onEdit && (
+              <button onClick={onEdit} className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
+            )}
+            {eleitor.nivel === 'lider' && onLink && (
+              <button onClick={onLink} className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded"><Link2 className="w-3 h-3"/>Link</button>
+            )}
+            {onDelete && (
+              <button onClick={onDelete} className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
+            )}
+            {onClose && (
+              <button onClick={onClose} className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-slate-50 text-slate-500 hover:bg-slate-100 rounded"><X className="w-3 h-3"/>Fechar</button>
+            )}
           </div>
         </div>
 

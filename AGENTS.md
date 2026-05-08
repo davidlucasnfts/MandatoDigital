@@ -106,10 +106,12 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Status com badges coloridos: `ativo`=verde, `pendente`=âmbar, `inativo`=cinza
 - **NUNCA** deixar coluna vazia no final da tabela
 
-### Cards (Kanban/Grid)
+### Cards/Preview/Detalhes
 - Botões no canto superior direito
 - Sempre visíveis (sem hover)
 - Mesmas cores da tabela
+- **Sempre com texto + ícone** (exceto kanban por limitação de espaço)
+- Ações principais: Editar, Excluir, Link (quando aplicável), Fechar
 
 ### Abas/Filtros
 - **"Todos"** → mostra todos os itens (incluindo pendentes)

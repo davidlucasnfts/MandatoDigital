@@ -107,12 +107,11 @@ export default function EleitoresPage() {
               comunidadeNome={getComunidadeNome(previewEleitor.comunidade_id)}
               indicadorNome={getIndicadorNome(previewEleitor.indicador_id)}
               afiliados={previewEleitor.nivel === 'lider' ? eleitores.filter(e => e.lider_id === previewEleitor.id) : undefined}
+              onClose={() => setPreviewEleitor(null)}
+              onEdit={() => setEditEleitor(previewEleitor)}
+              onDelete={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }}
+              onLink={previewEleitor.nivel === 'lider' ? () => setConviteLider(previewEleitor) : undefined}
             />
-            <div className="flex justify-end mt-2">
-              <Button variant="ghost" size="sm" onClick={() => setPreviewEleitor(null)} className="text-slate-400 hover:text-slate-600">
-                <ChevronDown className="w-4 h-4 mr-1" /> Fechar preview
-              </Button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
