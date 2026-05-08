@@ -1,15 +1,10 @@
 ﻿import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ClipboardList, Plus, Search, AlertCircle, Clock, CheckCircle, XCircle, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { ClipboardList, Plus, Search, AlertCircle, Clock, CheckCircle, XCircle, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import { useSolicitacoes } from '@/hooks/useSupabaseData';
 import KanbanBoard from '@/components/KanbanBoard';
 import NovaSolicitacaoDialog from '@/components/NovaSolicitacaoDialog';
@@ -32,15 +27,10 @@ function SolicitacaoCard({ solicitacao, onEdit, onDelete }: { solicitacao: Solic
       <CardContent className="p-3">
         <div className="flex items-start justify-between">
           <div className="font-medium text-sm text-slate-800 mb-1 flex-1">{solicitacao.titulo}</div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="p-1 hover:bg-slate-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"><MoreHorizontal className="w-3.5 h-3.5 text-slate-400"/></button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={onEdit} className="text-xs cursor-pointer"><Pencil className="w-3.5 h-3.5 mr-2" /> Editar</DropdownMenuItem>
-              <DropdownMenuItem onClick={onDelete} className="text-xs cursor-pointer text-red-600"><Trash2 className="w-3.5 h-3.5 mr-2" /> Excluir</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar"><Pencil className="w-3.5 h-3.5"/></button>
+            <button onClick={onDelete} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Excluir"><Trash2 className="w-3.5 h-3.5"/></button>
+          </div>
         </div>
         <div className="text-xs text-slate-500 mb-2">{solicitacao.eleitor_nome}</div>
         <div className="flex items-center justify-between">

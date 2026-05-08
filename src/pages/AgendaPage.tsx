@@ -1,14 +1,9 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, ChevronLeft, ChevronRight, Plus, Clock, MapPin, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Plus, Clock, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import { useEventos } from '@/hooks/useSupabaseData';
 import NovoEventoDialog from '@/components/NovoEventoDialog';
 import type { Evento } from '@/lib/supabase';
