@@ -79,7 +79,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | Editar | `bg-blue-50` | `text-blue-600` | `hover:bg-blue-100` |
 | Excluir/Recusar | `bg-red-50` | `text-red-600` | `hover:bg-red-100` |
 | Aprovar/Confirmar | `bg-green-50` | `text-green-600` | `hover:bg-green-100` |
-| Visualizar | `bg-slate-50` | `text-slate-600` | `hover:bg-slate-100` |
+| Ver/Preview | `bg-slate-50` | `text-slate-600` | `hover:bg-slate-100` | Ícone `Eye` |
 | Link/Afiliar | `bg-purple-50` | `text-purple-600` | `hover:bg-purple-100` |
 
 #### Layout — Botões com Texto (padrão preferido)

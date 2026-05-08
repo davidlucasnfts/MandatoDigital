@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Search, Plus, Download, Upload, Pencil, Trash2, MessageSquare, Link2, Eye, ChevronDown, CheckCircle, XCircle } from 'lucide-react';
+// Eye = ícone de visualizar/preview — sempre usar com texto "Ver" ou "Preview", nunca sozinho
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -134,6 +135,7 @@ export default function EleitoresPage() {
                           </>
                         ) : (
                           <>
+                            <button onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-slate-50 text-slate-600 hover:bg-slate-100 rounded"><Eye className="w-3 h-3"/>Ver</button>
                             <button onClick={() => setEditEleitor(e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
                             {e.nivel === 'lider' && (
                               <button onClick={() => setConviteLider(e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded"><Link2 className="w-3 h-3"/>Link</button>
@@ -144,21 +146,14 @@ export default function EleitoresPage() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <div 
-                        onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)} 
-                        className="flex items-center gap-3 cursor-pointer group"
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') setPreviewEleitor(previewEleitor?.id === e.id ? null : e); }}
-                      >
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-blue-600 font-semibold text-xs">{e.nome?.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
                         </div>
                         <div>
-                          <div className="font-medium text-slate-800 group-hover:text-blue-600 transition-colors">{e.nome}</div>
+                          <div className="font-medium text-slate-800">{e.nome}</div>
                           <div className="text-xs text-slate-400">{e.cidade}/{e.estado}</div>
                         </div>
-                        <Eye className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-400 transition-colors ml-1" />
                       </div>
                     </td>
                     <td className="py-3 px-4 text-slate-500"><div>{e.email}</div><div className="text-xs">{e.telefone}</div></td>
