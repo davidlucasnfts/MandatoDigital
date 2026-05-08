@@ -125,22 +125,21 @@ export default function EleitoresPage() {
               <tbody>
                 {loading ? Array.from({length:5}).map((_,i) => <tr key={i} className="border-b border-slate-50"><td colSpan={10} className="py-4 px-4"><div className="h-4 bg-slate-100 rounded animate-pulse"/></td></tr>) :
                 filtered.map(e => (
-                  <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                  <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)}>
                     <td className="py-3 px-2">
                       <div className="flex flex-col gap-1">
                         {e.status === 'pendente' ? (
                           <>
-                            <button onClick={async () => { await update(e.id, { status: 'ativo' }); fetch(); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100 rounded"><CheckCircle className="w-3 h-3"/>Aprovar</button>
-                            <button onClick={async () => { if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><XCircle className="w-3 h-3"/>Recusar</button>
+                            <button onClick={async (ev) => { ev.stopPropagation(); await update(e.id, { status: 'ativo' }); fetch(); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100 rounded"><CheckCircle className="w-3 h-3"/>Aprovar</button>
+                            <button onClick={async (ev) => { ev.stopPropagation(); if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><XCircle className="w-3 h-3"/>Recusar</button>
                           </>
                         ) : (
                           <>
-                            <button onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-slate-50 text-slate-600 hover:bg-slate-100 rounded"><Eye className="w-3 h-3"/>Ver</button>
-                            <button onClick={() => setEditEleitor(e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
+                            <button onClick={(ev) => { ev.stopPropagation(); setEditEleitor(e); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
                             {e.nivel === 'lider' && (
-                              <button onClick={() => setConviteLider(e)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded"><Link2 className="w-3 h-3"/>Link</button>
+                              <button onClick={(ev) => { ev.stopPropagation(); setConviteLider(e); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded"><Link2 className="w-3 h-3"/>Link</button>
                             )}
-                            <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
+                            <button onClick={async (ev) => { ev.stopPropagation(); if (confirm('Excluir este eleitor?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
                           </>
                         )}
                       </div>
