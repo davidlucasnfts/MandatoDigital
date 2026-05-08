@@ -40,6 +40,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | Aniversariantes: filtros dia/semana/mês + data visível | 07/05 |
 | Solicitações: data_solicitacao/data_evento, toggle rápido status na tabela | 07/05 |
 | Pesquisa de Opinião / Enquetes (CRUD, opções, respostas, estatísticas) | 07/05 |
+| Hierarquia de Líderes: campo lider_id, modal simplificado (Eleitor/Líder), link de afiliação, página pública de cadastro | 07/05 |
 
 ---
 

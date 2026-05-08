@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 07/05/2026
-> **Sessão atual:** Pesquisa de Opinião / Enquetes
+> **Sessão atual:** Hierarquia de Líderes + Link de Afiliação — CONCLUÍDO
 
 ---
 
@@ -11,35 +11,32 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Pesquisa de Opinião / Enquetes** — concluído em 07/05
+**Hierarquia de Líderes** — concluído em 07/05
 
 ### O que foi entregue:
-- **Migration 010**: tabelas `enquetes`, `enquete_opcoes`, `enquete_respostas` com enum `status_enquete`
-- **Router tRPC `enquetes`**: list, byId, create, update, delete, estatísticas, responder
-- **EnquetesPage**: lista com filtros por status, busca, badges coloridos
-- **NovaEnqueteDialog**: criação e edição com título, descrição, status, datas, tipo (única/múltipla), opções dinâmicas (2-10)
-- **ResponderEnqueteDialog**: interface para registrar votos, suporta múltipla escolha
-- **Estatísticas inline**: gráfico de barras com % por opção, total de respostas
-- **Menu lateral**: novo item "Enquetes" com ícone Vote
+- **Migration 011**: `ALTER TABLE eleitores ADD COLUMN lider_id UUID REFERENCES eleitores(id)`
+- **Tipos atualizados**: `nivel` agora só `'lider' | 'eleitor'`, campo `lider_id` adicionado
+- **NovoEleitorDialog refatorado**: só 2 abas (Eleitor/Líder), código unificado sem duplicação, campo "Líder Responsável" no cadastro de eleitor, try/catch no submit
+- **EleitoresPage atualizada**: filtro de nível só mostra Líder/Eleitor, coluna "Líder" na tabela
+- **Hook useConvitesEleitores**: `aprovarConvite` agora usa `lider_id` em vez de `indicador_id`
+- **Página pública ConvitePage**: `/convite/:token` — formulário de cadastro que vincula automaticamente o eleitor ao líder via `lider_id`
+- **Rota adicionada** em App.tsx
 
 ### Arquivos criados/modificados:
-- `supabase/migrations/010-enquetes.sql`
-- `db/schema.ts` — tabelas enquetes, enqueteOpcoes, enqueteRespostas + tipos + enum
-- `api/enquetes-router.ts` — CRUD completo + estatísticas + responder
-- `api/router.ts` — registrado enquetesRouter
-- `src/App.tsx` — rota /dashboard/enquetes
-- `src/pages/EnquetesPage.tsx` — página de listagem
-- `src/components/NovaEnqueteDialog.tsx` — form create/edit
-- `src/components/ResponderEnqueteDialog.tsx` — form de voto
-- `src/components/DashboardLayout.tsx` — item no menu
-- `supabase/schema_safe.sql` — atualizado
+- `supabase/migrations/011-lider-eleitor.sql`
+- `src/lib/supabase.ts` — tipos atualizados
+- `src/components/NovoEleitorDialog.tsx` — refatorado (2 abas, campo lider_id)
+- `src/pages/EleitoresPage.tsx` — coluna líder, filtro simplificado
+- `src/hooks/useSupabaseData.ts` — aprovarConvite usa lider_id
+- `src/pages/ConvitePage.tsx` — página pública de cadastro via link
+- `src/App.tsx` — rota /convite/:token
 
 Type check passando.
 
 ---
 
 ## Próximo passo definido
-**Prestação de Contas Pública** — MÉDIA prioridade
+**Melhorias no projeto atual** — aguardando definição do David
 
 ---
 
@@ -55,7 +52,7 @@ api/           → Backend tRPC/Hono (routers, middleware, context, lib/audit.ts
 db/            → Schema Drizzle + migrations
 contracts/     → Tipos e constantes compartilhados
 docs/          → ADRs + guia do projeto
-supabase/      → schema_safe.sql + migrations/ (001-009)
+supabase/      → schema_safe.sql + migrations/ (001-011)
 .github/       → Workflows CI/CD
 ```
 
@@ -64,9 +61,11 @@ supabase/      → schema_safe.sql + migrations/ (001-009)
 ## Decisões pendentes
 - [x] Aplicar `schema_safe.sql` no Supabase
 - [x] Configurar secrets no GitHub (VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID)
-- [x] Rodar migrations 006-008 no Supabase
-- [ ] **Rodar migration 010 no Supabase** (tabelas enquetes, enquete_opcoes, enquete_respostas)
+- [x] Rodar migrations 006-011 no Supabase
+- [x] Rodar migration 010 no Supabase (enquetes)
+- [x] Rodar migration 011 no Supabase (lider_id)
 - [ ] Criar mais testes para atingir cobertura 80% (backlog técnico, não bloqueante)
+- [ ] Revisar `DATABASE_URL` hardcoded em `api/lib/env.ts` — remover antes de deploy em produção (segurança)
 
 ---
 

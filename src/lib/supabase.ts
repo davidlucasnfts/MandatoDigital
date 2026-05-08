@@ -20,7 +20,8 @@ export type Eleitor = {
   cep: string;
   comunidade_id: string | null;
   indicador_id: string | null;
-  nivel: 'lider' | 'influenciador' | 'apoiador' | 'eleitor';
+  nivel: 'lider' | 'eleitor';
+  lider_id: string | null;
   tags: string[];
   status: 'ativo' | 'inativo' | 'pendente';
   observacoes: string;
