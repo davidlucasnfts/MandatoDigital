@@ -18,6 +18,7 @@ import ProposicoesPage from '@/pages/ProposicoesPage';
 import ProposicaoFormPage from '@/pages/ProposicaoFormPage';
 import ProposicaoDetailPage from '@/pages/ProposicaoDetailPage';
 import ProdutividadePage from '@/pages/ProdutividadePage';
+import EnquetesPage from '@/pages/EnquetesPage';
 import { RoleGuard } from '@/components/RoleGuard';
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
         <Route path="proposicoes/:id" element={<ProposicaoDetailPage />} />
         <Route path="proposicoes/:id/editar" element={<ProposicaoFormPage />} />
         <Route path="produtividade" element={<ProdutividadePage />} />
+        <Route path="enquetes" element={<EnquetesPage />} />
         <Route path="equipe" element={<RoleGuard require="admin"><EquipePage /></RoleGuard>} />
         <Route path="configuracoes" element={<RoleGuard require="admin"><ConfiguracoesPage /></RoleGuard>} />
       </Route>

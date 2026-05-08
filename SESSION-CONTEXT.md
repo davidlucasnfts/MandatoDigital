@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 07/05/2026
-> **Sessão atual:** Melhorias em Solicitações, Comunidades, Mapa e Aniversariantes
+> **Sessão atual:** Pesquisa de Opinião / Enquetes
 
 ---
 
@@ -11,35 +11,35 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Melhorias Solicitações + Comunidades + Mapa + Aniversariantes** — concluído em 07/05
+**Pesquisa de Opinião / Enquetes** — concluído em 07/05
 
 ### O que foi entregue:
-- **Migration 009**: `icone TEXT DEFAULT 'Users'` em `comunidades`
-- **ComunidadesPage + NovaComunidadeDialog**: ícone dinâmico do lucide-react (select com 60 ícones)
-- **MapaPage**: `maxBounds` limitando ao Brasil, tiles CARTO light (mais limpos que OSM)
-- **AniversariantesPanel**: filtros dia/semana/mês com toggle visual, data de nascimento (DD/MM) visível
-- **Tipos atualizados**: `owner_id` adicionado em `Comunidade`, `Solicitacao`, `Evento`, `Tarefa`
-- **Solicitações**: `data_solicitacao`/`data_evento` (migration 008), toggle rápido de status na tabela, status não editável no form de criação
-- **Modal de eleitor**: abas Eleitor/Apoiador/Influenciador/Líder com títulos e cores diferentes
+- **Migration 010**: tabelas `enquetes`, `enquete_opcoes`, `enquete_respostas` com enum `status_enquete`
+- **Router tRPC `enquetes`**: list, byId, create, update, delete, estatísticas, responder
+- **EnquetesPage**: lista com filtros por status, busca, badges coloridos
+- **NovaEnqueteDialog**: criação e edição com título, descrição, status, datas, tipo (única/múltipla), opções dinâmicas (2-10)
+- **ResponderEnqueteDialog**: interface para registrar votos, suporta múltipla escolha
+- **Estatísticas inline**: gráfico de barras com % por opção, total de respostas
+- **Menu lateral**: novo item "Enquetes" com ícone Vote
 
 ### Arquivos criados/modificados:
-- `supabase/migrations/009-comunidade-icone-mapa-aniversariantes.sql`
-- `src/lib/supabase.ts` — tipos atualizados
-- `src/components/NovaComunidadeDialog.tsx` — select de ícone
-- `src/pages/ComunidadesPage.tsx` — ícone dinâmico
-- `src/pages/MapaPage.tsx` — bounds + tiles CARTO
-- `src/components/AniversariantesPanel.tsx` — filtros dia/semana/mês
-- `src/components/NovoEleitorDialog.tsx` — abas por nível
-- `src/components/NovaSolicitacaoDialog.tsx` — data_solicitacao/data_evento
-- `src/pages/SolicitacoesPage.tsx` — toggle rápido status
+- `supabase/migrations/010-enquetes.sql`
+- `db/schema.ts` — tabelas enquetes, enqueteOpcoes, enqueteRespostas + tipos + enum
+- `api/enquetes-router.ts` — CRUD completo + estatísticas + responder
+- `api/router.ts` — registrado enquetesRouter
+- `src/App.tsx` — rota /dashboard/enquetes
+- `src/pages/EnquetesPage.tsx` — página de listagem
+- `src/components/NovaEnqueteDialog.tsx` — form create/edit
+- `src/components/ResponderEnqueteDialog.tsx` — form de voto
+- `src/components/DashboardLayout.tsx` — item no menu
 - `supabase/schema_safe.sql` — atualizado
 
-Type check passando. Commit `48f8c86` realizado.
+Type check passando.
 
 ---
 
 ## Próximo passo definido
-**Pesquisa de Opinião / Enquetes para base eleitoral** — ALTA prioridade
+**Prestação de Contas Pública** — MÉDIA prioridade
 
 ---
 
@@ -65,7 +65,7 @@ supabase/      → schema_safe.sql + migrations/ (001-009)
 - [x] Aplicar `schema_safe.sql` no Supabase
 - [x] Configurar secrets no GitHub (VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID)
 - [x] Rodar migrations 006-008 no Supabase
-- [ ] **Rodar migration 009 no Supabase** (`ALTER TABLE comunidades ADD COLUMN icone`)
+- [ ] **Rodar migration 010 no Supabase** (tabelas enquetes, enquete_opcoes, enquete_respostas)
 - [ ] Criar mais testes para atingir cobertura 80% (backlog técnico, não bloqueante)
 
 ---

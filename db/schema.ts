@@ -120,7 +120,51 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = typeof auditLogs.$inferInsert;
+export const enquetes = pgTable("enquetes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ownerId: uuid("owner_id").notNull(),
+  userId: uuid("user_id").notNull(),
+  titulo: varchar("titulo", { length: 500 }).notNull(),
+  descricao: text("descricao"),
+  status: statusEnqueteEnum("status").default("rascunho").notNull(),
+  dataPublicacao: date("data_publicacao", { mode: "date" }),
+  dataEncerramento: date("data_encerramento", { mode: "date" }),
+  permiteMultiplaEscolha: integer("permite_multipla_escolha").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const enqueteOpcoes = pgTable("enquete_opcoes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  enqueteId: uuid("enquete_id").notNull(),
+  ownerId: uuid("owner_id").notNull(),
+  texto: varchar("texto", { length: 500 }).notNull(),
+  ordem: integer("ordem").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const enqueteRespostas = pgTable("enquete_respostas", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  enqueteId: uuid("enquete_id").notNull(),
+  opcaoId: uuid("opcao_id").notNull(),
+  ownerId: uuid("owner_id").notNull(),
+  eleitorId: uuid("eleitor_id"),
+  nomeRespondente: varchar("nome_respondente", { length: 255 }),
+  telefoneRespondente: varchar("telefone_respondente", { length: 20 }),
+  observacao: text("observacao"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export type Proposicao = typeof proposicoes.$inferSelect;
 export type InsertProposicao = typeof proposicoes.$inferInsert;
 export type Tramitacao = typeof tramitacoes.$inferSelect;
 export type InsertTramitacao = typeof tramitacoes.$inferInsert;
+export type Enquete = typeof enquetes.$inferSelect;
+export type InsertEnquete = typeof enquetes.$inferInsert;
+export type EnqueteOpcao = typeof enqueteOpcoes.$inferSelect;
+export type InsertEnqueteOpcao = typeof enqueteOpcoes.$inferInsert;
+export type EnqueteResposta = typeof enqueteRespostas.$inferSelect;
+export type InsertEnqueteResposta = typeof enqueteRespostas.$inferInsert;

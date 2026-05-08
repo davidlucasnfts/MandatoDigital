@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, MapPin, Calendar, FolderOpen,
-  BarChart3, Settings, ChevronLeft, ChevronRight, LogOut, Bell,
+  BarChart3, Settings, ChevronLeft, ChevronRight, LogOut, Bell, Vote,
   Search, Shield, ClipboardList, FileText, MessageSquare, Tag, Menu, X,
   Gavel, TrendingUp
 } from 'lucide-react';
@@ -40,6 +40,7 @@ function useNavGroups() {
         { to: '/dashboard/documentos', icon: FolderOpen, label: 'Documentos' },
         { to: '/dashboard/proposicoes', icon: Gavel, label: 'Proposições' },
         { to: '/dashboard/produtividade', icon: TrendingUp, label: 'Produtividade' },
+        { to: '/dashboard/enquetes', icon: Vote, label: 'Enquetes' },
         { to: '/dashboard/relatorios', icon: BarChart3, label: 'Relatórios' },
       ],
     },
