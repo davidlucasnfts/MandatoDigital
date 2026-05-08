@@ -41,11 +41,36 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | Solicitações: data_solicitacao/data_evento, toggle rápido status na tabela | 07/05 |
 | Pesquisa de Opinião / Enquetes (CRUD, opções, respostas, estatísticas) | 07/05 |
 | Hierarquia de Líderes: campo lider_id, modal simplificado (Eleitor/Líder), link de afiliação, página pública de cadastro | 07/05 |
+| **Padronização UI/UX completa — botões de ação** | **07/05** |
 
 ---
 
-## 📋 Backlog Histórico
-- Pesquisa de Opinião / Enquetes para base eleitoral (ALTA)
+## 📝 Resumo da Sessão 07/05
+
+### Padronização de Botões de Ação (aplicado em TODO o projeto)
+- ❌ **Removido:** Dropdowns de 3 pontinhos (MoreHorizontal) em todas as páginas
+- ✅ **Novo padrão:** Botões com **texto + ícone** empilhados verticalmente
+- ✅ **Cores fixas por ação:** Editar(azul), Excluir(vermelho), Aprovar(verde), Link(roxo), Ver(cinza)
+- ✅ **Coluna Ações na primeira posição** da tabela (antes do nome)
+- ✅ **Hover azul** (`hover:bg-blue-50/50`) em todas as linhas de tabela
+- ✅ **Clique na linha** abre preview/detalhes
+- ✅ **`stopPropagation`** nos botões para não disparar clique da linha
+- ✅ **Botão Fechar** do preview centralizado abaixo do card
+
+### Hierarquia de Líderes (melhorias)
+- Preview do líder mostra **eleitores vinculados** com contador
+- **Filtro por líder** na tabela de eleitores
+- Coluna Líder com avatar + nome
+
+### Páginas padronizadas
+Eleitores, Solicitações, Proposições, Equipe, Enquetes, Comunidades, Agenda, Tarefas
+
+### AGENTS.md atualizado
+Regras de design de botões salvas para não repetir erros
+
+---
+
+## 📋 Backlog
 - Prestação de Contas Pública (MÉDIA)
 - App mobile / PWA para campo (MÉDIA)
 - Integração WhatsApp API oficial (MÉDIA)
