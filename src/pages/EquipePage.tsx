@@ -89,11 +89,11 @@ export default function EquipePage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
+                    {can.manageTeam && <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Ações</th>}
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Membro</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Cargo</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Permissão</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Status</th>
-                    {can.manageTeam && <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Ações</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -103,7 +103,17 @@ export default function EquipePage() {
                     <tr><td colSpan={can.manageTeam ? 5 : 4} className="py-8 text-center text-slate-400">Nenhum membro encontrado</td></tr>
                   ) : (
                     filtered.map((m) => (
-                      <tr key={m.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <tr key={m.id} className="border-b border-slate-50 hover:bg-blue-50/50 transition-colors">
+                        {can.manageTeam && (
+                          <td className="py-3 px-2">
+                            <button
+                              onClick={(ev) => { ev.stopPropagation(); setShowDelete(m.id); }}
+                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"
+                            >
+                              <Trash2 className="w-3 h-3" />Excluir
+                            </button>
+                          </td>
+                        )}
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center">
@@ -152,16 +162,6 @@ export default function EquipePage() {
                             </span>
                           )}
                         </td>
-                        {can.manageTeam && (
-                          <td className="py-3 px-4">
-                            <button
-                              onClick={() => setShowDelete(m.id)}
-                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </td>
-                        )}
                       </tr>
                     ))
                   )}

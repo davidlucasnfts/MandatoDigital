@@ -102,9 +102,12 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Coluna de Ações na primeira posição** (antes do nome)
 - **TODAS as ações na mesma coluna** — não separar em colunas diferentes
 - Pendentes: botões empilhados verticalmente (Aprovar em cima, Recusar embaixo)
-- Normais: botões lado a lado (Editar, Link, Excluir)
+- Normais: botões empilhados verticalmente (Ver, Editar, Link, Excluir)
 - Status com badges coloridos: `ativo`=verde, `pendente`=âmbar, `inativo`=cinza
 - **NUNCA** deixar coluna vazia no final da tabela
+- **Hover azul**: `hover:bg-blue-50/50` em todas as linhas de tabela
+- **Clique na linha** → abre preview/detalhes (quando aplicável)
+- Botões de ação usam `stopPropagation` para não disparar o clique da linha
 
 ### Cards/Preview/Detalhes
 - Botões no canto superior direito

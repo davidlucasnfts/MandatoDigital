@@ -110,7 +110,7 @@ export default function SolicitacoesPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50">
-                      {['Título','Eleitor','Categoria','Prioridade','Status','Prazo',''].map(h => (
+                      {['Ações','Título','Eleitor','Categoria','Prioridade','Status','Prazo'].map(h => (
                         <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">{h}</th>
                       ))}
                     </tr>
@@ -118,10 +118,16 @@ export default function SolicitacoesPage() {
                   <tbody>
                     {loading ? Array.from({length:4}).map((_,i) => (
                       <tr key={i} className="border-b">
-                        <td colSpan={6} className="py-3 px-4"><div className="h-4 bg-slate-100 rounded animate-pulse"/></td>
+                        <td colSpan={7} className="py-3 px-4"><div className="h-4 bg-slate-100 rounded animate-pulse"/></td>
                       </tr>
                     )) : filtered.map(s => (
-                      <tr key={s.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <tr key={s.id} className="border-b border-slate-50 hover:bg-blue-50/50 transition-colors">
+                        <td className="py-3 px-2">
+                          <div className="flex flex-col gap-1">
+                            <button onClick={(ev) => { ev.stopPropagation(); setEditSolicitacao(s); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
+                            <button onClick={(ev) => { ev.stopPropagation(); if (confirm('Excluir esta solicitacao?')) remove(s.id); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
+                          </div>
+                        </td>
                         <td className="py-3 px-4">
                           <div className="font-medium text-slate-800">{s.titulo}</div>
                           <div className="text-xs text-slate-400 line-clamp-1">{s.descricao}</div>
@@ -136,31 +142,24 @@ export default function SolicitacoesPage() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${statusColors[s.status || 'pendente']}`}>{s.status}</span>
-                            {/* Toggle rápido de status */}
                             <div className="flex gap-0.5">
                               {s.status !== 'pendente' && (
-                                <button onClick={() => update(s.id, { status: 'pendente' })} className="w-5 h-5 rounded bg-amber-100 text-amber-600 text-[10px] hover:bg-amber-200 transition-colors" title="Pendente">P</button>
+                                <button onClick={(ev) => { ev.stopPropagation(); update(s.id, { status: 'pendente' }); }} className="w-5 h-5 rounded bg-amber-100 text-amber-600 text-[10px] hover:bg-amber-200 transition-colors" title="Pendente">P</button>
                               )}
                               {s.status !== 'andamento' && (
-                                <button onClick={() => update(s.id, { status: 'andamento' })} className="w-5 h-5 rounded bg-blue-100 text-blue-600 text-[10px] hover:bg-blue-200 transition-colors" title="Em Andamento">A</button>
+                                <button onClick={(ev) => { ev.stopPropagation(); update(s.id, { status: 'andamento' }); }} className="w-5 h-5 rounded bg-blue-100 text-blue-600 text-[10px] hover:bg-blue-200 transition-colors" title="Em Andamento">A</button>
                               )}
                               {s.status !== 'concluido' && (
-                                <button onClick={() => update(s.id, { status: 'concluido' })} className="w-5 h-5 rounded bg-green-100 text-green-600 text-[10px] hover:bg-green-200 transition-colors" title="Concluído">C</button>
+                                <button onClick={(ev) => { ev.stopPropagation(); update(s.id, { status: 'concluido' }); }} className="w-5 h-5 rounded bg-green-100 text-green-600 text-[10px] hover:bg-green-200 transition-colors" title="Concluído">C</button>
                               )}
                               {s.status !== 'cancelado' && (
-                                <button onClick={() => update(s.id, { status: 'cancelado' })} className="w-5 h-5 rounded bg-red-100 text-red-600 text-[10px] hover:bg-red-200 transition-colors" title="Cancelado">X</button>
+                                <button onClick={(ev) => { ev.stopPropagation(); update(s.id, { status: 'cancelado' }); }} className="w-5 h-5 rounded bg-red-100 text-red-600 text-[10px] hover:bg-red-200 transition-colors" title="Cancelado">X</button>
                               )}
                             </div>
                           </div>
                         </td>
                         <td className="py-3 px-4 text-xs text-slate-500">
                           <div>{s.data_evento ? <span className="text-blue-600">?? {new Date(s.data_evento).toLocaleDateString('pt-BR')}</span> : (s.data_prazo || '—')}</div>
-                        </td>
-                        <td className="py-3 px-2">
-                          <div className="flex flex-col gap-1">
-                            <button onClick={() => setEditSolicitacao(s)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Pencil className="w-3 h-3"/>Editar</button>
-                            <button onClick={() => { if (confirm('Excluir esta solicitacao?')) remove(s.id); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
-                          </div>
                         </td>
                       </tr>
                     ))}

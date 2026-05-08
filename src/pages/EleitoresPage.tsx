@@ -108,11 +108,15 @@ export default function EleitoresPage() {
               comunidadeNome={getComunidadeNome(previewEleitor.comunidade_id)}
               indicadorNome={getIndicadorNome(previewEleitor.indicador_id)}
               afiliados={previewEleitor.nivel === 'lider' ? eleitores.filter(e => e.lider_id === previewEleitor.id) : undefined}
-              onClose={() => setPreviewEleitor(null)}
               onEdit={() => setEditEleitor(previewEleitor)}
               onDelete={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }}
               onLink={previewEleitor.nivel === 'lider' ? () => setConviteLider(previewEleitor) : undefined}
             />
+            <div className="flex justify-center mt-3">
+              <button onClick={() => setPreviewEleitor(null)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-md transition-colors">
+                <ChevronDown className="w-4 h-4"/>Fechar
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -125,7 +129,7 @@ export default function EleitoresPage() {
               <tbody>
                 {loading ? Array.from({length:5}).map((_,i) => <tr key={i} className="border-b border-slate-50"><td colSpan={abaAtiva === 'pendentes' ? 10 : 9} className="py-4 px-4"><div className="h-4 bg-slate-100 rounded animate-pulse"/></td></tr>) :
                 filtered.map(e => (
-                  <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)}>
+                  <tr key={e.id} className="border-b border-slate-50 hover:bg-blue-50/50 transition-colors cursor-pointer" onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)}>
                     {abaAtiva === 'pendentes' && (
                       <td className="py-3 px-2">
                         <div className="flex flex-col gap-1">

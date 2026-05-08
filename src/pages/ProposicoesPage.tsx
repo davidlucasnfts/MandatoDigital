@@ -139,12 +139,12 @@ export default function ProposicoesPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
+                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Ações</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Proposição</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Tipo</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Status</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Órgão</th>
                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Data</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -154,7 +154,13 @@ export default function ProposicoesPage() {
                     <tr><td colSpan={6} className="py-8 text-center text-slate-400">Nenhuma proposição encontrada</td></tr>
                   ) : (
                     filtered.map((p) => (
-                      <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <tr key={p.id} className="border-b border-slate-50 hover:bg-blue-50/50 transition-colors">
+                        <td className="py-3 px-2">
+                          <div className="flex flex-col gap-1">
+                            <button onClick={(ev) => { ev.stopPropagation(); navigate(`/dashboard/proposicoes/${p.id}`); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Eye className="w-3 h-3"/>Ver</button>
+                            <button onClick={(ev) => { ev.stopPropagation(); setShowDelete(p.id); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
+                          </div>
+                        </td>
                         <td className="py-3 px-4">
                           <div>
                             <div className="font-medium text-slate-800 line-clamp-1">{p.titulo}</div>
@@ -174,12 +180,6 @@ export default function ProposicoesPage() {
                         <td className="py-3 px-4 text-slate-600 text-xs">{p.orgaoAtual || '-'}</td>
                         <td className="py-3 px-4 text-slate-500 text-xs">
                           {p.dataApresentacao ? new Date(p.dataApresentacao).toLocaleDateString('pt-BR') : '-'}
-                        </td>
-                        <td className="py-3 px-2">
-                          <div className="flex flex-col gap-1">
-                            <button onClick={() => navigate(`/dashboard/proposicoes/${p.id}`)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"><Eye className="w-3 h-3"/>Ver</button>
-                            <button onClick={() => setShowDelete(p.id)} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"><Trash2 className="w-3 h-3"/>Excluir</button>
-                          </div>
                         </td>
                       </tr>
                     ))
