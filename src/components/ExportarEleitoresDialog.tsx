@@ -71,7 +71,7 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-blue-600" />
-            Exportar Eleitores
+            Exportar eleitores
           </DialogTitle>
           <DialogDescription>
             Selecione quais colunas deseja exportar para CSV.

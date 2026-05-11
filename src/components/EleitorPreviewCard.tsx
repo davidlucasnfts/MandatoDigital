@@ -92,7 +92,7 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
           {eleitor.data_nascimento && (
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-600">{new Date(eleitor.data_nascimento).toLocaleDateString('pt-BR')}</span>
+              <span className="text-slate-600">{new Date(eleitor.data_nascimento + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
             </div>
           )}
           {(eleitor.endereco || eleitor.bairro || eleitor.cidade) && (

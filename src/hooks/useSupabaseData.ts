@@ -49,7 +49,7 @@ export function useComunidades() {
     setLoading(false);
   }, []);
 
-  const insert = async (row: Omit<Comunidade, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
+  const insert = async (row: Omit<Comunidade, 'id' | 'created_at' | 'user_id' | 'owner_id' | 'total_eleitores'>) => {
     const { data: userData } = await supabase.auth.getUser();
     const ownerId = userData.user?.id;
     const { data: inserted } = await supabase.from('comunidades').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
@@ -262,7 +262,7 @@ export function useConvitesEleitores() {
     setLoading(false);
   }, []);
 
-  const criarConvite = async (indicadorId: string, dados?: { nome?: string; email?: string; telefone?: string }) => {
+  const criarConvite = async (indicadorId: string, dados?: { nome?: string; email?: string; telefone?: string; camposObrigatorios?: string[] }) => {
     const { data: userData } = await supabase.auth.getUser();
     const ownerId = userData.user?.id;
     const token = crypto.randomUUID();
@@ -273,6 +273,7 @@ export function useConvitesEleitores() {
       nome: dados?.nome || null,
       email: dados?.email || null,
       telefone: dados?.telefone || null,
+      campos_obrigatorios: dados?.camposObrigatorios || null,
       data_expiracao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     }).select().single();
     if (inserted) setData(prev => [inserted, ...prev]);

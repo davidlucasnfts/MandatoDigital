@@ -31,7 +31,7 @@ const statusOptions = [
   { value: 'rejeitado', label: 'Rejeitado' },
   { value: 'sancionado', label: 'Sancionado' },
   { value: 'arquivado', label: 'Arquivado' },
-  { value: 'vetoado', label: 'Vetado' },
+  { value: 'veteado', label: 'Vetado' },
   { value: 'retirado', label: 'Retirado' },
 ];
 
@@ -53,7 +53,7 @@ export default function ProposicaoFormPage() {
     titulo: string;
     ementa: string;
     tema: string;
-    status: 'em_elaboracao' | 'protocolado' | 'em_tramitacao' | 'em_comissao' | 'aprovado' | 'rejeitado' | 'sancionado' | 'arquivado' | 'vetoado' | 'retirado';
+    status: 'em_elaboracao' | 'protocolado' | 'em_tramitacao' | 'em_comissao' | 'aprovado' | 'rejeitado' | 'sancionado' | 'arquivado' | 'veteado' | 'retirado';
     dataApresentacao: string;
     dataAprovacao: string;
     orgaoAtual: string;
@@ -184,21 +184,21 @@ export default function ProposicaoFormPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs font-medium text-slate-500 mb-1 block">Número</label>
-                  <Input value={form.numero} onChange={e => setForm({ ...form, numero: e.target.value })} placeholder="Ex: 123" />
+                  <Input value={form.numero} onChange={e => setForm({ ...form, numero: e.target.value.replace(/\D/g, '') })} placeholder="Ex: 123" />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-slate-500 mb-1 block">Ano</label>
                   <Input type="number" value={form.ano} onChange={e => setForm({ ...form, ano: parseInt(e.target.value) || new Date().getFullYear() })} />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Data de Apresentação</label>
+                  <label className="text-xs font-medium text-slate-500 mb-1 block">Data de apresentação</label>
                   <Input type="date" value={form.dataApresentacao} onChange={e => setForm({ ...form, dataApresentacao: e.target.value })} />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Órgão Atual</label>
+                  <label className="text-xs font-medium text-slate-500 mb-1 block">Órgão atual</label>
                   <Input value={form.orgaoAtual} onChange={e => setForm({ ...form, orgaoAtual: e.target.value })} placeholder="Ex: CCJ, Plenário" />
                 </div>
                 <div>
@@ -208,7 +208,7 @@ export default function ProposicaoFormPage() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">Link Oficial</label>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Link oficial</label>
                 <Input type="url" value={form.linkOficial} onChange={e => setForm({ ...form, linkOficial: e.target.value })} placeholder="https://..." />
               </div>
 
@@ -221,7 +221,7 @@ export default function ProposicaoFormPage() {
                 <Button type="button" variant="outline" className="flex-1" onClick={() => navigate('/dashboard/proposicoes')}>Cancelar</Button>
                 <Button type="submit" className="flex-1 bg-blue-600" disabled={isPending}>
                   <Save className="w-4 h-4 mr-1.5" />
-                  {isPending ? 'Salvando...' : isEdit ? 'Salvar Alterações' : 'Criar Proposição'}
+                  {isPending ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar proposição'}
                 </Button>
               </div>
             </form>

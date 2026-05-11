@@ -1,9 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fawzdzfazmudolggtfno.supabase.co';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_hGC7Bc6lyxxdlhBfESH9Dg_0yqbHHor';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-console.log('[supabase] url present:', !!supabaseUrl, 'key present:', !!supabaseKey);
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error(
+    'Variáveis de ambiente VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY são obrigatórias. ' +
+    'Verifique se o arquivo .env está configurado corretamente.'
+  );
+}
+
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Types for tables
@@ -27,6 +33,8 @@ export type Eleitor = {
   status: 'ativo' | 'inativo' | 'pendente';
   observacoes: string;
   data_nascimento: string | null;
+  latitude: number | null;
+  longitude: number | null;
   user_id: string;
   owner_id: string | null;
   created_at: string;
@@ -42,6 +50,7 @@ export type ConviteEleitor = {
   telefone: string | null;
   status: 'pendente' | 'aprovado' | 'rejeitado' | 'expirado';
   data_expiracao: string | null;
+  campos_obrigatorios: string[] | null;
   created_at: string;
 };
 
@@ -52,6 +61,7 @@ export type Comunidade = {
   lider: string;
   cor: string;
   icone: string;
+  cidade: string | null;
   bairros: string[];
   user_id: string;
   owner_id: string | null;

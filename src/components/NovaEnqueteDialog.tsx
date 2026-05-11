@@ -11,7 +11,16 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  enquete?: any;
+  enquete?: {
+    id: string;
+    titulo: string;
+    descricao?: string | null;
+    status: string;
+    dataPublicacao?: string | Date | null;
+    dataEncerramento?: string | Date | null;
+    permiteMultiplaEscolha?: number;
+    opcoes?: { id: string; texto: string; ordem: number }[];
+  };
 }
 
 interface OpcaoForm {
@@ -20,7 +29,16 @@ interface OpcaoForm {
   ordem: number;
 }
 
-function buildForm(enquete?: any) {
+function buildForm(enquete?: {
+  id: string;
+  titulo: string;
+  descricao?: string | null;
+  status: string;
+  dataPublicacao?: string | Date | null;
+  dataEncerramento?: string | Date | null;
+  permiteMultiplaEscolha?: number;
+  opcoes?: { id: string; texto: string; ordem: number }[];
+}) {
   if (!enquete) {
     return {
       titulo: '',
@@ -42,9 +60,9 @@ function buildForm(enquete?: any) {
     dataPublicacao: enquete.dataPublicacao ? new Date(enquete.dataPublicacao).toISOString().split('T')[0] : '',
     dataEncerramento: enquete.dataEncerramento ? new Date(enquete.dataEncerramento).toISOString().split('T')[0] : '',
     permiteMultiplaEscolha: enquete.permiteMultiplaEscolha ?? 0,
-    opcoes: enquete.opcoes?.length > 0
-      ? enquete.opcoes.map((o: any, i: number) => ({ id: o.id, texto: o.texto, ordem: o.ordem ?? i }))
-      : [{ texto: '', ordem: 0 }, { texto: '', ordem: 1 }],
+    opcoes: (enquete.opcoes && enquete.opcoes.length > 0)
+      ? enquete.opcoes.map((o, i) => ({ id: o.id, texto: o.texto, ordem: o.ordem ?? i }))
+      : [{ texto: '', ordem: 0 }, { texto: '', ordem: 1 }] as OpcaoForm[],
   };
 }
 
@@ -58,7 +76,7 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
 
   useEffect(() => { setForm(buildForm(enquete)); }, [enquete]);
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: string, value: string | number) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
@@ -93,7 +111,7 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
     const payload = {
       titulo: form.titulo,
       descricao: form.descricao || undefined,
-      status: form.status as any,
+      status: form.status as 'rascunho' | 'publicada' | 'encerrada' | 'arquivada',
       dataPublicacao: form.dataPublicacao ? new Date(form.dataPublicacao) : undefined,
       dataEncerramento: form.dataEncerramento ? new Date(form.dataEncerramento) : undefined,
       permiteMultiplaEscolha: form.permiteMultiplaEscolha,
@@ -121,7 +139,7 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-blue-600" />
-            {isEdit ? 'Editar' : 'Nova'} Enquete
+            {isEdit ? 'Editar' : 'Nova'} enquete
           </DialogTitle>
           <DialogDescription>
             {isEdit ? 'Altere os dados da enquete abaixo.' : 'Crie uma nova pesquisa de opinião.'}
@@ -156,11 +174,11 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="dataPublicacao">Data publicação</Label>
+              <Label htmlFor="dataPublicacao">Data de publicação</Label>
               <Input id="dataPublicacao" type="date" value={form.dataPublicacao} onChange={e => updateField('dataPublicacao', e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="dataEncerramento">Data encerramento</Label>
+              <Label htmlFor="dataEncerramento">Data de encerramento</Label>
               <Input id="dataEncerramento" type="date" value={form.dataEncerramento} onChange={e => updateField('dataEncerramento', e.target.value)} />
             </div>
           </div>

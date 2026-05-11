@@ -263,23 +263,25 @@ export default function ProposicaoDetailPage() {
             <DialogDescription>Adicione uma nova etapa na tramitação desta proposição.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddTramitacao} className="space-y-4 mt-2">
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">Data *</label>
-              <input type="date" value={tramForm.data} onChange={e => setTramForm({ ...tramForm, data: e.target.value })} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" required />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">Órgão *</label>
-              <input value={tramForm.orgao} onChange={e => setTramForm({ ...tramForm, orgao: e.target.value })} placeholder="Ex: CCJ, Plenário" className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" required />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">Status</label>
-              <select value={tramForm.status} onChange={e => setTramForm({ ...tramForm, status: e.target.value as any })} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
-                {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Data *</label>
+                <input type="date" value={tramForm.data} onChange={e => setTramForm({ ...tramForm, data: e.target.value })} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" required />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Órgão *</label>
+                <input value={tramForm.orgao} onChange={e => setTramForm({ ...tramForm, orgao: e.target.value })} placeholder="Ex: CCJ, Plenário" className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" required />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Status</label>
+                <select value={tramForm.status} onChange={e => setTramForm({ ...tramForm, status: e.target.value as any })} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
+                  {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              </div>
             </div>
             <div>
               <label className="text-xs font-medium text-slate-500 mb-1 block">Descrição</label>
-              <textarea value={tramForm.descricao} onChange={e => setTramForm({ ...tramForm, descricao: e.target.value })} placeholder="Detalhes da movimentação..." rows={2} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none" />
+              <textarea value={tramForm.descricao} onChange={e => setTramForm({ ...tramForm, descricao: e.target.value })} placeholder="Detalhes da movimentação" rows={2} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none" />
             </div>
             <div className="flex gap-3 pt-2">
               <Button type="button" variant="outline" className="flex-1" onClick={() => setShowAddTramitacao(false)}>Cancelar</Button>

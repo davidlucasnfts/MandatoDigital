@@ -80,7 +80,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-600" />
-            {isEdit ? 'Editar Solicitação' : 'Nova Solicitação'}
+            {isEdit ? 'Editar solicitação' : 'Nova solicitação'}
           </DialogTitle>
           <DialogDescription>Preencha os dados para criar uma nova solicitação.</DialogDescription>
         </DialogHeader>
@@ -122,11 +122,11 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="data_solicitacao">Data da Solicitação</Label>
+              <Label htmlFor="data_solicitacao">Data da solicitação</Label>
               <Input id="data_solicitacao" type="date" value={form.data_solicitacao || ''} onChange={e => setField('data_solicitacao', e.target.value || null)} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="data_evento">Data do Evento</Label>
+              <Label htmlFor="data_evento">Data do evento</Label>
               <Input id="data_evento" type="date" value={form.data_evento || ''} onChange={e => setField('data_evento', e.target.value || null)} />
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>
-              {loading ? 'Salvando...' : isEdit ? 'Salvar Alterações' : 'Criar Solicitação'}
+              {loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar solicitação'}
             </Button>
           </div>
         </form>

@@ -10,9 +10,13 @@ type FiltroPeriodo = 'dia' | 'semana' | 'mes';
 
 function formatarDataNascimento(data: string | null): { dia: number; mes: number } | null {
   if (!data) return null;
-  const d = new Date(data + 'T00:00:00');
-  if (isNaN(d.getTime())) return null;
-  return { dia: d.getDate(), mes: d.getMonth() + 1 };
+  // Extrai dia/mês direto da string YYYY-MM-DD sem criar Date (evita timezone offset)
+  const [anoStr, mesStr, diaStr] = data.split('-');
+  if (!anoStr || !mesStr || !diaStr) return null;
+  const dia = parseInt(diaStr, 10);
+  const mes = parseInt(mesStr, 10);
+  if (isNaN(dia) || isNaN(mes)) return null;
+  return { dia, mes };
 }
 
 function hoje(): { dia: number; mes: number } {
@@ -250,7 +254,7 @@ export default function AniversariantesPanel() {
               <Button variant="outline" className="flex-1" onClick={() => setShowMassModal(false)}>Cancelar</Button>
               <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={enviarTodos}>
                 <Send className="w-4 h-4 mr-1" />
-                Enviar Todos
+                Enviar todos
               </Button>
             </div>
           </div>

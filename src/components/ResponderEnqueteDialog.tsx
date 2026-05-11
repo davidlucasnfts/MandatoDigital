@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Vote, Check } from 'lucide-react';
+import { maskPhone } from '@/lib/masks';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,7 +72,7 @@ export default function ResponderEnqueteDialog({ open, onClose, onSuccess, enque
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Vote className="w-5 h-5 text-green-600" />
-            Registrar Resposta
+            Registrar resposta
           </DialogTitle>
           <DialogDescription>
             {enquete.titulo}
@@ -106,13 +107,15 @@ export default function ResponderEnqueteDialog({ open, onClose, onSuccess, enque
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="nome">Nome do respondente</Label>
-            <Input id="nome" value={nomeRespondente} onChange={e => setNomeRespondente(e.target.value)} placeholder="Opcional" />
-          </div>
-          <div>
-            <Label htmlFor="telefone">Telefone</Label>
-            <Input id="telefone" value={telefoneRespondente} onChange={e => setTelefoneRespondente(e.target.value)} placeholder="Opcional" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="nome">Nome do respondente</Label>
+              <Input id="nome" value={nomeRespondente} onChange={e => setNomeRespondente(e.target.value)} placeholder="Opcional" />
+            </div>
+            <div>
+              <Label htmlFor="telefone">Telefone</Label>
+              <Input id="telefone" value={telefoneRespondente} onChange={e => setTelefoneRespondente(maskPhone(e.target.value))} placeholder="Opcional" maxLength={15} />
+            </div>
           </div>
           <div>
             <Label htmlFor="obs">Observação</Label>

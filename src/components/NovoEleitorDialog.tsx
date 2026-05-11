@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Plus, User, Crown } from 'lucide-react';
+import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
+import AutocompleteCidade from '@/components/AutocompleteCidade';
+import AutocompleteBairro from '@/components/AutocompleteBairro';
+import { geocodeEndereco } from '@/lib/geocoding';
 import type { Eleitor } from '@/lib/supabase';
 
 interface Props {
@@ -31,7 +35,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const isEdit = !!eleitor;
 
   const buildForm = (e?: Eleitor | null): Partial<Eleitor> => {
-    if (!e) return { nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null };
+    if (!e) return { nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null, data_nascimento: null };
     return {
       nome: e.nome,
       nome_mae: e.nome_mae,
@@ -72,12 +76,22 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
       const data = await res.json();
       if (!data.erro) {
+        const endereco = data.logradouro || '';
+        const bairro = data.bairro || '';
+        const cidade = data.localidade || '';
+        const estado = data.uf || '';
+
+        // Geocodifica o endereco para obter coordenadas precisas
+        const coords = await geocodeEndereco(endereco, bairro, cidade, estado, clean);
+
         setForm(prev => ({
           ...prev,
-          endereco: data.logradouro || prev.endereco,
-          bairro: data.bairro || prev.bairro,
-          cidade: data.localidade || prev.cidade,
-          estado: data.uf || prev.estado,
+          endereco,
+          bairro,
+          cidade,
+          estado,
+          latitude: coords?.lat ?? prev.latitude,
+          longitude: coords?.lng ?? prev.longitude,
         }));
       }
     } catch {
@@ -102,6 +116,8 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         cidade: form.cidade || 'São Paulo',
         estado: form.estado || 'SP',
         cep: form.cep || '',
+        latitude: form.latitude ?? null,
+        longitude: form.longitude ?? null,
         comunidade_id: form.comunidade_id || null,
         indicador_id: form.indicador_id || null,
         nivel: form.nivel || 'eleitor',
@@ -109,7 +125,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         tags: form.tags || [],
         status: form.status || 'ativo',
         observacoes: form.observacoes || '',
-        data_nascimento: form.data_nascimento || null,
+        data_nascimento: form.data_nascimento ? form.data_nascimento : null,
       };
 
       if (isEdit && eleitor) {
@@ -141,7 +157,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-600" />
-            {isEdit ? 'Editar' : 'Novo'} {config.label}
+            {isEdit ? 'Editar' : 'Novo'} {config.label.toLowerCase()}
           </DialogTitle>
           <DialogDescription>Preencha os dados para cadastrar.</DialogDescription>
         </DialogHeader>
@@ -175,13 +191,13 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
 
           {/* Campos principais */}
           <div className="space-y-1.5">
-            <Label htmlFor="nome">Nome *</Label>
-            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', e.target.value)} placeholder="Nome completo" required />
+            <Label htmlFor="nome">Nome completo *</Label>
+            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome completo" required />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="nome_mae">Nome da Mãe</Label>
-            <Input id="nome_mae" value={form.nome_mae || ''} onChange={e => setField('nome_mae', e.target.value)} placeholder="Nome completo da mãe" />
+            <Label htmlFor="nome_mae">Nome da mãe</Label>
+            <Input id="nome_mae" value={form.nome_mae || ''} onChange={e => setField('nome_mae', capitalizeWords(e.target.value))} placeholder="Nome completo da mãe" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -191,25 +207,33 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="telefone">Telefone</Label>
-              <Input id="telefone" value={form.telefone || ''} onChange={e => setField('telefone', e.target.value)} placeholder="(11) 98765-4321" />
+              <Input id="telefone" value={form.telefone || ''} onChange={e => setField('telefone', maskPhone(e.target.value))} placeholder="(11) 98765-4321" maxLength={15} />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="cpf">CPF</Label>
-              <Input id="cpf" value={form.cpf || ''} onChange={e => setField('cpf', e.target.value)} placeholder="123.456.789-00" />
+              <Input id="cpf" value={form.cpf || ''} onChange={e => setField('cpf', maskCPF(e.target.value))} placeholder="123.456.789-00" maxLength={14} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="data_nascimento">Data Nascimento</Label>
-              <Input id="data_nascimento" type="date" value={form.data_nascimento || ''} onChange={e => setField('data_nascimento', e.target.value || null)} />
+              <Label htmlFor="data_nascimento">Data de nascimento</Label>
+              <input
+                id="data_nascimento"
+                type="date"
+                min="1900-01-01"
+                max={new Date().toISOString().split('T')[0]}
+                value={formatDateForInput(form.data_nascimento)}
+                onChange={e => setField('data_nascimento', e.target.value || null)}
+                className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+              />
             </div>
           </div>
 
           {/* Líder (só aparece quando aba = eleitor) */}
           {abaAtiva === 'eleitor' && (
             <div className="space-y-1.5">
-              <Label htmlFor="lider_id">Líder Responsável</Label>
+              <Label htmlFor="lider_id">Líder responsável</Label>
               <select
                 id="lider_id"
                 value={form.lider_id || ''}
@@ -230,7 +254,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               <div className="space-y-1.5">
                 <Label htmlFor="cep">CEP</Label>
                 <div className="flex gap-2">
-                  <Input id="cep" value={form.cep || ''} onChange={e => setField('cep', e.target.value)} placeholder="01001-000" className="flex-1" />
+                  <Input id="cep" value={form.cep || ''} onChange={e => setField('cep', maskCEP(e.target.value))} placeholder="01001-000" className="flex-1" maxLength={9} />
                   <Button type="button" variant="outline" size="sm" onClick={() => buscarCep(form.cep || '')} className="h-10 px-3">Buscar</Button>
                 </div>
               </div>
@@ -245,21 +269,36 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
 
             <div className="space-y-1.5">
               <Label htmlFor="endereco">Endereço</Label>
-              <Input id="endereco" value={form.endereco || ''} onChange={e => setField('endereco', e.target.value)} placeholder="Rua, número, complemento" />
+              <Input id="endereco" value={form.endereco || ''} onChange={e => setField('endereco', capitalizeWords(e.target.value))} placeholder="Rua, número, complemento" />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="bairro">Bairro</Label>
-                <Input id="bairro" value={form.bairro || ''} onChange={e => setField('bairro', e.target.value)} placeholder="Bairro" />
+                <AutocompleteBairro
+                  id="bairro"
+                  label="Bairro"
+                  value={form.bairro || ''}
+                  onChange={v => setField('bairro', v)}
+                  cidade={form.cidade || ''}
+                  uf={form.estado || ''}
+                  placeholder="Bairro"
+                />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="cidade">Cidade</Label>
-                <Input id="cidade" value={form.cidade || ''} onChange={e => setField('cidade', e.target.value)} placeholder="Cidade" />
+                <AutocompleteCidade
+                  id="cidade"
+                  label="Cidade"
+                  value={form.cidade || ''}
+                  onChange={(v, uf) => {
+                    setField('cidade', v);
+                    if (uf) setField('estado', uf);
+                  }}
+                  placeholder="Cidade"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="estado">Estado</Label>
-                <Input id="estado" value={form.estado || ''} onChange={e => setField('estado', e.target.value)} placeholder="SP" maxLength={2} />
+                <Input id="estado" value={form.estado || ''} onChange={e => setField('estado', e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))} placeholder="SP" maxLength={2} />
               </div>
             </div>
 
@@ -287,7 +326,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>
-              {loading ? 'Salvando...' : isEdit ? 'Salvar Alterações' : `Cadastrar ${config.label}`}
+              {loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : `Cadastrar ${config.label}`}
             </Button>
           </div>
         </form>

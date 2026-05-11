@@ -1,6 +1,8 @@
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { env } from "./lib/env";
-import postgres from "postgres";
+import { getDb } from "./queries/connection";
+import * as schema from "@db/schema";
+import { eq } from "drizzle-orm";
 
 export type TrpcUser = {
   id: string;
@@ -15,10 +17,12 @@ export type TrpcContext = {
   user?: TrpcUser;
 };
 
+export type AuthenticatedContext = Omit<TrpcContext, "user"> & { user: TrpcUser };
+
 // Lazy init para evitar execucao no browser (importado pelo frontend para tipos)
 import { createClient } from "@supabase/supabase-js";
 let supabaseAdmin: ReturnType<typeof createClient> | null = null;
-function getSupabaseAdmin() {
+export function getSupabaseAdmin() {
   if (!supabaseAdmin) {
     try {
       supabaseAdmin = createClient(env.supabaseUrl, env.supabaseServiceKey);
@@ -51,15 +55,28 @@ export async function createContext(
       return { req: opts.req, resHeaders: opts.resHeaders };
     }
 
-    // Token válido do Supabase — retorna usuário como admin (fallback seguro)
+    // Busca role real do usuário na tabela equipe (RBAC funcional)
+    const db = getDb();
+    const equipeRows = await db
+      .select()
+      .from(schema.equipe)
+      .where(eq(schema.equipe.userId, supabaseUser.id))
+      .limit(1);
+
+    const equipe = equipeRows[0];
+
+    // Se não tem registro na equipe, assume visualizador (menor privilégio)
+    const role = equipe?.role ?? "visualizador";
+    const ownerId = equipe?.ownerId ?? supabaseUser.id;
+
     return {
       req: opts.req,
       resHeaders: opts.resHeaders,
       user: {
         id: supabaseUser.id,
         email: supabaseUser.email ?? "",
-        role: "admin",
-        ownerId: supabaseUser.id,
+        role,
+        ownerId: ownerId as string,
       },
     };
   } catch {

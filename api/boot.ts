@@ -55,6 +55,22 @@ app.use(
   })
 );
 
+// Rate limiting por usuário autenticado em rotas sensíveis (mutações)
+app.use(
+  "/api/trpc/equipe/*",
+  rateLimiter({
+    windowMs: 60 * 1000, // 1 minuto
+    limit: 30,
+    standardHeaders: "draft-6",
+    keyGenerator: (c) => {
+      const authHeader = c.req.header("authorization");
+      const token = authHeader?.replace("Bearer ", "");
+      // Usa token truncado como identificador de usuário
+      return token ? `user:${token.slice(0, 16)}` : c.req.header("x-forwarded-for") || "anonymous";
+    },
+  })
+);
+
 // Limite de tamanho do body: 50MB
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
 

@@ -58,7 +58,7 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-600" />
-            {isEdit ? 'Editar Evento' : 'Novo Evento'}
+            {isEdit ? 'Editar evento' : 'Novo evento'}
           </DialogTitle>
           <DialogDescription>Preencha os dados para criar um novo evento na agenda.</DialogDescription>
         </DialogHeader>
@@ -92,11 +92,11 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="hora_inicio">Hora Início</Label>
+              <Label htmlFor="hora_inicio">Hora de início</Label>
               <Input id="hora_inicio" type="time" value={form.hora_inicio || ''} onChange={e => setField('hora_inicio', e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="hora_fim">Hora Fim</Label>
+              <Label htmlFor="hora_fim">Hora de fim</Label>
               <Input id="hora_fim" type="time" value={form.hora_fim || ''} onChange={e => setField('hora_fim', e.target.value)} />
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>{loading ? 'Salvando...' : isEdit ? 'Salvar Alterações' : 'Criar Evento'}</Button>
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>{loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar evento'}</Button>
           </div>
         </form>
       </DialogContent>

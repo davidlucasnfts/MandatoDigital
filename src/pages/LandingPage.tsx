@@ -53,7 +53,7 @@ function PricingCard({ plan, price, period, features, recommended, onSubscribe }
       <div className="text-sm font-medium mb-2 opacity-80">{plan}</div>
       <div className="flex items-baseline gap-1 mb-6"><span className="text-3xl font-bold">{price}</span><span className={`text-sm ${recommended ? 'opacity-70' : 'text-slate-400'}`}>{period}</span></div>
       <ul className="space-y-3 mb-8">{features.map((f, i) => (<li key={i} className="flex items-start gap-2 text-sm"><Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${recommended ? 'text-blue-200' : 'text-blue-600'}`} /><span className={recommended ? '' : 'text-slate-600'}>{f}</span></li>))}</ul>
-      <Button onClick={onSubscribe} className={`w-full h-11 font-semibold ${recommended ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>Começar Agora</Button>
+      <Button onClick={onSubscribe} className={`w-full h-11 font-semibold ${recommended ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>Começar agora</Button>
     </motion.div>
   );
 }
@@ -135,7 +135,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
               ) : (
                 <>
                   <Button variant="ghost" onClick={() => setShowLogin(true)} className={`text-sm font-medium ${scrolled ? '' : 'text-white hover:text-white hover:bg-white/10'}`}>Entrar</Button>
-                  <Button onClick={() => setShowRegister(true)} className="bg-blue-600 hover:bg-blue-700 text-sm font-semibold px-5">Teste Grátis</Button>
+                  <Button onClick={() => setShowRegister(true)} className="bg-blue-600 hover:bg-blue-700 text-sm font-semibold px-5">Teste grátis</Button>
                 </>
               )}
             </div>
@@ -171,7 +171,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
           {/* Botões */}
           <div className="mt-6 flex flex-col gap-3">
             <Button variant="outline" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="w-full bg-white h-11">Entrar</Button>
-            <Button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="w-full bg-blue-600 h-11">Teste Grátis</Button>
+            <Button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="w-full bg-blue-600 h-11">Teste grátis</Button>
           </div>
         </div>
       </motion.div>}</AnimatePresence>
@@ -185,7 +185,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
               <FIU><div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 mb-4"><Award className="w-4 h-4 text-blue-400" /><span className="text-blue-300 text-sm font-medium">Software de Gestão Política #1 do Brasil</span></div></FIU>
               <FIU><h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-4">Nunca mais perca<br />um <span className="text-blue-400">voto</span> por<br />esquecimento</h1></FIU>
               <FIU><p className="text-lg text-slate-300 mb-6 max-w-lg leading-relaxed">A única plataforma que organiza sua base eleitoral, lembra você dos aniversários, mostra onde seus eleitores estão e garante que nenhuma solicitação caia no esquecimento.</p></FIU>
-              <FIU><div className="flex flex-col sm:flex-row gap-4"><Button onClick={() => setShowRegister(true)} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base">Teste Grátis por 7 Dias<ArrowRight className="w-5 h-5 ml-2" /></Button><Button onClick={() => scrollToSection('recursos')} variant="outline" size="lg" className="border-white/30 text-white bg-white/10 hover:bg-white/20 px-8 h-14 text-base">Ver Como Funciona</Button></div></FIU>
+              <FIU><div className="flex flex-col sm:flex-row gap-4"><Button onClick={() => setShowRegister(true)} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base">Teste grátis por 7 dias<ArrowRight className="w-5 h-5 ml-2" /></Button><Button onClick={() => scrollToSection('recursos')} variant="outline" size="lg" className="border-white/30 text-white bg-white/10 hover:bg-white/20 px-8 h-14 text-base">Ver como funciona</Button></div></FIU>
               <FIU><div className="flex items-center gap-6 mt-6">
                 <div className="text-center"><div className="text-2xl font-bold text-white">2.450+</div><div className="text-xs text-slate-400">Eleitores gerenciados</div></div>
                 <div className="w-px h-10 bg-slate-700" />
@@ -310,7 +310,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Pronto para nunca mais perder um voto?</h2>
             <p className="text-blue-200 mb-8 text-lg">7 dias grátis. Sem cartão de crédito. Cancele quando quiser.</p>
-            <Button onClick={() => setShowRegister(true)} size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-10 h-14 text-base">Começar Teste Grátis<ArrowRight className="w-5 h-5 ml-2" /></Button>
+            <Button onClick={() => setShowRegister(true)} size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-10 h-14 text-base">Começar teste grátis<ArrowRight className="w-5 h-5 ml-2" /></Button>
             <p className="text-blue-300 text-sm mt-4">Usado por 350+ parlamentares em 127 cidades brasileiras</p>
           </motion.div>
         </div>
@@ -371,7 +371,7 @@ export default function LandingPage({ user, isAuthenticated, signUp, signIn, sig
             <div><label className="text-xs font-medium text-slate-500 mb-1 block">Nome completo</label><Input placeholder="Seu nome" value={registerForm.nome} onChange={e => setRegisterForm({...registerForm,nome:e.target.value})} className="h-11" required /></div>
             <div><label className="text-xs font-medium text-slate-500 mb-1 block">E-mail</label><Input type="email" placeholder="seu@email.com" value={registerForm.email} onChange={e => setRegisterForm({...registerForm,email:e.target.value})} className="h-11" required /></div>
             <div><label className="text-xs font-medium text-slate-500 mb-1 block">Senha</label><Input type="password" placeholder="Mínimo 6 caracteres" value={registerForm.password} onChange={e => setRegisterForm({...registerForm,password:e.target.value})} className="h-11" required /></div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-11 font-semibold">Criar Conta Grátis</Button>
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-11 font-semibold">Criar conta grátis</Button>
           </form>
           <p className="text-center text-sm text-slate-500 mt-4">Já tem conta? <button onClick={() => {setShowRegister(false);setShowLogin(true);setAuthError('');}} className="text-blue-600 font-medium hover:underline">Entrar</button></p>
         </motion.div>

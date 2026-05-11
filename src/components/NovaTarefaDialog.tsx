@@ -58,7 +58,7 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-600" />
-            {isEdit ? 'Editar Tarefa' : 'Nova Tarefa'}
+            {isEdit ? 'Editar tarefa' : 'Nova tarefa'}
           </DialogTitle>
           <DialogDescription>Preencha os dados para criar uma nova tarefa.</DialogDescription>
         </DialogHeader>
@@ -117,24 +117,26 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="responsavel">Responsável</Label>
-            <Input
-              id="responsavel"
-              value={form.responsavel || ''}
-              onChange={e => setField('responsavel', e.target.value)}
-              placeholder="Nome do responsável"
-            />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="responsavel">Responsável</Label>
+              <Input
+                id="responsavel"
+                value={form.responsavel || ''}
+                onChange={e => setField('responsavel', e.target.value)}
+                placeholder="Nome do responsável"
+              />
+            </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="data_prazo">Prazo</Label>
-            <Input
-              id="data_prazo"
-              type="date"
-              value={form.data_prazo || ''}
-              onChange={e => setField('data_prazo', e.target.value || null)}
-            />
+            <div className="space-y-1.5">
+              <Label htmlFor="data_prazo">Prazo</Label>
+              <Input
+                id="data_prazo"
+                type="date"
+                value={form.data_prazo || ''}
+                onChange={e => setField('data_prazo', e.target.value || null)}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
@@ -142,7 +144,7 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
               Cancelar
             </Button>
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>
-              {loading ? 'Salvando...' : isEdit ? 'Salvar Alterações' : 'Criar Tarefa'}
+              {loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar tarefa'}
             </Button>
           </div>
         </form>

@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 07/05/2026
-> **Sessão atual:** Hierarquia de Líderes + Link de Afiliação — CONCLUÍDO
+> **Atualizado em:** 10/05/2026
+> **Sessão atual:** Geocodificacao real no mapa (Nominatim/OpenStreetMap)
 
 ---
 
@@ -11,32 +11,35 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Hierarquia de Líderes** — concluído em 07/05
+**Vínculo Comunidade-Cidade + Mapa** — concluído em 10/05
 
 ### O que foi entregue:
-- **Migration 011**: `ALTER TABLE eleitores ADD COLUMN lider_id UUID REFERENCES eleitores(id)`
-- **Tipos atualizados**: `nivel` agora só `'lider' | 'eleitor'`, campo `lider_id` adicionado
-- **NovoEleitorDialog refatorado**: só 2 abas (Eleitor/Líder), código unificado sem duplicação, campo "Líder Responsável" no cadastro de eleitor, try/catch no submit
-- **EleitoresPage atualizada**: filtro de nível só mostra Líder/Eleitor, coluna "Líder" na tabela
-- **Hook useConvitesEleitores**: `aprovarConvite` agora usa `lider_id` em vez de `indicador_id`
-- **Página pública ConvitePage**: `/convite/:token` — formulário de cadastro que vincula automaticamente o eleitor ao líder via `lider_id`
-- **Rota adicionada** em App.tsx
+- **Migration 013**: `comunidades.cidade TEXT` + `comunidades.icone TEXT DEFAULT 'Users'`
+- **Tipos atualizados**: `Comunidade` em `src/lib/supabase.ts` inclui `cidade` e `icone`
+- **NovaComunidadeDialog.tsx**: Campo cidade, layout em grid, bug bairros duplicado corrigido
+- **MapaPage.tsx**: Comunidades aparecem como marcadores coloridos (SVG com cor da comunidade)
+- **src/lib/mapIcons.ts**: `createColorIcon()` gera marcador SVG dinâmico
+- Tooltip no marcador mostra nome da comunidade + cidade
+- Clique no marcador de comunidade aplica filtro
+- Contador de comunidades no mapa na sidebar
 
 ### Arquivos criados/modificados:
-- `supabase/migrations/011-lider-eleitor.sql`
-- `src/lib/supabase.ts` — tipos atualizados
-- `src/components/NovoEleitorDialog.tsx` — refatorado (2 abas, campo lider_id)
-- `src/pages/EleitoresPage.tsx` — coluna líder, filtro simplificado
-- `src/hooks/useSupabaseData.ts` — aprovarConvite usa lider_id
-- `src/pages/ConvitePage.tsx` — página pública de cadastro via link
-- `src/App.tsx` — rota /convite/:token
+- `supabase/migrations/013-comunidade-cidade-icone.sql` — novo
+- `src/lib/supabase.ts` — adicionado `cidade` e `icone` no tipo Comunidade
+- `src/lib/mapIcons.ts` — novo (createColorIcon, defaultIcon)
+- `src/components/NovaComunidadeDialog.tsx` — campo cidade, layout grid
+- `src/pages/MapaPage.tsx` — marcadores de comunidade coloridos
 
-Type check passando.
+Type check passando. Testes passando (12/12).
 
 ---
 
 ## Próximo passo definido
-**Melhorias no projeto atual** — aguardando definição do David
+**Aguardando definição do David** — opções:
+1. Prestação de Contas Pública (portal de transparência)
+2. App mobile / PWA para campo
+3. Integração WhatsApp API oficial
+4. Mais hardening (cookie httpOnly, WAF Cloudflare, testes de penetração)
 
 ---
 
@@ -52,7 +55,7 @@ api/           → Backend tRPC/Hono (routers, middleware, context, lib/audit.ts
 db/            → Schema Drizzle + migrations
 contracts/     → Tipos e constantes compartilhados
 docs/          → ADRs + guia do projeto
-supabase/      → schema_safe.sql + migrations/ (001-011)
+supabase/      → schema_safe.sql + migrations/ (001-013)
 .github/       → Workflows CI/CD
 ```
 
@@ -64,8 +67,16 @@ supabase/      → schema_safe.sql + migrations/ (001-011)
 - [x] Rodar migrations 006-011 no Supabase
 - [x] Rodar migration 010 no Supabase (enquetes)
 - [x] Rodar migration 011 no Supabase (lider_id)
+- [x] Revisar `DATABASE_URL` hardcoded em `api/lib/env.ts` — REMOVIDO em 10/05
+- [x] Rodar migration 012 no Supabase (campos_personalizados na tabela convites_eleitores)
+- [x] **Rodar migration 013 no Supabase** (cidade + icone na tabela comunidades)
+- [x] **Rodar migration 014 no Supabase** (latitude + longitude na tabela eleitores)
+- [x] **Geocodificar eleitores existentes** via botao no mapa
 - [ ] Criar mais testes para atingir cobertura 80% (backlog técnico, não bloqueante)
-- [ ] Revisar `DATABASE_URL` hardcoded em `api/lib/env.ts` — remover antes de deploy em produção (segurança)
+- [ ] Adicionar mais cidades ao dataset de bairros (expansão futura)
+- [ ] Configurar `DATABASE_URL` no Vercel (ver SECURITY.md → Ações Manuais)
+- [ ] Trocar senha do banco Supabase (ver SECURITY.md → Ações Manuais)
+- [ ] Adicionar domínio na whitelist (ver SECURITY.md → Ações Manuais)
 
 ---
 

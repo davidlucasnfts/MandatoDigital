@@ -31,7 +31,7 @@ const proposicaoInput = z.object({
       "rejeitado",
       "sancionado",
       "arquivado",
-      "vetoado",
+      "veteado",
       "retirado",
     ])
     .optional(),
@@ -56,7 +56,7 @@ const tramitacaoInput = z.object({
     "rejeitado",
     "sancionado",
     "arquivado",
-    "vetoado",
+    "veteado",
     "retirado",
   ]),
   descricao: z.string().optional(),
@@ -86,7 +86,7 @@ export const proposicoesRouter = createRouter({
               "rejeitado",
               "sancionado",
               "arquivado",
-              "vetoado",
+              "veteado",
               "retirado",
             ])
             .optional(),

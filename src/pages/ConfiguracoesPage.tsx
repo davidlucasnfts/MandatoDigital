@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useConfiguracoes } from '@/hooks/useSupabaseData';
+import { maskPhone, capitalizeWords } from '@/lib/masks';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -81,7 +82,7 @@ export default function ConfiguracoesPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-medium text-slate-500 mb-1 block">Nome Completo</label>
-                    <Input value={profile.nome} onChange={(e) => setProfile({ ...profile, nome: e.target.value })} className="h-10" />
+                    <Input value={profile.nome} onChange={(e) => setProfile({ ...profile, nome: capitalizeWords(e.target.value) })} className="h-10" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-500 mb-1 block">E-mail</label>
@@ -89,7 +90,7 @@ export default function ConfiguracoesPage() {
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-500 mb-1 block">Telefone</label>
-                    <Input value={profile.telefone} onChange={(e) => setProfile({ ...profile, telefone: e.target.value })} className="h-10" />
+                    <Input value={profile.telefone} onChange={(e) => setProfile({ ...profile, telefone: maskPhone(e.target.value) })} className="h-10" maxLength={15} />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-500 mb-1 block">Cargo</label>
@@ -102,12 +103,12 @@ export default function ConfiguracoesPage() {
                   <div>
                     <label className="text-xs font-medium text-slate-500 mb-1 block">Cidade/Estado</label>
                     <div className="flex gap-2">
-                      <Input value={profile.cidade} onChange={(e) => setProfile({ ...profile, cidade: e.target.value })} className="h-10" />
-                      <Input value={profile.estado} onChange={(e) => setProfile({ ...profile, estado: e.target.value })} className="h-10 w-20" />
+                      <Input value={profile.cidade} onChange={(e) => setProfile({ ...profile, cidade: capitalizeWords(e.target.value) })} className="h-10" />
+                      <Input value={profile.estado} onChange={(e) => setProfile({ ...profile, estado: e.target.value.toUpperCase().replace(/[^A-Za-z]/g, '').slice(0, 2) })} className="h-10 w-20" maxLength={2} />
                     </div>
                   </div>
                 </div>
-                <Button className="bg-blue-600 hover:bg-blue-700">Salvar Alterações</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700">Salvar alterações</Button>
               </CardContent>
             </Card>
           </motion.div>
@@ -195,15 +196,15 @@ export default function ConfiguracoesPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Senha Atual</label>
+                  <label className="text-xs font-medium text-slate-500 mb-1 block">Senha atual</label>
                   <Input type="password" placeholder="Digite sua senha atual" className="h-10" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Nova Senha</label>
+                  <label className="text-xs font-medium text-slate-500 mb-1 block">Nova senha</label>
                   <Input type="password" placeholder="Mínimo 8 caracteres" className="h-10" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-500 mb-1 block">Confirmar Nova Senha</label>
+                  <label className="text-xs font-medium text-slate-500 mb-1 block">Confirmar nova senha</label>
                   <Input type="password" placeholder="Repita a nova senha" className="h-10" />
                 </div>
                 <Button className="bg-blue-600 hover:bg-blue-700">Atualizar Senha</Button>

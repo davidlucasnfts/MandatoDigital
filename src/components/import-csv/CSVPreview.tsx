@@ -118,8 +118,7 @@ export default function CSVPreview({
                   <td className="py-2 px-3">
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
                       p.data.nivel === 'lider' ? 'bg-purple-100 text-purple-700' :
-                      p.data.nivel === 'influenciador' ? 'bg-blue-100 text-blue-700' :
-                      p.data.nivel === 'apoiador' ? 'bg-green-100 text-green-700' :
+                      p.data.nivel === 'eleitor' ? 'bg-green-100 text-green-700' :
                       'bg-slate-100 text-slate-600'
                     }`}>{p.data.nivel}</span>
                   </td>

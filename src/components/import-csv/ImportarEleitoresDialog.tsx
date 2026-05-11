@@ -146,7 +146,7 @@ export default function ImportarEleitoresDialog({ open, onClose, onSuccess }: Pr
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-blue-600" />
-            Importar Eleitores via CSV
+            Importar eleitores via CSV
           </DialogTitle>
           <DialogDescription>
             Selecione um arquivo CSV para importar eleitores em lote.

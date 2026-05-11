@@ -37,7 +37,7 @@ export default function RelatoriosPage() {
   const [showCsvDialog, setShowCsvDialog] = useState(false);
   const [pdfConfig, setPdfConfig] = useState({ title: 'Relatório de Gestão Política', includeKPIs: true, includeCharts: true, includeTables: true });
   const [csvConfig, setCsvConfig] = useState({
-    title: 'Relatorio de Gestao Politica',
+    title: 'Relatorio de gestao politica',
     eleitoresComunidade: false,
     solicitacoesCategoria: false,
     statusSolicitacoes: false,
@@ -377,7 +377,7 @@ export default function RelatoriosPage() {
       {/* PDF Config Dialog */}
       <Dialog open={showPdfDialog} onOpenChange={setShowPdfDialog}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Exportar Relatório em PDF</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Exportar relatório em PDF</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-2">
             <div>
               <label className="text-xs font-medium text-slate-500 mb-1 block">Título do relatório</label>
@@ -411,11 +411,11 @@ export default function RelatoriosPage() {
       {/* CSV Config Dialog */}
       <Dialog open={showCsvDialog} onOpenChange={setShowCsvDialog}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Exportar Dados em CSV</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Exportar dados em CSV</DialogTitle></DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
               <label className="text-xs font-medium text-slate-500 mb-1 block">Nome do arquivo</label>
-              <Input value={csvConfig.title} onChange={e => setCsvConfig({ ...csvConfig, title: e.target.value })} placeholder="Relatorio de Gestao Politica" />
+              <Input value={csvConfig.title} onChange={e => setCsvConfig({ ...csvConfig, title: e.target.value })} placeholder="Relatorio de gestao politica" />
             </div>
             <label className="text-xs font-medium text-slate-500 block">Dados a exportar</label>
             {[

@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useComunidades } from '@/hooks/useSupabaseData';
+import AutocompleteCidade from '@/components/AutocompleteCidade';
+import { capitalizeWords } from '@/lib/masks';
 import type { Comunidade } from '@/lib/supabase';
 
 interface Props {
@@ -27,6 +29,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
     lider: c?.lider || '',
     cor: c?.cor || '#2563EB',
     icone: c?.icone || 'Users',
+    cidade: c?.cidade || '',
     bairros: c?.bairros || [],
   });
   const [form, setForm] = useState(buildForm(comunidade));
@@ -59,7 +62,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-600" />
-            {isEdit ? 'Editar Comunidade' : 'Nova Comunidade'}
+            {isEdit ? 'Editar comunidade' : 'Nova comunidade'}
           </DialogTitle>
           <DialogDescription>Preencha os dados para criar uma nova comunidade.</DialogDescription>
         </DialogHeader>
@@ -67,7 +70,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="nome">Nome *</Label>
-            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', e.target.value)} placeholder="Nome da comunidade" required />
+            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome da comunidade" required />
           </div>
 
           <div className="space-y-1.5">
@@ -75,12 +78,19 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
             <Textarea id="descricao" value={form.descricao || ''} onChange={e => setField('descricao', e.target.value)} placeholder="Descrição da comunidade" rows={3} />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="lider">Líder</Label>
-            <Input id="lider" value={form.lider || ''} onChange={e => setField('lider', e.target.value)} placeholder="Nome do líder da comunidade" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="lider">Líder</Label>
+              <Input id="lider" value={form.lider || ''} onChange={e => setField('lider', e.target.value)} placeholder="Nome do líder da comunidade" />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="cidade">Cidade</Label>
+              <AutocompleteCidade id="cidade" value={form.cidade || ''} onChange={v => setField('cidade', v)} placeholder="São Paulo" />
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="cor">Cor</Label>
               <div className="flex items-center gap-3">
@@ -88,6 +98,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
                 <span className="text-sm text-slate-600">{form.cor || '#2563EB'}</span>
               </div>
             </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="icone">Ícone</Label>
               <select id="icone" value={form.icone || 'Users'} onChange={e => setField('icone', e.target.value)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm">
@@ -103,7 +114,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>{loading ? 'Salvando...' : isEdit ? 'Salvar Alterações' : 'Criar Comunidade'}</Button>
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>{loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar comunidade'}</Button>
           </div>
         </form>
       </DialogContent>

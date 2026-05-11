@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { UserPlus, CheckCircle, AlertTriangle } from 'lucide-react';
+import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import AutocompleteCidade from '@/components/AutocompleteCidade';
+import AutocompleteBairro from '@/components/AutocompleteBairro';
 import { supabase } from '@/lib/supabase';
 
 export default function AfiliarPage() {
@@ -13,8 +17,11 @@ export default function AfiliarPage() {
   const [valido, setValido] = useState(false);
   const [liderNome, setLiderNome] = useState('');
   const [sucesso, setSucesso] = useState(false);
+  const [campos, setCampos] = useState<string[]>([]);
+  const [comunidades, setComunidades] = useState<{ id: string; nome: string }[]>([]);
   const [form, setForm] = useState({
     nome: '',
+    nome_mae: '',
     email: '',
     telefone: '',
     cpf: '',
@@ -24,6 +31,8 @@ export default function AfiliarPage() {
     estado: 'SP',
     cep: '',
     data_nascimento: '',
+    comunidade_id: '',
+    observacoes: '',
   });
 
   useEffect(() => {
@@ -39,6 +48,20 @@ export default function AfiliarPage() {
       if (lider) {
         setValido(true);
         setLiderNome(lider.nome);
+        const { data: convite } = await supabase
+          .from('convites_eleitores')
+          .select('campos_obrigatorios')
+          .eq('indicador_id', liderId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        if (convite?.campos_obrigatorios && Array.isArray(convite.campos_obrigatorios)) {
+          setCampos(convite.campos_obrigatorios as string[]);
+        } else {
+          setCampos(['nome', 'email', 'telefone', 'cpf', 'data_nascimento', 'cep', 'endereco', 'bairro', 'cidade', 'estado']);
+        }
+        const { data: coms } = await supabase.from('comunidades').select('id, nome').order('nome');
+        setComunidades(coms || []);
       }
       setLoading(false);
     }
@@ -76,6 +99,7 @@ export default function AfiliarPage() {
 
     const { data: eleitor } = await supabase.from('eleitores').insert({
       nome: form.nome,
+      nome_mae: form.nome_mae || null,
       email: form.email || null,
       telefone: form.telefone || null,
       cpf: form.cpf || null,
@@ -84,7 +108,9 @@ export default function AfiliarPage() {
       cidade: form.cidade || 'São Paulo',
       estado: form.estado || 'SP',
       cep: form.cep || null,
-      data_nascimento: form.data_nascimento || null,
+      data_nascimento: form.data_nascimento ? form.data_nascimento : null,
+      comunidade_id: form.comunidade_id || null,
+      observacoes: form.observacoes || null,
       lider_id: liderId,
       nivel: 'eleitor',
       status: 'pendente',
@@ -97,6 +123,8 @@ export default function AfiliarPage() {
     }
     setLoading(false);
   };
+
+  const mostrarCampo = (key: string) => campos.includes(key);
 
   if (loading) {
     return (
@@ -113,7 +141,7 @@ export default function AfiliarPage() {
           <CardContent className="p-6 text-center">
             <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
             <h2 className="text-lg font-semibold text-slate-800">Link inválido</h2>
-            <p className="text-sm text-slate-500 mt-1">Este link de afiliação não é válido.</p>
+            <p className="text-sm text-slate-500 mt-1">Este link de convite não é válido.</p>
           </CardContent>
         </Card>
       </div>
@@ -146,64 +174,122 @@ export default function AfiliarPage() {
 
         <Card>
           <CardContent className="p-5">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="nome">Nome completo *</Label>
-                <Input id="nome" value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} placeholder="Seu nome completo" required />
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              {mostrarCampo('nome') && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="nome">Nome completo *</Label>
+                  <Input id="nome" value={form.nome} onChange={e => setForm({ ...form, nome: capitalizeWords(e.target.value) })} placeholder="Seu nome completo" required />
+                </div>
+              )}
 
-              <div className="grid grid-cols-2 gap-3">
+              {mostrarCampo('nome_mae') && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="nome_mae">Nome da mãe</Label>
+                  <Input id="nome_mae" value={form.nome_mae} onChange={e => setForm({ ...form, nome_mae: capitalizeWords(e.target.value) })} placeholder="Nome completo da mãe" />
+                </div>
+              )}
+
+              {mostrarCampo('email') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="email">E-mail</Label>
                   <Input id="email" type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="email@exemplo.com" />
                 </div>
+              )}
+              {mostrarCampo('telefone') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="telefone">Telefone</Label>
-                  <Input id="telefone" value={form.telefone} onChange={e => setForm({ ...form, telefone: e.target.value })} placeholder="(11) 98765-4321" />
+                  <Input id="telefone" value={form.telefone} onChange={e => setForm({ ...form, telefone: maskPhone(e.target.value) })} placeholder="(11) 98765-4321" maxLength={15} />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+              )}
+              {mostrarCampo('cpf') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="cpf">CPF</Label>
-                  <Input id="cpf" value={form.cpf} onChange={e => setForm({ ...form, cpf: e.target.value })} placeholder="123.456.789-00" />
+                  <Input id="cpf" value={form.cpf} onChange={e => setForm({ ...form, cpf: maskCPF(e.target.value) })} placeholder="123.456.789-00" maxLength={14} />
                 </div>
+              )}
+              {mostrarCampo('data_nascimento') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="data_nascimento">Data Nascimento</Label>
-                  <Input id="data_nascimento" type="date" value={form.data_nascimento} onChange={e => setForm({ ...form, data_nascimento: e.target.value })} />
+                  <input
+                    id="data_nascimento"
+                    type="date"
+                    min="1900-01-01"
+                    max={new Date().toISOString().split('T')[0]}
+                    value={formatDateForInput(form.data_nascimento)}
+                    onChange={e => setForm({ ...form, data_nascimento: e.target.value })}
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+                  />
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-1.5">
-                <Label htmlFor="cep">CEP</Label>
-                <div className="flex gap-2">
-                  <Input id="cep" value={form.cep} onChange={e => setForm({ ...form, cep: e.target.value })} placeholder="01001-000" className="flex-1" />
-                  <Button type="button" variant="outline" size="sm" onClick={() => buscarCep(form.cep)} className="h-10 px-3">Buscar</Button>
+              {mostrarCampo('cep') && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="cep">CEP</Label>
+                  <div className="flex gap-2">
+                    <Input id="cep" value={form.cep} onChange={e => setForm({ ...form, cep: maskCEP(e.target.value) })} placeholder="01001-000" className="flex-1" maxLength={9} />
+                    <Button type="button" variant="outline" size="sm" onClick={() => buscarCep(form.cep)} className="h-10 px-3">Buscar</Button>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-1.5">
-                <Label htmlFor="endereco">Endereço</Label>
-                <Input id="endereco" value={form.endereco} onChange={e => setForm({ ...form, endereco: e.target.value })} placeholder="Rua, número" />
-              </div>
+              {mostrarCampo('endereco') && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="endereco">Endereço</Label>
+                  <Input id="endereco" value={form.endereco} onChange={e => setForm({ ...form, endereco: capitalizeWords(e.target.value) })} placeholder="Rua, número" />
+                </div>
+              )}
 
-              <div className="grid grid-cols-3 gap-3">
+              {mostrarCampo('bairro') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="bairro">Bairro</Label>
-                  <Input id="bairro" value={form.bairro} onChange={e => setForm({ ...form, bairro: e.target.value })} placeholder="Bairro" />
+                  <Input id="bairro" value={form.bairro} onChange={e => setForm({ ...form, bairro: capitalizeWords(e.target.value) })} placeholder="Bairro" />
                 </div>
+              )}
+              {mostrarCampo('cidade') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="cidade">Cidade</Label>
-                  <Input id="cidade" value={form.cidade} onChange={e => setForm({ ...form, cidade: e.target.value })} placeholder="Cidade" />
+                  <Input id="cidade" value={form.cidade} onChange={e => setForm({ ...form, cidade: capitalizeWords(e.target.value) })} placeholder="Cidade" />
                 </div>
+              )}
+              {mostrarCampo('estado') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="estado">Estado</Label>
-                  <Input id="estado" value={form.estado} onChange={e => setForm({ ...form, estado: e.target.value })} placeholder="SP" maxLength={2} />
+                  <Input id="estado" value={form.estado} onChange={e => setForm({ ...form, estado: e.target.value.toUpperCase().replace(/[^A-Z]/g, '') })} placeholder="SP" maxLength={2} />
                 </div>
-              </div>
+              )}
 
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading}>
-                {loading ? 'Cadastrando...' : 'Cadastrar como Eleitor'}
+              {mostrarCampo('comunidade_id') && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="comunidade_id">Comunidade</Label>
+                  <select
+                    id="comunidade_id"
+                    value={form.comunidade_id}
+                    onChange={e => setForm({ ...form, comunidade_id: e.target.value })}
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+                  >
+                    <option value="">Selecione</option>
+                    {comunidades.map(c => (
+                      <option key={c.id} value={c.id}>{c.nome}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {mostrarCampo('observacoes') && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="observacoes">Observações</Label>
+                  <Textarea
+                    id="observacoes"
+                    value={form.observacoes}
+                    onChange={e => setForm({ ...form, observacoes: e.target.value })}
+                    placeholder="Informações adicionais..."
+                    rows={3}
+                  />
+                </div>
+              )}
+
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 mt-2" disabled={loading}>
+                {loading ? 'Cadastrando...' : 'Cadastrar como eleitor'}
               </Button>
             </form>
           </CardContent>

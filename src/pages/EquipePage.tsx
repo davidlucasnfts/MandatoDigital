@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { trpc } from '@/providers/trpc';
+import { capitalizeWords } from '@/lib/masks';
 import { usePermissions } from '@/hooks/usePermissions';
 
 const fadeIn = {
@@ -181,29 +182,31 @@ export default function EquipePage() {
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4 mt-2">
             {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg">{error}</div>}
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">Nome completo</label>
-              <Input value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} placeholder="Nome" required />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">E-mail</label>
-              <Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="email@exemplo.com" required />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">Cargo</label>
-              <Input value={form.cargo} onChange={e => setForm({ ...form, cargo: e.target.value })} placeholder="Assessor, Voluntário..." />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">Permissão</label>
-              <select
-                value={form.role}
-                onChange={e => setForm({ ...form, role: e.target.value as 'admin' | 'editor' | 'visualizador' })}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-              >
-                <option value="editor">Editor (ler e escrever)</option>
-                <option value="visualizador">Visualizador (só ler)</option>
-                <option value="admin">Administrador (tudo)</option>
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Nome completo</label>
+                <Input value={form.nome} onChange={e => setForm({ ...form, nome: capitalizeWords(e.target.value) })} placeholder="Nome completo" required />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">E-mail</label>
+                <Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="email@exemplo.com" required />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Cargo</label>
+                <Input value={form.cargo} onChange={e => setForm({ ...form, cargo: capitalizeWords(e.target.value) })} placeholder="Assessor, voluntário" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Permissão</label>
+                <select
+                  value={form.role}
+                  onChange={e => setForm({ ...form, role: e.target.value as 'admin' | 'editor' | 'visualizador' })}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                >
+                  <option value="editor">Editor (ler e escrever)</option>
+                  <option value="visualizador">Visualizador (só ler)</option>
+                  <option value="admin">Administrador (tudo)</option>
+                </select>
+              </div>
             </div>
             <div>
               <label className="text-xs font-medium text-slate-500 mb-1 block">Senha temporária</label>
