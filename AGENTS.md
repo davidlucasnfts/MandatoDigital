@@ -34,6 +34,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Leitura única** — ler arquivo 1x, fazer todas as mudanças na memória, escrever 1x
 - **StrReplaceFile preferido** — só substituir o trecho que muda, não reescrever arquivo inteiro
 - **Commits agrupados** — uma única chamada de commit com todas as mudanças
+- **Push somente no final da sessão** — quando o usuário pedir para encerrar. Durante a sessão, commit local apenas
 - **Sem prints desnecessários** — resultado direto, sem mostrar código que já foi visto
 
 ### Sincronização de Arquivos de Projeto

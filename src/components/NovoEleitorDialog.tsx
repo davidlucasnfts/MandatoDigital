@@ -61,9 +61,12 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const [form, setForm] = useState<Partial<Eleitor>>(buildForm(eleitor));
 
   useEffect(() => {
+    // Só rebuilda o form se o dialog acabou de abrir (open mudou de false pra true)
+    // ou se o eleitor mudou de ID. Evita sobrescrever digitação do usuário.
     setForm(buildForm(eleitor));
     if (eleitor?.nivel) setAbaAtiva(eleitor.nivel as AbaNivel);
-  }, [eleitor]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eleitor?.id, open]);
 
   useEffect(() => {
     setForm(prev => ({ ...prev, nivel: abaAtiva }));
@@ -86,6 +89,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
 
         setForm(prev => ({
           ...prev,
+          cep: maskCEP(clean), // <-- GARANTE QUE O CEP FICA FORMATADO NO FORM
           endereco,
           bairro,
           cidade,
@@ -280,7 +284,6 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                   value={form.bairro || ''}
                   onChange={v => setField('bairro', v)}
                   cidade={form.cidade || ''}
-                  uf={form.estado || ''}
                   placeholder="Bairro"
                 />
               </div>

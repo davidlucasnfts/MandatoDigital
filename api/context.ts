@@ -66,7 +66,9 @@ export async function createContext(
     const equipe = equipeRows[0];
 
     // Se não tem registro na equipe, assume visualizador (menor privilégio)
-    const role = equipe?.role ?? "visualizador";
+    // EXCEÇÃO: o próprio dono da conta (quem criou) sempre é admin
+    const isOwner = !equipe || equipe.ownerId === supabaseUser.id;
+    const role = equipe?.role ?? (isOwner ? "admin" : "visualizador");
     const ownerId = equipe?.ownerId ?? supabaseUser.id;
 
     return {

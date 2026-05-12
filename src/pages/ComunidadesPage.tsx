@@ -3,7 +3,7 @@ import { Users, MapPin, Plus, Pencil, Trash2, icons } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { useComunidades } from '@/hooks/useSupabaseData';
+import { useComunidades, useEleitores } from '@/hooks/useSupabaseData';
 import NovaComunidadeDialog from '@/components/NovaComunidadeDialog';
 import type { Comunidade } from '@/lib/supabase';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: (i: number) => ({ opaci
 
 export default function ComunidadesPage() {
   const { data: comunidades, loading, fetch, remove } = useComunidades();
+  const { data: eleitores } = useEleitores();
   const [novaOpen, setNovaOpen] = useState(false);
   const [editComunidade, setEditComunidade] = useState<Comunidade | null>(null);
 
@@ -44,8 +45,13 @@ export default function ComunidadesPage() {
                 <p className="text-xs text-slate-500 mb-3 line-clamp-2">{c.descricao}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                   <div className="flex items-center gap-1.5 text-xs text-slate-500"><Users className="w-3.5 h-3.5"/>{c.total_eleitores || 0} eleitores</div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500"><MapPin className="w-3.5 h-3.5"/>{c.lider}</div>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500"><MapPin className="w-3.5 h-3.5"/>{c.bairro ? `${c.bairro}, ${c.cidade}` : (c.cidade || 'Sem local')}</div>
                 </div>
+                {c.lider_id && (
+                  <div className="mt-2 text-[10px] text-slate-400">
+                    Líder: {eleitores.find(e => e.id === c.lider_id)?.nome || '—'}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
@@ -55,5 +61,3 @@ export default function ComunidadesPage() {
     </div>
   );
 }
-
-

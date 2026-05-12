@@ -48,6 +48,11 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Autocomplete de cidades e bairros do Brasil** | **10/05** |
 | **Geocodificacao real no mapa (Nominatim/OpenStreetMap)** | **10/05** |
 | **Batch geocodificacao de eleitores existentes** | **10/05** |
+| **Bugfix: CEP atualiza no cadastro + Comunidade cria corretamente** | **11/05** |
+| **Comunidade.lider vinculado a eleitores (FK lider_id)** | **11/05** |
+| **Bairro relacional em comunidades + posicionamento no mapa** | **12/05** |
+| **Mapa Territorial v2: cluster, filtros avançados, popups, camadas, zoom automático, estatísticas** | **12/05** |
+| **Mapa Territorial v3: heatmap de densidade + rota de visita otimizada** | **12/05** |
 
 ---
 

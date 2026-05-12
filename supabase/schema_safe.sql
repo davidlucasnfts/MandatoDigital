@@ -398,6 +398,14 @@ ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS data_evento DATE;
 
 -- Comunidades: icone personalizado
 ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS icone TEXT DEFAULT 'Users';
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS cidade TEXT;
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS lider_id UUID REFERENCES eleitores(id) ON DELETE SET NULL;
+ALTER TABLE comunidades DROP COLUMN IF EXISTS lider;
+
+-- 12/05/2026 — Bairro relacional (único) + coordenadas da comunidade
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS bairro TEXT;
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS latitude NUMERIC(10, 8);
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS longitude NUMERIC(11, 8);
 
 -- Atualizar comunidades existentes
 UPDATE comunidades SET icone = 'Users' WHERE icone IS NULL;

@@ -5,8 +5,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useComunidades } from '@/hooks/useSupabaseData';
+import { useComunidades, useEleitores } from '@/hooks/useSupabaseData';
 import AutocompleteCidade from '@/components/AutocompleteCidade';
+import AutocompleteBairro from '@/components/AutocompleteBairro';
 import { capitalizeWords } from '@/lib/masks';
 import type { Comunidade } from '@/lib/supabase';
 
@@ -14,42 +15,64 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  comunidade?: import('@/lib/supabase').Comunidade | null;
+  comunidade?: Comunidade | null;
 }
 
 export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunidade }: Props) {
   const { insert, update } = useComunidades();
+  const { data: eleitores } = useEleitores();
+  const lideres = eleitores.filter(e => e.nivel === 'lider');
   const [loading, setLoading] = useState(false);
   const isEdit = !!comunidade;
   const iconesDisponiveis = Object.keys(icons).filter(k => k[0] >= 'A' && k[0] <= 'Z').sort();
 
-  const buildForm = (c?: import('@/lib/supabase').Comunidade | null) => ({
+  const buildForm = (c?: Comunidade | null) => ({
     nome: c?.nome || '',
     descricao: c?.descricao || '',
-    lider: c?.lider || '',
+    lider_id: c?.lider_id || null,
     cor: c?.cor || '#2563EB',
     icone: c?.icone || 'Users',
     cidade: c?.cidade || '',
-    bairros: c?.bairros || [],
+    bairro: c?.bairro || '',
   });
   const [form, setForm] = useState(buildForm(comunidade));
 
-  useEffect(() => { setForm(buildForm(comunidade)); }, [comunidade]);
+  useEffect(() => { setForm(buildForm(comunidade)); }, [comunidade?.id, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.nome?.trim()) return;
 
     setLoading(true);
-    if (isEdit && comunidade) {
-      await update(comunidade.id, form);
-    } else {
-      await insert(form as any);
+    try {
+      // Monta payload apenas com campos válidos do banco (sem campos virtuais)
+      const payload: Partial<Comunidade> = {
+        nome: form.nome.trim(),
+        descricao: form.descricao || undefined,
+        lider_id: form.lider_id || null,
+        cor: form.cor || '#2563EB',
+        icone: form.icone || 'Users',
+        cidade: form.cidade || null,
+        bairro: form.bairro || null,
+      };
+
+      let result;
+      if (isEdit && comunidade) {
+        result = await update(comunidade.id, payload);
+      } else {
+        result = await insert(payload as any);
+      }
+      if (!result) {
+        throw new Error('Erro ao salvar comunidade. Verifique se todos os campos estão preenchidos corretamente.');
+      }
+      setForm(buildForm(null));
+      onSuccess?.();
+      onClose();
+    } catch (err: any) {
+      alert(err?.message || 'Erro ao salvar comunidade');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-    setForm(buildForm(null));
-    onSuccess?.();
-    onClose();
   };
 
   const setField = <K extends keyof Comunidade>(key: K, value: Comunidade[K]) => {
@@ -80,14 +103,31 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="lider">Líder</Label>
-              <Input id="lider" value={form.lider || ''} onChange={e => setField('lider', e.target.value)} placeholder="Nome do líder da comunidade" />
+              <Label htmlFor="lider_id">Líder</Label>
+              <select id="lider_id" value={form.lider_id || ''} onChange={e => setField('lider_id', e.target.value || null)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm">
+                <option value="">Selecione um líder</option>
+                {lideres.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
+              </select>
             </div>
 
             <div className="space-y-1.5">
               <Label htmlFor="cidade">Cidade</Label>
-              <AutocompleteCidade id="cidade" value={form.cidade || ''} onChange={v => setField('cidade', v)} placeholder="São Paulo" />
+              <AutocompleteCidade id="cidade" value={form.cidade || ''} onChange={v => {
+                setField('cidade', v);
+                setField('bairro', ''); // Limpa bairro ao trocar cidade
+              }} placeholder="São Paulo" />
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="bairro">Bairro</Label>
+            <AutocompleteBairro
+              id="bairro"
+              cidade={form.cidade || ''}
+              value={form.bairro || ''}
+              onChange={v => setField('bairro', v)}
+              placeholder="Selecione o bairro"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -105,11 +145,6 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
                 {iconesDisponiveis.slice(0, 60).map(i => <option key={i} value={i}>{i}</option>)}
               </select>
             </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="bairros">Bairros (separados por vírgula)</Label>
-            <Input id="bairros" value={(form.bairros || []).join(', ')} onChange={e => setField('bairros', e.target.value.split(',').map(t => t.trim()).filter(Boolean))} placeholder="Centro, Jardins, Vila Mariana" />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

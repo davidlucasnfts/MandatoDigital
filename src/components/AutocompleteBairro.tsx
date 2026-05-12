@@ -1,46 +1,60 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Building, ChevronDown } from 'lucide-react';
+import { MapPin, ChevronDown } from 'lucide-react';
+import bairrosData from '@/data/bairrosBrasil.json';
 
 interface Props {
+  cidade: string;
   value: string;
   onChange: (value: string) => void;
-  cidade?: string;
-  uf?: string;
   placeholder?: string;
   label?: string;
   id?: string;
   disabled?: boolean;
 }
 
-// Bairros serão carregados dinamicamente do banco (eleitores existentes) + dataset local
-export default function AutocompleteBairro({ value, onChange, cidade, uf, placeholder = 'Digite o bairro', label, id, disabled }: Props) {
+const bairrosPorCidade: Record<string, string[]> = bairrosData;
+
+function normalizarCidade(cidade: string): string {
+  // Remove acentos e converte para formato do JSON: "Sao Paulo/SP"
+  const semAcento = cidade
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  return semAcento;
+}
+
+function encontrarChaveCidade(cidade: string): string | null {
+  if (!cidade) return null;
+  const norm = normalizarCidade(cidade).toLowerCase();
+
+  // Tenta match exato
+  for (const key of Object.keys(bairrosPorCidade)) {
+    const keyCidade = key.split('/')[0].toLowerCase();
+    if (keyCidade === norm) return key;
+  }
+
+  // Tenta match parcial
+  for (const key of Object.keys(bairrosPorCidade)) {
+    const keyCidade = key.split('/')[0].toLowerCase();
+    if (keyCidade.includes(norm) || norm.includes(keyCidade)) return key;
+  }
+
+  return null;
+}
+
+export default function AutocompleteBairro({ cidade, value, onChange, placeholder = 'Selecione o bairro', label, id, disabled }: Props) {
   const [aberto, setAberto] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [highlighted, setHighlighted] = useState(0);
-  const [bairrosLocais, setBairrosLocais] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const chaveCidade = useMemo(() => encontrarChaveCidade(cidade), [cidade]);
+  const bairros = useMemo(() => chaveCidade ? bairrosPorCidade[chaveCidade] : [], [chaveCidade]);
 
   // Sincroniza input com prop value
   useEffect(() => {
     setInputValue(value);
   }, [value]);
-
-  // Carrega bairros do dataset local se disponível
-  useEffect(() => {
-    if (!cidade || !uf) {
-      setBairrosLocais([]);
-      return;
-    }
-    const key = `${cidade}/${uf}`;
-    // Import dinâmico do dataset (lazy load)
-    import('@/data/bairrosBrasil.json')
-      .then(mod => {
-        const data = mod.default as Record<string, string[]> || {};
-        const lista = data[key] || [];
-        setBairrosLocais(lista);
-      })
-      .catch(() => setBairrosLocais([]));
-  }, [cidade, uf]);
 
   // Fecha ao clicar fora
   useEffect(() => {
@@ -53,16 +67,16 @@ export default function AutocompleteBairro({ value, onChange, cidade, uf, placeh
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filtrados = useMemo(() => {
+  const filtradas = useMemo(() => {
     const q = inputValue.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    if (!q) return [];
-    return bairrosLocais
+    if (!q) return bairros.slice(0, 8);
+    return bairros
       .filter(b => {
-        const norm = b.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return norm.includes(q);
+        const nomeNorm = b.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return nomeNorm.includes(q);
       })
       .slice(0, 8);
-  }, [inputValue, bairrosLocais]);
+  }, [inputValue, bairros]);
 
   const selecionar = useCallback((bairro: string) => {
     setInputValue(bairro);
@@ -71,7 +85,7 @@ export default function AutocompleteBairro({ value, onChange, cidade, uf, placeh
   }, [onChange]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!aberto && filtrados.length > 0 && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter')) {
+    if (!aberto && filtradas.length > 0 && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter')) {
       setAberto(true);
       return;
     }
@@ -80,16 +94,16 @@ export default function AutocompleteBairro({ value, onChange, cidade, uf, placeh
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setHighlighted(prev => (prev + 1) % filtrados.length);
+        setHighlighted(prev => (prev + 1) % filtradas.length);
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setHighlighted(prev => (prev - 1 + filtrados.length) % filtrados.length);
+        setHighlighted(prev => (prev - 1 + filtradas.length) % filtradas.length);
         break;
       case 'Enter':
         e.preventDefault();
-        if (filtrados[highlighted]) {
-          selecionar(filtrados[highlighted]);
+        if (filtradas[highlighted]) {
+          selecionar(filtradas[highlighted]);
         }
         break;
       case 'Escape':
@@ -99,7 +113,7 @@ export default function AutocompleteBairro({ value, onChange, cidade, uf, placeh
   };
 
   const handleFocus = () => {
-    if (inputValue.trim().length >= 2 && filtrados.length > 0) {
+    if (bairros.length > 0) {
       setAberto(true);
     }
   };
@@ -109,41 +123,40 @@ export default function AutocompleteBairro({ value, onChange, cidade, uf, placeh
     setInputValue(val);
     onChange(val);
     setHighlighted(0);
-    if (val.trim().length >= 2) {
+    if (val.trim().length >= 1) {
       setAberto(true);
     } else {
       setAberto(false);
     }
   };
 
-  const mostrarDropdown = aberto && filtrados.length > 0;
-  const mostrarVazio = aberto && inputValue.trim().length >= 2 && filtrados.length === 0 && bairrosLocais.length > 0;
-  const mostrarInfo = aberto && bairrosLocais.length === 0 && cidade && uf;
+  const semBairros = !chaveCidade || bairros.length === 0;
 
   return (
     <div ref={containerRef} className="relative">
       {label && <label htmlFor={id} className="block text-sm font-medium text-slate-700 mb-1">{label}</label>}
       <div className="relative">
-        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         <input
+          ref={inputRef}
           id={id}
           type="text"
           value={inputValue}
           onChange={handleChange}
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
-          disabled={disabled}
-          placeholder={placeholder}
+          disabled={disabled || semBairros}
+          placeholder={semBairros ? (cidade ? 'Cidade sem bairros cadastrados' : 'Selecione uma cidade primeiro') : placeholder}
           autoComplete="off"
-          className="w-full h-10 pl-9 pr-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+          className="w-full h-10 pl-9 pr-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 transition-transform ${aberto ? 'rotate-180' : ''}`} />
       </div>
 
-      {/* Dropdown com sugestões */}
-      {mostrarDropdown && (
+      {/* Dropdown */}
+      {aberto && filtradas.length > 0 && (
         <ul className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border border-slate-200 bg-white shadow-lg">
-          {filtrados.map((bairro, i) => (
+          {filtradas.map((bairro, i) => (
             <li
               key={bairro}
               onClick={() => selecionar(bairro)}
@@ -158,17 +171,9 @@ export default function AutocompleteBairro({ value, onChange, cidade, uf, placeh
         </ul>
       )}
 
-      {/* Sem resultados mas tem dataset */}
-      {mostrarVazio && (
+      {aberto && inputValue.trim().length >= 1 && filtradas.length === 0 && !semBairros && (
         <div className="absolute z-50 w-full mt-1 rounded-md border border-slate-200 bg-white shadow-lg px-3 py-2 text-sm text-slate-500">
-          Nenhum bairro encontrado — você pode digitar livremente
-        </div>
-      )}
-
-      {/* Sem dataset para esta cidade */}
-      {mostrarInfo && (
-        <div className="absolute z-50 w-full mt-1 rounded-md border border-slate-200 bg-white shadow-lg px-3 py-2 text-sm text-slate-500">
-          Digite o nome do bairro
+          Nenhum bairro encontrado
         </div>
       )}
     </div>

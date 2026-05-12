@@ -58,11 +58,13 @@ export type Comunidade = {
   id: string;
   nome: string;
   descricao: string;
-  lider: string;
+  lider_id: string | null;
   cor: string;
   icone: string;
   cidade: string | null;
-  bairros: string[];
+  bairro: string | null;
+  latitude: number | null;
+  longitude: number | null;
   user_id: string;
   owner_id: string | null;
   created_at: string;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createRouter, adminQuery } from "./middleware";
+import { createRouter, editorQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { sql } from "drizzle-orm";
 
@@ -24,17 +24,32 @@ async function geocodeEndereco(
   estado: string,
   cep: string
 ): Promise<GeoCoords | null> {
-  let query: string;
-  if (cep && cep.replace(/\D/g, "").length === 8) {
-    query = `${cep}, ${cidade}, ${estado}, Brasil`;
-  } else if (endereco && cidade && estado) {
-    query = `${endereco}, ${bairro}, ${cidade}, ${estado}, Brasil`;
-  } else if (cidade && estado) {
-    query = `${cidade}, ${estado}, Brasil`;
-  } else {
+  // Validacao: precisa ter pelo menos cidade + estado, ou CEP valido
+  const cepLimpo = cep.replace(/\D/g, "");
+  const temCepValido = cepLimpo.length === 8;
+  const temCidadeEstado = cidade && cidade.trim().length > 0 && estado && estado.trim().length > 0;
+  
+  if (!temCepValido && !temCidadeEstado) {
     return null;
   }
 
+  // Tenta buscar por CEP primeiro (mais preciso)
+  if (temCepValido) {
+    const coords = await buscarNominatim(`${cepLimpo}, ${cidade || ""}, ${estado || ""}, Brasil`);
+    if (coords) return coords;
+  }
+
+  // Se CEP falhou ou não tem CEP, tenta por endereço completo
+  if (endereco && endereco.trim().length > 0) {
+    const coords = await buscarNominatim(`${endereco}, ${bairro || ""}, ${cidade}, ${estado}, Brasil`);
+    if (coords) return coords;
+  }
+
+  // Último recurso: só cidade + estado
+  return buscarNominatim(`${cidade}, ${estado}, Brasil`);
+}
+
+async function buscarNominatim(query: string): Promise<GeoCoords | null> {
   try {
     const url = `${NOMINATIM_URL}?format=json&limit=1&q=${encodeURIComponent(query)}`;
     const res = await fetch(url, {
@@ -64,8 +79,38 @@ function delay(ms: number) {
 }
 
 export const geocodingRouter = createRouter({
+  // Geocodifica um bairro (cidade + estado + bairro)
+  geocodeBairro: editorQuery
+    .input(z.object({ bairro: z.string(), cidade: z.string(), estado: z.string().optional() }))
+    .mutation(async ({ input }) => {
+      const query = `${input.bairro}, ${input.cidade}, ${input.estado || ""}, Brasil`;
+      const coords = await buscarNominatim(query);
+      return coords;
+    }),
+
+  // Lista eleitores sem coordenadas (para debug)
+  pending: editorQuery.query(async () => {
+    const db = getDb();
+    const result = await db.execute(sql`
+      SELECT id, nome, endereco, bairro, cidade, estado, cep
+      FROM eleitores
+      WHERE latitude IS NULL AND longitude IS NULL
+      ORDER BY nome
+    `);
+    return result as unknown as Array<{
+      id: string;
+      nome: string;
+      endereco: string | null;
+      bairro: string | null;
+      cidade: string | null;
+      estado: string | null;
+      cep: string | null;
+    }>;
+  }),
+
   // Geocodifica TODOS os eleitores sem coordenadas (batch com throttle)
-  geocodeAll: adminQuery.mutation(async () => {
+  geocodeAll: editorQuery.mutation(async ({ ctx }) => {
+    console.log("[geocodeAll] iniciado por:", ctx.user.email, "role:", ctx.user.role);
     const db = getDb();
 
     // Busca eleitores sem coordenadas
@@ -93,6 +138,7 @@ export const geocodingRouter = createRouter({
     const errors: string[] = [];
 
     for (const e of rows) {
+      console.log("[geocodeAll] tentando:", e.id, e.endereco, e.cidade, e.estado, e.cep);
       const coords = await geocodeEndereco(
         e.endereco || "",
         e.bairro || "",
@@ -100,6 +146,7 @@ export const geocodingRouter = createRouter({
         e.estado || "",
         e.cep || ""
       );
+      console.log("[geocodeAll] resultado:", e.id, coords);
 
       if (coords) {
         try {
@@ -115,7 +162,12 @@ export const geocodingRouter = createRouter({
         }
       } else {
         failed++;
-        errors.push(`${e.id}: geocodificacao falhou`);
+        const motivo = !e.cidade || !e.estado 
+          ? "cidade/estado ausente" 
+          : !e.cep && !e.endereco 
+            ? "CEP ou endereco ausente" 
+            : "endereco nao encontrado no Nominatim";
+        errors.push(`${e.id}: ${motivo}`);
       }
 
       // Respeita rate limit do Nominatim: 1.2 segundos entre requisicoes
@@ -128,6 +180,9 @@ export const geocodingRouter = createRouter({
       failed,
       total: rows.length,
       errors: errors.slice(0, 10),
+      message: processed > 0 
+        ? `Geocodificacao concluida: ${processed} sucesso, ${failed} falha(s)` 
+        : `Nenhum endereco encontrado. Verifique se os eleitores tem CEP, endereco, cidade e estado preenchidos.`,
     };
   }),
 });
