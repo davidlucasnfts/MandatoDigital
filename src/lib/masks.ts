@@ -89,9 +89,9 @@ export function capitalizeFirst(value: string): string {
 
 // Formata data para input type="date" (YYYY-MM-DD)
 // Recebe string do banco (pode vir com timezone) e extrai só a parte da data
-export function formatDateForInput(value: string | null | undefined): string {
-  if (!value) return '';
+export function formatDateForInput(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
   // Se vier com timezone (ex: 1990-05-10T00:00:00+00:00), pega só YYYY-MM-DD
   const match = value.match(/^(\d{4}-\d{2}-\d{2})/);
-  return match ? match[1] : '';
+  return match ? match[1] : undefined;
 }
