@@ -3,10 +3,14 @@
  * Script para importar dados do CNEFE (IBGE) para o Supabase
  *
  * Uso:
- *   npx tsx scripts/importar-cnefe.ts <caminho-do-csv> [uf]
+ *   npx tsx scripts/importar-cnefe.ts <arquivo-ou-pasta> [UF]
  *
  * Exemplos:
+ *   # Importar um arquivo
  *   npx tsx scripts/importar-cnefe.ts "C:/Users/.../12_AC.csv" AC
+ *
+ *   # Importar TODOS os CSVs de uma pasta
+ *   npx tsx scripts/importar-cnefe.ts "C:/Users/.../MAPS_EXTRAIDOS"
  *
  * Fonte dos dados:
  *   ftp.ibge.gov.br/Cadastro_Nacional_de_Enderecos_para_Fins_Estatisticos/
@@ -14,6 +18,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
+import path from "path";
 import readline from "readline";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
@@ -26,11 +31,34 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const arquivo = process.argv[2];
+const caminho = process.argv[2];
 const ufFiltro = process.argv[3]?.toUpperCase();
 
-if (!arquivo || !fs.existsSync(arquivo)) {
-  console.error("Uso: npx tsx scripts/importar-cnefe.ts <arquivo.csv> [UF]");
+if (!caminho || !fs.existsSync(caminho)) {
+  console.error("Uso: npx tsx scripts/importar-cnefe.ts <arquivo.csv|pasta> [UF]");
+  process.exit(1);
+}
+
+// Detecta se é pasta ou arquivo
+const stat = fs.statSync(caminho);
+const arquivos: string[] = [];
+
+if (stat.isDirectory()) {
+  // Lista todos os CSVs da pasta
+  const files = fs.readdirSync(caminho);
+  files.forEach((f) => {
+    if (f.toLowerCase().endsWith(".csv")) {
+      arquivos.push(path.join(caminho, f));
+    }
+  });
+  console.log(`Pasta detectada: ${arquivos.length} arquivo(s) CSV encontrado(s)`);
+  arquivos.forEach((a) => console.log(`  - ${path.basename(a)}`));
+} else {
+  arquivos.push(caminho);
+}
+
+if (arquivos.length === 0) {
+  console.error("Nenhum arquivo CSV encontrado");
   process.exit(1);
 }
 
@@ -52,7 +80,19 @@ const UF_MAP: Record<string, string> = {
   "50": "MS", "51": "MT", "52": "GO", "53": "DF",
 };
 
-async function importar() {
+// Extrai UF do nome do arquivo (ex: "12_AC.csv" -> "AC")
+function extrairUfDoNome(nome: string): string | null {
+  const match = nome.match(/\d{2}_(\w{2})\.csv$/i);
+  return match ? match[1].toUpperCase() : null;
+}
+
+async function importarArquivo(arquivo: string): Promise<{ inseridos: number; ignorados: number }> {
+  const nomeArquivo = path.basename(arquivo);
+  const ufDoNome = extrairUfDoNome(nomeArquivo);
+  const ufUsar = ufFiltro || ufDoNome;
+
+  console.log(`\n=== Importando: ${nomeArquivo} ${ufUsar ? "(UF: " + ufUsar + ")" : ""} ===`);
+
   const fileStream = fs.createReadStream(arquivo, { encoding: "utf-8" });
   const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
 
@@ -61,7 +101,8 @@ async function importar() {
   let ignorados = 0;
   let lote: Array<{
     uf: string;
-    municipio: string;
+    codigo_municipio: string;
+    municipio: string | null;
     bairro: string | null;
     tipo_logradouro: string | null;
     nome_logradouro: string;
@@ -78,16 +119,14 @@ async function importar() {
   for await (const line of rl) {
     if (!cabecalho) {
       cabecalho = line.split(";").map((h) => h.replace(/^"|"$/g, "").trim());
-      console.log("Cabecalho:", cabecalho.slice(0, 5).join(", "), "...");
-      console.log("Total colunas:", cabecalho.length);
       continue;
     }
 
     const row = parseLinha(line, cabecalho);
 
-    // Mapeamento das colunas do CNEFE 2022 (nomes reais do IBGE)
+    // Mapeamento das colunas do CNEFE 2022
     const codUf = row["COD_UF"] || "";
-    const uf = UF_MAP[codUf] || ufFiltro || "";
+    const uf = UF_MAP[codUf] || ufUsar || "";
     const codigoMunicipio = row["COD_MUNICIPIO"] || "";
     const bairro = row["DSC_LOCALIDADE"] || null;
     const tipoLogradouro = row["NOM_TIPO_SEGLOGR"] || null;
@@ -122,7 +161,7 @@ async function importar() {
     lote.push({
       uf: uf.toUpperCase(),
       codigo_municipio: codigoMunicipio,
-      municipio: null, // sera preenchido posteriormente ou via API IBGE
+      municipio: null,
       bairro: bairro?.toUpperCase() || null,
       tipo_logradouro: tipoLogradouro?.toUpperCase() || null,
       nome_logradouro: nomeLogradouro.toUpperCase(),
@@ -137,13 +176,13 @@ async function importar() {
     if (lote.length >= BATCH_SIZE) {
       const { error } = await supabase.from("cnefe_enderecos").insert(lote);
       if (error) {
-        console.error("Erro no lote:", error.message);
+        console.error("  Erro no lote:", error.message);
       } else {
         inseridos += lote.length;
       }
       lote = [];
       if (inseridos % 10000 === 0) {
-        console.log(`Progresso: ${inseridos} enderecos importados...`);
+        console.log(`  Progresso: ${inseridos} enderecos...`);
       }
     }
   }
@@ -152,18 +191,36 @@ async function importar() {
   if (lote.length > 0) {
     const { error } = await supabase.from("cnefe_enderecos").insert(lote);
     if (error) {
-      console.error("Erro no lote final:", error.message);
+      console.error("  Erro no lote final:", error.message);
     } else {
       inseridos += lote.length;
     }
   }
 
-  console.log("\n=== Resumo da Importacao ===");
-  console.log(`Enderecos inseridos: ${inseridos}`);
-  console.log(`Linhas ignoradas: ${ignorados}`);
-  console.log(`Total processado: ${inseridos + ignorados}`);
-  console.log("\nPara verificar o status:");
+  console.log(`  Concluido: ${inseridos} inseridos, ${ignorados} ignorados`);
+  return { inseridos, ignorados };
+}
+
+async function importar() {
+  let totalInseridos = 0;
+  let totalIgnorados = 0;
+
+  for (const arquivo of arquivos) {
+    const { inseridos, ignorados } = await importarArquivo(arquivo);
+    totalInseridos += inseridos;
+    totalIgnorados += ignorados;
+  }
+
+  console.log("\n========================================");
+  console.log("=== RESUMO GERAL ===");
+  console.log(`Arquivos processados: ${arquivos.length}`);
+  console.log(`Total inseridos: ${totalInseridos}`);
+  console.log(`Total ignorados: ${totalIgnorados}`);
+  console.log(`Total geral: ${totalInseridos + totalIgnorados}`);
+  console.log("========================================");
+  console.log("\nPara verificar:");
   console.log("  SELECT COUNT(*) FROM cnefe_enderecos;");
+  console.log("  SELECT uf, COUNT(*) FROM cnefe_enderecos GROUP BY uf;");
 }
 
 importar().catch((err) => {
