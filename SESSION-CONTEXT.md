@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 14/05/2026
-> **Sessão atual:** Mapa Territorial v4 — CNEFE (IBGE) + tiles profissionais
+> **Sessão atual:** Correção de campos de data + validação de idade mínima
 
 ---
 
@@ -11,42 +11,35 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Mapa Territorial v4** — 14/05
+**Correção de campos de data + validação de idade mínima** — 14/05
 
 ### O que mudou:
-1. **Base CNEFE (IBGE) importada** — tabela `cnefe_enderecos` com 106M+ endereços georreferenciados do Censo 2022
-2. **Geocodificação híbrida** — busca no CNEFE primeiro (local, instantâneo), fallback para Nominatim (OSM)
-3. **Tiles profissionais** — CartoDB Voyager (padrão), Esri World Imagery (satélite), CartoDB Dark Matter (escuro)
-4. **Seletor de camada no mapa** — toggle entre Ruas / Satélite / Escuro
-5. **Script de importação** — `scripts/importar-cnefe.ts` para importar CSVs do IBGE por UF ou município
-6. **Endpoint tRPC `cnefe`** — busca por endereço, busca por CEP, geocodificação, status da importação
-7. **Batch geocodificação otimizada** — sem delay para CNEFE, só delay para Nominatim
-
-### Arquivos criados:
-- `supabase/migrations/017-cnefe-enderecos.sql` — schema da tabela CNEFE
-- `scripts/importar-cnefe.ts` — script de importação dos CSVs do IBGE
-- `api/cnefe-router.ts` — endpoints tRPC para busca no CNEFE
+1. **Correção `formatDateForInput`** — retorna `undefined` em vez de `''` quando não há valor, evitando ano 275760
+2. **`min/max` em todos os inputs `type="date"`** — `min="1900-01-01"`, `max` dinâmico conforme contexto
+3. **Validação `onBlur` para data de nascimento** — ao sair do campo, corrige para o máximo permitido (18 anos atrás) ou mínimo (1900)
+4. **Todos os dialogs corrigidos:** NovaSolicitacaoDialog, NovaEnqueteDialog, NovaTarefaDialog, NovoEventoDialog, InteracoesPanel, NovoEleitorDialog
 
 ### Arquivos modificados:
-- `db/schema.ts` — adicionado `cnefeEnderecos`
-- `api/router.ts` — registrado `cnefeRouter`
-- `api/geocoding-router.ts` — usa CNEFE primeiro, depois Nominatim
-- `src/lib/geocoding.ts` — atualizado para usar tRPC CNEFE
-- `src/pages/MapaPage.tsx` — tiles CartoDB/Esri + seletor de camada
+- `src/lib/masks.ts` — `formatDateForInput` retorna `undefined`
+- `src/components/NovoEleitorDialog.tsx` — validação `onBlur` com limite de 18 anos
+- `src/components/NovaSolicitacaoDialog.tsx` — `min/max` nos 3 campos de data
+- `src/components/NovaEnqueteDialog.tsx` — `min/max` nos 2 campos de data
+- `src/components/NovaTarefaDialog.tsx` — `min/max` no campo data_prazo
+- `src/components/NovoEventoDialog.tsx` — `min/max` no campo data
+- `src/components/InteracoesPanel.tsx` — `min/max` no campo data
 
 ---
 
 ## Funcionalidade entregue nesta sessão
-**Mapa Territorial v4 — CNEFE + Tiles Profissionais** — 14/05
+**Correção de campos de data + validação de idade mínima (18 anos)** — 14/05
 
 ---
 
 ## Próximo passo definido
 **Aguardando definição do David** — opções:
-1. Importar CNEFE da(s) UF(s) do mandato (ação manual)
-2. Prestação de Contas Pública (portal de transparência)
-3. App mobile / PWA para campo
-4. Integração WhatsApp API oficial
+1. Prestação de Contas Pública (portal de transparência)
+2. App mobile / PWA para campo
+3. Integração WhatsApp API oficial
 
 ---
 

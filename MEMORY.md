@@ -54,6 +54,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Mapa Territorial v2: cluster, filtros avançados, popups, camadas, zoom automático, estatísticas** | **12/05** |
 | **Mapa Territorial v3: heatmap de densidade + rota de visita otimizada** | **12/05** |
 | **Mapa Territorial v4: CNEFE (IBGE) + tiles profissionais (CartoDB/Esri)** | **14/05** |
+| **Correção campos de data (type=date) em todos os dialogs — formato YYYY-MM-DD** | **14/05** |
+| **Validação data de nascimento: mínimo 18 anos, bloqueio ano inválido** | **14/05** |
 
 ---
 
