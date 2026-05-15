@@ -3,30 +3,86 @@ import * as icons from 'lucide-react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
+// Mapeamento de nomes em inglês para português
+const NOMES_PT: Record<string, string> = {
+  Users: 'Pessoas',
+  User: 'Pessoa',
+  UserCheck: 'Pessoa Verif.',
+  UserPlus: 'Adicionar',
+  UserCircle: 'Perfil',
+  Building2: 'Prédio',
+  Building: 'Edifício',
+  Home: 'Casa',
+  House: 'Residência',
+  MapPin: 'Local',
+  Map: 'Mapa',
+  Globe: 'Mundo',
+  Locate: 'Localizar',
+  Heart: 'Coração',
+  HeartHandshake: 'Solidariedade',
+  Handshake: 'Acordo',
+  HelpingHand: 'Ajuda',
+  Star: 'Estrela',
+  Award: 'Prêmio',
+  Trophy: 'Troféu',
+  Medal: 'Medalha',
+  Flag: 'Bandeira',
+  FlagTriangleRight: 'Sinalizador',
+  Landmark: 'Monumento',
+  Shield: 'Escudo',
+  ShieldCheck: 'Protegido',
+  ShieldAlert: 'Alerta',
+  BookOpen: 'Livro Aberto',
+  Book: 'Livro',
+  Library: 'Biblioteca',
+  Church: 'Igreja',
+  School: 'Escola',
+  Hospital: 'Hospital',
+  Store: 'Loja',
+  TreePine: 'Natureza',
+  Flower2: 'Flor',
+  Sun: 'Sol',
+  Moon: 'Lua',
+  Music: 'Música',
+  Mic: 'Microfone',
+  Video: 'Vídeo',
+  Camera: 'Câmera',
+  Car: 'Carro',
+  Bus: 'Ônibus',
+  Train: 'Trem',
+  Plane: 'Avião',
+  Briefcase: 'Trabalho',
+  Wrench: 'Ferramenta',
+  Hammer: 'Construção',
+  HardHat: 'Segurança',
+  ShoppingCart: 'Carrinho',
+  ShoppingBag: 'Compras',
+  Gift: 'Presente',
+  Coffee: 'Café',
+  Utensils: 'Restaurante',
+  Pizza: 'Pizza',
+  Dumbbell: 'Academia',
+  Bike: 'Bicicleta',
+  Activity: 'Saúde',
+  Baby: 'Criança',
+  Accessibility: 'Acessibilidade',
+  Ear: 'Audição',
+  GraduationCap: 'Formatura',
+  PenTool: 'Design',
+  Palette: 'Arte',
+  Monitor: 'Computador',
+  Smartphone: 'Celular',
+  Wifi: 'Internet',
+  Droplets: 'Água',
+  Flame: 'Fogo',
+  Zap: 'Energia',
+  Anchor: 'Âncora',
+  Rocket: 'Foguete',
+  PlaneTakeoff: 'Decolagem',
+};
+
 // Ícones mais relevantes para comunidades/organizações políticas
-const ICONES_RECOMENDADOS = [
-  'Users', 'User', 'UserCheck', 'UserPlus', 'UserCircle',
-  'Building2', 'Building', 'Home', 'House',
-  'MapPin', 'Map', 'Globe', 'Locate',
-  'Heart', 'HeartHandshake', 'Handshake', 'HelpingHand',
-  'Star', 'Award', 'Trophy', 'Medal',
-  'Flag', 'FlagTriangleRight', 'Landmark',
-  'Shield', 'ShieldCheck', 'ShieldAlert',
-  'BookOpen', 'Book', 'Library',
-  'Church', 'School', 'Hospital', 'Store',
-  'TreePine', 'Flower2', 'Sun', 'Moon',
-  'Music', 'Mic', 'Video', 'Camera',
-  'Car', 'Bus', 'Train', 'Plane',
-  'Briefcase', 'Wrench', 'Hammer', 'HardHat',
-  'ShoppingCart', 'ShoppingBag', 'Gift',
-  'Coffee', 'Utensils', 'Pizza',
-  'Dumbbell', 'Bike', 'Activity',
-  'Baby', 'Accessibility', 'Ear',
-  'GraduationCap', 'PenTool', 'Palette',
-  'Monitor', 'Smartphone', 'Wifi',
-  'Droplets', 'Flame', 'Zap',
-  'Anchor', 'Rocket', 'PlaneTakeoff',
-];
+const ICONES_RECOMENDADOS = Object.keys(NOMES_PT);
 
 interface IconPickerProps {
   value: string;
@@ -41,7 +97,10 @@ export default function IconPicker({ value, onChange, label = 'Ícone' }: IconPi
   const iconesFiltrados = useMemo(() => {
     if (!busca) return ICONES_RECOMENDADOS;
     const q = busca.toLowerCase();
-    return ICONES_RECOMENDADOS.filter(n => n.toLowerCase().includes(q));
+    return ICONES_RECOMENDADOS.filter(nome => {
+      const nomePt = NOMES_PT[nome] || nome;
+      return nome.toLowerCase().includes(q) || nomePt.toLowerCase().includes(q);
+    });
   }, [busca]);
 
   // Componente do ícone selecionado
@@ -60,7 +119,7 @@ export default function IconPicker({ value, onChange, label = 'Ícone' }: IconPi
         <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
           <IconSelecionado className="w-4 h-4 text-blue-600" />
         </div>
-        <span className="flex-1 text-left text-slate-700">{value}</span>
+        <span className="flex-1 text-left text-slate-700">{NOMES_PT[value] || value}</span>
         <icons.ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${aberto ? 'rotate-180' : ''}`} />
       </button>
 
@@ -90,12 +149,13 @@ export default function IconPicker({ value, onChange, label = 'Ícone' }: IconPi
               const Icon = (icons as Record<string, React.ComponentType<{ className?: string }>>)[nome];
               if (!Icon) return null;
               const selecionado = nome === value;
+              const nomePt = NOMES_PT[nome] || nome;
               return (
                 <button
                   key={nome}
                   type="button"
                   onClick={() => { onChange(nome); setAberto(false); setBusca(''); }}
-                  title={nome}
+                  title={nomePt}
                   className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                     selecionado
                       ? 'bg-blue-50 border border-blue-200'
@@ -104,7 +164,7 @@ export default function IconPicker({ value, onChange, label = 'Ícone' }: IconPi
                 >
                   <Icon className={`w-5 h-5 ${selecionado ? 'text-blue-600' : 'text-slate-500'}`} />
                   <span className={`text-[9px] truncate w-full text-center ${selecionado ? 'text-blue-700 font-medium' : 'text-slate-400'}`}>
-                    {nome}
+                    {nomePt}
                   </span>
                 </button>
               );

@@ -207,7 +207,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" value={form.email || ''} onChange={e => setField('email', e.target.value)} placeholder="email@exemplo.com" />
+              <Input id="email" type="email" value={form.email || ''} onChange={e => setField('email', e.target.value)} placeholder="nome@email.com" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="telefone">Telefone</Label>
