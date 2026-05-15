@@ -56,6 +56,10 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Mapa Territorial v4: CNEFE (IBGE) + tiles profissionais (CartoDB/Esri)** | **14/05** |
 | **Correção campos de data (type=date) em todos os dialogs — formato YYYY-MM-DD** | **14/05** |
 | **Validação data de nascimento: mínimo 18 anos, bloqueio ano inválido** | **14/05** |
+| **IconPicker visual + ColorPicker para comunidades** | **15/05** |
+| **Endereço completo vinculado em comunidades (CEP, rua, número, bairro, cidade, estado)** | **15/05** |
+| **Tradução PT-BR: IconPicker com nomes em português** | **15/05** |
+| **Número da casa no cadastro de eleitor + Exportação CSV/DOC/PDF** | **15/05** |
 
 ---
 
