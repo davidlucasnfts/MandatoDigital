@@ -63,6 +63,10 @@ export type Comunidade = {
   icone: string;
   cidade: string | null;
   bairro: string | null;
+  estado: string | null;
+  cep: string | null;
+  logradouro: string | null;
+  numero: string | null;
   latitude: number | null;
   longitude: number | null;
   user_id: string;

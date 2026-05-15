@@ -141,6 +141,27 @@ export const geocodingRouter = createRouter({
       return coords;
     }),
 
+  // Geocodifica endereco completo de comunidade (rua, numero, bairro, cidade, estado, cep)
+  geocodeComunidade: editorQuery
+    .input(z.object({
+      logradouro: z.string().optional(),
+      numero: z.string().optional(),
+      bairro: z.string().optional(),
+      cidade: z.string(),
+      estado: z.string(),
+      cep: z.string().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const coords = await geocodeEndereco(
+        input.logradouro || "",
+        input.bairro || "",
+        input.cidade,
+        input.estado,
+        input.cep || ""
+      );
+      return coords;
+    }),
+
   // Lista eleitores sem coordenadas (para debug)
   pending: editorQuery.query(async () => {
     const db = getDb();

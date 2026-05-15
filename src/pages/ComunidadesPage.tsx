@@ -45,7 +45,7 @@ export default function ComunidadesPage() {
                 <p className="text-xs text-slate-500 mb-3 line-clamp-2">{c.descricao}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                   <div className="flex items-center gap-1.5 text-xs text-slate-500"><Users className="w-3.5 h-3.5"/>{c.total_eleitores || 0} eleitores</div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500"><MapPin className="w-3.5 h-3.5"/>{c.bairro ? `${c.bairro}, ${c.cidade}` : (c.cidade || 'Sem local')}</div>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500"><MapPin className="w-3.5 h-3.5"/>{c.logradouro ? `${c.logradouro}${c.numero ? ', ' + c.numero : ''} — ${c.bairro || ''}, ${c.cidade || ''}` : (c.cidade || 'Sem local')}</div>
                 </div>
                 {c.lider_id && (
                   <div className="mt-2 text-[10px] text-slate-400">

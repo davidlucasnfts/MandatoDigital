@@ -406,6 +406,10 @@ ALTER TABLE comunidades DROP COLUMN IF EXISTS lider;
 ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS bairro TEXT;
 ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS latitude NUMERIC(10, 8);
 ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS longitude NUMERIC(11, 8);
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS estado VARCHAR(2);
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS cep VARCHAR(8);
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS logradouro VARCHAR(200);
+ALTER TABLE comunidades ADD COLUMN IF NOT EXISTS numero VARCHAR(20);
 
 -- Atualizar comunidades existentes
 UPDATE comunidades SET icone = 'Users' WHERE icone IS NULL;
