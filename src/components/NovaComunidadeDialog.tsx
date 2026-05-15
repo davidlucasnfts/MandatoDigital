@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, icons } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useComunidades, useEleitores } from '@/hooks/useSupabaseData';
 import AutocompleteCidade from '@/components/AutocompleteCidade';
 import AutocompleteBairro from '@/components/AutocompleteBairro';
+import IconPicker from '@/components/IconPicker';
+import ColorPicker from '@/components/ColorPicker';
 import { capitalizeWords } from '@/lib/masks';
 import type { Comunidade } from '@/lib/supabase';
 
@@ -24,7 +26,6 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
   const lideres = eleitores.filter(e => e.nivel === 'lider');
   const [loading, setLoading] = useState(false);
   const isEdit = !!comunidade;
-  const iconesDisponiveis = Object.keys(icons).filter(k => k[0] >= 'A' && k[0] <= 'Z').sort();
 
   const buildForm = (c?: Comunidade | null) => ({
     nome: c?.nome || '',
@@ -131,20 +132,9 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="cor">Cor</Label>
-              <div className="flex items-center gap-3">
-                <input id="cor" type="color" value={form.cor || '#2563EB'} onChange={e => setField('cor', e.target.value)} className="w-10 h-10 rounded cursor-pointer border-0 p-0" />
-                <span className="text-sm text-slate-600">{form.cor || '#2563EB'}</span>
-              </div>
-            </div>
+            <ColorPicker value={form.cor || '#2563EB'} onChange={v => setField('cor', v)} />
 
-            <div className="space-y-1.5">
-              <Label htmlFor="icone">Ícone</Label>
-              <select id="icone" value={form.icone || 'Users'} onChange={e => setField('icone', e.target.value)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm">
-                {iconesDisponiveis.slice(0, 60).map(i => <option key={i} value={i}>{i}</option>)}
-              </select>
-            </div>
+            <IconPicker value={form.icone || 'Users'} onChange={v => setField('icone', v)} />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
