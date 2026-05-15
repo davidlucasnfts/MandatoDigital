@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { createRouter, editorQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { sql } from "drizzle-orm";
+import { sql, eq, and, ilike } from "drizzle-orm";
+import { cnefeEnderecos } from "../db/schema";
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT = "MandatoDigital/1.0 (contato@mandatodigital.com.br)";
@@ -15,8 +16,12 @@ interface NominatimResult {
 interface GeoCoords {
   lat: number;
   lng: number;
+  source: "cnefe" | "nominatim";
 }
 
+/**
+ * Busca endereco no CNEFE (IBGE) primeiro, fallback para Nominatim
+ */
 async function geocodeEndereco(
   endereco: string,
   bairro: string,
@@ -24,32 +29,80 @@ async function geocodeEndereco(
   estado: string,
   cep: string
 ): Promise<GeoCoords | null> {
-  // Validacao: precisa ter pelo menos cidade + estado, ou CEP valido
+  const db = getDb();
   const cepLimpo = cep.replace(/\D/g, "");
   const temCepValido = cepLimpo.length === 8;
   const temCidadeEstado = cidade && cidade.trim().length > 0 && estado && estado.trim().length > 0;
-  
+
   if (!temCepValido && !temCidadeEstado) {
     return null;
   }
 
-  // Tenta buscar por CEP primeiro (mais preciso)
+  // 1. Tenta CNEFE por CEP (mais preciso)
+  if (temCepValido) {
+    const porCep = await db
+      .select()
+      .from(cnefeEnderecos)
+      .where(eq(cnefeEnderecos.cep, cepLimpo))
+      .limit(1);
+
+    if (porCep.length > 0) {
+      return {
+        lat: parseFloat(porCep[0].latitude),
+        lng: parseFloat(porCep[0].longitude),
+        source: "cnefe",
+      };
+    }
+  }
+
+  // 2. Tenta CNEFE por logradouro + municipio
+  if (endereco && endereco.trim().length >= 3 && cidade) {
+    const logradouroNorm = endereco
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    const municipioNorm = cidade
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    const porLogradouro = await db
+      .select()
+      .from(cnefeEnderecos)
+      .where(
+        and(
+          ilike(cnefeEnderecos.nomeLogradouro, `%${logradouroNorm}%`),
+          ilike(cnefeEnderecos.municipio, `%${municipioNorm}%`),
+          estado ? eq(cnefeEnderecos.uf, estado.toUpperCase()) : undefined
+        )
+      )
+      .limit(1);
+
+    if (porLogradouro.length > 0) {
+      return {
+        lat: parseFloat(porLogradouro[0].latitude),
+        lng: parseFloat(porLogradouro[0].longitude),
+        source: "cnefe",
+      };
+    }
+  }
+
+  // 3. Fallback Nominatim (OpenStreetMap)
   if (temCepValido) {
     const coords = await buscarNominatim(`${cepLimpo}, ${cidade || ""}, ${estado || ""}, Brasil`);
-    if (coords) return coords;
+    if (coords) return { ...coords, source: "nominatim" };
   }
 
-  // Se CEP falhou ou não tem CEP, tenta por endereço completo
   if (endereco && endereco.trim().length > 0) {
     const coords = await buscarNominatim(`${endereco}, ${bairro || ""}, ${cidade}, ${estado}, Brasil`);
-    if (coords) return coords;
+    if (coords) return { ...coords, source: "nominatim" };
   }
 
-  // Último recurso: só cidade + estado
-  return buscarNominatim(`${cidade}, ${estado}, Brasil`);
+  const coords = await buscarNominatim(`${cidade}, ${estado}, Brasil`);
+  return coords ? { ...coords, source: "nominatim" } : null;
 }
 
-async function buscarNominatim(query: string): Promise<GeoCoords | null> {
+async function buscarNominatim(query: string): Promise<{ lat: number; lng: number } | null> {
   try {
     const url = `${NOMINATIM_URL}?format=json&limit=1&q=${encodeURIComponent(query)}`;
     const res = await fetch(url, {
@@ -134,6 +187,8 @@ export const geocodingRouter = createRouter({
     }
 
     let processed = 0;
+    let processedCnefe = 0;
+    let processedNominatim = 0;
     let failed = 0;
     const errors: string[] = [];
 
@@ -156,6 +211,8 @@ export const geocodingRouter = createRouter({
             WHERE id = ${e.id}
           `);
           processed++;
+          if (coords.source === "cnefe") processedCnefe++;
+          else processedNominatim++;
         } catch (err: any) {
           failed++;
           errors.push(`${e.id}: ${err?.message || "erro ao atualizar"}`);
@@ -166,22 +223,26 @@ export const geocodingRouter = createRouter({
           ? "cidade/estado ausente" 
           : !e.cep && !e.endereco 
             ? "CEP ou endereco ausente" 
-            : "endereco nao encontrado no Nominatim";
+            : "endereco nao encontrado (CNEFE + Nominatim)";
         errors.push(`${e.id}: ${motivo}`);
       }
 
-      // Respeita rate limit do Nominatim: 1.2 segundos entre requisicoes
-      await delay(1200);
+      // Só delay se usou Nominatim (CNEFE é local, não precisa)
+      if (!coords || coords.source === "nominatim") {
+        await delay(1200);
+      }
     }
 
     return {
       success: true,
       processed,
+      processedCnefe,
+      processedNominatim,
       failed,
       total: rows.length,
       errors: errors.slice(0, 10),
       message: processed > 0 
-        ? `Geocodificacao concluida: ${processed} sucesso, ${failed} falha(s)` 
+        ? `Geocodificacao concluida: ${processed} sucesso (${processedCnefe} CNEFE, ${processedNominatim} Nominatim), ${failed} falha(s)` 
         : `Nenhum endereco encontrado. Verifique se os eleitores tem CEP, endereco, cidade e estado preenchidos.`,
     };
   }),

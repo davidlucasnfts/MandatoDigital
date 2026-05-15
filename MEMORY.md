@@ -53,6 +53,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Bairro relacional em comunidades + posicionamento no mapa** | **12/05** |
 | **Mapa Territorial v2: cluster, filtros avançados, popups, camadas, zoom automático, estatísticas** | **12/05** |
 | **Mapa Territorial v3: heatmap de densidade + rota de visita otimizada** | **12/05** |
+| **Mapa Territorial v4: CNEFE (IBGE) + tiles profissionais (CartoDB/Esri)** | **14/05** |
 
 ---
 
@@ -197,7 +198,35 @@ O mapa posicionava eleitores no **centro da cidade** (coordenadas aproximadas de
 
 ---
 
+## 📝 Resumo da Sessão 14/05 — Mapa Territorial v4 (CNEFE + Tiles Profissionais)
+
+### Problema
+Mapa usava OpenStreetMap padrão (visual fraco) e Nominatim para geocodificação (impreciso, rate limit 1 req/sg). Precisava de dados REAIS do Brasil e visual profissional.
+
+### Solução
+1. **CNEFE (IBGE) como base primária** — 106M endereços georreferenciados do Censo 2022, gratuito, armazenável
+2. **Geocodificação híbrida** — CNEFE primeiro (local, instantâneo), Nominatim fallback
+3. **Tiles profissionais** — CartoDB Voyager (ruas), Esri World Imagery (satélite), CartoDB Dark Matter (escuro)
+
+### Arquivos criados
+- `supabase/migrations/017-cnefe-enderecos.sql` — schema tabela CNEFE
+- `scripts/importar-cnefe.ts` — importação de CSVs do IBGE
+- `api/cnefe-router.ts` — endpoints tRPC (busca, geocodificação, status)
+
+### Arquivos modificados
+- `db/schema.ts` — tabela `cnefeEnderecos`
+- `api/router.ts` — rota `cnefe`
+- `api/geocoding-router.ts` — CNEFE primeiro, Nominatim fallback
+- `src/lib/geocoding.ts` — usa tRPC CNEFE
+- `src/pages/MapaPage.tsx` — seletor de camada (Ruas/Satélite/Escuro)
+
+### Custo
+**R$ 0** — CNEFE é dado público federal, tiles CartoDB/Esri são gratuitos
+
+---
+
 ## 📋 Backlog
+- Importar CNEFE da UF do mandato (ação manual pendente)
 - Prestação de Contas Pública (MÉDIA)
 - App mobile / PWA para campo (MÉDIA)
 - Integração WhatsApp API oficial (MÉDIA)

@@ -159,6 +159,23 @@ export const enqueteRespostas = pgTable("enquete_respostas", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// CNEFE - Cadastro Nacional de Enderecos para Fins Estatisticos (IBGE)
+export const cnefeEnderecos = pgTable("cnefe_enderecos", {
+  id: serial("id").primaryKey(),
+  uf: varchar("uf", { length: 2 }).notNull(),
+  codigoMunicipio: varchar("codigo_municipio", { length: 20 }),
+  municipio: varchar("municipio", { length: 100 }),
+  bairro: varchar("bairro", { length: 100 }),
+  tipoLogradouro: varchar("tipo_logradouro", { length: 50 }),
+  nomeLogradouro: varchar("nome_logradouro", { length: 200 }).notNull(),
+  numero: varchar("numero", { length: 20 }),
+  cep: varchar("cep", { length: 8 }),
+  latitude: text("latitude").notNull(),
+  longitude: text("longitude").notNull(),
+  nivelGeocodificacao: integer("nivel_geocodificacao").default(3),
+  codigoUnico: varchar("codigo_unico", { length: 50 }).unique(),
+});
+
 export type Equipe = typeof equipe.$inferSelect;
 export type InsertEquipe = typeof equipe.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -175,3 +192,5 @@ export type EnqueteOpcao = typeof enqueteOpcoes.$inferSelect;
 export type InsertEnqueteOpcao = typeof enqueteOpcoes.$inferInsert;
 export type EnqueteResposta = typeof enqueteRespostas.$inferSelect;
 export type InsertEnqueteResposta = typeof enqueteRespostas.$inferInsert;
+export type CnefeEndereco = typeof cnefeEnderecos.$inferSelect;
+export type InsertCnefeEndereco = typeof cnefeEnderecos.$inferInsert;

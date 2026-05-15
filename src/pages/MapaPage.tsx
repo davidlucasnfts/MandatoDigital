@@ -53,6 +53,34 @@ function MapController({ flyTo }: { flyTo?: [number, number] | null }) {
   return null;
 }
 
+// Controle de camadas de tile (Voyager / Satelite / Dark)
+function TileLayerController({ camada }: { camada: 'voyager' | 'satellite' | 'dark' }) {
+  const map = useMap();
+  useEffect(() => {
+    // Forca refresh do tile quando muda a camada
+    map.invalidateSize();
+  }, [camada, map]);
+  return null;
+}
+
+const tileLayers = {
+  voyager: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    subdomains: '',
+  },
+  dark: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+  },
+};
+
 function agruparPorCidade(eleitores: Eleitor[]) {
   const map = new Map<string, Eleitor[]>();
   eleitores.forEach(e => { const cidade = e.cidade || 'Sem cidade'; const lista = map.get(cidade) || []; lista.push(e); map.set(cidade, lista); });
@@ -104,6 +132,7 @@ export default function MapaPage() {
   const [mostrarCidadesFallback, setMostrarCidadesFallback] = useState(true);
   const [mostrarHeatmap, setMostrarHeatmap] = useState(false);
   const [mostrarRota, setMostrarRota] = useState(false);
+  const [camadaBase, setCamadaBase] = useState<'voyager' | 'satellite' | 'dark'>('voyager');
 
   // Dialogs
   const [cidadeSelecionada, setCidadeSelecionada] = useState<string | null>(null);
@@ -347,6 +376,25 @@ export default function MapaPage() {
               </button>
               {camadasExpandido && (
                 <div className="space-y-2 pt-1">
+                  {/* Seletor de camada base */}
+                  <div className="pb-2 border-b border-slate-100">
+                    <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Mapa base</h4>
+                    <div className="flex gap-1">
+                      {[
+                        { key: 'voyager' as const, label: 'Ruas', icon: '🗺️' },
+                        { key: 'satellite' as const, label: 'Satélite', icon: '🛰️' },
+                        { key: 'dark' as const, label: 'Escuro', icon: '🌙' },
+                      ].map(c => (
+                        <button
+                          key={c.key}
+                          onClick={() => setCamadaBase(c.key)}
+                          className={`flex-1 text-[10px] py-1 px-1.5 rounded border transition-colors ${camadaBase === c.key ? 'bg-blue-50 border-blue-300 text-blue-700 font-medium' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                        >
+                          {c.icon} {c.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
                     <span className="text-xs text-slate-600">Eleitores ({eleitoresComCoords.length})</span>
@@ -469,7 +517,14 @@ export default function MapaPage() {
                 </div>
               ) : (
                 <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', minHeight: '600px', width: '100%' }}>
-                  <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <TileLayerController camada={camadaBase} />
+                  <TileLayer
+                    attribution={tileLayers[camadaBase].attribution}
+                    url={tileLayers[camadaBase].url}
+                    subdomains={tileLayers[camadaBase].subdomains}
+                    maxZoom={19}
+                    key={camadaBase}
+                  />
                   <MapController flyTo={flyTo} />
 
                   {/* Heatmap */}
