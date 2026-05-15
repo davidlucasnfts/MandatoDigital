@@ -228,7 +228,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                 id="data_nascimento"
                 type="date"
                 min="1900-01-01"
-                max={new Date().toISOString().split('T')[0]}
+                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
                 value={formatDateForInput(form.data_nascimento)}
                 onChange={e => setField('data_nascimento', e.target.value || null)}
                 className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
