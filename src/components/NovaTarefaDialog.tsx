@@ -134,6 +134,8 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
               <Input
                 id="data_prazo"
                 type="date"
+                min="1900-01-01"
+                max={new Date().toISOString().split('T')[0]}
                 value={formatDateForInput(form.data_prazo)}
                 onChange={e => setField('data_prazo', e.target.value || null)}
               />

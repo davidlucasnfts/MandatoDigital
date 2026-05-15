@@ -78,7 +78,7 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="data">Data *</Label>
-              <Input id="data" type="date" value={formatDateForInput(form.data)} onChange={e => setField('data', e.target.value)} required />
+              <Input id="data" type="date" min="1900-01-01" max={new Date().toISOString().split('T')[0]} value={formatDateForInput(form.data)} onChange={e => setField('data', e.target.value)} required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="tipo">Tipo</Label>

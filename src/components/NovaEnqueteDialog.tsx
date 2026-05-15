@@ -176,11 +176,11 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="dataPublicacao">Data de publicação</Label>
-              <Input id="dataPublicacao" type="date" value={formatDateForInput(form.dataPublicacao)} onChange={e => updateField('dataPublicacao', e.target.value)} />
+              <Input id="dataPublicacao" type="date" min="1900-01-01" max={new Date().toISOString().split('T')[0]} value={formatDateForInput(form.dataPublicacao)} onChange={e => updateField('dataPublicacao', e.target.value)} />
             </div>
             <div>
               <Label htmlFor="dataEncerramento">Data de encerramento</Label>
-              <Input id="dataEncerramento" type="date" value={formatDateForInput(form.dataEncerramento)} onChange={e => updateField('dataEncerramento', e.target.value)} />
+              <Input id="dataEncerramento" type="date" min="1900-01-01" max={new Date().toISOString().split('T')[0]} value={formatDateForInput(form.dataEncerramento)} onChange={e => updateField('dataEncerramento', e.target.value)} />
             </div>
           </div>
 
