@@ -96,7 +96,7 @@ export default function ConviteLinkDialog({ open, onClose, lider }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[95vw] max-w-lg p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Link2 className="w-5 h-5 text-blue-600" />

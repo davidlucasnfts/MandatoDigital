@@ -66,7 +66,7 @@ export default function CSVPreview({
 
       <div className="bg-slate-50 rounded-lg p-3">
         <p className="text-xs font-semibold text-slate-700 mb-2">Mapeamento de colunas</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {headers.map(h => (
             <div key={h} className="flex items-center gap-2">
               <span className="text-xs text-slate-600 truncate flex-1 font-medium">{h}:</span>
@@ -141,9 +141,9 @@ export default function CSVPreview({
         </div>
       </div>
 
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={onReset}>Cancelar</Button>
-        <Button onClick={onImport} className="bg-blue-600 hover:bg-blue-700">
+      <div className="flex flex-col-reverse sm:flex-row justify-end gap-2">
+        <Button variant="outline" onClick={onReset} size="sm" className="text-xs sm:text-sm">Cancelar</Button>
+        <Button onClick={onImport} className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm" size="sm">
           Importar {rawRowsCount} eleitores
         </Button>
       </div>
