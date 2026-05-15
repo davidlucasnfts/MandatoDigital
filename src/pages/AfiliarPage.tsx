@@ -26,6 +26,7 @@ export default function AfiliarPage() {
     telefone: '',
     cpf: '',
     endereco: '',
+    numero: '',
     bairro: '',
     cidade: 'São Paulo',
     estado: 'SP',
@@ -58,7 +59,7 @@ export default function AfiliarPage() {
         if (convite?.campos_obrigatorios && Array.isArray(convite.campos_obrigatorios)) {
           setCampos(convite.campos_obrigatorios as string[]);
         } else {
-          setCampos(['nome', 'email', 'telefone', 'cpf', 'data_nascimento', 'cep', 'endereco', 'bairro', 'cidade', 'estado']);
+          setCampos(['nome', 'email', 'telefone', 'cpf', 'data_nascimento', 'cep', 'endereco', 'numero', 'bairro', 'cidade', 'estado']);
         }
         const { data: coms } = await supabase.from('comunidades').select('id, nome').order('nome');
         setComunidades(coms || []);
@@ -78,6 +79,7 @@ export default function AfiliarPage() {
         setForm(prev => ({
           ...prev,
           endereco: data.logradouro || prev.endereco,
+          numero: '',
           bairro: data.bairro || prev.bairro,
           cidade: data.localidade || prev.cidade,
           estado: data.uf || prev.estado,
@@ -104,6 +106,7 @@ export default function AfiliarPage() {
       telefone: form.telefone || null,
       cpf: form.cpf || null,
       endereco: form.endereco || null,
+      numero: form.numero || null,
       bairro: form.bairro || null,
       cidade: form.cidade || 'São Paulo',
       estado: form.estado || 'SP',
@@ -233,9 +236,15 @@ export default function AfiliarPage() {
               )}
 
               {mostrarCampo('endereco') && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="endereco">Endereço</Label>
-                  <Input id="endereco" value={form.endereco} onChange={e => setForm({ ...form, endereco: capitalizeWords(e.target.value) })} placeholder="Rua, número" />
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2 space-y-1.5">
+                    <Label htmlFor="endereco">Endereço</Label>
+                    <Input id="endereco" value={form.endereco} onChange={e => setForm({ ...form, endereco: capitalizeWords(e.target.value) })} placeholder="Rua, avenida" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="numero">Número</Label>
+                    <Input id="numero" value={form.numero} onChange={e => setForm({ ...form, numero: e.target.value.toUpperCase() })} placeholder="S/N" />
+                  </div>
                 </div>
               )}
 

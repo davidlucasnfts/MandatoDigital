@@ -43,6 +43,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       telefone: e.telefone,
       cpf: e.cpf,
       endereco: e.endereco,
+      numero: e.numero,
       bairro: e.bairro,
       cidade: e.cidade,
       estado: e.estado,
@@ -116,6 +117,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         telefone: form.telefone || '',
         cpf: form.cpf || '',
         endereco: form.endereco || '',
+        numero: form.numero || null,
         bairro: form.bairro || '',
         cidade: form.cidade || 'São Paulo',
         estado: form.estado || 'SP',
@@ -271,9 +273,15 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="endereco">Endereço</Label>
-              <Input id="endereco" value={form.endereco || ''} onChange={e => setField('endereco', capitalizeWords(e.target.value))} placeholder="Rua, número, complemento" />
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2 space-y-1.5">
+                <Label htmlFor="endereco">Endereço</Label>
+                <Input id="endereco" value={form.endereco || ''} onChange={e => setField('endereco', capitalizeWords(e.target.value))} placeholder="Rua, avenida" />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="numero">Número</Label>
+                <Input id="numero" value={form.numero || ''} onChange={e => setField('numero', e.target.value.toUpperCase())} placeholder="S/N" />
+              </div>
             </div>
 
             <div className="grid grid-cols-3 gap-3">

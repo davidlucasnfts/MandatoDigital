@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS eleitores (
   cidade TEXT DEFAULT 'SÃ£o Paulo',
   estado TEXT DEFAULT 'SP',
   cep TEXT,
+  numero VARCHAR(20),
   comunidade_id UUID REFERENCES comunidades(id) ON DELETE SET NULL,
   nivel TEXT DEFAULT 'eleitor' CHECK (nivel IN ('lider','influenciador','apoiador','eleitor')),
   tags TEXT[] DEFAULT '{}',
