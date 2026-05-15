@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MessageSquare, Phone, MapPin, Mail, Video, FileText, Plus, X, Trash2 } from 'lucide-react';
+import { formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useInteracoes } from '@/hooks/useSupabaseData';
@@ -101,7 +102,7 @@ export default function InteracoesPanel({ eleitorId, eleitorNome, onClose }: Pro
                   <label className="text-xs font-medium text-slate-700">Data</label>
                   <input
                     type="date"
-                    value={form.data || ''}
+                    value={formatDateForInput(form.data)}
                     onChange={e => setForm({ ...form, data: e.target.value })}
                     className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
                     required

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/providers/trpc';
+import { formatDateForInput } from '@/lib/masks';
 
 interface Props {
   open: boolean;
@@ -175,11 +176,11 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="dataPublicacao">Data de publicação</Label>
-              <Input id="dataPublicacao" type="date" value={form.dataPublicacao} onChange={e => updateField('dataPublicacao', e.target.value)} />
+              <Input id="dataPublicacao" type="date" value={formatDateForInput(form.dataPublicacao)} onChange={e => updateField('dataPublicacao', e.target.value)} />
             </div>
             <div>
               <Label htmlFor="dataEncerramento">Data de encerramento</Label>
-              <Input id="dataEncerramento" type="date" value={form.dataEncerramento} onChange={e => updateField('dataEncerramento', e.target.value)} />
+              <Input id="dataEncerramento" type="date" value={formatDateForInput(form.dataEncerramento)} onChange={e => updateField('dataEncerramento', e.target.value)} />
             </div>
           </div>
 

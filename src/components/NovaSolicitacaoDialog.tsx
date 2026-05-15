@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useSolicitacoes, useEleitores } from '@/hooks/useSupabaseData';
+import { formatDateForInput } from '@/lib/masks';
 import type { Solicitacao } from '@/lib/supabase';
 
 interface Props {
@@ -123,18 +124,18 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="data_solicitacao">Data da solicitação</Label>
-              <Input id="data_solicitacao" type="date" value={form.data_solicitacao || ''} onChange={e => setField('data_solicitacao', e.target.value || null)} />
+              <Input id="data_solicitacao" type="date" value={formatDateForInput(form.data_solicitacao)} onChange={e => setField('data_solicitacao', e.target.value || null)} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="data_evento">Data do evento</Label>
-              <Input id="data_evento" type="date" value={form.data_evento || ''} onChange={e => setField('data_evento', e.target.value || null)} />
+              <Input id="data_evento" type="date" value={formatDateForInput(form.data_evento)} onChange={e => setField('data_evento', e.target.value || null)} />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="data_prazo">Prazo</Label>
-              <Input id="data_prazo" type="date" value={form.data_prazo || ''} onChange={e => setField('data_prazo', e.target.value || null)} />
+              <Input id="data_prazo" type="date" value={formatDateForInput(form.data_prazo)} onChange={e => setField('data_prazo', e.target.value || null)} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="responsavel">Responsável</Label>

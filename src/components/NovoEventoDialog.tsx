@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
+import { formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -77,7 +78,7 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="data">Data *</Label>
-              <Input id="data" type="date" value={form.data || ''} onChange={e => setField('data', e.target.value)} required />
+              <Input id="data" type="date" value={formatDateForInput(form.data)} onChange={e => setField('data', e.target.value)} required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="tipo">Tipo</Label>

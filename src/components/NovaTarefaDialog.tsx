@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
+import { formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -133,7 +134,7 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
               <Input
                 id="data_prazo"
                 type="date"
-                value={form.data_prazo || ''}
+                value={formatDateForInput(form.data_prazo)}
                 onChange={e => setField('data_prazo', e.target.value || null)}
               />
             </div>
