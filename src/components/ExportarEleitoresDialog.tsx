@@ -29,7 +29,7 @@ const DEFAULT_COLUMNS: ColumnOption[] = [
   { key: 'tags', label: 'Tags', checked: false },
   { key: 'status', label: 'Status', checked: true },
   { key: 'observacoes', label: 'Observações', checked: false },
-  { key: 'data_nascimento', label: 'Data Nascimento', checked: false },
+  { key: 'data_nascimento', label: 'Data Nasc.', checked: false },
 ];
 
 type ExportFormat = 'csv' | 'doc' | 'pdf';
@@ -82,31 +82,31 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
     }
   };
 
-  const previewColumns = checkedColumns.slice(0, 6);
+  const previewColumns = checkedColumns.slice(0, 5);
   const previewData = data.slice(0, 3);
 
   const formatos = [
-    { key: 'csv' as ExportFormat, label: 'CSV', icon: FileSpreadsheet, desc: 'Planilha Excel' },
-    { key: 'doc' as ExportFormat, label: 'DOC', icon: FileText, desc: 'Documento Word' },
-    { key: 'pdf' as ExportFormat, label: 'PDF', icon: File, desc: 'Documento PDF' },
+    { key: 'csv' as ExportFormat, label: 'CSV', icon: FileSpreadsheet, desc: 'Excel' },
+    { key: 'doc' as ExportFormat, label: 'DOC', icon: FileText, desc: 'Word' },
+    { key: 'pdf' as ExportFormat, label: 'PDF', icon: File, desc: 'PDF' },
   ];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileSpreadsheet className="w-5 h-5 text-blue-600" />
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="space-y-1">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <FileSpreadsheet className="w-5 h-5 text-blue-600 flex-shrink-0" />
             Exportar eleitores
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             Selecione as colunas e o formato de exportação.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-2">
           {/* Nome do arquivo */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <label className="text-xs font-medium text-slate-700">Nome do arquivo</label>
             <input
               type="text"
@@ -117,10 +117,10 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
             />
           </div>
 
-          {/* Formato */}
-          <div className="space-y-1.5">
+          {/* Formato — responsivo: vertical em mobile, horizontal em desktop */}
+          <div className="space-y-1">
             <label className="text-xs font-medium text-slate-700">Formato</label>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {formatos.map(f => {
                 const Icon = f.icon;
                 const selecionado = formato === f.key;
@@ -129,16 +129,16 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
                     key={f.key}
                     type="button"
                     onClick={() => setFormato(f.key)}
-                    className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
+                    className={`flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
                       selecionado
                         ? 'bg-blue-50 border-blue-300 text-blue-700'
                         : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                    <div className="text-left">
-                      <div className="font-medium">{f.label}</div>
-                      <div className="text-[10px] text-slate-400">{f.desc}</div>
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <div className="text-center sm:text-left">
+                      <div className="font-medium leading-tight">{f.label}</div>
+                      <div className="text-[9px] sm:text-[10px] text-slate-400 hidden sm:block">{f.desc}</div>
                     </div>
                   </button>
                 );
@@ -146,29 +146,31 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
             </div>
           </div>
 
-          {/* Colunas */}
+          {/* Colunas — grid responsivo */}
           <div className="bg-slate-50 rounded-lg p-3">
-            <p className="text-xs font-semibold text-slate-700 mb-2">Colunas disponíveis ({checkedColumns.length} selecionadas)</p>
-            <div className="grid grid-cols-3 gap-2">
+            <p className="text-xs font-semibold text-slate-700 mb-2">
+              Colunas ({checkedColumns.length} selecionadas)
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
               {columns.map(col => (
-                <label key={col.key} className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 rounded px-1 py-0.5">
-                  <Checkbox checked={col.checked} onCheckedChange={() => toggleColumn(col.key)} />
-                  <span className="text-xs text-slate-700">{col.label}</span>
+                <label key={col.key} className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 rounded px-1 py-0.5">
+                  <Checkbox checked={col.checked} onCheckedChange={() => toggleColumn(col.key)} className="w-3.5 h-3.5" />
+                  <span className="text-xs text-slate-700 truncate">{col.label}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          {/* Preview */}
+          {/* Preview — scroll horizontal em mobile */}
           {previewColumns.length > 0 && previewData.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-slate-700 mb-2">Preview ({data.length} registros)</p>
-              <div className="overflow-x-auto border rounded-lg">
-                <table className="w-full text-xs">
+              <div className="overflow-x-auto border rounded-lg -mx-1 px-1">
+                <table className="w-full text-xs min-w-[400px]">
                   <thead className="bg-slate-50">
                     <tr>
                       {previewColumns.map(c => (
-                        <th key={c.key} className="text-left py-2 px-3 font-semibold text-slate-600">{c.label}</th>
+                        <th key={c.key} className="text-left py-2 px-2 font-semibold text-slate-600 whitespace-nowrap">{c.label}</th>
                       ))}
                     </tr>
                   </thead>
@@ -179,7 +181,7 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
                           let val: any = (row as any)[col.key];
                           if (col.key === 'comunidade_id') val = comunidades.find(c => c.id === val)?.nome || '';
                           if (Array.isArray(val)) val = val.join('; ');
-                          return <td key={col.key} className="py-2 px-3 text-slate-600">{val || '—'}</td>;
+                          return <td key={col.key} className="py-2 px-2 text-slate-600 whitespace-nowrap">{val || '—'}</td>;
                         })}
                       </tr>
                     ))}
@@ -189,13 +191,13 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
             </div>
           )}
 
-          {/* Ações */}
-          <div className="flex justify-between items-center pt-2">
-            <p className="text-xs text-slate-500">{data.length} registros serão exportados</p>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={onClose}>Cancelar</Button>
-              <Button onClick={handleExport} className="bg-blue-600 hover:bg-blue-700" disabled={checkedColumns.length === 0 || exportando}>
-                <Download className="w-4 h-4 mr-1.5" />
+          {/* Ações — empilhados em mobile */}
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2">
+            <p className="text-xs text-slate-500 text-center sm:text-left">{data.length} registros serão exportados</p>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={onClose} size="sm" className="text-xs sm:text-sm">Cancelar</Button>
+              <Button onClick={handleExport} className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm" disabled={checkedColumns.length === 0 || exportando} size="sm">
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
                 {exportando ? 'Exportando...' : `Exportar ${formato.toUpperCase()}`}
               </Button>
             </div>
