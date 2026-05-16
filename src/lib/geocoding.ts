@@ -1,15 +1,10 @@
-// Geocodificacao hibrida: CNEFE (IBGE) primario + Nominatim (OSM) fallback
-// CNEFE = dados oficiais do Censo 2022, gratuitos, armazenaveis
-// Nominatim = fallback para enderecos nao cobertos pelo CNEFE
-
-import { trpc } from "@/providers/trpc";
-
-const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
+// Geocodificacao usando apenas CNEFE (IBGE) — dados proprios na VPS
+// Sem dependencia de servicos externos
 
 interface GeoCoords {
   lat: number;
   lng: number;
-  source: "cnefe" | "nominatim";
+  source: "cnefe";
   displayName?: string;
 }
 
@@ -52,26 +47,29 @@ export async function geocodeEndereco(
       displayName: result.enderecoEncontrado,
     };
   } catch {
-    // Fallback direto para Nominatim se tRPC falhar
-    return geocodeNominatimFallback(endereco, bairro, cidade, estado, cep);
+    return null;
   }
 }
 
 /**
- * Geocodifica apenas por CEP
+ * Geocodifica por CEP usando apenas CNEFE (dados proprios na VPS)
+ * Se logradouro for informado, filtra por ele para maior precisao
  */
 export async function geocodeCep(
   cep: string,
   cidade?: string,
-  estado?: string
+  estado?: string,
+  logradouro?: string
 ): Promise<GeoCoords | null> {
   const clean = cep.replace(/\D/g, "");
   if (clean.length !== 8) return null;
 
-  // Tenta CNEFE por CEP primeiro
   try {
+    const params: Record<string, string> = { cep: clean };
+    if (logradouro) params.logradouro = logradouro;
+    
     const response = await fetch(
-      `/api/trpc/cnefe.buscarPorCep?input=${encodeURIComponent(JSON.stringify({ cep: clean }))}`
+      `/api/trpc/cnefe.buscarPorCep?input=${encodeURIComponent(JSON.stringify(params))}`
     );
     const json = await response.json();
     const result = json.result?.data;
@@ -85,65 +83,10 @@ export async function geocodeCep(
       };
     }
   } catch {
-    // continua para fallback
+    // ignora erro
   }
 
-  // Fallback Nominatim
-  const query =
-    cidade && estado
-      ? `${clean}, ${cidade}, ${estado}, Brasil`
-      : `${clean}, Brasil`;
-  return geocodeNominatimFallback("", "", cidade || "", estado || "", cep);
-}
-
-/**
- * Fallback direto para Nominatim (quando CNEFE nao tem o endereco)
- */
-async function geocodeNominatimFallback(
-  endereco: string,
-  bairro: string,
-  cidade: string,
-  estado: string,
-  cep: string
-): Promise<GeoCoords | null> {
-  let query: string;
-  if (cep && cep.replace(/\D/g, "").length === 8) {
-    query = `${cep}, ${cidade}, ${estado}, Brasil`;
-  } else if (endereco && cidade && estado) {
-    query = `${endereco}, ${bairro}, ${cidade}, ${estado}, Brasil`;
-  } else if (cidade && estado) {
-    query = `${cidade}, ${estado}, Brasil`;
-  } else {
-    return null;
-  }
-
-  try {
-    const url = `${NOMINATIM_URL}?format=json&limit=1&q=${encodeURIComponent(query)}`;
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "MandatoDigital/1.0 (contato@mandatodigital.com.br)",
-        "Accept-Language": "pt-BR",
-      },
-    });
-
-    if (!res.ok) return null;
-
-    const data = (await res.json()) as Array<{
-      lat: string;
-      lon: string;
-      display_name: string;
-    }>;
-    if (!data || data.length === 0) return null;
-
-    return {
-      lat: parseFloat(data[0].lat),
-      lng: parseFloat(data[0].lon),
-      source: "nominatim",
-      displayName: data[0].display_name,
-    };
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 // Cache em memoria para evitar requisicoes duplicadas na mesma sessao

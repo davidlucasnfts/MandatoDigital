@@ -32,3 +32,11 @@ export function getDb() {
   }
   return instance;
 }
+
+export function getCnefeDb() {
+  if (!env.cnefeDatabaseUrl) {
+    throw new Error("CNEFE_DATABASE_URL not configured");
+  }
+  const client = postgres(env.cnefeDatabaseUrl);
+  return drizzle(client, { schema: fullSchema });
+}

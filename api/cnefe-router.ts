@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createRouter, publicQuery, editorQuery } from "./middleware";
-import { getDb } from "./queries/connection";
+import { getCnefeDb } from "./queries/connection";
 import { cnefeEnderecos } from "../db/schema";
 import { sql, eq, and, like, ilike } from "drizzle-orm";
 
@@ -18,7 +18,7 @@ export const cnefeRouter = createRouter({
       })
     )
     .query(async ({ input }) => {
-      const db = getDb();
+      const db = getCnefeDb();
 
       // Normaliza termos de busca
       const logradouroNorm = input.logradouro
@@ -62,13 +62,57 @@ export const cnefeRouter = createRouter({
       return result;
     }),
 
-  // Busca por CEP (para preencher endereco automaticamente no cadastro)
+  // Busca por CEP — USA APENAS CNEFE (dados proprios na VPS)
+  // Se logradouro for informado, filtra por ele para maior precisao
   buscarPorCep: publicQuery
-    .input(z.object({ cep: z.string().min(8).max(9) }))
+    .input(z.object({ 
+      cep: z.string().min(8).max(9),
+      logradouro: z.string().optional(),
+    }))
     .query(async ({ input }) => {
-      const db = getDb();
+      const db = getCnefeDb();
       const cepLimpo = input.cep.replace(/\D/g, "");
 
+      // Se tem logradouro, busca CEP + logradouro
+      if (input.logradouro && input.logradouro.length >= 3) {
+        const logradouroNorm = input.logradouro
+          .toUpperCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        
+        // Remove o tipo do logradouro (RUA, AVENIDA, etc.)
+        const tiposLogradouro = [
+          "RUA", "AVENIDA", "AV", "TRAVESSA", "TRAV", "ALAMEDA", "AL",
+          "ESTRADA", "EST", "RODOVIA", "ROD", "VIELA", "VIA", "PASSAGEM",
+          "BECO", "LARGO", "PRACA", "PC", "QUADRA", "QD", "BLOCO", "BL"
+        ];
+        
+        let nomeSemTipo = logradouroNorm;
+        for (const tipo of tiposLogradouro) {
+          if (nomeSemTipo.startsWith(tipo + " ")) {
+            nomeSemTipo = nomeSemTipo.slice(tipo.length).trim();
+            break;
+          }
+        }
+        
+        // Busca CEP + nome do logradouro (sem tipo)
+        if (nomeSemTipo.length >= 2) {
+          const result = await db
+            .select()
+            .from(cnefeEnderecos)
+            .where(
+              and(
+                eq(cnefeEnderecos.cep, cepLimpo),
+                ilike(cnefeEnderecos.nomeLogradouro, `%${nomeSemTipo}%`)
+              )
+            )
+            .limit(1);
+          
+          if (result.length > 0) return result[0];
+        }
+      }
+
+      // Fallback: busca so por CEP
       const result = await db
         .select()
         .from(cnefeEnderecos)
@@ -91,7 +135,7 @@ export const cnefeRouter = createRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const db = getDb();
+      const db = getCnefeDb();
 
       // 1. Tenta buscar no CNEFE primeiro
       const logradouroNorm = (input.endereco || "")
@@ -131,49 +175,13 @@ export const cnefeRouter = createRouter({
         }
       }
 
-      // 2. Fallback para Nominatim (OpenStreetMap)
-      const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-      const query = input.cep
-        ? `${input.cep.replace(/\D/g, "")}, ${input.municipio}, ${input.uf}, Brasil`
-        : `${input.endereco || ""}, ${input.bairro || ""}, ${input.municipio}, ${input.uf}, Brasil`;
-
-      try {
-        const url = `${NOMINATIM_URL}?format=json&limit=1&q=${encodeURIComponent(query)}`;
-        const res = await fetch(url, {
-          headers: {
-            "User-Agent": "MandatoDigital/1.0 (contato@mandatodigital.com.br)",
-            "Accept-Language": "pt-BR",
-          },
-        });
-
-        if (!res.ok) return null;
-
-        const data = (await res.json()) as Array<{
-          lat: string;
-          lon: string;
-          display_name: string;
-        }>;
-
-        if (!data || data.length === 0) return null;
-
-        return {
-          source: "nominatim" as const,
-          lat: parseFloat(data[0].lat),
-          lng: parseFloat(data[0].lon),
-          enderecoEncontrado: data[0].display_name,
-          bairro: null,
-          municipio: input.municipio,
-          uf: input.uf,
-          cep: input.cep || null,
-        };
-      } catch {
-        return null;
-      }
+      // Nao encontrou no CNEFE
+      return null;
     }),
 
   // Status da importacao CNEFE (quantos enderecos temos no banco)
   status: publicQuery.query(async () => {
-    const db = getDb();
+    const db = getCnefeDb();
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(cnefeEnderecos);

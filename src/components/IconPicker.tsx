@@ -104,7 +104,7 @@ export default function IconPicker({ value, onChange, label = 'Ícone' }: IconPi
   }, [busca]);
 
   // Componente do ícone selecionado
-  const IconSelecionado = (icons as Record<string, React.ComponentType<{ className?: string }>>)[value] || icons.Users;
+  const IconSelecionado = (icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[value] || icons.Users;
 
   return (
     <div className="space-y-1.5">
@@ -146,7 +146,7 @@ export default function IconPicker({ value, onChange, label = 'Ícone' }: IconPi
           {/* Grid de ícones */}
           <div className="grid grid-cols-6 gap-1 max-h-[200px] overflow-y-auto">
             {iconesFiltrados.map(nome => {
-              const Icon = (icons as Record<string, React.ComponentType<{ className?: string }>>)[nome];
+              const Icon = (icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[nome];
               if (!Icon) return null;
               const selecionado = nome === value;
               const nomePt = NOMES_PT[nome] || nome;

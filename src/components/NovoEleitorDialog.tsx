@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
 import AutocompleteCidade from '@/components/AutocompleteCidade';
 import AutocompleteBairro from '@/components/AutocompleteBairro';
-import { geocodeEndereco } from '@/lib/geocoding';
+import { geocodeCep } from '@/lib/geocoding';
 import type { Eleitor } from '@/lib/supabase';
 
 interface Props {
@@ -85,8 +85,8 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         const cidade = data.localidade || '';
         const estado = data.uf || '';
 
-        // Geocodifica o endereco para obter coordenadas precisas
-        const coords = await geocodeEndereco(endereco, bairro, cidade, estado, clean);
+        // Geocodifica o CEP + logradouro + cidade + estado para coordenadas precisas
+        const coords = await geocodeCep(clean, cidade, estado, endereco);
 
         setForm(prev => ({
           ...prev,
@@ -267,7 +267,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               <div className="space-y-1.5">
                 <Label htmlFor="cep">CEP</Label>
                 <div className="flex gap-2">
-                  <Input id="cep" value={form.cep || ''} onChange={e => setField('cep', maskCEP(e.target.value))} placeholder="01001-000" className="flex-1" maxLength={9} />
+                  <Input id="cep" value={form.cep || ''} onChange={e => setField('cep', maskCEP(e.target.value))} onBlur={e => buscarCep(e.target.value)} placeholder="01001-000" className="flex-1" maxLength={9} />
                   <Button type="button" variant="outline" size="sm" onClick={() => buscarCep(form.cep || '')} className="h-10 px-3">Buscar</Button>
                 </div>
               </div>
