@@ -1,45 +1,65 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 14/05/2026
-> **Sessão atual:** Correção de campos de data + validação de idade mínima
+> **Atualizado em:** 16/05/2026
+> **Sessão atual:** Geocodificação 100% CNEFE — remove Nominatim
 
 ---
 
 ## Stack (1 linha)
-React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + Vercel
+React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (CNEFE) + Vercel
 
 ---
 
 ## Última funcionalidade trabalhada
-**Correção de campos de data + validação de idade mínima** — 14/05
+**Geocodificação 100% CNEFE — remove dependência do Nominatim** — 16/05
 
 ### O que mudou:
-1. **Correção `formatDateForInput`** — retorna `undefined` em vez de `''` quando não há valor, evitando ano 275760
-2. **`min/max` em todos os inputs `type="date"`** — `min="1900-01-01"`, `max` dinâmico conforme contexto
-3. **Validação `onBlur` para data de nascimento** — ao sair do campo, corrige para o máximo permitido (18 anos atrás) ou mínimo (1900)
-4. **Todos os dialogs corrigidos:** NovaSolicitacaoDialog, NovaEnqueteDialog, NovaTarefaDialog, NovoEventoDialog, InteracoesPanel, NovoEleitorDialog
+1. **Remove Nominatim completamente** — agora usa apenas dados próprios na VPS
+2. **CNEFE como única fonte** — sem fallback externo
+3. **Busca por CEP + logradouro** — filtra por nome do logradouro (sem tipo) para maior precisão
+4. **Remove `geocodeNominatimFallback`** — função não mais necessária
+5. **Simplifica `geocodeCep`** — chama API CNEFE, retorna null se não encontrar
 
 ### Arquivos modificados:
-- `src/lib/masks.ts` — `formatDateForInput` retorna `undefined`
-- `src/components/NovoEleitorDialog.tsx` — validação `onBlur` com limite de 18 anos
-- `src/components/NovaSolicitacaoDialog.tsx` — `min/max` nos 3 campos de data
-- `src/components/NovaEnqueteDialog.tsx` — `min/max` nos 2 campos de data
-- `src/components/NovaTarefaDialog.tsx` — `min/max` no campo data_prazo
-- `src/components/NovoEventoDialog.tsx` — `min/max` no campo data
-- `src/components/InteracoesPanel.tsx` — `min/max` no campo data
+- `api/cnefe-router.ts` — remove Nominatim, busca apenas CNEFE
+- `src/lib/geocoding.ts` — remove Nominatim, simplifica geocodeCep
+- `api/lib/env.ts` — mantém `cnefeDatabaseUrl`
+- `api/queries/connection.ts` — mantém `getCnefeDb()`
+- `src/components/NovoEleitorDialog.tsx` — CEP com onBlur + geocodeCep
+- `src/components/IconPicker.tsx` — fix tipagem lucide-react
 
 ---
 
 ## Funcionalidade entregue nesta sessão
-**Correção de campos de data + validação de idade mínima (18 anos)** — 14/05
+**Geocodificação 100% CNEFE — remove Nominatim** — 16/05
+
+---
+
+## Decisões pendentes (ação manual necessária)
+
+### ⚠️ CNEFE com múltiplos registros para mesmo CEP
+**Problema:** O CNEFE tem registros duplicados para o mesmo CEP em bairros diferentes (ex: CEP 65057-060 tem registros no Centro e no João de Deus).
+
+**Status:** Implementamos filtro por logradouro para tentar pegar o correto, mas ainda pode retornar o registro errado se houver múltiplas ruas com nomes similares.
+
+**Onde fazer:** VPS HostUp — verificar qualidade dos dados importados
+**Como fazer:** Rodar query SQL para identificar CEPs com coordenadas muito dispersas
+
+### ⚠️ Geocodificação por número da casa
+**Decisão:** Não implementamos geocodificação precisa por número de casa. O CNEFE só tem coordenadas de nível de rua.
+
+**Opções para o futuro:**
+1. Usar Google Maps Geocoding API (pago)
+2. Usar Here Maps API (tem tier gratuito)
+3. Aceitar precisão de rua do CNEFE
 
 ---
 
 ## Próximo passo definido
 **Aguardando definição do David** — opções:
-1. Prestação de Contas Pública (portal de transparência)
-2. App mobile / PWA para campo
-3. Integração WhatsApp API oficial
+1. Melhorar precisão do CNEFE (identificar/registrar CEPs problemáticos)
+2. Implementar geocodificação por número (API paga)
+3. Outra funcionalidade
 
 ---
 
@@ -48,41 +68,16 @@ Nenhum.
 
 ---
 
-## Estrutura de pastas (resumida)
-```
-src/           → Frontend React (pages, components, hooks, lib)
-api/           → Backend tRPC/Hono (routers, middleware, context, lib/audit.ts)
-db/            → Schema Drizzle + migrations
-contracts/     → Tipos e constantes compartilhados
-docs/          → ADRs + guia do projeto
-supabase/      → schema_safe.sql + migrations/ (001-017)
-scripts/       → Scripts utilitários (importar-cnefe.ts)
-.github/       → Workflows CI/CD
-```
+## Contexto técnico atual
 
----
+### Banco CNEFE (VPS HostUp)
+- **Total de registros:** ~7.6 milhões (CE + MA)
+- **CE:** 4.537.155 registros
+- **MA:** 3.086.449 registros
+- **Problema conhecido:** CEPs duplicados em bairros diferentes
 
-## Decisões pendentes
-- [ ] **Importar CNEFE no Supabase** — Baixar CSV da UF do mandato em ftp.ibge.gov.br e rodar:
-  1. `npx tsx scripts/importar-cnefe.ts <arquivo.csv> [UF]`
-  2. `npx tsx scripts/atualizar-municipios-cnefe.ts [UF]` (busca nomes dos municipios na API IBGE)
-- [ ] Rodar migration 017 no Supabase (`supabase/migrations/017-cnefe-enderecos.sql`)
-- [ ] Criar mais testes para atingir cobertura 80% (backlog técnico, não bloqueante)
-- [ ] Configurar `DATABASE_URL` no Vercel (ver SECURITY.md → Ações Manuais)
-- [ ] Trocar senha do banco Supabase (ver SECURITY.md → Ações Manuais)
-- [ ] Adicionar domínio na whitelist (ver SECURITY.md → Ações Manuais)
-
----
-
-## Ações Manuais — REGRA PARA O KIMI
-> Sempre que uma funcionalidade exigir ação manual (rodar SQL no Supabase, configurar secret no GitHub/Vercel, criar bucket, env var, etc.), **adicionar na seção "Decisões pendentes" acima** e **avisar David no final da resposta** com destaque em negrito e emoji ⚠️.
-
----
-
-## Como atualizar este arquivo
-No final de cada sessão, substitua:
-1. **Data** no topo
-2. **Última funcionalidade trabalhada** — o que foi feito
-3. **Próximo passo definido** — o que faremos na próxima sessão
-4. **Bloqueios** — se houver
-5. **Decisões pendentes** — marcar como [x] quando concluído
+### Arquivos principais (geocodificação)
+- `api/cnefe-router.ts` — router tRPC para buscas CNEFE
+- `src/lib/geocoding.ts` — funções frontend de geocodificação
+- `api/queries/connection.ts` — `getCnefeDb()` para conexão VPS
+- `src/components/NovoEleitorDialog.tsx` — form com CEP + onBlur

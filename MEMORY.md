@@ -60,6 +60,9 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Endereço completo vinculado em comunidades (CEP, rua, número, bairro, cidade, estado)** | **15/05** |
 | **Tradução PT-BR: IconPicker com nomes em português** | **15/05** |
 | **Número da casa no cadastro de eleitor + Exportação CSV/DOC/PDF** | **15/05** |
+| **Geocodificação 100% CNEFE — remove dependência do Nominatim** | **16/05** |
+| **CNEFE: busca por CEP + logradouro para maior precisão** | **16/05** |
+| **Fix IconPicker: compatibilidade com lucide-react atual** | **16/05** |
 
 ---
 
