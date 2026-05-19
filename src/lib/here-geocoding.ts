@@ -165,9 +165,10 @@ async function geocodeFallback(
 }
 
 /**
- * Geocodificacao inteligente com cascata:
- * 1. Here API (precisao de numero de casa)
- * 2. CNEFE (dados proprios, custo zero)
+ * Geocodificacao para CADASTRO DE ELEITOR
+ * Fluxo otimizado para economizar Here API:
+ * 1. CNEFE (dados proprios, custo zero) — sempre que tiver CEP
+ * 2. Here API (precisao de numero) — apenas quando o numero e informado/alterado
  * 3. Centro da cidade (fallback)
  *
  * Uso: chame esta funcao no cadastro de eleitores
@@ -181,10 +182,21 @@ export async function geocodeSmart(
   cep: string
 ): Promise<GeoCoords | null> {
   console.log("[geocodeSmart] Input:", { endereco, numero, bairro, cidade, estado, cep });
-  
-  const cacheKey = [endereco, numero, bairro, cidade, estado, cep].join("|");
 
-  // 1. Tenta Here API (melhor precisao)
+  // 1. SEMPRE tenta CNEFE primeiro (custo zero, tem todos os CEPs)
+  console.log("[geocodeSmart] Tentando CNEFE...");
+  const cnefeResult = await geocodeCnefe(endereco, bairro, cidade, estado, cep);
+  console.log("[geocodeSmart] CNEFE result:", cnefeResult);
+
+  if (cnefeResult) {
+    console.log("[geocodeSmart] CNEFE sucesso:", cnefeResult.displayName);
+    return {
+      ...cnefeResult,
+      confidence: 0.6,
+    };
+  }
+
+  // 2. Here API como fallback (quando CNEFE nao encontra)
   console.log("[geocodeSmart] Tentando Here API...");
   const hereResult = await geocodeHere(
     endereco,
@@ -195,36 +207,86 @@ export async function geocodeSmart(
     cep
   );
   console.log("[geocodeSmart] Here result:", hereResult);
-  
-  if (hereResult && hereResult.confidence && hereResult.confidence > 0.8) {
+
+  if (hereResult && hereResult.confidence && hereResult.confidence > 0.5) {
     console.log("[geocodeSmart] Here API sucesso:", hereResult.displayName);
     return hereResult;
-  }
-
-  // 2. Fallback: CNEFE (dados proprios)
-  console.log("[geocodeSmart] Tentando CNEFE...");
-  const cnefeResult = await geocodeCnefe(endereco, bairro, cidade, estado, cep);
-  console.log("[geocodeSmart] CNEFE result:", cnefeResult);
-  
-  if (cnefeResult) {
-    console.log("[geocodeSmart] CNEFE sucesso:", cnefeResult.displayName);
-    return {
-      ...cnefeResult,
-      confidence: 0.6,
-    };
   }
 
   // 3. Fallback: centro da cidade
   console.log("[geocodeSmart] Tentando fallback...");
   const fallbackResult = await geocodeFallback(cidade, estado);
   console.log("[geocodeSmart] Fallback result:", fallbackResult);
-  
+
   if (fallbackResult) {
     console.log("[geocodeSmart] Fallback sucesso:", fallbackResult.displayName);
     return fallbackResult;
   }
 
   console.log("[geocodeSmart] Nenhum resultado encontrado");
+  return null;
+}
+
+/**
+ * Geocodificacao com precisao de NUMERO (Here API)
+ * Chamada APENAS quando o usuario digita/altera o numero da casa
+ * Economiza o free tier da Here (30k/mes)
+ */
+export async function geocodeWithNumber(
+  endereco: string,
+  numero: string,
+  bairro: string,
+  cidade: string,
+  estado: string,
+  cep: string,
+  coordsBase?: { lat: number; lng: number } | null
+): Promise<GeoCoords | null> {
+  console.log("[geocodeWithNumber] Input:", { endereco, numero, bairro, cidade, estado, cep, coordsBase });
+
+  // Se nao tem numero valido, retorna coordenadas base (do CEP)
+  if (!numero || numero.trim() === "" || numero === "S/N") {
+    console.log("[geocodeWithNumber] Sem numero valido, retornando coords base");
+    if (coordsBase) {
+      return {
+        lat: coordsBase.lat,
+        lng: coordsBase.lng,
+        source: "cnefe",
+        displayName: `${endereco}, S/N`,
+        confidence: 0.5,
+      };
+    }
+    return null;
+  }
+
+  // Tenta Here API para precisao de numero
+  console.log("[geocodeWithNumber] Tentando Here API com numero...");
+  const hereResult = await geocodeHere(
+    endereco,
+    numero,
+    bairro,
+    cidade,
+    estado,
+    cep
+  );
+  console.log("[geocodeWithNumber] Here result:", hereResult);
+
+  if (hereResult && hereResult.confidence && hereResult.confidence > 0.7) {
+    console.log("[geocodeWithNumber] Here API sucesso:", hereResult.displayName);
+    return hereResult;
+  }
+
+  // Se Here falhar, retorna coords base (do CEP) com o numero
+  if (coordsBase) {
+    console.log("[geocodeWithNumber] Here falhou, retornando coords base");
+    return {
+      lat: coordsBase.lat,
+      lng: coordsBase.lng,
+      source: "cnefe",
+      displayName: `${endereco}, ${numero}`,
+      confidence: 0.5,
+    };
+  }
+
   return null;
 }
 

@@ -30,7 +30,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const { insert, update } = useEleitores();
   const { data: comunidades } = useComunidades();
   const { data: lideres } = useEleitores();
-  const { geocode, geocodeByCep, isLoading: geoLoading, hereEnabled } = useGeocoding();
+  const { geocode, geocodeByCep, refineWithNumber, isLoading: geoLoading, hereEnabled } = useGeocoding();
   const [loading, setLoading] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState<AbaNivel>('eleitor');
   const isEdit = !!eleitor;
@@ -74,7 +74,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
     setForm(prev => ({ ...prev, nivel: abaAtiva }));
   }, [abaAtiva]);
 
-  // Busca CEP no ViaCEP (preenche endereco, geocodifica so se tiver numero)
+  // Busca CEP no ViaCEP e geocodifica com CNEFE (custo zero)
   const buscarCep = async (cep: string) => {
     const clean = cep.replace(/\D/g, '');
     if (clean.length !== 8) return;
@@ -90,16 +90,14 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           cidade: data.localidade || '',
           estado: data.uf || '',
         }));
-        // So geocodifica se ja tiver numero preenchido
-        if (form.numero) {
-          await geocodificarEndereco(
-            data.logradouro || '',
-            form.numero,
-            data.bairro || '',
-            data.localidade || '',
-            data.uf || '',
-            clean
-          );
+        // Geocodifica com CNEFE (custo zero) — sempre que tiver CEP
+        const coords = await geocodeByCep(clean, data.localidade || '', data.uf || '', data.logradouro || '');
+        if (coords) {
+          setForm(prev => ({
+            ...prev,
+            latitude: coords.lat,
+            longitude: coords.lng,
+          }));
         }
       }
     } catch {
@@ -117,6 +115,30 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
     cep: string
   ) => {
     const coords = await geocode(endereco, numero, bairro, cidade, estado, cep);
+    if (coords) {
+      setForm(prev => ({
+        ...prev,
+        latitude: coords.lat,
+        longitude: coords.lng,
+      }));
+    }
+  };
+
+  // Refina coordenadas com numero da casa (Here API) — chamada apenas quando numero muda
+  const refinarComNumero = async (numero: string) => {
+    if (!form.endereco || !form.cidade || !form.estado) return;
+    const coordsBase = form.latitude && form.longitude
+      ? { lat: form.latitude, lng: form.longitude }
+      : null;
+    const coords = await refineWithNumber(
+      form.endereco || '',
+      numero,
+      form.bairro || '',
+      form.cidade || '',
+      form.estado || '',
+      form.cep || '',
+      coordsBase
+    );
     if (coords) {
       setForm(prev => ({
         ...prev,
@@ -333,8 +355,17 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               <div className="space-y-1 flex-1 min-w-[180px]">
                 <Label htmlFor="endereco" className="text-xs">Endereço</Label>
                 <Input id="endereco" value={form.endereco || ''} onChange={e => setField('endereco', capitalizeWords(e.target.value))} onBlur={() => {
-                  if (form.endereco && form.cidade && form.estado) {
-                    geocodificarEndereco(form.endereco || '', form.numero || '', form.bairro || '', form.cidade || '', form.estado || '', form.cep || '');
+                  if (form.endereco && form.cidade && form.estado && form.cep) {
+                    // Geocodifica com CNEFE (custo zero) quando endereco muda
+                    geocodeByCep(form.cep.replace(/\D/g, ''), form.cidade, form.estado, form.endereco).then(coords => {
+                      if (coords) {
+                        setForm(prev => ({
+                          ...prev,
+                          latitude: coords.lat,
+                          longitude: coords.lng,
+                        }));
+                      }
+                    });
                   }
                 }} placeholder="Rua, avenida" className="h-9" />
               </div>
@@ -348,9 +379,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                       onChange={(e) => {
                         if (e.target.checked) {
                           setField('numero', 'S/N');
-                          if (form.endereco && form.cidade && form.estado) {
-                            geocodificarEndereco(form.endereco || '', 'S/N', form.bairro || '', form.cidade || '', form.estado || '', form.cep || '');
-                          }
+                          // S/N nao chama Here API, mantem coordenadas do CEP
                         } else {
                           setField('numero', '');
                         }

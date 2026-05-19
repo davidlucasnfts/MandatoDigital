@@ -1,8 +1,8 @@
 // Hook para geocodificacao inteligente no cadastro de eleitores
-// Cascata: Here API -> CNEFE -> Centro da cidade
+// Fluxo: CNEFE (CEP) -> Here API (numero) -> Centro da cidade
 
 import { useState, useCallback } from "react";
-import { geocodeSmart, geocodeCepSmart, getHereStatus } from "@/lib/here-geocoding";
+import { geocodeSmart, geocodeCepSmart, geocodeWithNumber, getHereStatus } from "@/lib/here-geocoding";
 
 interface GeocodeResult {
   lat: number;
@@ -26,6 +26,16 @@ interface UseGeocodingReturn {
     cidade?: string,
     estado?: string,
     logradouro?: string
+  ) => Promise<GeocodeResult | null>;
+  /** Chamada APENAS quando o usuario digita/altera o numero da casa */
+  refineWithNumber: (
+    endereco: string,
+    numero: string,
+    bairro: string,
+    cidade: string,
+    estado: string,
+    cep: string,
+    coordsBase?: { lat: number; lng: number } | null
   ) => Promise<GeocodeResult | null>;
   isLoading: boolean;
   hereEnabled: boolean;
@@ -81,9 +91,39 @@ export function useGeocoding(): UseGeocodingReturn {
     []
   );
 
+  const refineWithNumber = useCallback(
+    async (
+      endereco: string,
+      numero: string,
+      bairro: string,
+      cidade: string,
+      estado: string,
+      cep: string,
+      coordsBase?: { lat: number; lng: number } | null
+    ): Promise<GeocodeResult | null> => {
+      setIsLoading(true);
+      try {
+        const result = await geocodeWithNumber(
+          endereco,
+          numero,
+          bairro,
+          cidade,
+          estado,
+          cep,
+          coordsBase
+        );
+        return result;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
   return {
     geocode,
     geocodeByCep,
+    refineWithNumber,
     isLoading,
     hereEnabled: status.enabled,
     hereHasKey: status.hasKey,

@@ -33,7 +33,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 - [ ] HTTPS/SSL (precisa de domínio)
 - [ ] Cloudflare Tunnel (esconder IP da VPS)
 - [ ] Importar mais estados (opcional)
-- [ ] Testar geocodificação completa no cadastro de eleitor
+- [x] Testar geocodificação completa no cadastro de eleitor
 
 ---
 
