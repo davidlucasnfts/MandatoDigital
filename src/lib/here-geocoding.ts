@@ -291,7 +291,7 @@ export async function geocodeWithNumber(
 }
 
 /**
- * Geocodifica por CEP com cascata Here -> CNEFE
+ * Geocodifica por CEP: CNEFE primeiro (custo zero), Here API como fallback
  */
 export async function geocodeCepSmart(
   cep: string,
@@ -302,8 +302,20 @@ export async function geocodeCepSmart(
   const clean = cep.replace(/\D/g, "");
   if (clean.length !== 8) return null;
 
-  // 1. Tenta Here API por CEP
+  // 1. SEMPRE tenta CNEFE primeiro (custo zero, dados proprios)
+  console.log("[geocodeCepSmart] Tentando CNEFE...");
+  const cnefeResult = await geocodeCep(cep, cidade, estado, logradouro);
+  if (cnefeResult) {
+    console.log("[geocodeCepSmart] CNEFE sucesso:", cnefeResult.displayName);
+    return {
+      ...cnefeResult,
+      confidence: 0.6,
+    };
+  }
+
+  // 2. Fallback: Here API (quando CNEFE nao encontra)
   if (HERE_CONFIG.enabled) {
+    console.log("[geocodeCepSmart] CNEFE nao encontrou, tentando Here API...");
     try {
       const url = new URL("https://geocode.search.hereapi.com/v1/geocode");
       url.searchParams.set("qq", "postalCode=" + clean);
@@ -315,6 +327,7 @@ export async function geocodeCepSmart(
         const data = await res.json();
         const item = data.items?.[0];
         if (item?.position) {
+          console.log("[geocodeCepSmart] Here API sucesso:", item.title);
           return {
             lat: item.position.lat,
             lng: item.position.lng,
@@ -329,15 +342,7 @@ export async function geocodeCepSmart(
     }
   }
 
-  // 2. Fallback: CNEFE
-  const cnefeResult = await geocodeCep(cep, cidade, estado, logradouro);
-  if (cnefeResult) {
-    return {
-      ...cnefeResult,
-      confidence: 0.6,
-    };
-  }
-
+  console.log("[geocodeCepSmart] Nenhum resultado encontrado");
   return null;
 }
 
