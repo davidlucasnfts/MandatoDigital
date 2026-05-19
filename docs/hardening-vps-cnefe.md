@@ -1,8 +1,9 @@
 # Hardening VPS — Proteção do Banco CNEFE
 
-> **Data:** 18/05/2026
+> **Data:** 18/05/2026 (atualizado 19/05/2026)
 > **Incidente:** Ransomware no PostgreSQL da VPS HostUp
 > **Causa provável:** Senha fraca (`senha123`) + porta 5432 aberta para internet
+> **Status:** Resolvido — API Proxy implementada, PostgreSQL isolado
 
 ---
 
@@ -184,6 +185,30 @@ sudo tail -f /var/log/postgresql/postgresql-*.log
 | 443 | HTTPS | ✅ Sim (se usar API proxy) |
 | 5432 | PostgreSQL | ❌ NUNCA para internet |
 | 80 | HTTP | ❌ Não (use HTTPS) |
+
+---
+
+## Alterações Realizadas (19/05/2026)
+
+### API Proxy Implementada
+- Node.js + Hono rodando na porta 3001 (localhost)
+- Nginx reverse proxy na porta 80
+- Rate limiting: 100 req/15min por IP
+- CORS configurado para Vercel
+- Rodando como usuário `cnefe-api` (não root)
+- Systemd service para auto-restart
+
+### Segurança Reforçada
+- PostgreSQL: senha hex 64 chars (forte)
+- PostgreSQL: só escuta em 127.0.0.1
+- UFW: portas 2222 (SSH) e 80 (API) apenas
+- API Proxy: rate limiting em memória
+- API Proxy: sem acesso root
+
+### Pendências
+- [ ] HTTPS/SSL (Certbot + domínio)
+- [ ] Cloudflare Tunnel (esconder IP)
+- [ ] Importar dados CNEFE (CE, MA, etc.)
 
 ---
 

@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { createRouter, authedQuery, adminQuery } from "./middleware";
-import { getDb } from "./queries/connection";
-import * as schema from "@db/schema";
+import { createRouter, authedQuery, adminQuery } from "./middleware.js";
+import { getDb } from "./queries/connection.js";
+import * as schema from "../db/schema.js";
 import { eq, and } from "drizzle-orm";
-import { env } from "./lib/env";
+import { env } from "./lib/env.js";
 
 let supabaseAdmin: ReturnType<typeof import("@supabase/supabase-js").createClient> | null = null;
 function getSupabaseAdmin() {

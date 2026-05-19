@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createRouter, editorQuery } from "./middleware";
-import { getDb, getCnefeDb } from "./queries/connection";
-import { sql, eq, and, ilike } from "drizzle-orm";
-import { cnefeEnderecos } from "../db/schema";
+import { createRouter, editorQuery } from "./middleware.js";
+import { getDb } from "./queries/connection.js";
+import { sql } from "drizzle-orm";
+import { geocodificarCnefe } from "./lib/cnefe-client.js";
 
 interface GeoCoords {
   lat: number;
@@ -11,8 +11,7 @@ interface GeoCoords {
 }
 
 /**
- * Busca endereco no CNEFE (IBGE) — dados proprios na VPS
- * 100% CNEFE, sem fallback externo
+ * Busca endereco no CNEFE via API Proxy na VPS
  * Retorna coordenadas MEDIAS do CEP (mais preciso que 1 registro so)
  */
 async function geocodeEndereco(
@@ -22,7 +21,6 @@ async function geocodeEndereco(
   estado: string,
   cep: string
 ): Promise<GeoCoords | null> {
-  const db = getCnefeDb();
   const cepLimpo = cep.replace(/\D/g, "");
   const temCepValido = cepLimpo.length === 8;
   const temCidadeEstado = cidade && cidade.trim().length > 0 && estado && estado.trim().length > 0;
@@ -31,99 +29,50 @@ async function geocodeEndereco(
     return null;
   }
 
-  // 1. Tenta CNEFE por CEP (mais preciso) — busca TODOS os registros e calcula media
-  if (temCepValido) {
-    const porCep = await db
-      .select()
-      .from(cnefeEnderecos)
-      .where(eq(cnefeEnderecos.cep, cepLimpo));
+  try {
+    const result = await geocodificarCnefe({
+      endereco: endereco || undefined,
+      bairro: bairro || undefined,
+      municipio: cidade,
+      uf: estado,
+      cep: cepLimpo || undefined,
+    });
 
-    if (porCep.length > 0) {
-      const lats = porCep.map(r => parseFloat(r.latitude)).filter(n => !isNaN(n));
-      const lngs = porCep.map(r => parseFloat(r.longitude)).filter(n => !isNaN(n));
-      
-      if (lats.length > 0 && lngs.length > 0) {
-        return {
-          lat: lats.reduce((a, b) => a + b, 0) / lats.length,
-          lng: lngs.reduce((a, b) => a + b, 0) / lngs.length,
-          source: "cnefe",
-        };
-      }
-    }
-  }
-
-  // 2. Tenta CNEFE por logradouro + municipio
-  if (endereco && endereco.trim().length >= 3 && cidade) {
-    const logradouroNorm = endereco
-      .toUpperCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-    const municipioNorm = cidade
-      .toUpperCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-
-    const porLogradouro = await db
-      .select()
-      .from(cnefeEnderecos)
-      .where(
-        and(
-          ilike(cnefeEnderecos.nomeLogradouro, `%${logradouroNorm}%`),
-          ilike(cnefeEnderecos.municipio, `%${municipioNorm}%`),
-          estado ? eq(cnefeEnderecos.uf, estado.toUpperCase()) : undefined
-        )
-      )
-      .limit(1);
-
-    if (porLogradouro.length > 0) {
+    if (result) {
       return {
-        lat: parseFloat(porLogradouro[0].latitude),
-        lng: parseFloat(porLogradouro[0].longitude),
+        lat: result.lat,
+        lng: result.lng,
         source: "cnefe",
       };
     }
+  } catch (err: any) {
+    console.error("[geocodeEndereco] CNEFE erro:", err?.message || err);
   }
 
-  // Nao encontrou no CNEFE
   return null;
 }
 
 export const geocodingRouter = createRouter({
-  // Geocodifica um bairro (cidade + estado + bairro) — usa CNEFE
+  // Geocodifica um bairro (cidade + estado + bairro)
   geocodeBairro: editorQuery
     .input(z.object({ bairro: z.string(), cidade: z.string(), estado: z.string().optional() }))
     .mutation(async ({ input }) => {
-      const db = getCnefeDb();
-      const bairroNorm = input.bairro
-        .toUpperCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-      const cidadeNorm = input.cidade
-        .toUpperCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-
-      const result = await db
-        .select()
-        .from(cnefeEnderecos)
-        .where(
-          and(
-            ilike(cnefeEnderecos.bairro, `%${bairroNorm}%`),
-            ilike(cnefeEnderecos.municipio, `%${cidadeNorm}%`)
-          )
-        )
-        .limit(1);
-
-      if (result.length > 0) {
-        return {
-          lat: parseFloat(result[0].latitude),
-          lng: parseFloat(result[0].longitude),
-        };
+      try {
+        const result = await geocodificarCnefe({
+          bairro: input.bairro,
+          municipio: input.cidade,
+          uf: input.estado,
+        });
+        if (result) {
+          return { lat: result.lat, lng: result.lng };
+        }
+      } catch {
+        // CNEFE offline ou nao encontrou
       }
       return null;
     }),
 
-  // Geocodifica endereco completo de comunidade (rua, numero, bairro, cidade, estado, cep)
+  // Geocodifica endereco completo de comunidade
   geocodeComunidade: editorQuery
     .input(z.object({
       logradouro: z.string().optional(),
@@ -134,14 +83,13 @@ export const geocodingRouter = createRouter({
       cep: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
-      const coords = await geocodeEndereco(
+      return geocodeEndereco(
         input.logradouro || "",
         input.bairro || "",
         input.cidade,
         input.estado,
         input.cep || ""
       );
-      return coords;
     }),
 
   // Lista eleitores sem coordenadas (para debug)
@@ -169,7 +117,6 @@ export const geocodingRouter = createRouter({
     console.log("[geocodeAll] iniciado por:", ctx.user.email, "role:", ctx.user.role);
     const db = getDb();
 
-    // Busca eleitores sem coordenadas
     const result = await db.execute(sql`
       SELECT id, endereco, bairro, cidade, estado, cep
       FROM eleitores
@@ -218,10 +165,10 @@ export const geocodingRouter = createRouter({
         }
       } else {
         failed++;
-        const motivo = !e.cidade || !e.estado 
-          ? "cidade/estado ausente" 
-          : !e.cep && !e.endereco 
-            ? "CEP ou endereco ausente" 
+        const motivo = !e.cidade || !e.estado
+          ? "cidade/estado ausente"
+          : !e.cep && !e.endereco
+            ? "CEP ou endereco ausente"
             : "endereco nao encontrado no CNEFE";
         errors.push(`${e.id}: ${motivo}`);
       }
@@ -233,8 +180,8 @@ export const geocodingRouter = createRouter({
       failed,
       total: rows.length,
       errors: errors.slice(0, 10),
-      message: processed > 0 
-        ? `Geocodificacao concluida: ${processed} sucesso, ${failed} falha(s) (100% CNEFE)` 
+      message: processed > 0
+        ? `Geocodificacao concluida: ${processed} sucesso, ${failed} falha(s) (100% CNEFE)`
         : `Nenhum endereco encontrado no CNEFE. Verifique se os eleitores tem CEP, endereco, cidade e estado preenchidos.`,
     };
   }),

@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
-import { createRouter, authedQuery, editorQuery } from "./middleware";
-import { getDb } from "./queries/connection";
-import * as schema from "@db/schema";
-import { logAudit } from "./lib/audit";
+import { createRouter, authedQuery, editorQuery } from "./middleware.js";
+import { getDb } from "./queries/connection.js";
+import * as schema from "../db/schema.js";
+import { logAudit } from "./lib/audit.js";
 import { TRPCError } from "@trpc/server";
 
 const opcaoInput = z.object({

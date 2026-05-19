@@ -1,10 +1,10 @@
-import { authRouter } from "./auth-router";
-import { equipeRouter } from "./equipe-router";
-import { proposicoesRouter } from "./proposicoes-router";
-import { enquetesRouter } from "./enquetes-router";
-import { geocodingRouter } from "./geocoding-router";
-import { cnefeRouter } from "./cnefe-router";
-import { createRouter, publicQuery } from "./middleware";
+import { authRouter } from "./auth-router.js";
+import { equipeRouter } from "./equipe-router.js";
+import { proposicoesRouter } from "./proposicoes-router.js";
+import { enquetesRouter } from "./enquetes-router.js";
+import { geocodingRouter } from "./geocoding-router.js";
+import { cnefeRouter } from "./cnefe-router.js";
+import { createRouter, publicQuery } from "./middleware.js";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),

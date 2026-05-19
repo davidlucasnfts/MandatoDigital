@@ -92,6 +92,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 003 | Duplicar informação de segurança | 10/05/2026 | Expandir arquivo existente, nunca criar duplicata |
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
 | 005 | VPS com PostgreSQL exposto + senha fraca | 18/05/2026 | NUNCA expor porta 5432, usar senhas fortes (20+ chars), firewall UFW, fail2ban |
+| 008 | API Proxy sem rate limiting / rodando como root | 19/05/2026 | Sempre usar usuário dedicado, rate limiting por IP, systemd service com restart auto |
 | 006 | Esquecer de monitorar volume de API externa | 18/05/2026 | Sempre criar alerta de uso (80% do free tier), documentar plano de migração em SESSION-CONTEXT.md |
 | 007 | Não atualizar grafo do projeto após mudanças grandes | 18/05/2026 | Rodar `npm run graphify` após refactorings ou novas funcionalidades. Usar `npm run graphify:watch` para atualização automática |
 | 007 | Não documentar decisão de provedor de geocodificação | 18/05/2026 | Salvar comparativo de preços e plano de migração em `docs/geocoding-providers-comparison.md`

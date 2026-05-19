@@ -1,7 +1,7 @@
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
-import { env } from "./lib/env";
-import { getDb } from "./queries/connection";
-import * as schema from "@db/schema";
+import { env } from "./lib/env.js";
+import { getDb } from "./queries/connection.js";
+import * as schema from "../db/schema.js";
 import { eq } from "drizzle-orm";
 
 export type TrpcUser = {

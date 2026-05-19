@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { env } from "../lib/env";
-import * as schema from "@db/schema";
-import * as relations from "@db/relations";
+import { env } from "../lib/env.js";
+import * as schema from "../../db/schema.js";
+import * as relations from "../../db/relations.js";
 
 const fullSchema = { ...schema, ...relations };
 
@@ -33,10 +33,4 @@ export function getDb() {
   return instance;
 }
 
-export function getCnefeDb() {
-  if (!env.cnefeDatabaseUrl) {
-    throw new Error("CNEFE_DATABASE_URL not configured");
-  }
-  const client = postgres(env.cnefeDatabaseUrl);
-  return drizzle(client, { schema: fullSchema });
-}
+

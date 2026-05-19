@@ -1,5 +1,5 @@
-import { getDb } from "../queries/connection";
-import * as schema from "@db/schema";
+import { getDb } from "../queries/connection.js";
+import * as schema from "../../db/schema.js";
 
 
 export type AuditAction = "create" | "read" | "update" | "delete" | "login" | "logout" | "export";
