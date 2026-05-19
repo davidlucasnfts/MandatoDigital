@@ -71,14 +71,24 @@ CNEFE_API_URL=http://82.197.73.101
 
 ---
 
-## Checklist Próxima Sessão
+## Checklist Próxima Sessão — PRIORIDADE 1
 
 ```
 □ Testar cadastro de eleitor com geocodificação CNEFE
+  → Acessar https://mandato-digital-xi.vercel.app
+  → Cadastrar eleitor com CEP e número
+  → Verificar se aparece no mapa na posição correta
+  
 □ Verificar se Here API está sendo usada como fallback
+  → Cadastrar endereço fora do CE/MA (ex: São Paulo)
+  → Confirmar se Here API geocodifica
+
 □ Comprar/configurar domínio (se decidir)
 □ Importar mais estados se necessário (PB, RN, PI)
 ```
+
+> **LEMBRETE:** Amanhã a prioridade é testar o cadastro de eleitor no mapa com o CNEFE ativo.
+> URL: https://mandato-digital-xi.vercel.app
 
 ---
 
