@@ -1,115 +1,89 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 18/05/2026
-> **Sessão atual:** Here API implementada com monitoramento de volume
-
-## Here API — ATIVA
-- **Chave:** Configurada no `.env`
-- **Status:** Testada e funcionando (precisão de número de casa)
-- **Free tier:** 30.000 requisições/mês
-- **Monitoramento:** Tela `/admin` com alertas de volume
+> **Atualizado em:** 19/05/2026
+> **Sessão atual:** VPS CNEFE reativada com API Proxy e dados importados
 
 ---
 
 ## Stack (1 linha)
-React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (CNEFE) + Vercel
+React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (CNEFE API Proxy) + Vercel
 
 ---
 
 ## Última funcionalidade trabalhada
-**Correção geocodificação 100% CNEFE** — 18/05
+**API Proxy CNEFE + Importação de dados** — 19/05
 
-### Problemas identificados e corrigidos:
-1. **`geocoding-router.ts` usava `getDb()` (Supabase) em vez de `getCnefeDb()` (VPS)**
-   - Como a tabela `cnefe_enderecos` só existe na VPS, a busca retornava vazio
-   - Sistema caía no fallback Nominatim, posicionando no centro da cidade
-   
-2. **`buscarPorCep` retornava apenas 1 registro arbitrário**
-   - Agora busca TODOS os registros do CEP e calcula coordenadas médias
-   - Mais preciso quando há múltiplos números na mesma rua
-   
-3. **Frontend `geocoding.ts` usava fetch manual com formato errado**
-   - Reescrito com função `trpcCall` que envia `{ json: payload }` no POST
-   - Remove import não utilizado do `trpc` React
+### O que foi feito:
+1. **API Proxy na VPS** — Node.js/Hono rodando na porta 3001 (localhost), Nginx reverse proxy na porta 80
+2. **Segurança reforçada:**
+   - PostgreSQL só em localhost (127.0.0.1), senha hex 64 chars
+   - UFW: portas 2222 (SSH) e 80 (API) apenas
+   - Rate limiting: 100 req/15min por IP
+   - API roda como usuário `cnefe-api` (não root)
+   - Systemd service com auto-restart
+3. **Dados CNEFE importados:**
+   - CE (23): 4.750.642 registros
+   - MA (21): 3.257.843 registros
+   - **Total: 8.008.485 endereços georreferenciados**
+4. **Projeto atualizado** para usar HTTP client em vez de PostgreSQL direto
+5. **MestreProjects.md** atualizado com regras de VPS para todos os projetos
+6. **Deploy Vercel** funcionando com CNEFE_API_URL configurada
 
-4. **Nominatim removido completamente**
-   - `geocoding-router.ts` agora é 100% CNEFE
-   - `geocodeBairro` também usa CNEFE (não Nominatim)
-
-### Arquivos modificados:
-- `api/geocoding-router.ts` — `getDb()` → `getCnefeDb()`, remove Nominatim, coordenadas médias
-- `api/cnefe-router.ts` — `buscarPorCep` retorna coordenadas médias do CEP
-- `src/lib/geocoding.ts` — corrige chamada tRPC com POST + `{ json: payload }`
-
----
-
-## Funcionalidade entregue nesta sessão
-**Correção geocodificação 100% CNEFE** — 18/05
+### Pendências para próxima sessão:
+- [ ] HTTPS/SSL (precisa de domínio)
+- [ ] Cloudflare Tunnel (esconder IP da VPS)
+- [ ] Importar mais estados (opcional)
+- [ ] Testar geocodificação completa no cadastro de eleitor
 
 ---
 
-## Decisões pendentes (ação manual necessária)
+## URLs Importantes
 
-### ⚠️ CNEFE com múltiplos registros para mesmo CEP
-**Problema:** O CNEFE tem registros duplicados para o mesmo CEP em bairros diferentes (ex: CEP 65057-060 tem registros no Centro e no João de Deus).
-
-**Status:** Implementamos coordenadas médias do CEP, o que melhora a precisão para ruas com muitos números, mas ainda pode retornar ponto central entre bairros diferentes.
-
-**Onde fazer:** VPS HostUp — verificar qualidade dos dados importados
-**Como fazer:** Rodar query SQL para identificar CEPs com coordenadas muito dispersas
-
-### ⚠️ Geocodificação por número da casa
-**Decisão:** Implementar Here API para geocodificação precisa (nível de número).
-
-**Plano de migração por volume:**
-- 0-30k/mês: Here (grátis) ← ATUAL
-- 30k-100k/mês: TomTom (~$54/mês)
-- 100k-500k/mês: OpenCage ($50-125/mês fixo)
-- 500k+/mês: CSV2GEO ($50-100/mês fixo)
-
-**Monitoramento:** Verificar dashboard Here mensalmente (dia 1)
-**Referência:** Ver comparativo completo na seção "Comparativo de Provedores de Geocodificação" abaixo
+| Serviço | URL |
+|---|---|
+| **Produção (Vercel)** | https://mandato-digital-xi.vercel.app |
+| **API Proxy CNEFE** | http://82.197.73.101 |
+| **VPS (SSH)** | ssh -p 2222 root@82.197.73.101 |
 
 ---
 
-## Próximo passo definido
-**Aguardando teste local do David** — rodar `npm run dev` e testar cadastro de eleitor com CEP
+## Decisões Pendentes (Ações Manuais)
+
+| # | Ação | Onde fazer | Prioridade |
+|---|---|---|---|
+| 1 | Comprar domínio (Registro.br, Porkbun ou KingHost) | Site do registrador | Média |
+| 2 | Configurar DNS para apontar VPS | Painel do registrador | Média |
+| 3 | Configurar Certbot (HTTPS) | VPS (quando tiver domínio) | Média |
+| 4 | Configurar Cloudflare Tunnel | Cloudflare (opcional) | Baixa |
 
 ---
 
-## Bloqueios
-Nenhum.
+## Variáveis de Ambiente (Vercel)
+
+```
+DATABASE_URL=postgresql://... (Supabase)
+SUPABASE_SERVICE_ROLE_KEY=...
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+VITE_HERE_API_KEY=bPFahqLf6LlNCV9bq4k7pDB9iTiRj_twmAeRf06-lUM
+CNEFE_API_URL=http://82.197.73.101
+```
 
 ---
 
-## Comparativo de Provedores de Geocodificação
+## Checklist Próxima Sessão
 
-> **Decisão atual:** Here API (free tier 30k/mês)
-> **Próxima revisão:** Quando volume atingir 25.000 requisições/mês
-
-| Volume mensal | Provedor | Custo | Por quê |
-|---------------|----------|-------|---------|
-| 0 - 30.000 | **Here** | R$ 0 | Free tier generoso, precisão de número |
-| 30.001 - 100.000 | **TomTom** | ~$54/mês | Mais barato que Here após free tier |
-| 100.001 - 500.000 | **OpenCage** | $50-125/mês | Preço fixo, previsível |
-| 500.001+ | **CSV2GEO** | $50-100/mês | Plano fixo ilimitado |
-
-**⚠️ ALERTA:** NÃO usar Mapbox — free tier de 100k é ótimo, mas se ultrapassar 1 requisição, paga $5/1k em tudo (sem gradualidade).
-
-**Monitoramento:** Verificar dashboard Here mensalmente (dia 1) em https://developer.here.com/dashboard
+```
+□ Testar cadastro de eleitor com geocodificação CNEFE
+□ Verificar se Here API está sendo usada como fallback
+□ Comprar/configurar domínio (se decidir)
+□ Importar mais estados se necessário (PB, RN, PI)
+```
 
 ---
 
-## Contexto técnico atual
+## Erros Registrados (Self-Healing)
 
-### Banco CNEFE (VPS HostUp)
-- **Status:** VPS reinstalada após ransomware, segurança reforçada
-- **PostgreSQL:** Só localhost, senha forte, firewall UFW, fail2ban
-- **Tabela:** `cnefe_enderecos` criada, aguardando importação dos dados
-
-### Arquivos principais (geocodificação)
-- `api/cnefe-router.ts` — router tRPC para buscas CNEFE
-- `api/geocoding-router.ts` — batch geocoding + geocodeBairro (100% CNEFE)
-- `src/lib/geocoding.ts` — funções frontend de geocodificação
-- `api/queries/connection.ts` — `getCnefeDb()` para conexão VPS
-- `src/components/NovoEleitorDialog.tsx` — form com CEP + onBlur
+| # | Erro | Data | Prevenção |
+|---|---|---|---|
+| 008 | API Proxy sem rate limiting / rodando como root | 19/05/2026 | Sempre usar usuário dedicado, rate limiting, systemd |
