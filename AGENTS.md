@@ -91,6 +91,10 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 002 | Sobrescrever arquivo fora do repo Git | 11/05/2026 | Nunca usar `overwrite` fora do working dir |
 | 003 | Duplicar informação de segurança | 10/05/2026 | Expandir arquivo existente, nunca criar duplicata |
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
+| 005 | VPS com PostgreSQL exposto + senha fraca | 18/05/2026 | NUNCA expor porta 5432, usar senhas fortes (20+ chars), firewall UFW, fail2ban |
+| 006 | Esquecer de monitorar volume de API externa | 18/05/2026 | Sempre criar alerta de uso (80% do free tier), documentar plano de migração em SESSION-CONTEXT.md |
+| 007 | Não atualizar grafo do projeto após mudanças grandes | 18/05/2026 | Rodar `npm run graphify` após refactorings ou novas funcionalidades. Usar `npm run graphify:watch` para atualização automática |
+| 007 | Não documentar decisão de provedor de geocodificação | 18/05/2026 | Salvar comparativo de preços e plano de migração em `docs/geocoding-providers-comparison.md`
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
@@ -197,6 +201,10 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 □ npm audit limpo
 □ Audit logs funcionando
 □ .env não está no git
+□ VPS: PostgreSQL NÃO exposto na internet (porta 5432 fechada)
+□ VPS: Firewall UFW ativo (só 22 e 443 abertos)
+□ VPS: Fail2Ban configurado
+□ VPS: Senha do PostgreSQL forte (20+ caracteres)
 ```
 
 ### Headers HTTP padrão
@@ -213,6 +221,28 @@ Permissions-Policy: camera=(), microphone=(), geolocation=(self)
 - Geral: 100 req/15min por IP
 - Auth: 10 req/15min por IP
 - Rotas sensíveis: 30 req/1min por usuário (token)
+
+### 🔒 Segurança de VPS / Banco Próprio
+> **Referência:** `docs/hardening-vps-cnefe.md`
+
+#### 🚫 PROIBIDO em VPS
+1. **NUNCA** deixar PostgreSQL (porta 5432) acessível da internet
+2. **NUNCA** usar senhas fracas no PostgreSQL (ex: `senha123`)
+3. **NUNCA** usar `0.0.0.0/0` no `pg_hba.conf`
+4. **NUNCA** commitar `CNEFE_DATABASE_URL` com credenciais reais
+
+#### ✅ Obrigatório em VPS
+- PostgreSQL só escuta em `127.0.0.1` (localhost)
+- Firewall UFW: apenas portas 22 (SSH) e 443 (HTTPS) abertas
+- Fail2Ban para bloquear IPs suspeitos
+- Senha do PostgreSQL: mínimo 20 caracteres, aleatória
+- Acesso remoto via API proxy (HTTPS) ou VPN, nunca direto no banco
+- Cloudflare Tunnel (recomendado) para esconder IP da VPS
+
+#### Arquitetura segura recomendada
+```
+Vercel → HTTPS → API Proxy (VPS:443) → localhost → PostgreSQL (VPS:5432)
+```
 
 ---
 

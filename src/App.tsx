@@ -15,6 +15,8 @@ import DocumentosPage from '@/pages/DocumentosPage';
 import RelatoriosPage from '@/pages/RelatoriosPage';
 import EquipePage from '@/pages/EquipePage';
 import ConfiguracoesPage from '@/pages/ConfiguracoesPage';
+import AdminPage from '@/pages/AdminPage';
+import HereApiTest from '@/components/HereApiTest';
 import ProposicoesPage from '@/pages/ProposicoesPage';
 import ProposicaoFormPage from '@/pages/ProposicaoFormPage';
 import ProposicaoDetailPage from '@/pages/ProposicaoDetailPage';
@@ -29,6 +31,8 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage {...auth} />} />
       <Route path="/afiliar/:liderId" element={<AfiliarPage />} />
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/teste-here" element={<HereApiTest />} />
       <Route
         path="/dashboard"
         element={auth.isAuthenticated ? <DashboardLayout {...auth} /> : <Navigate to="/" replace />}

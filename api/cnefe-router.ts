@@ -64,6 +64,7 @@ export const cnefeRouter = createRouter({
 
   // Busca por CEP — USA APENAS CNEFE (dados proprios na VPS)
   // Se logradouro for informado, filtra por ele para maior precisao
+  // Retorna coordenadas MEDIAS de todos os registros do CEP (mais preciso que 1 so)
   buscarPorCep: publicQuery
     .input(z.object({ 
       cep: z.string().min(8).max(9),
@@ -73,7 +74,15 @@ export const cnefeRouter = createRouter({
       const db = getCnefeDb();
       const cepLimpo = input.cep.replace(/\D/g, "");
 
-      // Se tem logradouro, busca CEP + logradouro
+      // Busca TODOS os registros do CEP
+      let registros = await db
+        .select()
+        .from(cnefeEnderecos)
+        .where(eq(cnefeEnderecos.cep, cepLimpo));
+
+      if (registros.length === 0) return null;
+
+      // Se tem logradouro, filtra por ele para maior precisao
       if (input.logradouro && input.logradouro.length >= 3) {
         const logradouroNorm = input.logradouro
           .toUpperCase()
@@ -95,31 +104,33 @@ export const cnefeRouter = createRouter({
           }
         }
         
-        // Busca CEP + nome do logradouro (sem tipo)
+        // Filtra registros que contenham o nome do logradouro
         if (nomeSemTipo.length >= 2) {
-          const result = await db
-            .select()
-            .from(cnefeEnderecos)
-            .where(
-              and(
-                eq(cnefeEnderecos.cep, cepLimpo),
-                ilike(cnefeEnderecos.nomeLogradouro, `%${nomeSemTipo}%`)
-              )
-            )
-            .limit(1);
-          
-          if (result.length > 0) return result[0];
+          const filtrados = registros.filter(r => {
+            const nome = (r.nomeLogradouro || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return nome.includes(nomeSemTipo);
+          });
+          if (filtrados.length > 0) {
+            registros = filtrados;
+          }
         }
       }
 
-      // Fallback: busca so por CEP
-      const result = await db
-        .select()
-        .from(cnefeEnderecos)
-        .where(eq(cnefeEnderecos.cep, cepLimpo))
-        .limit(1);
+      // Calcula coordenadas medias dos registros encontrados
+      const lats = registros.map(r => parseFloat(r.latitude)).filter(n => !isNaN(n));
+      const lngs = registros.map(r => parseFloat(r.longitude)).filter(n => !isNaN(n));
+      
+      if (lats.length === 0 || lngs.length === 0) return null;
 
-      return result[0] || null;
+      const latMedia = lats.reduce((a, b) => a + b, 0) / lats.length;
+      const lngMedia = lngs.reduce((a, b) => a + b, 0) / lngs.length;
+
+      // Retorna o primeiro registro com coordenadas medias
+      return {
+        ...registros[0],
+        latitude: String(latMedia),
+        longitude: String(lngMedia),
+      };
     }),
 
   // Geocodifica um endereco: busca no CNEFE, fallback para Nominatim

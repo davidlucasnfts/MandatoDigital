@@ -1,0 +1,20 @@
+{
+  "autoUpdate": true,
+  "watchOnDev": true,
+  "exportFormats": ["html", "json", "report"],
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    ".git/",
+    "graphify-out/",
+    "*.log",
+    "package-lock.json"
+  ],
+  "features": {
+    "query": true,
+    "explain": true,
+    "path": true,
+    "callflow": true,
+    "tree": true
+  }
+}

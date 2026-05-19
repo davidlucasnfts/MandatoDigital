@@ -63,6 +63,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Geocodificação 100% CNEFE — remove dependência do Nominatim** | **16/05** |
 | **CNEFE: busca por CEP + logradouro para maior precisão** | **16/05** |
 | **Fix IconPicker: compatibilidade com lucide-react atual** | **16/05** |
+| **Hardening VPS — reinstalação após ransomware, firewall, fail2ban, chaves SSH** | **18/05** |
+| **Decisão: Here API para geocodificação precisa (nível de número)** | **18/05** |
 
 ---
 

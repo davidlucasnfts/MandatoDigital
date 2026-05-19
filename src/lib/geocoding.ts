@@ -9,7 +9,35 @@ interface GeoCoords {
 }
 
 /**
- * Geocodifica um endereco usando CNEFE (local) + Nominatim (fallback)
+ * Faz chamada tRPC via HTTP com formato correto
+ */
+async function trpcCall<T>(path: string, payload: unknown): Promise<T | null> {
+  try {
+    const res = await fetch(`/api/trpc/${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ json: payload }),
+    });
+
+    if (!res.ok) {
+      console.error(`[geocoding] tRPC error ${res.status}:`, await res.text());
+      return null;
+    }
+
+    const json = await res.json();
+    // tRPC response format: { result: { data: T } }
+    return json.result?.data ?? null;
+  } catch (err) {
+    console.error("[geocoding] fetch error:", err);
+    return null;
+  }
+}
+
+/**
+ * Geocodifica um endereco usando CNEFE (local)
  * Chamada via tRPC — os dados sao salvos no banco, sem restricoes de armazenamento
  */
 export async function geocodeEndereco(
@@ -19,36 +47,27 @@ export async function geocodeEndereco(
   estado: string,
   cep: string
 ): Promise<GeoCoords | null> {
-  // Usa a API tRPC que faz CNEFE + fallback Nominatim
-  try {
-    const response = await fetch("/api/trpc/cnefe.geocodificar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        json: {
-          endereco,
-          bairro,
-          municipio: cidade,
-          uf: estado,
-          cep,
-        },
-      }),
-    });
+  const result = await trpcCall<{
+    source: "cnefe";
+    lat: number;
+    lng: number;
+    enderecoEncontrado: string;
+  }>("cnefe.geocodificar", {
+    endereco,
+    bairro,
+    municipio: cidade,
+    uf: estado,
+    cep,
+  });
 
-    const json = await response.json();
-    const result = json.result?.data;
+  if (!result) return null;
 
-    if (!result) return null;
-
-    return {
-      lat: result.lat,
-      lng: result.lng,
-      source: result.source,
-      displayName: result.enderecoEncontrado,
-    };
-  } catch {
-    return null;
-  }
+  return {
+    lat: result.lat,
+    lng: result.lng,
+    source: "cnefe",
+    displayName: result.enderecoEncontrado,
+  };
 }
 
 /**
@@ -64,29 +83,25 @@ export async function geocodeCep(
   const clean = cep.replace(/\D/g, "");
   if (clean.length !== 8) return null;
 
-  try {
-    const params: Record<string, string> = { cep: clean };
-    if (logradouro) params.logradouro = logradouro;
-    
-    const response = await fetch(
-      `/api/trpc/cnefe.buscarPorCep?input=${encodeURIComponent(JSON.stringify(params))}`
-    );
-    const json = await response.json();
-    const result = json.result?.data;
+  const result = await trpcCall<{
+    latitude: string;
+    longitude: string;
+    tipoLogradouro: string | null;
+    nomeLogradouro: string | null;
+    numero: string | null;
+  }>("cnefe.buscarPorCep", {
+    cep: clean,
+    logradouro,
+  });
 
-    if (result) {
-      return {
-        lat: parseFloat(result.latitude),
-        lng: parseFloat(result.longitude),
-        source: "cnefe",
-        displayName: `${result.tipoLogradouro || ""} ${result.nomeLogradouro}, ${result.numero || "S/N"}`,
-      };
-    }
-  } catch {
-    // ignora erro
-  }
+  if (!result) return null;
 
-  return null;
+  return {
+    lat: parseFloat(result.latitude),
+    lng: parseFloat(result.longitude),
+    source: "cnefe",
+    displayName: `${result.tipoLogradouro || ""} ${result.nomeLogradouro}, ${result.numero || "S/N"}`,
+  };
 }
 
 // Cache em memoria para evitar requisicoes duplicadas na mesma sessao

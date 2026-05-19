@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, User, Crown } from 'lucide-react';
+import { Plus, User, Crown, MapPin } from 'lucide-react';
 import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
 import AutocompleteCidade from '@/components/AutocompleteCidade';
 import AutocompleteBairro from '@/components/AutocompleteBairro';
-import { geocodeCep } from '@/lib/geocoding';
+import { useGeocoding } from '@/hooks/useGeocoding';
 import type { Eleitor } from '@/lib/supabase';
 
 interface Props {
@@ -30,6 +30,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const { insert, update } = useEleitores();
   const { data: comunidades } = useComunidades();
   const { data: lideres } = useEleitores();
+  const { geocode, geocodeByCep, isLoading: geoLoading, hereEnabled } = useGeocoding();
   const [loading, setLoading] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState<AbaNivel>('eleitor');
   const isEdit = !!eleitor;
@@ -73,6 +74,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
     setForm(prev => ({ ...prev, nivel: abaAtiva }));
   }, [abaAtiva]);
 
+  // Busca CEP no ViaCEP (preenche endereco, geocodifica so se tiver numero)
   const buscarCep = async (cep: string) => {
     const clean = cep.replace(/\D/g, '');
     if (clean.length !== 8) return;
@@ -80,33 +82,78 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
       const data = await res.json();
       if (!data.erro) {
-        const endereco = data.logradouro || '';
-        const bairro = data.bairro || '';
-        const cidade = data.localidade || '';
-        const estado = data.uf || '';
-
-        // Geocodifica o CEP + logradouro + cidade + estado para coordenadas precisas
-        const coords = await geocodeCep(clean, cidade, estado, endereco);
-
         setForm(prev => ({
           ...prev,
-          cep: maskCEP(clean), // <-- GARANTE QUE O CEP FICA FORMATADO NO FORM
-          endereco,
-          bairro,
-          cidade,
-          estado,
-          latitude: coords?.lat ?? prev.latitude,
-          longitude: coords?.lng ?? prev.longitude,
+          cep: maskCEP(clean),
+          endereco: data.logradouro || '',
+          bairro: data.bairro || '',
+          cidade: data.localidade || '',
+          estado: data.uf || '',
         }));
+        // So geocodifica se ja tiver numero preenchido
+        if (form.numero) {
+          await geocodificarEndereco(
+            data.logradouro || '',
+            form.numero,
+            data.bairro || '',
+            data.localidade || '',
+            data.uf || '',
+            clean
+          );
+        }
       }
     } catch {
       // ignora erro de CEP
     }
   };
 
+  // Geocodifica endereco completo (com numero) usando Here API
+  const geocodificarEndereco = async (
+    endereco: string,
+    numero: string,
+    bairro: string,
+    cidade: string,
+    estado: string,
+    cep: string
+  ) => {
+    const coords = await geocode(endereco, numero, bairro, cidade, estado, cep);
+    if (coords) {
+      setForm(prev => ({
+        ...prev,
+        latitude: coords.lat,
+        longitude: coords.lng,
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.nome?.trim()) return;
+
+    // Validacao: CEP obrigatorio
+    const cepLimpo = (form.cep || '').replace(/\D/g, '');
+    if (cepLimpo.length !== 8) {
+      alert('CEP é obrigatório para geocodificação');
+      return;
+    }
+
+    // Validacao: numero obrigatorio (ou S/N)
+    if (!form.numero || form.numero.trim() === '') {
+      alert('Número é obrigatório. Marque "Sem número (S/N)" se não houver.');
+      return;
+    }
+
+    // Se nao tiver coordenadas, tenta geocodificar antes de salvar
+    if (!form.latitude || !form.longitude) {
+      await geocodificarEndereco(
+        form.endereco || '',
+        form.numero || '',
+        form.bairro || '',
+        form.cidade || '',
+        form.estado || '',
+        form.cep || ''
+      );
+    }
 
     setLoading(true);
     try {
@@ -196,34 +243,34 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           </div>
 
           {/* Campos principais */}
-          <div className="space-y-1.5">
-            <Label htmlFor="nome">Nome completo *</Label>
-            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome completo" required />
+          <div className="space-y-1">
+            <Label htmlFor="nome" className="text-xs">Nome completo *</Label>
+            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome completo" required className="h-9" />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="nome_mae">Nome da mãe</Label>
-            <Input id="nome_mae" value={form.nome_mae || ''} onChange={e => setField('nome_mae', capitalizeWords(e.target.value))} placeholder="Nome completo da mãe" />
+          <div className="space-y-1">
+            <Label htmlFor="nome_mae" className="text-xs">Nome da mãe</Label>
+            <Input id="nome_mae" value={form.nome_mae || ''} onChange={e => setField('nome_mae', capitalizeWords(e.target.value))} placeholder="Nome completo da mãe" className="h-9" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" value={form.email || ''} onChange={e => setField('email', e.target.value)} placeholder="nome@email.com" />
+          <div className="flex flex-wrap gap-2 items-end">
+            <div className="space-y-1 flex-1 min-w-[200px]">
+              <Label htmlFor="email" className="text-xs">E-mail</Label>
+              <Input id="email" type="email" value={form.email || ''} onChange={e => setField('email', e.target.value)} placeholder="nome@email.com" className="h-9" />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="telefone">Telefone</Label>
-              <Input id="telefone" value={form.telefone || ''} onChange={e => setField('telefone', maskPhone(e.target.value))} placeholder="(11) 98765-4321" maxLength={15} />
+            <div className="space-y-1 w-[140px]">
+              <Label htmlFor="telefone" className="text-xs">Telefone</Label>
+              <Input id="telefone" value={form.telefone || ''} onChange={e => setField('telefone', maskPhone(e.target.value))} placeholder="(11) 98765-4321" maxLength={15} className="h-9" />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="cpf">CPF</Label>
-              <Input id="cpf" value={form.cpf || ''} onChange={e => setField('cpf', maskCPF(e.target.value))} placeholder="123.456.789-00" maxLength={14} />
+          <div className="flex flex-wrap gap-2 items-end">
+            <div className="space-y-1 w-[150px]">
+              <Label htmlFor="cpf" className="text-xs">CPF</Label>
+              <Input id="cpf" value={form.cpf || ''} onChange={e => setField('cpf', maskCPF(e.target.value))} placeholder="123.456.789-00" maxLength={14} className="h-9" />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="data_nascimento">Data de nascimento</Label>
+            <div className="space-y-1 w-[140px]">
+              <Label htmlFor="data_nascimento" className="text-xs">Data nasc.</Label>
               <input
                 id="data_nascimento"
                 type="date"
@@ -238,20 +285,28 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                   if (val > maxDate) setField('data_nascimento', maxDate);
                   else if (val < '1900-01-01') setField('data_nascimento', '1900-01-01');
                 }}
-                className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+                className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
               />
+            </div>
+            <div className="space-y-1 w-[100px]">
+              <Label htmlFor="status" className="text-xs">Status</Label>
+              <select id="status" value={form.status || 'ativo'} onChange={e => setField('status', e.target.value as Eleitor['status'])} className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm">
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+                <option value="pendente">Pendente</option>
+              </select>
             </div>
           </div>
 
           {/* Líder (só aparece quando aba = eleitor) */}
           {abaAtiva === 'eleitor' && (
-            <div className="space-y-1.5">
-              <Label htmlFor="lider_id">Líder responsável</Label>
+            <div className="space-y-1">
+              <Label htmlFor="lider_id" className="text-xs">Líder responsável</Label>
               <select
                 id="lider_id"
                 value={form.lider_id || ''}
                 onChange={e => setField('lider_id', e.target.value || null)}
-                className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+                className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
               >
                 <option value="">Sem líder</option>
                 {lideres.filter(l => l.nivel === 'lider').map(l => (
@@ -261,38 +316,70 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
             </div>
           )}
 
-          {/* Campos comuns */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="cep">CEP</Label>
-                <div className="flex gap-2">
-                  <Input id="cep" value={form.cep || ''} onChange={e => setField('cep', maskCEP(e.target.value))} onBlur={e => buscarCep(e.target.value)} placeholder="01001-000" className="flex-1" maxLength={9} />
-                  <Button type="button" variant="outline" size="sm" onClick={() => buscarCep(form.cep || '')} className="h-10 px-3">Buscar</Button>
+          {/* Secao: Endereco */}
+          <div className="space-y-3 pt-4 border-t border-slate-100">
+            <p className="text-sm font-medium text-slate-700 flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-blue-600" />
+              Endereço
+            </p>
+
+            {/* CEP + Buscar + Endereco + Numero */}
+            <div className="flex flex-wrap gap-2 items-end">
+              <div className="space-y-1 w-[110px]">
+                <Label htmlFor="cep" className="text-xs">CEP *</Label>
+                <Input id="cep" value={form.cep || ''} onChange={e => setField('cep', maskCEP(e.target.value))} onBlur={e => buscarCep(e.target.value)} placeholder="01001-000" maxLength={9} className="h-9" />
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={() => buscarCep(form.cep || '')} className="h-9 px-3">Buscar</Button>
+              <div className="space-y-1 flex-1 min-w-[180px]">
+                <Label htmlFor="endereco" className="text-xs">Endereço</Label>
+                <Input id="endereco" value={form.endereco || ''} onChange={e => setField('endereco', capitalizeWords(e.target.value))} onBlur={() => {
+                  if (form.endereco && form.cidade && form.estado) {
+                    geocodificarEndereco(form.endereco || '', form.numero || '', form.bairro || '', form.cidade || '', form.estado || '', form.cep || '');
+                  }
+                }} placeholder="Rua, avenida" className="h-9" />
+              </div>
+              <div className="space-y-1 w-[60px]">
+                <div className="flex items-center gap-1">
+                  <Label htmlFor="numero" className="text-xs">Nº</Label>
+                  <label className="flex items-center gap-0.5 text-[9px] text-slate-400 cursor-pointer leading-none">
+                    <input
+                      type="checkbox"
+                      checked={form.numero === "S/N"}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setField('numero', 'S/N');
+                          if (form.endereco && form.cidade && form.estado) {
+                            geocodificarEndereco(form.endereco || '', 'S/N', form.bairro || '', form.cidade || '', form.estado || '', form.cep || '');
+                          }
+                        } else {
+                          setField('numero', '');
+                        }
+                      }}
+                      className="w-3 h-3"
+                    />
+                    <span>S/N</span>
+                  </label>
                 </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="comunidade_id">Comunidade</Label>
-                <select id="comunidade_id" value={form.comunidade_id || ''} onChange={e => setField('comunidade_id', e.target.value || null)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm">
-                  <option value="">Selecione</option>
-                  {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div className="col-span-2 space-y-1.5">
-                <Label htmlFor="endereco">Endereço</Label>
-                <Input id="endereco" value={form.endereco || ''} onChange={e => setField('endereco', capitalizeWords(e.target.value))} placeholder="Rua, avenida" />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="numero">Número</Label>
-                <Input id="numero" value={form.numero || ''} onChange={e => setField('numero', e.target.value.toUpperCase())} placeholder="S/N" />
+                <Input
+                  id="numero"
+                  value={form.numero === "S/N" ? "" : (form.numero || '')}
+                  disabled={form.numero === "S/N"}
+                  onChange={e => setField('numero', e.target.value.toUpperCase())}
+                  onBlur={(e) => {
+                    const numero = e.target.value.toUpperCase();
+                    if (form.endereco && form.cidade && form.estado && numero && numero !== "S/N") {
+                      geocodificarEndereco(form.endereco || '', numero, form.bairro || '', form.cidade || '', form.estado || '', form.cep || '');
+                    }
+                  }}
+                  placeholder={form.numero === "S/N" ? "S/N" : "123"}
+                  className="h-9 px-2"
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1.5">
+            {/* Bairro + Cidade + Estado */}
+            <div className="flex flex-wrap gap-2 items-end">
+              <div className="space-y-1 flex-1 min-w-[120px]">
                 <AutocompleteBairro
                   id="bairro"
                   label="Bairro"
@@ -302,7 +389,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                   placeholder="Bairro"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1 flex-1 min-w-[120px]">
                 <AutocompleteCidade
                   id="cidade"
                   label="Cidade"
@@ -314,29 +401,33 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                   placeholder="Cidade"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="estado">Estado</Label>
-                <Input id="estado" value={form.estado || ''} onChange={e => setField('estado', e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))} placeholder="SP" maxLength={2} />
+              <div className="space-y-1 w-[55px]">
+                <Label htmlFor="estado" className="text-xs">UF</Label>
+                <Input id="estado" value={form.estado || ''} onChange={e => setField('estado', e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))} placeholder="SP" maxLength={2} className="h-9 px-2" />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="status">Status</Label>
-                <select id="status" value={form.status || 'ativo'} onChange={e => setField('status', e.target.value as Eleitor['status'])} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm">
-                  <option value="ativo">Ativo</option>
-                  <option value="inativo">Inativo</option>
-                  <option value="pendente">Pendente</option>
+            {/* Comunidade + Tags */}
+            <div className="flex flex-wrap gap-2 items-end">
+              <div className="space-y-1 w-[140px]">
+                <Label htmlFor="comunidade_id" className="text-xs">Comunidade</Label>
+                <select id="comunidade_id" value={form.comunidade_id || ''} onChange={e => setField('comunidade_id', e.target.value || null)} className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm">
+                  <option value="">Selecione</option>
+                  {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                 </select>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="tags">Tags (separadas por vírgula)</Label>
-                <Input id="tags" value={(form.tags || []).join(', ')} onChange={e => setField('tags', e.target.value.split(',').map(t => t.trim()).filter(Boolean))} placeholder="saude, educacao, infraestrutura" />
+              <div className="space-y-1 flex-1 min-w-[200px]">
+                <Label htmlFor="tags" className="text-xs">Tags</Label>
+                <Input id="tags" value={(form.tags || []).join(', ')} onChange={e => setField('tags', e.target.value.split(',').map(t => t.trim()).filter(Boolean))} placeholder="saude, educacao" className="h-9" />
               </div>
             </div>
+          </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="observacoes">Observações</Label>
+          {/* Secao: Observacoes */}
+          <div className="space-y-3 pt-4 border-t border-slate-100">
+            <p className="text-sm font-medium text-slate-700">Observações</p>
+
+            <div className="space-y-1">
               <Textarea id="observacoes" value={form.observacoes || ''} onChange={e => setField('observacoes', e.target.value)} placeholder="Observações adicionais" rows={3} />
             </div>
           </div>

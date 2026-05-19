@@ -17,7 +17,16 @@
     "test:ui": "vitest --ui",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "graphify": "py -m graphify . && py scripts/build-visualizer.py && start graphify-out/visualizer-embedded.html",
+    "graphify:report": "py -m graphify . && start graphify-out/GRAPH_REPORT.md",
+    "graphify:query": "py -m graphify query",
+    "graphify:explain": "py -m graphify explain",
+    "graphify:path": "py -m graphify path",
+    "graphify:watch": "py -m graphify watch .",
+    "graphify:serve": "py scripts/build-visualizer.py && npx serve graphify-out -p 3001",
+    "graphify:callflow": "py -m graphify export callflow-html && start graphify-out/CALLFLOW.html",
+    "graphify:tree": "py -m graphify tree && start graphify-out/GRAPH_TREE.html"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.965.0",
@@ -117,6 +126,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "graphify": "^1.0.0",
     "jsdom": "^29.1.1",
     "kimi-plugin-inspect-react": "^1.0.3",
     "postcss": "^8.5.6",

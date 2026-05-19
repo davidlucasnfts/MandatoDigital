@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useConfiguracoes } from '@/hooks/useSupabaseData';
 import { maskPhone, capitalizeWords } from '@/lib/masks';
 
+
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } })
@@ -70,6 +71,7 @@ export default function ConfiguracoesPage() {
           <TabsTrigger value="integracoes">
             <Mail className="w-4 h-4 mr-1.5" /> Integrações
           </TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="perfil" className="space-y-4">
@@ -243,6 +245,7 @@ export default function ConfiguracoesPage() {
             </Card>
           </motion.div>
         </TabsContent>
+
       </Tabs>
     </div>
   );
