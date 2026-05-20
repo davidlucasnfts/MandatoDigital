@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Plus, User, Crown, MapPin } from 'lucide-react';
 import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const [loading, setLoading] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState<AbaNivel>('eleitor');
   const isEdit = !!eleitor;
+  const lastCepRef = useRef<string>('');
 
   const buildForm = (e?: Eleitor | null): Partial<Eleitor> => {
     if (!e) return { nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null, data_nascimento: null };
@@ -78,6 +79,9 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const buscarCep = async (cep: string) => {
     const clean = cep.replace(/\D/g, '');
     if (clean.length !== 8) return;
+    // Evita chamar geocodificacao multiplas vezes para o mesmo CEP
+    if (lastCepRef.current === clean) return;
+    lastCepRef.current = clean;
     try {
       const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
       const data = await res.json();

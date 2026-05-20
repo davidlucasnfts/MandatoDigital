@@ -124,9 +124,18 @@ export async function geocodeCep(
 
   if (!result) return null;
 
+  const lat = parseFloat(result.latitude);
+  const lng = parseFloat(result.longitude);
+
+  // Verifica se as coordenadas sao validas
+  if (isNaN(lat) || isNaN(lng)) {
+    console.log("[geocodeCep] Coordenadas invalidas do CNEFE, retornando null");
+    return null;
+  }
+
   return {
-    lat: parseFloat(result.latitude),
-    lng: parseFloat(result.longitude),
+    lat,
+    lng,
     source: "cnefe",
     displayName: `${result.tipoLogradouro || ""} ${result.nomeLogradouro}, ${result.numero || "S/N"}`,
   };
