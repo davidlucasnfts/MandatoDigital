@@ -9,7 +9,7 @@ interface GeoCoords {
 }
 
 /**
- * Faz chamada tRPC via HTTP com formato correto
+ * Faz chamada tRPC MUTATION via HTTP POST
  */
 async function trpcCall<T>(path: string, payload: unknown): Promise<T | null> {
   try {
@@ -24,6 +24,34 @@ async function trpcCall<T>(path: string, payload: unknown): Promise<T | null> {
 
     if (!res.ok) {
       console.error(`[geocoding] tRPC error ${res.status}:`, await res.text());
+      return null;
+    }
+
+    const json = await res.json();
+    // tRPC response format: { result: { data: T } }
+    return json.result?.data ?? null;
+  } catch (err) {
+    console.error("[geocoding] fetch error:", err);
+    return null;
+  }
+}
+
+/**
+ * Faz chamada tRPC QUERY via HTTP GET
+ */
+async function trpcQuery<T>(path: string, payload: unknown): Promise<T | null> {
+  try {
+    const input = encodeURIComponent(JSON.stringify({ json: payload }));
+    const res = await fetch(`/api/trpc/${path}?input=${input}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      console.error(`[geocoding] tRPC query error ${res.status}:`, await res.text());
       return null;
     }
 
@@ -83,7 +111,7 @@ export async function geocodeCep(
   const clean = cep.replace(/\D/g, "");
   if (clean.length !== 8) return null;
 
-  const result = await trpcCall<{
+  const result = await trpcQuery<{
     latitude: string;
     longitude: string;
     tipoLogradouro: string | null;

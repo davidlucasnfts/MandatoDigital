@@ -59,6 +59,7 @@ export const cnefeRouter = createRouter({
         municipio: input.municipio,
         uf: input.uf,
         cep: input.cep,
+        numero: input.numero,
       });
     }),
 

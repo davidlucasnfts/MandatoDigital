@@ -88,6 +88,7 @@ export async function geocodificarCnefe(params: {
   municipio?: string;
   uf?: string;
   cep?: string;
+  numero?: string;
 }): Promise<GeocodeResult | null> {
   return fetchCnefe("/cnefe/geocodificar", {
     method: "POST",
