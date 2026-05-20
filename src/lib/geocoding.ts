@@ -122,10 +122,16 @@ export async function geocodeCep(
     logradouro,
   });
 
+  console.log("[geocodeCep] Resultado bruto:", result);
+
   if (!result) return null;
+
+  console.log("[geocodeCep] latitude:", result.latitude, "longitude:", result.longitude);
 
   const lat = parseFloat(result.latitude);
   const lng = parseFloat(result.longitude);
+
+  console.log("[geocodeCep] lat parseFloat:", lat, "lng parseFloat:", lng);
 
   // Verifica se as coordenadas sao validas
   if (isNaN(lat) || isNaN(lng)) {
