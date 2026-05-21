@@ -105,7 +105,7 @@ const PESOS: { label: string; weight: IconWeight }[] = [
 
 export const IconDemo: React.FC = () => {
   const [pesoAtivo, setPesoAtivo] = React.useState<IconWeight>(
-    () => (localStorage.getItem("icon-weight-preference") as IconWeight) || "regular"
+    () => (localStorage.getItem("icon-weight-preference") as IconWeight) || "bold"
   );
 
   const salvarPeso = (peso: IconWeight) => {

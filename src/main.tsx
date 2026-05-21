@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <TRPCProvider>
-        <IconContext.Provider value={{ weight: "regular", size: 20 }}>
+        <IconContext.Provider value={{ weight: "bold", size: 20 }}>
           <App />
         </IconContext.Provider>
       </TRPCProvider>
