@@ -11,20 +11,24 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Repaginação de Ícones — Phosphor Icons** — 20/05
+**Repaginação de Ícones — Testando Carbon Icons e Material Design** — 20/05
 
 ### O que foi feito:
-1. **Instalado `@phosphor-icons/react`** — biblioteca com 7000+ ícones, 6 pesos visuais
-2. **Criado wrapper `@/lib/icons.ts`** — mapeia nomes Lucide → Phosphor para compatibilidade
-3. **Substituídos todos os imports** `lucide-react` → `@/lib/icons` em 43 arquivos
-4. **IconContext global** no `main.tsx` com `weight: "fill"` (efeito 3D/preenchido)
-5. **Página demo** `/icones` com visualização de todos os pesos (thin a duotone)
-6. **IconPicker mantido** com lucide-react (uso interno, não afeta UI principal)
+1. **Rejeitado Phosphor Icons** — usuário não gostou dos pesos (fill/duotone/bold)
+2. **Rejeitado Fluent UI + Govicons** — usuário não gostou do visual
+3. **Instalado `@carbon/icons-react`** (IBM) — página demo `/icones-carbon` criada
+4. **Instalado `@mui/icons-material`** (Google) — página demo `/icones-material` criada
+5. **Corrigido build** — instalado `@emotion/react` e `@emotion/styled` (peer deps do MUI)
+6. **Wrapper `@/lib/icons.ts`** mantido como ponto único de troca futura
 
-### Próximos passos:
-- Verificar visualmente se o peso "fill" ficou bom em todos os componentes
-- Ajustar peso individual em ícones que precisem de destaque (duotone)
-- Remover lucide-react do package.json quando IconPicker for migrado
+### Páginas de teste disponíveis:
+- http://localhost:3000/icones-carbon — Carbon Icons (IBM) — estilo técnico, cantos quadrados
+- http://localhost:3000/icones-material — Material Design (Google) — estilo preenchido, cantos arredondados
+
+### Decisão pendente:
+- **Usuário vai decidir amanhã** qual biblioteca adotar (ou rejeitar ambas)
+- Se escolher uma: migrar `src/lib/icons.ts` e todos os imports
+- Se rejeitar ambas: pesquisar outras opções (Heroicons, Tabler, etc.)
 
 ### Pendências para próxima sessão:
 - [ ] HTTPS/SSL (precisa de domínio)
@@ -71,6 +75,12 @@ CNEFE_API_URL=http://82.197.73.101
 ## Checklist Próxima Sessão — PRIORIDADE 1
 
 ```
+□ DECIDIR BIBLIOTECA DE ÍCONES
+  → Acessar http://localhost:3000/icones-carbon (Carbon Icons IBM)
+  → Acessar http://localhost:3000/icones-material (Material Design Google)
+  → Comparar visualmente e escolher uma (ou pedir outras opções)
+  → Migrar src/lib/icons.ts e todos os imports para a escolhida
+
 □ Testar cadastro de eleitor com geocodificação CNEFE
   → Acessar https://mandato-digital-xi.vercel.app
   → Cadastrar eleitor com CEP e número
@@ -84,8 +94,8 @@ CNEFE_API_URL=http://82.197.73.101
 □ Importar mais estados se necessário (PB, RN, PI)
 ```
 
-> **LEMBRETE:** Amanhã a prioridade é testar o cadastro de eleitor no mapa com o CNEFE ativo.
-> URL: https://mandato-digital-xi.vercel.app
+> **LEMBRETE:** Amanhã a prioridade é decidir a biblioteca de ícones.
+> URLs de teste: http://localhost:3000/icones-carbon | http://localhost:3000/icones-material
 
 ---
 
