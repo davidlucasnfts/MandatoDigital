@@ -38,6 +38,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | Abas no modal de eleitor (Eleitor/Apoiador/Influenciador/Líder) com títulos e cores | 07/05 |
 | Comunidades: ícone dinâmico por comunidade (lucide-react) | 07/05 |
 | Mapa: bounds limitado ao Brasil, tiles CARTO light | 07/05 |
+| Repaginação ícones: Phosphor Icons (fill/duotone) substituindo Lucide | 20/05 |
 | Aniversariantes: filtros dia/semana/mês + data visível | 07/05 |
 | Solicitações: data_solicitacao/data_evento, toggle rápido status na tabela | 07/05 |
 | Pesquisa de Opinião / Enquetes (CRUD, opções, respostas, estatísticas) | 07/05 |
@@ -66,6 +67,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Hardening VPS — reinstalação após ransomware, firewall, fail2ban, chaves SSH** | **18/05** |
 | **API Proxy CNEFE na VPS — PostgreSQL isolado, rate limiting, usuário dedicado** | **19/05** |
 | **Decisão: Here API para geocodificação precisa (nível de número)** | **18/05** |
+| **Documentação técnica: Diagrama ER, Regras de Negócio, Diagramas de Estado, Padrões Frontend, Plano de Testes, Runbook** | **20/05** |
 
 ---
 

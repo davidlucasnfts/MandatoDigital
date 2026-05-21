@@ -19,6 +19,13 @@
 | `SESSION-CONTEXT.md` | Raiz do projeto | **Estado atual** — última funcionalidade, próximo passo, bloqueios | Kimi (início de sessão) | Cada sessão |
 | `docs/adr-*.md` | Pasta `docs/` | **Decisões arquiteturais** — por que tomamos cada decisão | Time técnico | Novas decisões arquiteturais |
 | `docs/mandato-digital-guia.md` | Pasta `docs/` | **Guia técnico completo** — stack, padrões, exemplos | Novos devs | Mudanças na arquitetura |
+| `docs/diagrama-er.md` | Pasta `docs/` | **Diagrama ER** — modelo de dados em Mermaid | Time técnico | Mudanças no schema |
+| `docs/regras-de-negocio.md` | Pasta `docs/` | **Regras de negócio** — RBAC, validações, fluxos | Time técnico + PO | Mudanças em regras |
+| `docs/diagramas-estado.md` | Pasta `docs/` | **Diagramas de estado** — ciclos de vida das entidades | Time técnico | Novos status/entidades |
+| `docs/padroes-frontend.md` | Pasta `docs/` | **Padrões de frontend** — componentes, hooks, forms | Devs frontend | Mudanças na stack UI |
+| `docs/plano-de-testes.md` | Pasta `docs/` | **Plano de testes** — estratégia, cenários, cobertura | QA + Devs | Novas funcionalidades |
+| `docs/runbook.md` | Pasta `docs/` | **Runbook operacional** — deploy, troubleshooting, links | DevOps + Devs | Mudanças na infra |
+| `docs/gestao-skills.md` | Pasta `docs/` | **Como usar as 50 skills** — detecção automática, fluxo de trabalho | David + Kimi | Mudanças nas skills |
 | `docs/documentacao-estrutura.md` | Pasta `docs/` | **Este arquivo** — mapa de onde vai cada coisa | Kimi | Mudanças na estrutura |
 | `README.md` | Raiz do projeto | **Visão geral** — setup, scripts, descrição | Contribuidores | Mudanças no setup |
 | `MestreProjects.md` | `C:\Users\David Lucas\Documents\PROJETOS IA\` | **Padrão global** — regras para todos os projetos | Kimi (novos projetos) | Novos padrões descobertos |

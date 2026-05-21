@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Plus, Search, Mail, X, ChevronDown, Trash2, AlertTriangle } from 'lucide-react';
+import { Shield, Plus, Search, Mail, X, ChevronDown, Trash2, AlertTriangle } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/icons';
 
 // Paleta de cores recomendadas para comunidades
 const CORES_PRESET = [

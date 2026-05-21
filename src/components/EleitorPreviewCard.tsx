@@ -1,4 +1,4 @@
-import { User, Mail, Phone, MapPin, Calendar, Tag, Shield, Users, Heart, Pencil, Trash2, Link2, X } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Tag, Shield, Users, Heart, Pencil, Trash2, Link2, X } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Eleitor } from '@/lib/supabase';
 

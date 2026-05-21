@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BarChart3, FileText, CheckCircle, TrendingUp, Target, Award } from 'lucide-react';
+import { BarChart3, FileText, CheckCircle, TrendingUp, Target, Award } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { trpc } from '@/providers/trpc';
 

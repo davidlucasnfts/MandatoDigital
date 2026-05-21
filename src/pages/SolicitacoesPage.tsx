@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ClipboardList, Plus, Search, AlertCircle, Clock, CheckCircle, XCircle, Pencil, Trash2 } from 'lucide-react';
+import { ClipboardList, Plus, Search, AlertCircle, Clock, CheckCircle, XCircle, Pencil, Trash2 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';

@@ -4,7 +4,7 @@ import {
   MapPin, Filter, Users, X, Building2, Navigation, MapPinned, Loader2,
   Eye, Layers, Search, Route, Thermometer, BarChart3, ChevronDown, ChevronUp,
   CheckCircle2, Trash2, Share2
-} from 'lucide-react';
+} from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,12 +12,12 @@ import { Badge } from '@/components/ui/badge';
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getCoordenadasCidade } from '@/data/coordenadasCidades';
-import { createColorIcon } from '@/lib/mapIcons';
+import { createComunidadeIcon, createEleitorIcon, createLiderIcon } from '@/lib/mapIcons';
 import { trpc } from '@/providers/trpc';
 import HeatmapLayer from '@/components/HeatmapLayer';
 import type { Eleitor, Comunidade } from '@/lib/supabase';
 
-import { MapContainer, TileLayer, Marker, Tooltip, CircleMarker, Popup, useMap, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Tooltip, Popup, useMap, Polyline } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -397,11 +397,24 @@ export default function MapaPage() {
                   </div>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600">Eleitores ({eleitoresComCoords.length})</span>
+                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
+                      <img src="https://img.icons8.com/color/16/user.png" alt="eleitor" className="w-4 h-4" />
+                      Eleitores ({eleitoresComCoords.filter(e => e.nivel !== 'lider').length})
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
+                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
+                      <img src="https://img.icons8.com/color/16/crown.png" alt="lider" className="w-4 h-4" />
+                      Líderes ({eleitoresComCoords.filter(e => e.nivel === 'lider').length})
+                    </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarComunidades} onChange={e => setMostrarComunidades(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600">Comunidades ({comunidadesNoMapa.length})</span>
+                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
+                      <img src="https://img.icons8.com/color/16/conference.png" alt="comunidade" className="w-4 h-4" />
+                      Comunidades ({comunidadesNoMapa.length})
+                    </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarCidadesFallback} onChange={e => setMostrarCidadesFallback(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
@@ -539,7 +552,7 @@ export default function MapaPage() {
 
                   {/* Comunidades */}
                   {mostrarComunidades && comunidadesNoMapa.map(c => (
-                    <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createColorIcon(c.cor)}
+                    <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)}
                       eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
                       <Popup>
                         <div className="text-xs min-w-[160px]">
@@ -561,17 +574,22 @@ export default function MapaPage() {
                   {mostrarEleitores && (
                     <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIcon} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
                       {eleitoresComCoords.map(e => (
-                        <CircleMarker key={e.id} center={[e.latitude!, e.longitude!]} radius={7}
-                          pathOptions={{
-                            fillColor: statusColors[e.status] || '#2563eb',
-                            color: e.nivel === 'lider' ? '#9333ea' : '#fff',
-                            weight: e.nivel === 'lider' ? 3 : 2,
-                            opacity: 1,
-                            fillOpacity: 0.9,
-                          }}>
+                        <Marker
+                          key={e.id}
+                          position={[e.latitude!, e.longitude!]}
+                          icon={e.nivel === 'lider' ? createLiderIcon(e.status) : createEleitorIcon(e.status)}
+                          eventHandlers={{ click: () => setEleitorSelecionado(e) }}
+                        >
                           <Popup>
                             <div className="text-xs min-w-[180px]">
-                              <div className="font-semibold text-slate-800 text-sm">{e.nome}</div>
+                              <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                                {e.nivel === 'lider' && (
+                                  <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                  </span>
+                                )}
+                                {e.nome}
+                              </div>
                               <div className="flex items-center gap-2 mt-1">
                                 <Badge variant="outline" className={`text-[10px] capitalize ${e.nivel === 'lider' ? 'border-purple-200 text-purple-700 bg-purple-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}>{e.nivel}</Badge>
                                 <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
@@ -594,7 +612,7 @@ export default function MapaPage() {
                               </div>
                             </div>
                           </Popup>
-                        </CircleMarker>
+                        </Marker>
                       ))}
                     </MarkerClusterGroup>
                   )}

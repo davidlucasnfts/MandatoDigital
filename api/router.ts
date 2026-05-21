@@ -4,6 +4,7 @@ import { proposicoesRouter } from "./proposicoes-router.js";
 import { enquetesRouter } from "./enquetes-router.js";
 import { geocodingRouter } from "./geocoding-router.js";
 import { cnefeRouter } from "./cnefe-router.js";
+import { lideresRouter } from "./lideres-router.js";
 import { createRouter, publicQuery } from "./middleware.js";
 
 export const appRouter = createRouter({
@@ -14,6 +15,7 @@ export const appRouter = createRouter({
   enquetes: enquetesRouter,
   geocoding: geocodingRouter,
   cnefe: cnefeRouter,
+  lideres: lideresRouter,
 });
 
 export type AppRouter = typeof appRouter;

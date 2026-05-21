@@ -4,8 +4,8 @@ import {
   LayoutDashboard, Users, MapPin, Calendar, FolderOpen,
   BarChart3, Settings, ChevronLeft, ChevronRight, LogOut, Bell, Vote,
   Search, Shield, ClipboardList, FileText, MessageSquare, Tag, Menu, X,
-  Gavel, TrendingUp
-} from 'lucide-react';
+  Gavel, TrendingUp, Crown
+} from '@/lib/icons';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
@@ -40,6 +40,7 @@ function useNavGroups() {
         { to: '/dashboard/documentos', icon: FolderOpen, label: 'Documentos' },
         { to: '/dashboard/proposicoes', icon: Gavel, label: 'Proposições' },
         { to: '/dashboard/produtividade', icon: TrendingUp, label: 'Produtividade' },
+        { to: '/dashboard/lideres', icon: Crown, label: 'Líderes' },
         { to: '/dashboard/enquetes', icon: Vote, label: 'Enquetes' },
         { to: '/dashboard/relatorios', icon: BarChart3, label: 'Relatórios' },
       ],

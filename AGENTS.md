@@ -51,8 +51,8 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | Estado atual da sessão | `SESSION-CONTEXT.md` | `MEMORY.md` |
 | Regra de codificação nova | `AGENTS.md` | Arquivo qualquer |
 | Decisão arquitetural | `docs/adr-NNN-nome.md` | `AGENTS.md` sozinho |
-| Padrão para todos os projetos | `MestreProjects.md` | Dentro de projeto |
-| Mudança em segurança | `AGENTS.md` + `MestreProjects.md` | Arquivo isolado |
+| Padrão para todos os projetos | `MestreProjects/` (pasta) | Dentro de projeto |
+| Mudança em segurança | `AGENTS.md` + `MestreProjects/02-seguranca.md` | Arquivo isolado |
 | Estrutura de documentação | `docs/documentacao-estrutura.md` | Outro lugar |
 
 **Checklist antes de finalizar qualquer tarefa:**
@@ -90,7 +90,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 001 | Criar arquivo sem verificar se função já existe | 11/05/2026 | Consultar `docs/documentacao-estrutura.md` antes |
 | 002 | Sobrescrever arquivo fora do repo Git | 11/05/2026 | Nunca usar `overwrite` fora do working dir |
 | 003 | Duplicar informação de segurança | 10/05/2026 | Expandir arquivo existente, nunca criar duplicata |
-| 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
+| 004 | Salvar no `MestreProjects/` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
 | 005 | VPS com PostgreSQL exposto + senha fraca | 18/05/2026 | NUNCA expor porta 5432, usar senhas fortes (20+ chars), firewall UFW, fail2ban |
 | 008 | API Proxy sem rate limiting / rodando como root | 19/05/2026 | Sempre usar usuário dedicado, rate limiting por IP, systemd service com restart auto |
 | 006 | Esquecer de monitorar volume de API externa | 18/05/2026 | Sempre criar alerta de uso (80% do free tier), documentar plano de migração em SESSION-CONTEXT.md |
@@ -105,7 +105,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 □ 3. Vou usar StrReplaceFile ou WriteFile? (preferir StrReplaceFile sempre)
 □ 4. Se criar arquivo novo, adicionei no docs/documentacao-estrutura.md?
 □ 5. Se modificar arquivo, atualizei todos que referenciam ele?
-□ 6. Onde devo salvar? AGENTS.md (projeto) ou MestreProjects.md (global)?
+□ 6. Onde devo salvar? AGENTS.md (projeto) ou MestreProjects/ (global)?
 □ 7. Execute npm run check após mudanças?
 ```
 
@@ -114,7 +114,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 1. **NUNCA** criar arquivo de documentação sem verificar se função já existe
 2. **NUNCA** usar `WriteFile overwrite` em arquivos fora do working directory
 3. **NUNCA** duplicar informação entre arquivos
-4. **NUNCA** salvar no `MestreProjects.md` sem explicitamente ser "para todos os projetos"
+4. **NUNCA** salvar no `MestreProjects/` sem explicitamente ser "para todos os projetos"
 5. **SEMPRE** executar checklist antes de criar/modificar/deletar
 6. **SEMPRE** preferir `StrReplaceFile` sobre `WriteFile`
 7. **SEMPRE** consultar `docs/documentacao-estrutura.md` antes de nova documentação
@@ -123,34 +123,34 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ## 🛠️ Skills Disponíveis (quando usar)
 
-> **Skills do Kimi:** `C:\Users\David Lucas\.claude\skills\`
-> **Skills do claude-spec-toolkit:** `C:\Users\David Lucas\Documents\claude-spec-toolkit\skills\`
+> **Skills globais:** `C:\Users\David Lucas\.kimi\skills\` (50 skills)
+> **Referência completa:** `C:\Users\David Lucas\Documents\PROJETOS IA\MestreProjects\10-skills.md`
 
-### Skills do Kimi (usar quando necessário)
+### Skills aplicáveis a este projeto
 | Skill | Quando usar |
 |-------|-------------|
-| **security** | Revisão de segurança, auditoria, vulnerabilidades |
-| **frontend-design** | Design de UI, componentes, landing pages |
-| **ux-ui-designer** | Experiência do usuário, fluxos, wireframes |
-| **scalability** | Problemas de performance, otimização |
-| **cost-reducer** | Reduzir custos de infraestrutura |
-| **researcher** | Pesquisa de mercado, concorrência, tecnologias |
-| **self-healing** | Debugging, resolver bugs complexos |
-| **customer-support** | Atendimento, FAQ, documentação de suporte |
+| **security** | Revisão de segurança, auditoria |
+| **frontend-design** | Design de UI, componentes |
+| **ux-ui-designer** | Experiência do usuário |
+| **scalability** | Performance, otimização |
+| **cost-reducer** | Reduzir custos de infra |
+| **self-healing** | Debugging, prevenção de erros |
+| **react-frontend** | Desenvolvimento React |
+| **diagrama-er** | Documentar schema do banco |
+| **diagramas-estado** | Ciclos de vida |
+| **diagramas-sequencia** | Fluxos complexos |
+| **testes** | Estratégia de testes |
+| **user-stories** | Decompor funcionalidades |
+| **regras-de-negocio** | Documentar regras do domínio |
+| **c4-model** | Documentar arquitetura |
+| **runbook** | Procedimentos operacionais |
+| **arquiteto-solucoes** | Decisoes arquiteturais, trade-offs |
+| **arquiteto-postgresql** | Modelagem, performance, HA |
+| **engenheiro-dba** | DDL, migrations, padronizacao |
+| **analista-de-negocio** | Levantamento de requisitos |
+| **technical-writer** | Documentacao tecnica, runbooks |
 
-### Skills do claude-spec-toolkit (aplicáveis a este projeto)
-| Skill | Quando usar | Onde está |
-|-------|-------------|-----------|
-| **react-frontend** | Desenvolvimento React, hooks, estado | `claude-spec-toolkit/skills/react-frontend/` |
-| **c4-model** | Documentar arquitetura | `claude-spec-toolkit/skills/c4-model/` |
-| **diagrama-er** | Documentar schema do banco | `claude-spec-toolkit/skills/diagrama-er/` |
-| **diagramas-estado** | Ciclos de vida (status, workflows) | `claude-spec-toolkit/skills/diagramas-estado/` |
-| **diagramas-sequencia** | Fluxos complexos | `claude-spec-toolkit/skills/diagramas-sequencia/` |
-| **testes** | Estratégia de testes, TDD | `claude-spec-toolkit/skills/testes/` |
-| **user-stories** | Decompor funcionalidades | `claude-spec-toolkit/skills/user-stories/` |
-| **regras-de-negocio** | Documentar regras do domínio | `claude-spec-toolkit/skills/regras-de-negocio/` |
-
-### Skills NÃO aplicáveis (nunca usar neste projeto)
+### Skills NÃO aplicáveis
 | Skill | Por quê não |
 |-------|-------------|
 | api-design | Usamos tRPC, não REST |
@@ -163,14 +163,17 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | react-native | Projeto é web |
 | spring-boot-3 | Usamos TypeScript/Node |
 | cloud-azure | Usamos Vercel + Supabase |
-| devops / runbook | Sem infra própria |
+| devops | Sem infra própria |
+| engenheiro-devops | Sem infra própria |
+| engenheiro-kubernetes-docker | Vercel serverless, não K8s |
+| design-patterns | Não aplicável no momento |
 
 ---
 
 ## 🔒 Segurança — Regras Obrigatórias (aplicáveis a todos os projetos)
 
 > **Referência técnica:** `docs/adr-005-seguranca-padrao.md`
-> **Referência global:** `C:\Users\David Lucas\Documents\PROJETOS IA\MestreProjects.md` (seção 2)
+> **Referência global:** `C:\Users\David Lucas\Documents\PROJETOS IA\MestreProjects\02-seguranca.md`
 
 ### 🚫 PROIBIDO — Regras de Ouro
 1. **NUNCA** hardcodear credenciais, senhas, chaves API, connection strings

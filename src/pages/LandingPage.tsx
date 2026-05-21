@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, MapPin, Mail, BarChart3, Calendar, FolderOpen, Shield, ChevronDown, Menu, X, Check, ArrowRight, Star, Phone, MessageSquare, Zap, Lock, Headphones, Smartphone, Bell, FileText, Tag, TrendingUp, Clock, Award, HeartHandshake
-} from 'lucide-react';
+} from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { User } from '@supabase/supabase-js';

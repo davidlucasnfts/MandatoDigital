@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AlertTriangle, Clock, Calendar } from 'lucide-react';
+import { AlertTriangle, Clock, Calendar } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface Alerta {

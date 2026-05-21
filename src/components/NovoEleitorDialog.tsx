@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, User, Crown, MapPin } from 'lucide-react';
+import { Plus, User, Crown, MapPin } from '@/lib/icons';
 import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -33,8 +33,12 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const { geocode, geocodeByCep, refineWithNumber, isLoading: geoLoading, hereEnabled } = useGeocoding();
   const [loading, setLoading] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState<AbaNivel>('eleitor');
+  const [estimativaVotos, setEstimativaVotos] = useState<string>('');
   const isEdit = !!eleitor;
   const lastCepRef = useRef<string>('');
+  const lastNumeroRefinedRef = useRef<string>('');
+  const coordsRefinedRef = useRef<{ lat: number; lng: number } | null>(null);
+  const isRefiningRef = useRef<boolean>(false);
 
   const buildForm = (e?: Eleitor | null): Partial<Eleitor> => {
     if (!e) return { nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null, data_nascimento: null };
@@ -68,7 +72,18 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
     // ou se o eleitor mudou de ID. Evita sobrescrever digitação do usuário.
     setForm(buildForm(eleitor));
     if (eleitor?.nivel) setAbaAtiva(eleitor.nivel as AbaNivel);
+    // Reset flags ao abrir dialog
+    lastCepRef.current = '';
+    lastNumeroRefinedRef.current = '';
+    coordsRefinedRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eleitor?.id, open]);
+
+  // Atualiza estimativa_votos quando eleitor muda ou dialog abre
+  useEffect(() => {
+    if (open) {
+      setEstimativaVotos(eleitor?.estimativa_votos != null ? String(eleitor.estimativa_votos) : '');
+    }
   }, [eleitor?.id, open]);
 
   useEffect(() => {
@@ -129,8 +144,14 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   };
 
   // Refina coordenadas com numero da casa (Here API) — chamada apenas quando numero muda
-  const refinarComNumero = async (numero: string) => {
-    if (!form.endereco || !form.cidade || !form.estado) return;
+  // Retorna as coordenadas para uso imediato (evita race condition com setForm)
+  const refinarComNumero = async (numero: string): Promise<{ lat: number; lng: number } | null> => {
+    // Evita chamar Here API 2x para o mesmo numero
+    if (lastNumeroRefinedRef.current === numero) {
+      return form.latitude && form.longitude ? { lat: form.latitude, lng: form.longitude } : null;
+    }
+    if (!form.endereco || !form.cidade || !form.estado) return null;
+    isRefiningRef.current = true;
     const coordsBase = form.latitude && form.longitude
       ? { lat: form.latitude, lng: form.longitude }
       : null;
@@ -143,13 +164,19 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       form.cep || '',
       coordsBase
     );
+    isRefiningRef.current = false;
     if (coords) {
+      lastNumeroRefinedRef.current = numero;
+      coordsRefinedRef.current = { lat: coords.lat, lng: coords.lng };
+      // Coordenadas refinadas salvas na ref para acesso imediato no submit
       setForm(prev => ({
         ...prev,
         latitude: coords.lat,
         longitude: coords.lng,
       }));
+      return { lat: coords.lat, lng: coords.lng };
     }
+    return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -169,17 +196,14 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       return;
     }
 
-    // Se nao tiver coordenadas, tenta geocodificar antes de salvar
-    if (!form.latitude || !form.longitude) {
-      await geocodificarEndereco(
-        form.endereco || '',
-        form.numero || '',
-        form.bairro || '',
-        form.cidade || '',
-        form.estado || '',
-        form.cep || ''
-      );
+    // Espera o onBlur do numero terminar (se estiver refinando)
+    let waitCount = 0;
+    while (isRefiningRef.current && waitCount < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      waitCount++;
     }
+
+    // Usa coordenadas refinadas (Here API) se disponíveis, senão usa as do form (CNEFE)
 
     setLoading(true);
     try {
@@ -195,8 +219,8 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         cidade: form.cidade || 'São Paulo',
         estado: form.estado || 'SP',
         cep: form.cep || '',
-        latitude: form.latitude ?? null,
-        longitude: form.longitude ?? null,
+        latitude: coordsRefinedRef.current?.lat ?? form.latitude ?? null,
+        longitude: coordsRefinedRef.current?.lng ?? form.longitude ?? null,
         comunidade_id: form.comunidade_id || null,
         indicador_id: form.indicador_id || null,
         nivel: form.nivel || 'eleitor',
@@ -205,6 +229,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         status: form.status || 'ativo',
         observacoes: form.observacoes || '',
         data_nascimento: form.data_nascimento ? form.data_nascimento : null,
+        estimativa_votos: estimativaVotos ? parseInt(estimativaVotos) : null,
       };
 
       if (isEdit && eleitor) {
@@ -261,7 +286,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           })}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => { e.preventDefault(); }} className="space-y-4">
           {/* Banner da aba */}
           <div className={`p-3 ${config.bg} rounded-lg`}>
             <p className={`text-sm font-medium ${config.color}`}>Cadastro de {config.label}</p>
@@ -323,6 +348,23 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               </select>
             </div>
           </div>
+
+          {/* Estimativa de votos (só aparece quando aba = lider) */}
+          {abaAtiva === 'lider' && (
+            <div className="space-y-1">
+              <Label htmlFor="estimativa_votos" className="text-xs">Estimativa de votos</Label>
+              <Input
+                id="estimativa_votos"
+                type="number"
+                min={0}
+                value={estimativaVotos}
+                onChange={e => setEstimativaVotos(e.target.value)}
+                placeholder="Ex: 500"
+                className="h-9"
+              />
+              <p className="text-[10px] text-slate-400">Quantidade estimada de votos que este líder pode mobilizar</p>
+            </div>
+          )}
 
           {/* Líder (só aparece quando aba = eleitor) */}
           {abaAtiva === 'eleitor' && (
@@ -397,11 +439,18 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                   id="numero"
                   value={form.numero === "S/N" ? "" : (form.numero || '')}
                   disabled={form.numero === "S/N"}
-                  onChange={e => setField('numero', e.target.value.toUpperCase())}
+                  onChange={e => {
+                    const novoNumero = e.target.value.toUpperCase();
+                    // Reset flag quando numero muda (permite refinar novamente)
+                    if (novoNumero !== lastNumeroRefinedRef.current) {
+                      lastNumeroRefinedRef.current = '';
+                    }
+                    setField('numero', novoNumero);
+                  }}
                   onBlur={(e) => {
                     const numero = e.target.value.toUpperCase();
                     if (form.endereco && form.cidade && form.estado && numero && numero !== "S/N") {
-                      geocodificarEndereco(form.endereco || '', numero, form.bairro || '', form.cidade || '', form.estado || '', form.cep || '');
+                      refinarComNumero(numero);
                     }
                   }}
                   placeholder={form.numero === "S/N" ? "S/N" : "123"}
@@ -467,7 +516,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>
+            <Button type="button" onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700" disabled={loading}>
               {loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : `Cadastrar ${config.label}`}
             </Button>
           </div>

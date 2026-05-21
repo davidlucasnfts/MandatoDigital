@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createRouter, publicQuery, editorQuery } from "./middleware.js";
+import { createRouter, editorQuery } from "./middleware.js";
 import {
   getCnefeStatus,
   buscarCnefeEndereco,
@@ -9,7 +9,7 @@ import {
 
 export const cnefeRouter = createRouter({
   // Busca endereco no CNEFE por logradouro + municipio
-  buscarEndereco: publicQuery
+  buscarEndereco: editorQuery
     .input(
       z.object({
         logradouro: z.string().min(3),
@@ -31,7 +31,7 @@ export const cnefeRouter = createRouter({
     }),
 
   // Busca por CEP — retorna coordenadas MEDIAS do CEP
-  buscarPorCep: publicQuery
+  buscarPorCep: editorQuery
     .input(z.object({
       cep: z.string().min(8).max(9),
       logradouro: z.string().optional(),
@@ -41,7 +41,7 @@ export const cnefeRouter = createRouter({
     }),
 
   // Geocodifica um endereco
-  geocodificar: publicQuery
+  geocodificar: editorQuery
     .input(
       z.object({
         endereco: z.string().optional(),
@@ -64,7 +64,7 @@ export const cnefeRouter = createRouter({
     }),
 
   // Status da importacao CNEFE
-  status: publicQuery.query(async () => {
+  status: editorQuery.query(async () => {
     return getCnefeStatus();
   }),
 });

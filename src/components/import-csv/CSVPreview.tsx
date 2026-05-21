@@ -1,4 +1,4 @@
-import { X, CheckCircle, AlertTriangle, Check } from 'lucide-react';
+import { X, CheckCircle, AlertTriangle, Check } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import type { PreviewRow, FieldDef } from './csvImportUtils';
 

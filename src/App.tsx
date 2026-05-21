@@ -17,10 +17,12 @@ import EquipePage from '@/pages/EquipePage';
 import ConfiguracoesPage from '@/pages/ConfiguracoesPage';
 import AdminPage from '@/pages/AdminPage';
 import HereApiTest from '@/components/HereApiTest';
+import IconesDemoPage from '@/pages/IconesDemoPage';
 import ProposicoesPage from '@/pages/ProposicoesPage';
 import ProposicaoFormPage from '@/pages/ProposicaoFormPage';
 import ProposicaoDetailPage from '@/pages/ProposicaoDetailPage';
 import ProdutividadePage from '@/pages/ProdutividadePage';
+import LideresProdutividadePage from '@/pages/LideresProdutividadePage';
 import EnquetesPage from '@/pages/EnquetesPage';
 import { RoleGuard } from '@/components/RoleGuard';
 
@@ -33,6 +35,7 @@ function App() {
       <Route path="/afiliar/:liderId" element={<AfiliarPage />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/teste-here" element={<HereApiTest />} />
+      <Route path="/icones" element={<IconesDemoPage />} />
       <Route
         path="/dashboard"
         element={auth.isAuthenticated ? <DashboardLayout {...auth} /> : <Navigate to="/" replace />}
@@ -51,6 +54,7 @@ function App() {
         <Route path="proposicoes/:id" element={<ProposicaoDetailPage />} />
         <Route path="proposicoes/:id/editar" element={<ProposicaoFormPage />} />
         <Route path="produtividade" element={<ProdutividadePage />} />
+        <Route path="lideres" element={<LideresProdutividadePage />} />
         <Route path="enquetes" element={<EnquetesPage />} />
         <Route path="equipe" element={<RoleGuard require="admin"><EquipePage /></RoleGuard>} />
         <Route path="configuracoes" element={<RoleGuard require="admin"><ConfiguracoesPage /></RoleGuard>} />

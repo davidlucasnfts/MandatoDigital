@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 19/05/2026
-> **Sessão atual:** VPS CNEFE reativada com API Proxy e dados importados
+> **Atualizado em:** 20/05/2026
+> **Sessão atual:** Repaginação de ícones — Phosphor Icons substituindo Lucide
 
 ---
 
@@ -11,23 +11,20 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**API Proxy CNEFE + Importação de dados** — 19/05
+**Repaginação de Ícones — Phosphor Icons** — 20/05
 
 ### O que foi feito:
-1. **API Proxy na VPS** — Node.js/Hono rodando na porta 3001 (localhost), Nginx reverse proxy na porta 80
-2. **Segurança reforçada:**
-   - PostgreSQL só em localhost (127.0.0.1), senha hex 64 chars
-   - UFW: portas 2222 (SSH) e 80 (API) apenas
-   - Rate limiting: 100 req/15min por IP
-   - API roda como usuário `cnefe-api` (não root)
-   - Systemd service com auto-restart
-3. **Dados CNEFE importados:**
-   - CE (23): 4.750.642 registros
-   - MA (21): 3.257.843 registros
-   - **Total: 8.008.485 endereços georreferenciados**
-4. **Projeto atualizado** para usar HTTP client em vez de PostgreSQL direto
-5. **MestreProjects.md** atualizado com regras de VPS para todos os projetos
-6. **Deploy Vercel** funcionando com CNEFE_API_URL configurada
+1. **Instalado `@phosphor-icons/react`** — biblioteca com 7000+ ícones, 6 pesos visuais
+2. **Criado wrapper `@/lib/icons.ts`** — mapeia nomes Lucide → Phosphor para compatibilidade
+3. **Substituídos todos os imports** `lucide-react` → `@/lib/icons` em 43 arquivos
+4. **IconContext global** no `main.tsx` com `weight: "fill"` (efeito 3D/preenchido)
+5. **Página demo** `/icones` com visualização de todos os pesos (thin a duotone)
+6. **IconPicker mantido** com lucide-react (uso interno, não afeta UI principal)
+
+### Próximos passos:
+- Verificar visualmente se o peso "fill" ficou bom em todos os componentes
+- Ajustar peso individual em ícones que precisem de destaque (duotone)
+- Remover lucide-react do package.json quando IconPicker for migrado
 
 ### Pendências para próxima sessão:
 - [ ] HTTPS/SSL (precisa de domínio)

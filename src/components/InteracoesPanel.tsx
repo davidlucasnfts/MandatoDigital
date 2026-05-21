@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageSquare, Phone, MapPin, Mail, Video, FileText, Plus, X, Trash2 } from 'lucide-react';
+import { MessageSquare, Phone, MapPin, Mail, Video, FileText, Plus, X, Trash2 } from '@/lib/icons';
 import { formatDateForInput } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

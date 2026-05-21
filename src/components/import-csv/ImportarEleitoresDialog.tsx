@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
-import { Loader2, FileSpreadsheet } from 'lucide-react';
+import { Loader2, FileSpreadsheet } from '@/lib/icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabase';
 import { useComunidades } from '@/hooks/useSupabaseData';

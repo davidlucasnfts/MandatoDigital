@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload } from '@/lib/icons';
 
 interface Props {
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;

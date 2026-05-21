@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, ArrowLeft, Calendar, Building2, User, Link2, Plus, Trash2, AlertTriangle, Clock } from 'lucide-react';
+import { FileText, ArrowLeft, Calendar, Building2, User, Link2, Plus, Trash2, AlertTriangle, Clock } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';

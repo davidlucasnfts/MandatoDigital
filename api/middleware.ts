@@ -58,7 +58,7 @@ const validateOrigin = ta.middleware(async (opts) => {
     // Lista de origens permitidas (adicionar domínios de produção)
 const allowedOrigins = [
   `https://${host}`,
-  "https://mandato-digital-xl.vercel.app",  // substitua pelo seu domínio real da Vercel
+  "https://mandato-digital-xi.vercel.app",
 ];
 
     // Se tem origin, deve ser da lista permitida

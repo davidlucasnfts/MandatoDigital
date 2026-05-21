@@ -11,12 +11,18 @@ interface GeoCoords {
 /**
  * Faz chamada tRPC MUTATION via HTTP POST
  */
+function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem("sb-access-token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function trpcCall<T>(path: string, payload: unknown): Promise<T | null> {
   try {
     const res = await fetch(`/api/trpc/${path}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       credentials: "include",
       body: JSON.stringify({ json: payload }),
@@ -28,8 +34,8 @@ async function trpcCall<T>(path: string, payload: unknown): Promise<T | null> {
     }
 
     const json = await res.json();
-    // tRPC response format: { result: { data: T } }
-    return json.result?.data ?? null;
+    // tRPC response format: { result: { data: { json: T } } }
+    return json.result?.data?.json ?? null;
   } catch (err) {
     console.error("[geocoding] fetch error:", err);
     return null;
@@ -46,6 +52,7 @@ async function trpcQuery<T>(path: string, payload: unknown): Promise<T | null> {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       credentials: "include",
     });
@@ -56,8 +63,8 @@ async function trpcQuery<T>(path: string, payload: unknown): Promise<T | null> {
     }
 
     const json = await res.json();
-    // tRPC response format: { result: { data: T } }
-    return json.result?.data ?? null;
+    // tRPC response format: { result: { data: { json: T } } }
+    return json.result?.data?.json ?? null;
   } catch (err) {
     console.error("[geocoding] fetch error:", err);
     return null;
@@ -114,27 +121,21 @@ export async function geocodeCep(
   const result = await trpcQuery<{
     latitude: string;
     longitude: string;
-    tipoLogradouro: string | null;
-    nomeLogradouro: string | null;
+    tipo_logradouro: string | null;
+    nome_logradouro: string | null;
     numero: string | null;
   }>("cnefe.buscarPorCep", {
     cep: clean,
     logradouro,
   });
 
-  console.log("[geocodeCep] Resultado bruto:", result);
-
   if (!result) return null;
-
-  console.log("[geocodeCep] latitude:", result.latitude, "longitude:", result.longitude);
 
   const lat = parseFloat(result.latitude);
   const lng = parseFloat(result.longitude);
 
-  console.log("[geocodeCep] lat parseFloat:", lat, "lng parseFloat:", lng);
-
   // Verifica se as coordenadas sao validas
-  if (isNaN(lat) || isNaN(lng)) {
+  if (isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) {
     console.log("[geocodeCep] Coordenadas invalidas do CNEFE, retornando null");
     return null;
   }
@@ -143,7 +144,7 @@ export async function geocodeCep(
     lat,
     lng,
     source: "cnefe",
-    displayName: `${result.tipoLogradouro || ""} ${result.nomeLogradouro}, ${result.numero || "S/N"}`,
+    displayName: `${result.tipo_logradouro || ""} ${result.nome_logradouro}, ${result.numero || "S/N"}`,
   };
 }
 

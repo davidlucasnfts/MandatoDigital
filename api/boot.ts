@@ -71,6 +71,21 @@ app.use(
   })
 );
 
+// Rate limiting para rotas CNEFE (consomem API externa na VPS)
+app.use(
+  "/api/trpc/cnefe/*",
+  rateLimiter({
+    windowMs: 60 * 1000, // 1 minuto
+    limit: 60, // 1 req/segundo em média
+    standardHeaders: "draft-6",
+    keyGenerator: (c) => {
+      const authHeader = c.req.header("authorization");
+      const token = authHeader?.replace("Bearer ", "");
+      return token ? `user:${token.slice(0, 16)}` : c.req.header("x-forwarded-for") || "anonymous";
+    },
+  })
+);
+
 // Limite de tamanho do body: 50MB
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
 

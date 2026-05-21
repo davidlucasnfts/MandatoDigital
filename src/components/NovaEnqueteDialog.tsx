@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, X, BarChart3 } from 'lucide-react';
+import { Plus, X, BarChart3 } from '@/lib/icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

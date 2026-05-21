@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FolderOpen, Plus, FileText, Image, FileSpreadsheet, File, Search } from 'lucide-react';
+import { FolderOpen, Plus, FileText, Image, FileSpreadsheet, File, Search } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';

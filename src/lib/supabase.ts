@@ -36,6 +36,7 @@ export type Eleitor = {
   data_nascimento: string | null;
   latitude: number | null;
   longitude: number | null;
+  estimativa_votos: number | null;
   user_id: string;
   owner_id: string | null;
   created_at: string;

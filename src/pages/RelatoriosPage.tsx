@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
   BarChart3, TrendingUp, Users, ClipboardList, Download, FileText,
   Calendar, AlertTriangle, Clock
-} from 'lucide-react';
+} from '@/lib/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';

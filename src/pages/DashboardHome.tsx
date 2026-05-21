@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, ClipboardList, Calendar, MessageSquare, ArrowRight, Clock } from 'lucide-react';
+import { Users, ClipboardList, Calendar, MessageSquare, ArrowRight, Clock } from '@/lib/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useStats } from '@/hooks/useSupabaseData';
 import { useDashboardData } from '@/hooks/useDashboardData';

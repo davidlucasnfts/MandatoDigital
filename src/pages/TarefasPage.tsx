@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Plus, Search, AlertCircle, Clock, CheckCircle, Pencil, Trash2 } from 'lucide-react';
+import { FileText, Plus, Search, AlertCircle, Clock, CheckCircle, Pencil, Trash2 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Vote, Check } from 'lucide-react';
+import { Vote, Check } from '@/lib/icons';
 import { maskPhone } from '@/lib/masks';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';

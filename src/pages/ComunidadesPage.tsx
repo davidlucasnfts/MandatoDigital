@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Users, MapPin, Plus, Pencil, Trash2, icons } from 'lucide-react';
+import { Users, MapPin, Plus, Pencil, Trash2, icons } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -33,7 +33,7 @@ export default function ComunidadesPage() {
               <CardContent className="p-5">
                 <div className="flex items-start justify-between mb-4">
                   {(() => {
-                    const IconComp = (icons as Record<string, React.ComponentType<{className?: string; style?: React.CSSProperties}> >)[c.icone || 'Users'] || Users;
+                    const IconComp = ((icons as unknown) as Record<string, React.ComponentType<{className?: string; style?: React.CSSProperties}>>)[c.icone || 'Users'] || Users;
                     return <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor:(c.cor||'#2563EB')+'20'}}><IconComp className="w-5 h-5" style={{color:c.cor||'#2563EB'}}/></div>;
                   })()}
                   <div className="flex items-center gap-1">

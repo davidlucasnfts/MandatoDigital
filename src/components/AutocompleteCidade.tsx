@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { MapPin, ChevronDown } from 'lucide-react';
+import { MapPin, ChevronDown } from '@/lib/icons';
 import cidadesData from '@/data/cidadesBrasil.json';
 
 interface CidadeItem {

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Plus, Search, Filter, Trash2, AlertTriangle, Eye, ArrowRight } from 'lucide-react';
+import { FileText, Plus, Search, Filter, Trash2, AlertTriangle, Eye, ArrowRight } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';

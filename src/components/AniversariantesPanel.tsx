@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Gift, MessageCircle, Check, ExternalLink, Send, PartyPopper, CalendarDays, Calendar, CalendarRange } from 'lucide-react';
+import { Gift, MessageCircle, Check, ExternalLink, Send, PartyPopper, CalendarDays, Calendar, CalendarRange } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEleitores, useConfiguracoes, useEnviosAniversario } from '@/hooks/useSupabaseData';
