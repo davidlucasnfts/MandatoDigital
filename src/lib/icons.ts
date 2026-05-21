@@ -1,96 +1,161 @@
 /**
  * Biblioteca de Ícones Mandato Digital
- * Wrapper sobre @phosphor-icons/react com nomes compatíveis com lucide-react
- * Todos os ícones usam weight="fill" por padrão para aparência 3D
+ * Combinação: Fluent UI (Microsoft) + Govicons (governo/política)
  */
 
-// Re-exportação direta (mesmo nome no Phosphor)
+// ============================================
+// FLUENT UI — Ícones de Sistema
+// ============================================
 export {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-  At,
-  Bell,
-  Calendar,
-  Check,
-  CheckCircle,
-  Clock,
-  Copy,
-  Crown,
-  Download,
-  Eye,
-  File,
-  FileText,
-  FolderOpen,
-  Gavel,
-  GearSix,
-  Gift,
-  Headphones,
-  Heart,
-  Image,
-  Lock,
-  MapPin,
-  Medal,
-  Pencil,
-  Phone,
-  Plus,
-  Shield,
-  Star,
-  Tag,
-  Target,
-  Thermometer,
-  Upload,
-  User,
-  UserPlus,
-  Users,
-  Video,
-  X,
-  XCircle,
-} from "@phosphor-icons/react";
+  PeopleRegular as Users,
+  PersonRegular as User,
+  PersonAddRegular as UserPlus,
+  LocationRegular as MapPin,
+  MailRegular as Mail,
+  ChatRegular as MessageSquare,
+  CommentRegular as MessageCircle,
+  DataTrendingRegular as TrendingUp,
+  ChartMultipleRegular as BarChart3,
+  SearchRegular as Search,
+  EditRegular as Pencil,
+  EyeRegular as Eye,
+  EyeOffRegular as EyeOff,
+  ArrowDownloadRegular as Download,
+  ArrowUploadRegular as Upload,
+  SaveRegular as Save,
+  FilterRegular as Filter,
+  NavigationRegular as Navigation,
+  NavigationUnreadRegular as Menu,
+  SettingsRegular as Settings,
+  AlertRegular as AlertTriangle,
+  WarningRegular as AlertCircle,
+  ShieldRegular as Shield,
+  FlagRegular as Flag,
+  StarRegular as Star,
+  CalendarRegular as Calendar,
+  CalendarLtrRegular as CalendarDays,
+  CalendarWeekNumbersRegular as CalendarRange,
+  DocumentRegular as FileText,
+  DocumentBulletListRegular as File,
+  FolderRegular as FolderOpen,
+  ImageRegular as Image,
+  PhoneRegular as Phone,
+  VideoRegular as Video,
+  CameraRegular as Camera,
+  GiftRegular as Gift,
+  HeartRegular as Heart,
+  ThumbLikeRegular as HeartHandshake,
+  LockClosedRegular as Lock,
+  LinkRegular as Link2,
+  ShareRegular as Share2,
+  SendRegular as Send,
+  ClockRegular as Clock,
+  CopyRegular as Copy,
+  TagRegular as Tag,
+  TargetRegular as Target,
+  CheckmarkRegular as Check,
+  CheckmarkCircleRegular as CheckCircle,
+  CheckmarkCircleRegular as CheckCircle2,
+  DismissRegular as X,
+  DismissCircleRegular as XCircle,
+  DeleteRegular as Trash2,
+  AddRegular as Plus,
+  ChevronDownRegular as ChevronDown,
+  ChevronLeftRegular as ChevronLeft,
+  ChevronRightRegular as ChevronRight,
+  ChevronUpRegular as ChevronUp,
+  HomeRegular as LayoutDashboard,
+  BuildingRegular as Building2,
+  MapRegular as MapPinned,
+  GlobeRegular as ExternalLink,
+  MoreHorizontalRegular as MoreHorizontal,
+  MoreVerticalRegular as MoreVertical,
+  LightbulbRegular as Zap,
+  WeatherSunnyRegular as PartyPopper,
+  CloudRegular as Layers,
+  DatabaseRegular as FileSpreadsheet,
+  ServerRegular as Route,
+  HeadphonesRegular as Headphones,
+  ArrowLeftRegular as ArrowLeft,
+  ArrowRightRegular as ArrowRight,
+  ArrowUpRegular as ArrowUp,
+  ArrowDownRegular as ArrowDown,
+  SubtractRegular as Minus,
+  SignOutRegular as LogOut,
+  ServiceBellRegular as Bell,
+  ClipboardTaskRegular as ClipboardList,
+  CrownRegular as Crown,
+  MedalRegular as Medal,
+  TrophyRegular as Award,
+  TemperatureRegular as Thermometer,
+  ArrowUpRightRegular as ArrowUpRight,
+  ArrowUpLeftRegular as ArrowUpLeft,
+  SpinnerIosRegular as Loader2,
+  ReadingModeMobileRegular as Smartphone,
+} from "@fluentui/react-icons";
 
-// Re-exportação com nome diferente (mapeamento Lucide → Phosphor)
-export { Warning as AlertTriangle } from "@phosphor-icons/react";
-export { WarningOctagon as AlertCircle } from "@phosphor-icons/react";
-export { ChartBar as BarChart3 } from "@phosphor-icons/react";
-export { Building as Building2 } from "@phosphor-icons/react";
-export { CalendarBlank as CalendarDays } from "@phosphor-icons/react";
-export { CalendarDots as CalendarRange } from "@phosphor-icons/react";
-export { CaretDown as ChevronDown } from "@phosphor-icons/react";
-export { CaretLeft as ChevronLeft } from "@phosphor-icons/react";
-export { CaretRight as ChevronRight } from "@phosphor-icons/react";
-export { CaretUp as ChevronUp } from "@phosphor-icons/react";
-export { SealCheck as CheckCircle2 } from "@phosphor-icons/react";
-export { ClipboardText as ClipboardList } from "@phosphor-icons/react";
-export { Confetti as PartyPopper } from "@phosphor-icons/react";
-export { EyeSlash as EyeOff } from "@phosphor-icons/react";
-export { ArrowSquareOut as ExternalLink } from "@phosphor-icons/react";
-export { FileXls as FileSpreadsheet } from "@phosphor-icons/react";
-export { FunnelSimple as Filter } from "@phosphor-icons/react";
-export { HandHeart as HeartHandshake } from "@phosphor-icons/react";
-export { Stack as Layers } from "@phosphor-icons/react";
-export { SquaresFour as LayoutDashboard } from "@phosphor-icons/react";
-export { LinkSimple as Link2 } from "@phosphor-icons/react";
-export { SpinnerGap as Loader2 } from "@phosphor-icons/react";
-export { SignOut as LogOut } from "@phosphor-icons/react";
-export { MapPinArea as MapPinned } from "@phosphor-icons/react";
-export { ChatCircle as MessageCircle } from "@phosphor-icons/react";
-export { Chat as MessageSquare } from "@phosphor-icons/react";
-export { List as Menu } from "@phosphor-icons/react";
-export { NavigationArrow as Navigation } from "@phosphor-icons/react";
-export { Path as Route } from "@phosphor-icons/react";
-export { FloppyDisk as Save } from "@phosphor-icons/react";
-export { MagnifyingGlass as Search } from "@phosphor-icons/react";
-export { PaperPlaneRight as Send } from "@phosphor-icons/react";
-export { Envelope as Mail } from "@phosphor-icons/react";
-export { ShareNetwork as Share2 } from "@phosphor-icons/react";
-export { DeviceMobile as Smartphone } from "@phosphor-icons/react";
-export { Trash as Trash2 } from "@phosphor-icons/react";
-export { TrendUp as TrendingUp } from "@phosphor-icons/react";
-export { Checks as Vote } from "@phosphor-icons/react";
-export { GearSix as Settings } from "@phosphor-icons/react";
-export { Medal as Award } from "@phosphor-icons/react";
-export { Lightning as Zap } from "@phosphor-icons/react";
+// ============================================
+// GOVICONS — Ícones Temáticos de Governo
+// ============================================
+export {
+  GovIcon,
+  IconVote as Vote,
+  IconGavel as Gavel,
+  IconHandshake as Handshake,
+  IconPolitician as Politician,
+  IconCapitol as Capitol,
+  IconWhiteHouse as WhiteHouse,
+  IconBalance as Balance,
+  IconMedalStar as MedalStar,
+  IconMedalCircle as MedalCircle,
+  IconRibbon as RibbonGov,
+  IconFlagWavy as FlagWavy,
+  IconFlagStraight as FlagStraight,
+  IconUSMap as USMap,
+  IconWorld as WorldGov,
+  IconGovShield as GovShield,
+  IconIDCard as IDCard,
+  IconFingerprint as Fingerprint,
+  IconMoney as Money,
+  IconUSD as USD,
+  IconPieChart as PieChart,
+  IconBarChart as BarChart,
+  IconLineChart as LineChart,
+  IconGovDatabase as GovDatabase,
+  IconGovCloud as GovCloud,
+  IconGovSearch as GovSearch,
+  IconComment as CommentGov,
+  IconComments as CommentsGov,
+  IconGovCheck as GovCheck,
+  IconGovCheckSquare as GovCheckSquare,
+  IconGovWarning as GovWarning,
+  IconGovKey as GovKey,
+  IconGovFolder as GovFolder,
+  IconGovTable as GovTable,
+  IconGovUnlock as GovUnlock,
+  IconGovLock as GovLock,
+  IconGovCog as GovCog,
+  IconGovCogs as GovCogs,
+  IconGovStar as GovStar,
+  IconGovUser as GovUser,
+  IconGovUsers as GovUsers,
+  IconUserSuit as UserSuit,
+  IconUserGraduate as UserGraduate,
+  IconPresenter as Presenter,
+  IconGovFile as GovFile,
+  IconGovFileText as GovFileText,
+  IconGovFileO as GovFileO,
+  IconGovFileTextO as GovFileTextO,
+  IconFileWord as FileWord,
+  IconFileExcel as FileExcel,
+  IconFileContract as FileContract,
+  IconGovBuilding as GovBuilding,
+  IconStatueLiberty as StatueLiberty,
+  IconLibertyBell as LibertyBell,
+  IconWashingtonMonument as WashingtonMonument,
+  IconPentagon as PentagonGov,
+} from "@/components/icons/GovIcon";
 
-// Namespace para uso dinâmico (IconPicker)
-import * as PhosphorIcons from "@phosphor-icons/react";
-export const icons = PhosphorIcons;
+// Namespace para uso dinâmico (IconPicker e similares)
+import * as FluentIcons from "@fluentui/react-icons";
+export { FluentIcons as icons };
