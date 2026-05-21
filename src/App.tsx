@@ -18,6 +18,8 @@ import ConfiguracoesPage from '@/pages/ConfiguracoesPage';
 import AdminPage from '@/pages/AdminPage';
 import HereApiTest from '@/components/HereApiTest';
 import IconesDemoPage from '@/pages/IconesDemoPage';
+import IconesCarbonPage from '@/pages/IconesCarbonPage';
+import IconesMaterialPage from '@/pages/IconesMaterialPage';
 import ProposicoesPage from '@/pages/ProposicoesPage';
 import ProposicaoFormPage from '@/pages/ProposicaoFormPage';
 import ProposicaoDetailPage from '@/pages/ProposicaoDetailPage';
@@ -36,6 +38,8 @@ function App() {
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/teste-here" element={<HereApiTest />} />
       <Route path="/icones" element={<IconesDemoPage />} />
+      <Route path="/icones-carbon" element={<IconesCarbonPage />} />
+      <Route path="/icones-material" element={<IconesMaterialPage />} />
       <Route
         path="/dashboard"
         element={auth.isAuthenticated ? <DashboardLayout {...auth} /> : <Navigate to="/" replace />}
