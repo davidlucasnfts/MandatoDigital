@@ -104,7 +104,14 @@ const PESOS: { label: string; weight: IconWeight }[] = [
 ];
 
 export const IconDemo: React.FC = () => {
-  const [pesoAtivo, setPesoAtivo] = React.useState<IconWeight>("fill");
+  const [pesoAtivo, setPesoAtivo] = React.useState<IconWeight>(
+    () => (localStorage.getItem("icon-weight-preference") as IconWeight) || "regular"
+  );
+
+  const salvarPeso = (peso: IconWeight) => {
+    setPesoAtivo(peso);
+    localStorage.setItem("icon-weight-preference", peso);
+  };
 
   const categorias = Array.from(new Set(ICONES.map(i => i.categoria)));
 
@@ -125,7 +132,7 @@ export const IconDemo: React.FC = () => {
             {PESOS.map(({ label, weight }) => (
               <button
                 key={weight}
-                onClick={() => setPesoAtivo(weight)}
+                onClick={() => salvarPeso(weight)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pesoAtivo === weight
                     ? "bg-blue-600 text-white"
