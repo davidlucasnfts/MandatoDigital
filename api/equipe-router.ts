@@ -16,21 +16,37 @@ function getSupabaseAdmin() {
 
 export const equipeRouter = createRouter({
   me: authedQuery.query(async ({ ctx }) => {
-    const db = getDb();
-    const rows = await db
-      .select()
-      .from(schema.equipe)
-      .where(eq(schema.equipe.userId, ctx.user.id))
-      .limit(1);
-    return rows[0] ?? null;
+    try {
+      const db = getDb();
+      console.log("[equipe.me] querying for user_id:", ctx.user.id);
+      
+      const rows = await db
+        .select()
+        .from(schema.equipe)
+        .where(eq(schema.equipe.userId, ctx.user.id))
+        .limit(1);
+      
+      console.log("[equipe.me] result:", rows.length, "rows");
+      return rows[0] ?? null;
+    } catch (e: any) {
+      console.log("[equipe.me] error:", e.message);
+      console.log("[equipe.me] error stack:", e.stack);
+      // Retorna null em vez de quebrar
+      return null;
+    }
   }),
 
   list: authedQuery.query(async ({ ctx }) => {
-    const db = getDb();
-    return db
-      .select()
-      .from(schema.equipe)
-      .where(eq(schema.equipe.ownerId, ctx.user.ownerId));
+    try {
+      const db = getDb();
+      return db
+        .select()
+        .from(schema.equipe)
+        .where(eq(schema.equipe.ownerId, ctx.user.ownerId));
+    } catch (e: any) {
+      console.log("[equipe.list] error:", e.message);
+      return [];
+    }
   }),
 
   create: adminQuery
@@ -79,7 +95,7 @@ export const equipeRouter = createRouter({
   update: adminQuery
     .input(
       z.object({
-        id: z.number(),
+        id: z.string().uuid(),
         role: z.enum(["admin", "editor", "visualizador"]).optional(),
         status: z.enum(["ativo", "inativo"]).optional(),
         cargo: z.string().optional(),
@@ -103,7 +119,7 @@ export const equipeRouter = createRouter({
     }),
 
   remove: adminQuery
-    .input(z.object({ id: z.number(), userId: z.string() }))
+    .input(z.object({ id: z.string().uuid(), userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const db = getDb();
       await db

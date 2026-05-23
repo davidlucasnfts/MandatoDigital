@@ -68,6 +68,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **API Proxy CNEFE na VPS — PostgreSQL isolado, rate limiting, usuário dedicado** | **19/05** |
 | **Decisão: Here API para geocodificação precisa (nível de número)** | **18/05** |
 | **Documentação técnica: Diagrama ER, Regras de Negócio, Diagramas de Estado, Padrões Frontend, Plano de Testes, Runbook** | **20/05** |
+| **Teste bibliotecas ícones: Carbon (IBM), Material (Google), Tabler** | **22/05** |
 
 ---
 
@@ -239,7 +240,30 @@ Mapa usava OpenStreetMap padrão (visual fraco) e Nominatim para geocodificaçã
 
 ---
 
+## 📝 Resumo da Sessão 22/05 — Teste de Bibliotecas de Ícones
+
+### Contexto
+Usuário rejeitou Phosphor Icons (pesos fill/duotone/bold) e Govicons. Precisava testar alternativas visuais antes de decidir.
+
+### Bibliotecas testadas
+| Biblioteca | Estilo | Página | Status |
+|---|---|---|---|
+| Carbon Icons (IBM) | Técnico, cantos quadrados | `/icones-carbon` | ✅ Testável |
+| Material Design (Google) | Preenchido, cantos arredondados | `/icones-material` | ✅ Testável |
+| Tabler Icons | Minimalista, stroke fino | `/icones-tabler` | ✅ Testável (corrigido build) |
+
+### Erro corrigido
+- `IconFire` não existe no `@tabler/icons-react` → substituído por `IconFlame`
+- Build falhava com "not exported" → corrigido, build passando
+
+### Decisão pendente
+Usuário vai acessar as 3 páginas localmente e decidir qual biblioteca adotar.
+
+---
+
 ## 📋 Backlog
+- Decidir biblioteca de ícones (Carbon vs Material vs Tabler)
+- Migrar `src/lib/icons.ts` e todos os imports para biblioteca escolhida
 - Importar CNEFE da UF do mandato (ação manual pendente)
 - Prestação de Contas Pública (MÉDIA)
 - App mobile / PWA para campo (MÉDIA)

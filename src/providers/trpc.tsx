@@ -1,5 +1,5 @@
 import { createTRPCReact } from "@trpc/react-query";
-import { httpBatchLink } from "@trpc/client";
+import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import superjson from "superjson";
 import type { AppRouter } from "../../api/router";
@@ -8,14 +8,30 @@ import { supabase } from "@/lib/supabase";
 
 export const trpc = createTRPCReact<AppRouter>();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        if (error instanceof TRPCClientError && error.data?.code === "UNAUTHORIZED") {
+          return false;
+        }
+        return failureCount < 2;
+      },
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
+
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
       url: "/api/trpc",
       transformer: superjson,
-      headers() {
-        const token = localStorage.getItem("sb-access-token");
+      async headers() {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token ?? localStorage.getItem("sb-access-token");
         return token ? { Authorization: `Bearer ${token}` } : {};
       },
       fetch(input, init) {

@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { useAuthErrorHandler } from '@/hooks/useAuthErrorHandler';
+
 import LandingPage from '@/pages/LandingPage';
 import AfiliarPage from '@/pages/AfiliarPage';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -20,6 +22,7 @@ import HereApiTest from '@/components/HereApiTest';
 import IconesDemoPage from '@/pages/IconesDemoPage';
 import IconesCarbonPage from '@/pages/IconesCarbonPage';
 import IconesMaterialPage from '@/pages/IconesMaterialPage';
+import IconesTablerPage from '@/pages/IconesTablerPage';
 import ProposicoesPage from '@/pages/ProposicoesPage';
 import ProposicaoFormPage from '@/pages/ProposicaoFormPage';
 import ProposicaoDetailPage from '@/pages/ProposicaoDetailPage';
@@ -30,6 +33,7 @@ import { RoleGuard } from '@/components/RoleGuard';
 
 function App() {
   const auth = useSupabaseAuth();
+  useAuthErrorHandler();
 
   return (
     <Routes>
@@ -40,6 +44,8 @@ function App() {
       <Route path="/icones" element={<IconesDemoPage />} />
       <Route path="/icones-carbon" element={<IconesCarbonPage />} />
       <Route path="/icones-material" element={<IconesMaterialPage />} />
+      <Route path="/icones-tabler" element={<IconesTablerPage />} />
+      <Route path="/login" element={<Navigate to="/" replace />} />
       <Route
         path="/dashboard"
         element={auth.isAuthenticated ? <DashboardLayout {...auth} /> : <Navigate to="/" replace />}

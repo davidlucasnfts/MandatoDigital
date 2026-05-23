@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 20/05/2026
-> **Sessão atual:** Repaginação de ícones — Phosphor Icons substituindo Lucide
+> **Atualizado em:** 22/05/2026
+> **Sessão atual:** Teste de bibliotecas de ícones — Carbon, Material, Tabler
 
 ---
 
@@ -11,24 +11,27 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Repaginação de Ícones — Testando Carbon Icons e Material Design** — 20/05
+**Teste de bibliotecas de ícones: Carbon, Material, Tabler** — 22/05
 
 ### O que foi feito:
 1. **Rejeitado Phosphor Icons** — usuário não gostou dos pesos (fill/duotone/bold)
 2. **Rejeitado Fluent UI + Govicons** — usuário não gostou do visual
 3. **Instalado `@carbon/icons-react`** (IBM) — página demo `/icones-carbon` criada
 4. **Instalado `@mui/icons-material`** (Google) — página demo `/icones-material` criada
-5. **Corrigido build** — instalado `@emotion/react` e `@emotion/styled` (peer deps do MUI)
-6. **Wrapper `@/lib/icons.ts`** mantido como ponto único de troca futura
+5. **Instalado `@tabler/icons-react`** — página demo `/icones-tabler` criada
+6. **Corrigido build** — instalado `@emotion/react` e `@emotion/styled` (peer deps do MUI)
+7. **Corrigido erro `IconFire` → `IconFlame`** — ícone não existia no Tabler, build falhava
+8. **Wrapper `@/lib/icons.ts`** mantido como ponto único de troca futura
 
 ### Páginas de teste disponíveis:
 - http://localhost:3000/icones-carbon — Carbon Icons (IBM) — estilo técnico, cantos quadrados
 - http://localhost:3000/icones-material — Material Design (Google) — estilo preenchido, cantos arredondados
+- http://localhost:3000/icones-tabler — Tabler Icons — estilo minimalista, stroke fino
 
 ### Decisão pendente:
-- **Usuário vai decidir amanhã** qual biblioteca adotar (ou rejeitar ambas)
+- **Usuário vai decidir** qual biblioteca adotar (ou rejeitar todas)
 - Se escolher uma: migrar `src/lib/icons.ts` e todos os imports
-- Se rejeitar ambas: pesquisar outras opções (Heroicons, Tabler, etc.)
+- Se rejeitar todas: pesquisar outras opções (Heroicons, etc.)
 
 ### Pendências para próxima sessão:
 - [ ] HTTPS/SSL (precisa de domínio)
@@ -78,8 +81,13 @@ CNEFE_API_URL=http://82.197.73.101
 □ DECIDIR BIBLIOTECA DE ÍCONES
   → Acessar http://localhost:3000/icones-carbon (Carbon Icons IBM)
   → Acessar http://localhost:3000/icones-material (Material Design Google)
+  → Acessar http://localhost:3000/icones-tabler (Tabler Icons)
   → Comparar visualmente e escolher uma (ou pedir outras opções)
   → Migrar src/lib/icons.ts e todos os imports para a escolhida
+
+□ Testar página /icones-tabler no navegador
+  → Verificar se renderiza corretamente (corrigido erro IconFire → IconFlame)
+  → Verificar controles de stroke width e tamanho
 
 □ Testar cadastro de eleitor com geocodificação CNEFE
   → Acessar https://mandato-digital-xi.vercel.app
@@ -94,8 +102,8 @@ CNEFE_API_URL=http://82.197.73.101
 □ Importar mais estados se necessário (PB, RN, PI)
 ```
 
-> **LEMBRETE:** Amanhã a prioridade é decidir a biblioteca de ícones.
-> URLs de teste: http://localhost:3000/icones-carbon | http://localhost:3000/icones-material
+> **LEMBRETE:** Prioridade é decidir a biblioteca de ícones.
+> URLs de teste: http://localhost:3000/icones-carbon | http://localhost:3000/icones-material | http://localhost:3000/icones-tabler
 
 ---
 

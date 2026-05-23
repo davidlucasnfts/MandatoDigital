@@ -46,7 +46,7 @@ export const statusEnqueteEnum = pgEnum("status_enquete", [
 ]);
 
 export const equipe = pgTable("equipe", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull(),
   ownerId: uuid("owner_id").notNull(),
   nome: varchar("nome", { length: 255 }).notNull(),
