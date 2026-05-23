@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 22/05/2026
-> **Sessão atual:** Teste de bibliotecas de ícones — Carbon, Material, Tabler
+> **Atualizado em:** 23/05/2026
+> **Sessão atual:** Migração completa para Tabler Icons — Deploy em produção
 
 ---
 
@@ -11,33 +11,44 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Teste de bibliotecas de ícones: Carbon, Material, Tabler** — 22/05
+**Migração para Tabler Icons — 23/05**
 
 ### O que foi feito:
-1. **Rejeitado Phosphor Icons** — usuário não gostou dos pesos (fill/duotone/bold)
-2. **Rejeitado Fluent UI + Govicons** — usuário não gostou do visual
-3. **Instalado `@carbon/icons-react`** (IBM) — página demo `/icones-carbon` criada
-4. **Instalado `@mui/icons-material`** (Google) — página demo `/icones-material` criada
-5. **Instalado `@tabler/icons-react`** — página demo `/icones-tabler` criada
-6. **Corrigido build** — instalado `@emotion/react` e `@emotion/styled` (peer deps do MUI)
-7. **Corrigido erro `IconFire` → `IconFlame`** — ícone não existia no Tabler, build falhava
-8. **Wrapper `@/lib/icons.ts`** mantido como ponto único de troca futura
+1. **Decidido Tabler Icons** — biblioteca escolhida após testes (Carbon, Material, Tabler)
+2. **Criada página de sugestões** `/icones-sugestoes` — 140+ ícones mapeados por função
+3. **Criada página de preview** `/preview-sidebar` — visualização do menu com Tabler
+4. **Atualizado `src/lib/icons.ts`** — 200 ícones Tabler com aliases mantidos
+5. **Atualizado `src/components/DashboardLayout.tsx`** — stroke 2px, tamanho 20px
+6. **Corrigidos ícones inexistentes** — `IconDotsHorizontal`, `IconLayers`, `IconVote`, `IconMessageSquare`, etc.
+7. **Build limpo** — `npx tsc --noEmit` zero erros
+8. **Deploy em produção** — Vercel, status Ready
 
-### Páginas de teste disponíveis:
-- http://localhost:3000/icones-carbon — Carbon Icons (IBM) — estilo técnico, cantos quadrados
-- http://localhost:3000/icones-material — Material Design (Google) — estilo preenchido, cantos arredondados
-- http://localhost:3000/icones-tabler — Tabler Icons — estilo minimalista, stroke fino
+### Configuração visual dos ícones:
+| Propriedade | Valor |
+|---|---|
+| Biblioteca | `@tabler/icons-react` |
+| Stroke | 2px |
+| Tamanho | 20px |
 
-### Decisão pendente:
-- **Usuário vai decidir** qual biblioteca adotar (ou rejeitar todas)
-- Se escolher uma: migrar `src/lib/icons.ts` e todos os imports
-- Se rejeitar todas: pesquisar outras opções (Heroicons, etc.)
-
-### Pendências para próxima sessão:
-- [ ] HTTPS/SSL (precisa de domínio)
-- [ ] Cloudflare Tunnel (esconder IP da VPS)
-- [ ] Importar mais estados (opcional)
-- [x] Testar geocodificação completa no cadastro de eleitor
+### Ícones do menu lateral (atualizados):
+| Aba | Ícone Tabler |
+|---|---|
+| Dashboard | `IconLayoutDashboard` |
+| Eleitores | `IconUsers` |
+| Comunidades | `IconBuildingCommunity` |
+| Solicitações | `IconClipboardList` |
+| Comunicação | `IconMessageCircle` |
+| Mapa | `IconMapPin` |
+| Agenda | `IconCalendar` |
+| Tarefas | `IconFileText` |
+| Documentos | `IconFolder` |
+| Proposições | `IconGavel` |
+| Produtividade | `IconTrendingUp` |
+| Líderes | `IconCrown` |
+| Enquetes | `IconChartBar` |
+| Relatórios | `IconReportAnalytics` |
+| Equipe | `IconShield` |
+| Configurações | `IconSettings` |
 
 ---
 
@@ -45,7 +56,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 
 | Serviço | URL |
 |---|---|
-| **Produção (Vercel)** | https://mandato-digital-xi.vercel.app |
+| **Produção (Vercel)** | https://mandato-digital-c5e5w98ys-mandatodiigital-1923s-projects.vercel.app |
 | **API Proxy CNEFE** | http://82.197.73.101 |
 | **VPS (SSH)** | ssh -p 2222 root@82.197.73.101 |
 
@@ -78,22 +89,16 @@ CNEFE_API_URL=http://82.197.73.101
 ## Checklist Próxima Sessão — PRIORIDADE 1
 
 ```
-□ DECIDIR BIBLIOTECA DE ÍCONES
-  → Acessar http://localhost:3000/icones-carbon (Carbon Icons IBM)
-  → Acessar http://localhost:3000/icones-material (Material Design Google)
-  → Acessar http://localhost:3000/icones-tabler (Tabler Icons)
-  → Comparar visualmente e escolher uma (ou pedir outras opções)
-  → Migrar src/lib/icons.ts e todos os imports para a escolhida
-
-□ Testar página /icones-tabler no navegador
-  → Verificar se renderiza corretamente (corrigido erro IconFire → IconFlame)
-  → Verificar controles de stroke width e tamanho
+□ VERIFICAR ÍCONES EM PRODUÇÃO
+  → Acessar https://mandato-digital-c5e5w98ys-mandatodiigital-1923s-projects.vercel.app
+  → Navegar por todas as abas do dashboard
+  → Verificar se algum ícone ficou estranho ou faltando
+  → Reportar prints se houver erro
 
 □ Testar cadastro de eleitor com geocodificação CNEFE
-  → Acessar https://mandato-digital-xi.vercel.app
   → Cadastrar eleitor com CEP e número
   → Verificar se aparece no mapa na posição correta
-  
+
 □ Verificar se Here API está sendo usada como fallback
   → Cadastrar endereço fora do CE/MA (ex: São Paulo)
   → Confirmar se Here API geocodifica
@@ -102,8 +107,7 @@ CNEFE_API_URL=http://82.197.73.101
 □ Importar mais estados se necessário (PB, RN, PI)
 ```
 
-> **LEMBRETE:** Prioridade é decidir a biblioteca de ícones.
-> URLs de teste: http://localhost:3000/icones-carbon | http://localhost:3000/icones-material | http://localhost:3000/icones-tabler
+> **LEMBRETE:** Prioridade é verificar se os ícones Tabler estão corretos em produção.
 
 ---
 
@@ -112,3 +116,4 @@ CNEFE_API_URL=http://82.197.73.101
 | # | Erro | Data | Prevenção |
 |---|---|---|---|
 | 008 | API Proxy sem rate limiting / rodando como root | 19/05/2026 | Sempre usar usuário dedicado, rate limiting, systemd |
+| 009 | Ícones Tabler inexistentes causando crash | 23/05/2026 | Sempre verificar existência no pacote antes de usar (`node -e "require('@tabler/icons-react').IconNome"`) |
