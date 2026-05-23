@@ -23,6 +23,8 @@ import IconesDemoPage from '@/pages/IconesDemoPage';
 import IconesCarbonPage from '@/pages/IconesCarbonPage';
 import IconesMaterialPage from '@/pages/IconesMaterialPage';
 import IconesTablerPage from '@/pages/IconesTablerPage';
+import IconesTablerSugestoesPage from '@/pages/icones/IconesTablerSugestoesPage';
+import PreviewSidebarTablerPage from '@/pages/icones/PreviewSidebarTablerPage';
 import ProposicoesPage from '@/pages/ProposicoesPage';
 import ProposicaoFormPage from '@/pages/ProposicaoFormPage';
 import ProposicaoDetailPage from '@/pages/ProposicaoDetailPage';
@@ -45,6 +47,8 @@ function App() {
       <Route path="/icones-carbon" element={<IconesCarbonPage />} />
       <Route path="/icones-material" element={<IconesMaterialPage />} />
       <Route path="/icones-tabler" element={<IconesTablerPage />} />
+      <Route path="/icones-sugestoes" element={<IconesTablerSugestoesPage />} />
+      <Route path="/preview-sidebar" element={<PreviewSidebarTablerPage />} />
       <Route path="/login" element={<Navigate to="/" replace />} />
       <Route
         path="/dashboard"
