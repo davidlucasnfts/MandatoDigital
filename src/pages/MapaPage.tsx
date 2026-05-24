@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getCoordenadasCidade } from '@/data/coordenadasCidades';
-import { createComunidadeIcon, createEleitorIcon, createLiderIcon, createHeatmapIcon, createRouteIcon } from '@/lib/mapIcons';
+import { createComunidadeIcon, createEleitorIcon, createLiderIcon } from '@/lib/mapIcons';
 import { trpc } from '@/providers/trpc';
 import HeatmapLayer from '@/components/HeatmapLayer';
 import type { Eleitor, Comunidade } from '@/lib/supabase';
@@ -398,44 +398,35 @@ export default function MapaPage() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
                     <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+                      <img src="https://img.icons8.com/color/16/user.png" alt="eleitor" className="w-4 h-4" />
                       Eleitores ({eleitoresComCoords.filter(e => e.nivel !== 'lider').length})
                     </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
                     <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6l4 6 5-4-2 10H5L3 8l5 4z"/></svg>
+                      <img src="https://img.icons8.com/color/16/crown.png" alt="lider" className="w-4 h-4" />
                       Líderes ({eleitoresComCoords.filter(e => e.nivel === 'lider').length})
                     </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarComunidades} onChange={e => setMostrarComunidades(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
                     <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="2"/><circle cx="15" cy="8" r="2"/><path d="M6 15c0-2 2-3 4-3s4 1 4 3"/><path d="M18 15c0-2-2-3-4-3"/></svg>
+                      <img src="https://img.icons8.com/color/16/conference.png" alt="comunidade" className="w-4 h-4" />
                       Comunidades ({comunidadesNoMapa.length})
                     </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarCidadesFallback} onChange={e => setMostrarCidadesFallback(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                      Cidades sem coordenadas ({porCidade.length})
-                    </span>
+                    <span className="text-xs text-slate-600">Cidades sem coordenadas ({porCidade.length})</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarHeatmap} onChange={e => setMostrarHeatmap(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-                      Heatmap
-                    </span>
+                    <span className="text-xs text-slate-600 flex items-center gap-1"><Thermometer className="w-3 h-3" /> Heatmap</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarRota} onChange={e => setMostrarRota(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-8a3.5 3.5 0 0 1 0-7H12"/></svg>
-                      Rota de visita ({rotaPontos.length} pts)
-                    </span>
+                    <span className="text-xs text-slate-600 flex items-center gap-1"><Route className="w-3 h-3" /> Rota de visita ({rotaPontos.length} pts)</span>
                   </label>
                 </div>
               )}
