@@ -116,6 +116,16 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
               <span className="text-slate-600">Indicado por: {indicadorNome}</span>
             </div>
           )}
+          {(eleitor.titulo_eleitor || eleitor.zona || eleitor.secao) && (
+            <div className="flex items-center gap-2 text-sm sm:col-span-2">
+              <Shield className="w-4 h-4 text-slate-400" />
+              <span className="text-slate-600">
+                {eleitor.titulo_eleitor && `Título: ${eleitor.titulo_eleitor}`}
+                {eleitor.zona && ` · Zona: ${eleitor.zona}`}
+                {eleitor.secao && ` · Seção: ${eleitor.secao}`}
+              </span>
+            </div>
+          )}
           {eleitor.tags && eleitor.tags.length > 0 && (
             <div className="flex items-start gap-2 text-sm sm:col-span-2">
               <Tag className="w-4 h-4 text-slate-400 mt-0.5" />

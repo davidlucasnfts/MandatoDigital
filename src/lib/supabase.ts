@@ -30,6 +30,10 @@ export type Eleitor = {
   indicador_id: string | null;
   nivel: 'lider' | 'eleitor';
   lider_id: string | null;
+  lider_vinculado_id: string | null;
+  secao: string | null;
+  zona: string | null;
+  titulo_eleitor: string | null;
   tags: string[];
   status: 'ativo' | 'inativo' | 'pendente';
   observacoes: string;

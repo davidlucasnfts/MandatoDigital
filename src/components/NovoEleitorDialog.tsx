@@ -41,7 +41,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
   const isRefiningRef = useRef<boolean>(false);
 
   const buildForm = (e?: Eleitor | null): Partial<Eleitor> => {
-    if (!e) return { nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null, data_nascimento: null };
+    if (!e) return { nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null, lider_vinculado_id: null, data_nascimento: null };
     return {
       nome: e.nome,
       nome_mae: e.nome_mae,
@@ -58,6 +58,10 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       indicador_id: e.indicador_id,
       nivel: e.nivel,
       lider_id: e.lider_id,
+      lider_vinculado_id: e.lider_vinculado_id,
+      secao: e.secao,
+      zona: e.zona,
+      titulo_eleitor: e.titulo_eleitor,
       tags: e.tags,
       status: e.status,
       observacoes: e.observacoes,
@@ -225,6 +229,10 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
         indicador_id: form.indicador_id || null,
         nivel: form.nivel || 'eleitor',
         lider_id: form.lider_id || null,
+        lider_vinculado_id: form.lider_vinculado_id || null,
+        secao: form.secao || null,
+        zona: form.zona || null,
+        titulo_eleitor: form.titulo_eleitor || null,
         tags: form.tags || [],
         status: form.status || 'ativo',
         observacoes: form.observacoes || '',
@@ -237,7 +245,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       } else {
         await insert(payload);
       }
-      setForm({ nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null });
+      setForm({ nivel: 'eleitor', status: 'ativo', tags: [], lider_id: null, lider_vinculado_id: null });
       setAbaAtiva('eleitor');
       onSuccess?.();
       onClose();
@@ -383,6 +391,44 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               </select>
             </div>
           )}
+
+          {/* Líder vinculado (só aparece quando aba = lider) */}
+          {abaAtiva === 'lider' && (
+            <div className="space-y-1">
+              <Label htmlFor="lider_vinculado_id" className="text-xs">Líder vinculado (superior)</Label>
+              <select
+                id="lider_vinculado_id"
+                value={form.lider_vinculado_id || ''}
+                onChange={e => setField('lider_vinculado_id', e.target.value || null)}
+                className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
+              >
+                <option value="">Sem líder superior</option>
+                {lideres.filter(l => l.nivel === 'lider' && l.id !== eleitor?.id).map(l => (
+                  <option key={l.id} value={l.id}>{l.nome}</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-slate-400">Vincule este líder a outro líder (hierarquia multi-nível)</p>
+            </div>
+          )}
+
+          {/* Dados eleitorais */}
+          <div className="space-y-3 pt-2">
+            <p className="text-sm font-medium text-slate-700">Dados Eleitorais</p>
+            <div className="flex flex-wrap gap-2">
+              <div className="space-y-1 w-[100px]">
+                <Label htmlFor="titulo_eleitor" className="text-xs">Título de Eleitor</Label>
+                <Input id="titulo_eleitor" value={form.titulo_eleitor || ''} onChange={e => setField('titulo_eleitor', e.target.value)} placeholder="000000000000" maxLength={20} className="h-9" />
+              </div>
+              <div className="space-y-1 w-[80px]">
+                <Label htmlFor="zona" className="text-xs">Zona</Label>
+                <Input id="zona" value={form.zona || ''} onChange={e => setField('zona', e.target.value)} placeholder="000" maxLength={10} className="h-9" />
+              </div>
+              <div className="space-y-1 w-[80px]">
+                <Label htmlFor="secao" className="text-xs">Seção</Label>
+                <Input id="secao" value={form.secao || ''} onChange={e => setField('secao', e.target.value)} placeholder="0000" maxLength={10} className="h-9" />
+              </div>
+            </div>
+          </div>
 
           {/* Secao: Endereco */}
           <div className="space-y-3 pt-4 border-t border-slate-100">
