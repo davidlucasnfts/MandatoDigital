@@ -122,10 +122,18 @@ Regras de design de botões salvas para não repetir erros
 | **Edição de estimativa** | Lápis sempre visível na lista e no modal de líderes |
 | **Script automático** | `npm run db:schema-safe` consolida migrations no schema_safe.sql |
 
+### Melhorias Técnicas
+| Melhoria | Descrição |
+|---|---|
+| **Codificação de senha** | `api/lib/env.ts` codifica automaticamente caracteres especiais na `DATABASE_URL` |
+| **Session Pooler** | Mudança de Direct Connection (IPv6) para Session Pooler (IPv4) do Supabase |
+| **Cliente postgres direto** | `lideres-router.ts` usa `postgres()` em vez de `db.execute(sql")` |
+
 ### Melhorias UI/UX
 - Cores do ranking: 1º=âmbar, 2º=prata, 3º=bronze
 - Podium horizontal no mobile
 - Textos KPI encurtados no mobile
+- Lápis de edição sempre visível (sem hover)
 
 ---
 

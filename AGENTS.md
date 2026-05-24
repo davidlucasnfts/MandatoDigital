@@ -66,7 +66,15 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 □ Se modifiquei um arquivo, atualizei todos que referenciam ele?
 □ Se criei arquivo novo, adicionei no docs/documentacao-estrutura.md?
 □ Se deletei arquivo, removi referências em todos os docs?
+□ Atualizei MEMORY.md com a nova funcionalidade/melhoria?
+□ Verifiquei se todas as melhorias do commit estão no MEMORY.md?
 ```
+
+### Regra de Ouro — Documentação de Funcionalidades
+- **APÓS CADA funcionalidade validada e funcionando**, anotar imediatamente no `MEMORY.md`
+- **NUNCA** deixar para o final da sessão — anotar no momento da entrega
+- **VERIFICAR** commit por commit se todas as melhorias estão documentadas
+- **RESUMO DETALHADO** no final da sessão com todas as correções e melhorias técnicas
 
 ### Datas em Funcionalidades
 - **Sempre incluir a data de entrega** ao lado do nome da funcionalidade em MEMORY.md e roadmap.html
