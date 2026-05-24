@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createRouter, editorQuery } from "./middleware.js";
 import { getDb } from "./queries/connection.js";
 import { sql } from "drizzle-orm";
@@ -6,8 +7,10 @@ import { sql } from "drizzle-orm";
 export const lideresRouter = createRouter({
   // Lista todos os líderes com métricas de produtividade
   produtividade: editorQuery.query(async ({ ctx }) => {
+    try {
     const db = getDb();
     const ownerId = ctx.user.ownerId;
+    console.log("[lideres.produtividade] ownerId:", ownerId);
 
     // Busca todos os líderes com estimativa e conta eleitores vinculados
     const result = await db.execute(sql`
@@ -96,6 +99,14 @@ export const lideresRouter = createRouter({
         bairros,
       },
     };
+    } catch (e: any) {
+      console.error("[lideres.produtividade] ERROR:", e.message);
+      console.error("[lideres.produtividade] STACK:", e.stack);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Erro ao buscar produtividade: " + e.message,
+      });
+    }
   }),
 
   // Atualizar estimativa de votos de um líder
