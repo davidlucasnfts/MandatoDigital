@@ -16,21 +16,29 @@ function required(name: string): string {
  * Precisamos codificar apenas a parte da senha.
  */
 function encodeDatabaseUrl(url: string): string {
+  console.log("[encodeDatabaseUrl] INPUT (parcial):", url.substring(0, 30) + "...");
+  
   // Regex para extrair as partes da URL PostgreSQL
-  // postgresql://usuario:SENHA@host:port/database?params
   const match = url.match(/^(postgresql:\/\/)([^:]+):([^@]+)@(.+)$/);
   if (!match) {
-    // Se não conseguir parsear, retorna original
+    console.log("[encodeDatabaseUrl] Não conseguiu parsear com regex, retorna original");
     return url;
   }
 
   const [, protocol, user, password, rest] = match;
+  console.log("[encodeDatabaseUrl] user:", user);
+  console.log("[encodeDatabaseUrl] password (primeiros 20 chars):", password.substring(0, 20) + "...");
+  console.log("[encodeDatabaseUrl] rest:", rest.substring(0, 30) + "...");
   
   // Codifica a senha (apenas se ainda não estiver codificada)
   const isEncoded = /%[0-9A-Fa-f]{2}/.test(password);
-  const encodedPassword = isEncoded ? password : encodeURIComponent(password);
+  console.log("[encodeDatabaseUrl] já codificada?", isEncoded);
   
-  return `${protocol}${user}:${encodedPassword}@${rest}`;
+  const encodedPassword = isEncoded ? password : encodeURIComponent(password);
+  const result = `${protocol}${user}:${encodedPassword}@${rest}`;
+  console.log("[encodeDatabaseUrl] OUTPUT (parcial):", result.substring(0, 40) + "...");
+  
+  return result;
 }
 
 const rawDatabaseUrl = required("DATABASE_URL");
