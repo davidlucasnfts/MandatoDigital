@@ -106,7 +106,7 @@ export default function LideresProdutividadePage() {
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight"><span className="sm:hidden">Total Líderes</span><span className="hidden sm:inline">Total de Líderes (Base)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Total de Líderes (Base)</p>
                   <p className="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5">{isLoading ? '...' : totais?.total_lideres ?? 0}</p>
                 </div>
                 <div className="w-7 h-7 sm:w-10 sm:h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -119,7 +119,7 @@ export default function LideresProdutividadePage() {
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight"><span className="sm:hidden">Estimativa Total</span><span className="hidden sm:inline">Estimativa Total (KPI)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Estimativa Total (KPI)</p>
                   <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-0.5">{isLoading ? '...' : (totais?.total_estimativa ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="w-7 h-7 sm:w-10 sm:h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -132,7 +132,7 @@ export default function LideresProdutividadePage() {
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight"><span className="sm:hidden">Eleitores Vinc.</span><span className="hidden sm:inline">Eleitores Vinculados (Métrica)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Eleitores Vinculados (Métrica)</p>
                   <p className="text-xl sm:text-2xl font-bold text-green-600 mt-0.5">{isLoading ? '...' : (totais?.total_vinculados ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="w-7 h-7 sm:w-10 sm:h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -145,7 +145,7 @@ export default function LideresProdutividadePage() {
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight"><span className="sm:hidden">Média Conversão</span><span className="hidden sm:inline">Média de Conversão (%)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Média de Conversão (%)</p>
                   <p className="text-xl sm:text-2xl font-bold text-amber-600 mt-0.5">{isLoading ? '...' : `${totais?.media_conversao ?? 0}%`}</p>
                 </div>
                 <div className="w-7 h-7 sm:w-10 sm:h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -158,7 +158,7 @@ export default function LideresProdutividadePage() {
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight"><span className="sm:hidden">Projeção Votos</span><span className="hidden sm:inline">Projeção de Votos (Forecast)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Projeção de Votos (Forecast)</p>
                   <p className="text-xl sm:text-2xl font-bold text-emerald-600 mt-0.5">{isLoading ? '...' : (totais?.projecao_votos ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="w-7 h-7 sm:w-10 sm:h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
