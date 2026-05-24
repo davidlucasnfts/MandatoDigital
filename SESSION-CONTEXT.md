@@ -66,10 +66,24 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 
 | # | Ação | Onde fazer | Prioridade |
 |---|---|---|---|
-| 1 | Comprar domínio (Registro.br, Porkbun ou KingHost) | Site do registrador | Média |
-| 2 | Configurar DNS para apontar VPS | Painel do registrador | Média |
-| 3 | Configurar Certbot (HTTPS) | VPS (quando tiver domínio) | Média |
-| 4 | Configurar Cloudflare Tunnel | Cloudflare (opcional) | Baixa |
+| 1 | **Aplicar migration 020 no Supabase (estimativa_votos)** | SQL Editor do Supabase | 🔴 ALTA |
+| 2 | Comprar domínio (Registro.br, Porkbun ou KingHost) | Site do registrador | Média |
+| 3 | Configurar DNS para apontar VPS | Painel do registrador | Média |
+| 4 | Configurar Certbot (HTTPS) | VPS (quando tiver domínio) | Média |
+| 5 | Configurar Cloudflare Tunnel | Cloudflare (opcional) | Baixa |
+
+### ⚠️ AÇÃO URGENTE: Aplicar migration 020 no Supabase
+
+**Por que:** A coluna `estimativa_votos` não existe no banco de produção, causando erro 500 na aba "Produtividade dos Líderes".
+
+**Como fazer:**
+1. Acesse https://app.supabase.com → seu projeto → SQL Editor
+2. Cole o comando abaixo e clique em **Run**:
+   ```sql
+   ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS estimativa_votos INTEGER;
+   COMMENT ON COLUMN eleitores.estimativa_votos IS 'Estimativa de votos que o líder pode mobilizar';
+   ```
+3. Verifique se a aba "Líderes → Produtividade" carrega sem erro 500
 
 ---
 

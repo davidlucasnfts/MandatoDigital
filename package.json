@@ -18,6 +18,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
+    "db:schema-safe": "tsx scripts/build-schema-safe.ts",
     "graphify": "py -m graphify . && py scripts/build-visualizer.py && start graphify-out/visualizer-embedded.html",
     "graphify:report": "py -m graphify . && start graphify-out/GRAPH_REPORT.md",
     "graphify:query": "py -m graphify query",
