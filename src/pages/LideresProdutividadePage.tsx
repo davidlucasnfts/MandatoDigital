@@ -176,9 +176,9 @@ export default function LideresProdutividadePage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl">
             {top3.map((lider, i) => {
               const posicoes = [
-                { bg: 'bg-amber-50', border: 'border-amber-300', icon: Medal, iconColor: 'text-amber-500', label: '1º', rankColor: 'text-amber-600' },
-                { bg: 'bg-slate-100', border: 'border-slate-300', icon: Medal, iconColor: 'text-slate-400', label: '2º', rankColor: 'text-slate-600' },
-                { bg: 'bg-orange-50', border: 'border-orange-300', icon: Medal, iconColor: 'text-orange-500', label: '3º', rankColor: 'text-orange-600' },
+                { bg: 'bg-yellow-50', border: 'border-yellow-400', icon: Medal, iconColor: 'text-yellow-500', label: '1º', rankColor: 'text-yellow-600' },
+                { bg: 'bg-slate-100', border: 'border-slate-400', icon: Medal, iconColor: 'text-slate-400', label: '2º', rankColor: 'text-slate-600' },
+                { bg: 'bg-orange-50', border: 'border-orange-400', icon: Medal, iconColor: 'text-orange-600', label: '3º', rankColor: 'text-orange-700' },
               ];
               const pos = posicoes[i];
               const Icon = pos.icon;
@@ -313,9 +313,9 @@ export default function LideresProdutividadePage() {
                       <div className="flex items-center gap-2 sm:gap-4">
                         {/* Ranking */}
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] sm:text-xs font-bold ${
-                          lider.ranking === 1 ? 'bg-amber-100 text-amber-600 border border-amber-300' :
-                          lider.ranking === 2 ? 'bg-slate-100 text-slate-500 border border-slate-300' :
-                          lider.ranking === 3 ? 'bg-orange-100 text-orange-500 border border-orange-300' :
+                          lider.ranking === 1 ? 'bg-yellow-100 text-yellow-600 border-2 border-yellow-400' :
+                          lider.ranking === 2 ? 'bg-slate-100 text-slate-500 border-2 border-slate-400' :
+                          lider.ranking === 3 ? 'bg-orange-100 text-orange-600 border-2 border-orange-400' :
                           'bg-slate-50 text-slate-400'
                         }`}>
                           {lider.ranking}
@@ -406,11 +406,11 @@ export default function LideresProdutividadePage() {
                                   setEditandoEstimativa(lider.id);
                                   setNovaEstimativa(lider.estimativa_votos ? String(lider.estimativa_votos) : '');
                                 }}
-                                className="flex items-center gap-0.5 hover:text-blue-600 group"
+                                className="flex items-center gap-1 hover:text-blue-600"
                                 title="Editar estimativa"
                               >
                                 <span>{lider.estimativa_votos || 0}</span>
-                                <Pencil className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <Pencil className="w-3 h-3 text-slate-400" />
                               </button>
                             )}
                           </div>
