@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Crown, TrendingUp, Users, Target, Award, BarChart3,
-  ChevronDown, ChevronUp, MapPin, Building2, Filter, Medal, Zap, ArrowUpRight
+  ChevronDown, ChevronUp, MapPin, Building2, Filter, Medal, Zap, ArrowUpRight, Pencil, Check, X
 } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,10 @@ const statusMetaColors: Record<string, { bg: string; text: string; label: string
 type Ordenacao = 'ranking' | 'nome' | 'estimativa' | 'vinculados' | 'conversao';
 
 export default function LideresProdutividadePage() {
-  const { data, isLoading } = trpc.lideres.produtividade.useQuery();
+  const { data, isLoading, refetch } = trpc.lideres.produtividade.useQuery();
+  const atualizarEstimativa = trpc.lideres.atualizarEstimativa.useMutation({
+    onSuccess: () => refetch(),
+  });
   const [busca, setBusca] = useState('');
   const [liderSelecionado, setLiderSelecionado] = useState<any>(null);
   const [detalhesExpandido, setDetalhesExpandido] = useState(false);
@@ -31,6 +34,8 @@ export default function LideresProdutividadePage() {
   const [filtroComunidade, setFiltroComunidade] = useState<string | null>(null);
   const [filtroBairro, setFiltroBairro] = useState<string | null>(null);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [editandoEstimativa, setEditandoEstimativa] = useState<string | null>(null);
+  const [novaEstimativa, setNovaEstimativa] = useState('');
 
   const lideresFiltrados = useMemo(() => {
     let lista = data?.lideres || [];
@@ -171,9 +176,9 @@ export default function LideresProdutividadePage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl">
             {top3.map((lider, i) => {
               const posicoes = [
-                { bg: 'bg-amber-50', border: 'border-amber-200', icon: Medal, iconColor: 'text-amber-600', label: '1º' },
-                { bg: 'bg-slate-50', border: 'border-slate-200', icon: Medal, iconColor: 'text-slate-500', label: '2º' },
-                { bg: 'bg-orange-50', border: 'border-orange-200', icon: Medal, iconColor: 'text-orange-600', label: '3º' },
+                { bg: 'bg-amber-50', border: 'border-amber-300', icon: Medal, iconColor: 'text-amber-500', label: '1º', rankColor: 'text-amber-600' },
+                { bg: 'bg-slate-100', border: 'border-slate-300', icon: Medal, iconColor: 'text-slate-400', label: '2º', rankColor: 'text-slate-600' },
+                { bg: 'bg-orange-50', border: 'border-orange-300', icon: Medal, iconColor: 'text-orange-500', label: '3º', rankColor: 'text-orange-600' },
               ];
               const pos = posicoes[i];
               const Icon = pos.icon;
@@ -308,10 +313,10 @@ export default function LideresProdutividadePage() {
                       <div className="flex items-center gap-2 sm:gap-4">
                         {/* Ranking */}
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] sm:text-xs font-bold ${
-                          lider.ranking === 1 ? 'bg-amber-100 text-amber-700' :
-                          lider.ranking === 2 ? 'bg-slate-100 text-slate-600' :
-                          lider.ranking === 3 ? 'bg-orange-100 text-orange-700' :
-                          'bg-slate-50 text-slate-500'
+                          lider.ranking === 1 ? 'bg-amber-100 text-amber-600 border border-amber-300' :
+                          lider.ranking === 2 ? 'bg-slate-100 text-slate-500 border border-slate-300' :
+                          lider.ranking === 3 ? 'bg-orange-100 text-orange-500 border border-orange-300' :
+                          'bg-slate-50 text-slate-400'
                         }`}>
                           {lider.ranking}
                         </div>
@@ -349,8 +354,65 @@ export default function LideresProdutividadePage() {
                       <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
                         {/* Métricas */}
                         <div className="text-right flex-shrink-0">
-                          <div className="text-xs text-slate-500">
-                            <span className="font-semibold text-slate-800">{lider.eleitores_vinculados}</span> / {lider.estimativa_votos || 0}
+                          <div className="text-xs text-slate-500 flex items-center justify-end gap-1">
+                            <span className="font-semibold text-slate-800">{lider.eleitores_vinculados}</span>
+                            <span>/</span>
+                            {editandoEstimativa === lider.id ? (
+                              <div className="flex items-center gap-1">
+                                <Input
+                                  type="number"
+                                  value={novaEstimativa}
+                                  onChange={e => setNovaEstimativa(e.target.value)}
+                                  className="w-14 h-5 text-[10px] px-1 py-0"
+                                  min={0}
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                      atualizarEstimativa.mutate({
+                                        liderId: lider.id,
+                                        estimativaVotos: novaEstimativa ? parseInt(novaEstimativa) : null,
+                                      });
+                                      setEditandoEstimativa(null);
+                                    }
+                                  }}
+                                  onClick={e => e.stopPropagation()}
+                                />
+                                <button
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    atualizarEstimativa.mutate({
+                                      liderId: lider.id,
+                                      estimativaVotos: novaEstimativa ? parseInt(novaEstimativa) : null,
+                                    });
+                                    setEditandoEstimativa(null);
+                                  }}
+                                  className="text-green-600 hover:text-green-700"
+                                >
+                                  <Check className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    setEditandoEstimativa(null);
+                                  }}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setEditandoEstimativa(lider.id);
+                                  setNovaEstimativa(lider.estimativa_votos ? String(lider.estimativa_votos) : '');
+                                }}
+                                className="flex items-center gap-0.5 hover:text-blue-600 group"
+                                title="Editar estimativa"
+                              >
+                                <span>{lider.estimativa_votos || 0}</span>
+                                <Pencil className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </button>
+                            )}
                           </div>
                           <div className="text-[10px] text-slate-400">eleitores / meta</div>
                         </div>
@@ -415,7 +477,50 @@ export default function LideresProdutividadePage() {
               {/* Métricas */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-slate-50 p-3 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-blue-600">{liderSelecionado.estimativa_votos || 0}</div>
+                  {editandoEstimativa === liderSelecionado.id ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Input
+                        type="number"
+                        value={novaEstimativa}
+                        onChange={e => setNovaEstimativa(e.target.value)}
+                        className="w-20 h-8 text-sm"
+                        min={0}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => {
+                          atualizarEstimativa.mutate({
+                            liderId: liderSelecionado.id,
+                            estimativaVotos: novaEstimativa ? parseInt(novaEstimativa) : null,
+                          });
+                          setEditandoEstimativa(null);
+                        }}
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setEditandoEstimativa(null)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-1">
+                      <div className="text-2xl font-bold text-blue-600">{liderSelecionado.estimativa_votos || 0}</div>
+                      <button
+                        onClick={() => {
+                          setEditandoEstimativa(liderSelecionado.id);
+                          setNovaEstimativa(liderSelecionado.estimativa_votos ? String(liderSelecionado.estimativa_votos) : '');
+                        }}
+                        className="text-slate-400 hover:text-blue-600"
+                        title="Editar estimativa"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
                   <div className="text-xs text-slate-500">Estimativa de votos <span className="text-[9px] text-slate-400">(KPI)</span></div>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-lg text-center">
