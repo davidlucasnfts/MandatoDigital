@@ -1,4 +1,4 @@
-import { User, Mail, Phone, MapPin, Calendar, Tag, Shield, Users, Heart, Pencil, Trash2, Link2, X } from '@/lib/icons';
+import { User, Mail, Phone, MapPin, Calendar, Tag, Shield, Users, Heart, Pencil, Trash2, Link2, X, Crown } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Eleitor } from '@/lib/supabase';
 
@@ -6,6 +6,7 @@ interface Props {
   eleitor: Eleitor;
   comunidadeNome?: string;
   indicadorNome?: string;
+  liderVinculadoNome?: string;
   afiliados?: Eleitor[];
   onClose?: () => void;
   onEdit?: () => void;
@@ -26,7 +27,7 @@ const statusColors: Record<string, string> = {
   pendente: 'bg-amber-50 text-amber-600',
 };
 
-export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorNome, afiliados, onClose, onEdit, onDelete, onLink }: Props) {
+export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorNome, liderVinculadoNome, afiliados, onClose, onEdit, onDelete, onLink }: Props) {
   return (
     <Card className="border-blue-100">
       <CardContent className="p-5">
@@ -114,6 +115,12 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
             <div className="flex items-center gap-2 text-sm">
               <User className="w-4 h-4 text-slate-400" />
               <span className="text-slate-600">Indicado por: {indicadorNome}</span>
+            </div>
+          )}
+          {liderVinculadoNome && (
+            <div className="flex items-center gap-2 text-sm">
+              <Crown className="w-4 h-4 text-purple-400" />
+              <span className="text-slate-600">Líder superior: {liderVinculadoNome}</span>
             </div>
           )}
           {(eleitor.titulo_eleitor || eleitor.zona || eleitor.secao) && (

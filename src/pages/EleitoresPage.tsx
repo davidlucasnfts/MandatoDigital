@@ -57,6 +57,7 @@ export default function EleitoresPage() {
   const getComunidadeNome = (id: string | null) => comunidades.find(c => c.id === id)?.nome;
   const getIndicadorNome = (id: string | null) => eleitores.find(e => e.id === id)?.nome;
   const getLiderNome = (id: string | null) => eleitores.find(e => e.id === id)?.nome;
+  const getLiderVinculadoNome = (id: string | null) => eleitores.find(e => e.id === id)?.nome;
 
   return (
     <div className="space-y-6">
@@ -107,6 +108,7 @@ export default function EleitoresPage() {
               eleitor={previewEleitor}
               comunidadeNome={getComunidadeNome(previewEleitor.comunidade_id)}
               indicadorNome={getIndicadorNome(previewEleitor.indicador_id)}
+              liderVinculadoNome={getLiderVinculadoNome(previewEleitor.lider_vinculado_id)}
               afiliados={previewEleitor.nivel === 'lider' ? eleitores.filter(e => e.lider_id === previewEleitor.id) : undefined}
               onEdit={() => setEditEleitor(previewEleitor)}
               onDelete={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }}
