@@ -105,25 +105,12 @@ export default function LideresProdutividadePage() {
           <Card>
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Total Líderes <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Base)</span></p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-800 mt-1">{isLoading ? '...' : totais?.total_lideres ?? 0}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Total Líderes <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Base)</span></p>
+                  <p className="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5">{isLoading ? '...' : totais?.total_lideres ?? 0}</p>
                 </div>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-3 sm:p-5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Estimativa Total <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(KPI)</span></p>
-                  <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-1">{isLoading ? '...' : (totais?.total_estimativa ?? 0).toLocaleString()}</p>
-                </div>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Target className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Crown className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-purple-600" />
                 </div>
               </div>
             </CardContent>
@@ -131,25 +118,12 @@ export default function LideresProdutividadePage() {
           <Card>
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Eleitores Vinc. <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Métrica)</span></p>
-                  <p className="text-xl sm:text-2xl font-bold text-green-600 mt-1">{isLoading ? '...' : (totais?.total_vinculados ?? 0).toLocaleString()}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Estimativa Total <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(KPI)</span></p>
+                  <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-0.5">{isLoading ? '...' : (totais?.total_estimativa ?? 0).toLocaleString()}</p>
                 </div>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-3 sm:p-5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Média de Conversão <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(%)</span></p>
-                  <p className="text-xl sm:text-2xl font-bold text-amber-600 mt-1">{isLoading ? '...' : `${totais?.media_conversao ?? 0}%`}</p>
-                </div>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Target className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-blue-600" />
                 </div>
               </div>
             </CardContent>
@@ -157,12 +131,38 @@ export default function LideresProdutividadePage() {
           <Card>
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Projeção Votos <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Forecast)</span></p>
-                  <p className="text-xl sm:text-2xl font-bold text-emerald-600 mt-1">{isLoading ? '...' : (totais?.projecao_votos ?? 0).toLocaleString()}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Eleitores Vinc. <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Métrica)</span></p>
+                  <p className="text-xl sm:text-2xl font-bold text-green-600 mt-0.5">{isLoading ? '...' : (totais?.total_vinculados ?? 0).toLocaleString()}</p>
                 </div>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Users className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-3 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Média Conversão <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(%)</span></p>
+                  <p className="text-xl sm:text-2xl font-bold text-amber-600 mt-0.5">{isLoading ? '...' : `${totais?.media_conversao ?? 0}%`}</p>
+                </div>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-amber-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-3 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight">Projeção Votos <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Forecast)</span></p>
+                  <p className="text-xl sm:text-2xl font-bold text-emerald-600 mt-0.5">{isLoading ? '...' : (totais?.projecao_votos ?? 0).toLocaleString()}</p>
+                </div>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-emerald-600" />
                 </div>
               </div>
             </CardContent>
