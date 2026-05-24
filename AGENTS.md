@@ -29,6 +29,10 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 ### Banco de dados
 - **Sempre usar `schema_safe.sql`** (nunca `schema.sql`) — idempotent, pode rodar quantas vezes quiser
 - Comentar **data + descrição** no topo de cada alteração no schema
+- **SENHA do PostgreSQL: nunca usar caracteres especiais que quebram URL** (`!`, `@`, `#`, `$`, `%`, `&`, `*`, `(`, `)`, `+`, `=`, `[`, `]`, `{`, `}`, `|`, `\`, `:`, `;`, `"`, `'`, `<`, `>`, `,`, `?`, `/`, ` `)
+  - Se a senha já existir com caracteres especiais, codificar com `encodeURIComponent()` antes de montar a `DATABASE_URL`
+  - Exemplo de senha segura: `Mandato2026SeguroXYZ` (apenas letras e números)
+  - O `api/lib/env.ts` deve sempre codificar a senha antes de passar para o cliente postgres
 
 ### Economia de Tokens
 - **Leitura única** — ler arquivo 1x, fazer todas as mudanças na memória, escrever 1x

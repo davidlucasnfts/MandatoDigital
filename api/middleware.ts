@@ -74,5 +74,5 @@ const allowedOrigins = [
 });
 
 export const authedQuery = t.procedure.use(requireAuth);
-export const adminQuery = ta.procedure.use(requireRole("admin")).use(validateOrigin);
-export const editorQuery = ta.procedure.use(requireRole("admin", "editor")).use(validateOrigin);
+export const adminQuery = t.procedure.use(requireAuth).use(requireRole("admin")).use(validateOrigin);
+export const editorQuery = t.procedure.use(requireAuth).use(requireRole("admin", "editor")).use(validateOrigin);
