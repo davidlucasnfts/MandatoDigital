@@ -101,7 +101,7 @@ export default function LideresProdutividadePage() {
 
       {/* KPIs */}
       <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           <Card>
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
