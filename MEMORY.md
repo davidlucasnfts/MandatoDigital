@@ -72,6 +72,9 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Correção crítica: DATABASE_URL + schema_safe.sql + erro 500 Líderes** | **24/05** |
 | **Novos campos eleitorais: seção, zona, título + vinculo líder→líder** | **24/05** |
 | **Script automático: `npm run db:schema-safe` para consolidar migrations** | **24/05** |
+| **Migração completa para Tabler Icons** | **23/05** |
+| **Página Produtividade dos Líderes: edição de estimativa + cores do ranking** | **24/05** |
+| **Responsividade mobile na página de Líderes** | **24/05** |
 
 ---
 
@@ -97,6 +100,32 @@ Eleitores, Solicitações, Proposições, Equipe, Enquetes, Comunidades, Agenda,
 
 ### AGENTS.md atualizado
 Regras de design de botões salvas para não repetir erros
+
+---
+
+## 📝 Resumo da Sessão 24/05 — Correções Críticas + Novos Campos Eleitorais
+
+### Correções Críticas
+| # | Problema | Causa | Solução |
+|---|---|---|---|
+| 1 | Erro 500 em `lideres.produtividade` | Coluna `estimativa_votos` não existia no banco | Migration 020 aplicada no Supabase |
+| 2 | `DATABASE_URL` era placeholder | Valor `postgres://user:pass@db.example.com` na Vercel | Atualizado para Session Pooler do Supabase |
+| 3 | Senha com `!` quebrava URL | Caractere especial não codificado | `encodeURIComponent()` no `api/lib/env.ts` |
+| 4 | `schema_safe.sql` desatualizado | Faltavam migrations 011-025 | Script `npm run db:schema-safe` criado |
+| 5 | `editorQuery` sem autenticação | `ta.procedure` não verificava `ctx.user` | Adicionado `requireAuth` antes de `requireRole` |
+
+### Novas Funcionalidades
+| Funcionalidade | Descrição |
+|---|---|
+| **Campos eleitorais** | Seção (4 dígitos), Zona (3 dígitos), Título de Eleitor (12 dígitos) |
+| **Vincular líder com líder** | Campo `lider_vinculado_id` — hierarquia multi-nível |
+| **Edição de estimativa** | Lápis sempre visível na lista e no modal de líderes |
+| **Script automático** | `npm run db:schema-safe` consolida migrations no schema_safe.sql |
+
+### Melhorias UI/UX
+- Cores do ranking: 1º=âmbar, 2º=prata, 3º=bronze
+- Podium horizontal no mobile
+- Textos KPI encurtados no mobile
 
 ---
 
