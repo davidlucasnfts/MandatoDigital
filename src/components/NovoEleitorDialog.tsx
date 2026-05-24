@@ -415,17 +415,17 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           <div className="space-y-3 pt-2">
             <p className="text-sm font-medium text-slate-700">Dados Eleitorais</p>
             <div className="flex flex-wrap gap-2">
-              <div className="space-y-1 w-[100px]">
+              <div className="space-y-1 w-[120px]">
                 <Label htmlFor="titulo_eleitor" className="text-xs">Título de Eleitor</Label>
-                <Input id="titulo_eleitor" value={form.titulo_eleitor || ''} onChange={e => setField('titulo_eleitor', e.target.value)} placeholder="000000000000" maxLength={20} className="h-9" />
+                <Input id="titulo_eleitor" value={form.titulo_eleitor || ''} onChange={e => setField('titulo_eleitor', e.target.value.replace(/\D/g, ''))} placeholder="000000000000" maxLength={12} className="h-9" />
               </div>
-              <div className="space-y-1 w-[80px]">
+              <div className="space-y-1 w-[70px]">
                 <Label htmlFor="zona" className="text-xs">Zona</Label>
-                <Input id="zona" value={form.zona || ''} onChange={e => setField('zona', e.target.value)} placeholder="000" maxLength={10} className="h-9" />
+                <Input id="zona" value={form.zona || ''} onChange={e => setField('zona', e.target.value.replace(/\D/g, ''))} placeholder="000" maxLength={3} className="h-9" />
               </div>
-              <div className="space-y-1 w-[80px]">
+              <div className="space-y-1 w-[70px]">
                 <Label htmlFor="secao" className="text-xs">Seção</Label>
-                <Input id="secao" value={form.secao || ''} onChange={e => setField('secao', e.target.value)} placeholder="0000" maxLength={10} className="h-9" />
+                <Input id="secao" value={form.secao || ''} onChange={e => setField('secao', e.target.value.replace(/\D/g, ''))} placeholder="0000" maxLength={4} className="h-9" />
               </div>
             </div>
           </div>

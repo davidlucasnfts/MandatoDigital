@@ -1,6 +1,6 @@
 -- ============================================================
 -- SCHEMA SAFE - Consolidado de Migrations
--- Gerado automaticamente em: 2026-05-24T15:01:50.180Z
+-- Gerado automaticamente em: 2026-05-24T15:13:17.620Z
 -- Total de migrations: 26
 --
 -- INSTRUÇÕES:
@@ -775,10 +775,13 @@ WHERE tablename = 'equipe';
 -- Secao, zona e titulo de eleitor para controle eleitoral
 -- lider_vinculado_id permite que um lider seja vinculado a outro lider
 
--- Campos eleitorais
-ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS secao VARCHAR(10);
-ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS zona VARCHAR(10);
-ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS titulo_eleitor VARCHAR(20);
+-- Campos eleitorais (padrão Brasil)
+-- Título de eleitor: 12 dígitos numéricos
+-- Zona: até 3 dígitos
+-- Seção: até 4 dígitos
+ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS secao VARCHAR(4);
+ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS zona VARCHAR(3);
+ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS titulo_eleitor VARCHAR(12);
 
 -- Vinculo de lider com outro lider (auto-relacionamento)
 ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS lider_vinculado_id UUID REFERENCES eleitores(id) ON DELETE SET NULL;

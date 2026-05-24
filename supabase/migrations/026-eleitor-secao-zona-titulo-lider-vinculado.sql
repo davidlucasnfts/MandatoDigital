@@ -2,10 +2,13 @@
 -- Secao, zona e titulo de eleitor para controle eleitoral
 -- lider_vinculado_id permite que um lider seja vinculado a outro lider
 
--- Campos eleitorais
-ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS secao VARCHAR(10);
-ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS zona VARCHAR(10);
-ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS titulo_eleitor VARCHAR(20);
+-- Campos eleitorais (padrão Brasil)
+-- Título de eleitor: 12 dígitos numéricos
+-- Zona: até 3 dígitos
+-- Seção: até 4 dígitos
+ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS secao VARCHAR(4);
+ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS zona VARCHAR(3);
+ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS titulo_eleitor VARCHAR(12);
 
 -- Vinculo de lider com outro lider (auto-relacionamento)
 ALTER TABLE eleitores ADD COLUMN IF NOT EXISTS lider_vinculado_id UUID REFERENCES eleitores(id) ON DELETE SET NULL;
