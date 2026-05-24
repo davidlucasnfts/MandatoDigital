@@ -101,12 +101,12 @@ export default function LideresProdutividadePage() {
 
       {/* KPIs */}
       <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           <Card>
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Total de Líderes <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Base)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Total Líderes <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Base)</span></p>
                   <p className="text-xl sm:text-2xl font-bold text-slate-800 mt-1">{isLoading ? '...' : totais?.total_lideres ?? 0}</p>
                 </div>
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -132,7 +132,7 @@ export default function LideresProdutividadePage() {
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Eleitores Vinculados <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Métrica)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Eleitores Vinc. <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Métrica)</span></p>
                   <p className="text-xl sm:text-2xl font-bold text-green-600 mt-1">{isLoading ? '...' : (totais?.total_vinculados ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -158,7 +158,7 @@ export default function LideresProdutividadePage() {
             <CardContent className="p-3 sm:p-5">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Projeção de Votos <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Forecast)</span></p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">Projeção Votos <span className="hidden sm:inline text-[9px] text-slate-400 font-normal">(Forecast)</span></p>
                   <p className="text-xl sm:text-2xl font-bold text-emerald-600 mt-1">{isLoading ? '...' : (totais?.projecao_votos ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -173,7 +173,7 @@ export default function LideresProdutividadePage() {
       {/* Podium - Top 3 */}
       {top3.length > 0 && (
         <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-2xl">
             {top3.map((lider, i) => {
               const posicoes = [
                 { bg: 'bg-yellow-50', border: 'border-yellow-400', icon: Medal, iconColor: 'text-yellow-500', label: '1º', rankColor: 'text-yellow-600' },
@@ -184,14 +184,14 @@ export default function LideresProdutividadePage() {
               const Icon = pos.icon;
               return (
                 <Card key={lider.id} className={`${pos.bg} border-2 ${pos.border}`}>
-                  <CardContent className="p-2 sm:p-3 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${pos.iconColor}`} />
-                      <span className="text-[10px] sm:text-xs font-medium text-slate-500">{pos.label}</span>
+                  <CardContent className="p-1.5 sm:p-3 text-center">
+                    <div className="flex items-center justify-center gap-0.5 sm:gap-1">
+                      <Icon className={`w-3 h-3 sm:w-5 sm:h-5 ${pos.iconColor}`} />
+                      <span className="text-[9px] sm:text-xs font-medium text-slate-500">{pos.label}</span>
                     </div>
-                    <p className="font-semibold text-slate-800 text-xs sm:text-sm mt-0.5 truncate">{lider.nome}</p>
-                    <p className="text-lg sm:text-xl font-bold text-slate-800">{lider.taxa_conversao}%</p>
-                    <p className="text-[9px] sm:text-[10px] text-slate-500">{lider.eleitores_vinculados} / {lider.estimativa_votos || 0}</p>
+                    <p className="font-semibold text-slate-800 text-[10px] sm:text-sm mt-0.5 truncate">{lider.nome}</p>
+                    <p className="text-sm sm:text-xl font-bold text-slate-800">{lider.taxa_conversao}%</p>
+                    <p className="text-[8px] sm:text-[10px] text-slate-500">{lider.eleitores_vinculados}/{lider.estimativa_votos || 0}</p>
                   </CardContent>
                 </Card>
               );
