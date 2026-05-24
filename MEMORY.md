@@ -69,6 +69,9 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Decisão: Here API para geocodificação precisa (nível de número)** | **18/05** |
 | **Documentação técnica: Diagrama ER, Regras de Negócio, Diagramas de Estado, Padrões Frontend, Plano de Testes, Runbook** | **20/05** |
 | **Teste bibliotecas ícones: Carbon (IBM), Material (Google), Tabler** | **22/05** |
+| **Correção crítica: DATABASE_URL + schema_safe.sql + erro 500 Líderes** | **24/05** |
+| **Novos campos eleitorais: seção, zona, título + vinculo líder→líder** | **24/05** |
+| **Script automático: `npm run db:schema-safe` para consolidar migrations** | **24/05** |
 
 ---
 
