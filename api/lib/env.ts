@@ -11,20 +11,26 @@ function required(name: string): string {
 /**
  * Codifica a senha em uma URL PostgreSQL para evitar erros com caracteres especiais.
  * Caracteres como !, @, #, $, %, &, *, (, ), etc. na senha quebram a URL.
+ * 
+ * Formato: postgresql://user:password@host:port/db
+ * Precisamos codificar apenas a parte da senha.
  */
 function encodeDatabaseUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    // Se a senha já está codificada, não codifica de novo
-    const password = parsed.password;
-    if (password && !/%[0-9A-Fa-f]{2}/.test(password)) {
-      parsed.password = encodeURIComponent(password);
-    }
-    return parsed.toString();
-  } catch {
-    // Se não conseguir parsear como URL, retorna original
+  // Regex para extrair as partes da URL PostgreSQL
+  // postgresql://usuario:SENHA@host:port/database?params
+  const match = url.match(/^(postgresql:\/\/)([^:]+):([^@]+)@(.+)$/);
+  if (!match) {
+    // Se não conseguir parsear, retorna original
     return url;
   }
+
+  const [, protocol, user, password, rest] = match;
+  
+  // Codifica a senha (apenas se ainda não estiver codificada)
+  const isEncoded = /%[0-9A-Fa-f]{2}/.test(password);
+  const encodedPassword = isEncoded ? password : encodeURIComponent(password);
+  
+  return `${protocol}${user}:${encodedPassword}@${rest}`;
 }
 
 const rawDatabaseUrl = required("DATABASE_URL");
