@@ -28,6 +28,7 @@ import ProdutividadePage from '@/pages/ProdutividadePage';
 import LideresProdutividadePage from '@/pages/LideresProdutividadePage';
 import EnquetesPage from '@/pages/EnquetesPage';
 import EleitoresPageV2 from '@/pages/EleitoresPageV2';
+import EleitoresPageV3 from '@/pages/EleitoresPageV3';
 import { RoleGuard } from '@/components/RoleGuard';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
         <Route path="teste-v2" element={<DashboardV2 />} />
         <Route path="eleitores" element={<EleitoresPage />} />
         <Route path="eleitores-v2" element={<EleitoresPageV2 />} />
+        <Route path="eleitores-v3" element={<EleitoresPageV3 />} />
         <Route path="comunidades" element={<ComunidadesPage />} />
         <Route path="solicitacoes" element={<SolicitacoesPage />} />
         <Route path="comunicacao" element={<ComunicacaoPage />} />
