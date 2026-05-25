@@ -11,46 +11,58 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Correções críticas + Novos campos Eleitorais — 24/05**
+**Dashboard v2 — 10 melhorias completas — 24/05**
 
 ### ✅ O que foi entregue hoje:
 
-#### 1. Correção crítica: DATABASE_URL corrompida
-- **Problema:** `DATABASE_URL` na Vercel estava com valor placeholder (`postgres://user:pass@db.example.com`)
-- **Causa:** Senha com `!` quebrava a URL + uso de Direct Connection (IPv6) em vez de Session Pooler
-- **Solução:**
-  - Atualizou `DATABASE_URL` para Session Pooler do Supabase
-  - Adicionou codificação automática de senha em `api/lib/env.ts`
-  - Adicionou regra no `AGENTS.md`: senhas sem caracteres especiais
+#### 1. Cards com tendência (↑↓ %)
+- `useStats` agora calcula variação mês atual vs mês anterior
+- Badge verde (positivo) / vermelho (negativo) em cada card
+- Ícones `TrendingUp`/`TrendingDown` do Tabler
 
-#### 2. Correção: schema_safe.sql desatualizado
-- **Problema:** Faltavam migrations 011-025 no schema_safe.sql
-- **Solução:**
-  - Criado script `scripts/build-schema-safe.ts` para consolidar migrations automaticamente
-  - Comando: `npm run db:schema-safe`
-  - Atualizado com todas as 26 migrations
+#### 2. Painel Território
+- Top 5 bairros com mais eleitores (barras de progresso)
+- Cobertura geográfica: % de eleitores geolocalizados no mapa
+- Link direto para o mapa territorial
 
-#### 3. Correção: Erro 500 na aba Líderes → Produtividade
-- **Problema:** `lideres.produtividade` retornava 500 (coluna `estimativa_votos` não existia)
-- **Solução:**
-  - Aplicada migration 020 no Supabase
-  - Corrigido `editorQuery`/`adminQuery` para verificar autenticação primeiro
-  - Usado cliente postgres direto para SQL raw no `lideres-router.ts`
+#### 3. Produtividade dos Líderes (mini ranking)
+- Top 3 líderes com mais eleitores vinculados
+- Mostra estimativa de votos e taxa de conversão
+- Link para página completa de produtividade
 
-#### 4. Nova funcionalidade: Campos eleitorais no cadastro
-- **Migration 026:** `supabase/migrations/026-eleitor-secao-zona-titulo-lider-vinculado.sql`
-- **Campos adicionados:**
-  - `titulo_eleitor` (VARCHAR 12) — Título de eleitor (12 dígitos)
-  - `zona` (VARCHAR 3) — Zona eleitoral (até 3 dígitos)
-  - `secao` (VARCHAR 4) — Seção eleitoral (até 4 dígitos)
-  - `lider_vinculado_id` (UUID) — Vincula líder com outro líder
-- **Validação:** Apenas números, limites conforme padrão Brasil
-- **Preview card:** Mostra dados eleitorais e líder superior quando preenchidos
+#### 4. Proposições em tramitação
+- Contagem por status (em elaboração, tramitação, aprovada, arquivada)
+- 3 proposições mais recentes com badge colorido
+- Link para gerenciar proposições
 
-#### 5. Melhorias na página Produtividade dos Líderes
-- Edição de estimativa de votos inline (lápis sempre visível)
-- Cores do ranking corrigidas (1º=âmbar, 2º=prata, 3º=bronze)
-- Responsividade mobile (podium horizontal, textos encurtados)
+#### 5. Enquetes ativas
+- Total de enquetes ativas + total de respostas
+- Lista das 3 enquetes mais recentes com contagem de respostas
+
+#### 6. Atividade recente (feed)
+- Últimos eleitores cadastrados
+- Solicitações resolvidas
+- Interações registradas
+- Formato de tempo relativo (agora, 5min, 2h, 3d)
+
+#### 7. Meta eleitoral — barra de progresso
+- Meta configurável (salva em `configuracoes`)
+- Barra de progresso visual
+- Projeção: "Na velocidade atual, atinge a meta em X dias"
+
+#### 8. Aniversariantes — estatística de envios
+- Barra de progresso: % de mensagens já enviadas no período
+- Contador "X de Y enviados"
+
+#### 9. Comunicação — status dos canais
+- Quantos eleitores têm e-mail / WhatsApp
+- Total de envios de aniversário no ano
+- Base segmentável
+
+#### 10. Convites pendentes de aprovação
+- Lista de eleitores aguardando aprovação
+- Tempo de espera (hoje, ontem, X dias)
+- Link para aprovar
 
 ---
 
@@ -91,6 +103,9 @@ CNEFE_API_URL=http://82.197.73.101
 ## Checklist Próxima Sessão
 
 ```
+□ Testar dashboard v2 em produção (todos os 10 painéis)
+□ Verificar performance das queries (muitas requisições no dashboard)
+□ Testar meta eleitoral (editar e salvar)
 □ Testar vinculo de lider com lider em producao
 □ Testar campos eleitorais (secao, zona, titulo) em producao
 □ Verificar se ícones Tabler estão corretos em todas as abas

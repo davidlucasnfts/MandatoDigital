@@ -211,18 +211,77 @@ export function useInteracoes(eleitorId?: string) {
 // ===================== STATS =====================
 export function useStats() {
   const [stats, setStats] = useState({ eleitores: 0, solicitacoes: 0, tarefas: 0, eventos: 0, pendentes: 0 });
+  const [tendencias, setTendencias] = useState({
+    eleitores: { valor: 0, positivo: true },
+    solicitacoes: { valor: 0, positivo: true },
+    tarefas: { valor: 0, positivo: true },
+    eventos: { valor: 0, positivo: true },
+    pendentes: { valor: 0, positivo: true },
+  });
 
   const fetch = useCallback(async () => {
+    // Contagens atuais
     const { count: eleitores } = await supabase.from('eleitores').select('*', { count: 'exact', head: true });
     const { count: solicitacoes } = await supabase.from('solicitacoes').select('*', { count: 'exact', head: true });
     const { count: tarefas } = await supabase.from('tarefas').select('*', { count: 'exact', head: true });
     const { count: eventos } = await supabase.from('eventos').select('*', { count: 'exact', head: true });
     const { count: pendentes } = await supabase.from('solicitacoes').select('*', { count: 'exact', head: true }).eq('status', 'pendente');
+
     setStats({ eleitores: eleitores || 0, solicitacoes: solicitacoes || 0, tarefas: tarefas || 0, eventos: eventos || 0, pendentes: pendentes || 0 });
+
+    // Tendências: comparar mês atual vs mês anterior
+    const agora = new Date();
+    const inicioMesAtual = new Date(agora.getFullYear(), agora.getMonth(), 1).toISOString();
+    const inicioMesAnterior = new Date(agora.getFullYear(), agora.getMonth() - 1, 1).toISOString();
+    const fimMesAnterior = new Date(agora.getFullYear(), agora.getMonth(), 1).toISOString();
+
+    const contarMes = async (tabela: string, inicio: string, fim?: string, filtros?: Record<string, any>) => {
+      let query = supabase.from(tabela).select('*', { count: 'exact', head: true }).gte('created_at', inicio);
+      if (fim) query = query.lt('created_at', fim);
+      if (filtros) Object.entries(filtros).forEach(([k, v]) => { query = query.eq(k, v); });
+      const { count } = await query;
+      return count || 0;
+    };
+
+    const [eleitoresAtual, eleitoresAnterior] = await Promise.all([
+      contarMes('eleitores', inicioMesAtual),
+      contarMes('eleitores', inicioMesAnterior, fimMesAnterior),
+    ]);
+    const [solicitacoesAtual, solicitacoesAnterior] = await Promise.all([
+      contarMes('solicitacoes', inicioMesAtual),
+      contarMes('solicitacoes', inicioMesAnterior, fimMesAnterior),
+    ]);
+    const [tarefasAtual, tarefasAnterior] = await Promise.all([
+      contarMes('tarefas', inicioMesAtual),
+      contarMes('tarefas', inicioMesAnterior, fimMesAnterior),
+    ]);
+    const [eventosAtual, eventosAnterior] = await Promise.all([
+      contarMes('eventos', inicioMesAtual),
+      contarMes('eventos', inicioMesAnterior, fimMesAnterior),
+    ]);
+    const [pendentesAtual, pendentesAnterior] = await Promise.all([
+      contarMes('solicitacoes', inicioMesAtual, undefined, { status: 'pendente' }),
+      contarMes('solicitacoes', inicioMesAnterior, fimMesAnterior, { status: 'pendente' }),
+    ]);
+
+    const calcTendencia = (atual: number, anterior: number) => {
+      if (anterior === 0) return { valor: atual > 0 ? 100 : 0, positivo: atual >= 0 };
+      const diff = atual - anterior;
+      const pct = Math.round((diff / anterior) * 100);
+      return { valor: Math.abs(pct), positivo: diff >= 0 };
+    };
+
+    setTendencias({
+      eleitores: calcTendencia(eleitoresAtual, eleitoresAnterior),
+      solicitacoes: calcTendencia(solicitacoesAtual, solicitacoesAnterior),
+      tarefas: calcTendencia(tarefasAtual, tarefasAnterior),
+      eventos: calcTendencia(eventosAtual, eventosAnterior),
+      pendentes: calcTendencia(pendentesAtual, pendentesAnterior),
+    });
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
-  return { stats, fetch };
+  return { stats, tendencias, fetch };
 }
 
 // ===================== CONFIGURACOES =====================

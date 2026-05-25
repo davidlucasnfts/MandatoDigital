@@ -75,6 +75,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Migração completa para Tabler Icons** | **23/05** |
 | **Página Produtividade dos Líderes: edição de estimativa + cores do ranking** | **24/05** |
 | **Responsividade mobile na página de Líderes** | **24/05** |
+| **Dashboard v2: 10 melhorias completas** | **24/05** |
 
 ---
 
@@ -134,6 +135,39 @@ Regras de design de botões salvas para não repetir erros
 - Podium horizontal no mobile
 - Textos KPI encurtados no mobile
 - Lápis de edição sempre visível (sem hover)
+
+---
+
+## 📝 Resumo da Sessão 24/05 — Dashboard v2 (10 Melhorias)
+
+### Melhorias no Dashboard
+| # | Melhoria | Descrição |
+|---|---|---|
+| 1 | **Tendência nos cards** | Indicador ↑↓ % vs mês anterior em cada card (verde=positivo, vermelho=negativo) |
+| 2 | **Painel Território** | Top 5 bairros com mais eleitores + barra de cobertura geográfica (% geolocalizados) |
+| 3 | **Produtividade Líderes** | Top 3 líderes do mês com eleitores vinculados e taxa de conversão |
+| 4 | **Proposições** | Contagem por status + 3 proposições mais recentes com badge de status |
+| 5 | **Enquetes Ativas** | Total de enquetes ativas + respostas + lista das 3 mais recentes |
+| 6 | **Atividade Recente** | Feed com últimas ações: eleitores cadastrados, solicitações resolvidas, interações |
+| 7 | **Meta Eleitoral** | Barra de progresso editável + projeção de quando atinge a meta |
+| 8 | **Aniversariantes** | Estatística de envios (% enviado, barra de progresso) no topo do painel |
+| 9 | **Comunicação** | Resumo de canais (e-mail/WhatsApp) + envios de aniversário + base segmentável |
+| 10 | **Convites Pendentes** | Lista de eleitores aguardando aprovação com tempo de espera |
+
+### Arquivos criados
+- `src/components/TerritorioPanel.tsx`
+- `src/components/LideresPanel.tsx`
+- `src/components/ProposicoesPanel.tsx`
+- `src/components/EnquetesPanel.tsx`
+- `src/components/AtividadeRecentePanel.tsx`
+- `src/components/MetaEleitoralPanel.tsx`
+- `src/components/ComunicacaoPanel.tsx`
+- `src/components/ConvitesPendentesPanel.tsx`
+
+### Arquivos modificados
+- `src/hooks/useSupabaseData.ts` — `useStats` retorna `tendencias` (comparação mês atual vs anterior)
+- `src/pages/DashboardHome.tsx` — Layout reorganizado com todos os novos painéis
+- `src/components/AniversariantesPanel.tsx` — Barra de progresso de envios adicionada
 
 ---
 

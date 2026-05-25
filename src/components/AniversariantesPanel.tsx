@@ -131,6 +131,32 @@ export default function AniversariantesPanel() {
         )}
       </div>
 
+      {/* Estatística de envios */}
+      {aniversariantes.length > 0 && (
+        <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
+          <div className="flex-1">
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="text-slate-500">Mensagens enviadas</span>
+              <span className="font-medium text-slate-700">
+                {aniversariantes.length - pendentes.length} de {aniversariantes.length}
+              </span>
+            </div>
+            <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-green-500 rounded-full transition-all"
+                style={{ width: `${aniversariantes.length > 0 ? ((aniversariantes.length - pendentes.length) / aniversariantes.length) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-lg font-bold text-green-600">
+              {aniversariantes.length > 0 ? Math.round(((aniversariantes.length - pendentes.length) / aniversariantes.length) * 100) : 0}%
+            </p>
+            <p className="text-[10px] text-slate-400">enviado</p>
+          </div>
+        </div>
+      )}
+
       {/* Filtros */}
       <div className="flex bg-slate-100 rounded-lg p-0.5">
         {(Object.keys(periodoLabels) as FiltroPeriodo[]).map(p => {
