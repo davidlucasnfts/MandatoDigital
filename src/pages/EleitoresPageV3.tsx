@@ -192,7 +192,7 @@ export default function EleitoresPageV3() {
                       <Link2 className="w-3.5 h-3.5"/>Gerar Link
                     </button>
                   )}
-                  <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors border border-red-200">
+                  <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors shadow-sm hover:shadow-md">
                     <Trash2 className="w-3.5 h-3.5"/>Excluir
                   </button>
                 </div>
