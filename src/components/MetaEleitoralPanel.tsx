@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Target, TrendingUp, Users, Pencil, Check, X } from '@/lib/icons';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Target, TrendingUp, Pencil, Check, X } from '@/lib/icons';
+import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
 
 interface MetaEleitoralProps {
@@ -62,7 +62,6 @@ export default function MetaEleitoralPanel({ totalAtual }: MetaEleitoralProps) {
     const diasPassados = Math.max(1, agora.getDate());
     const diasNoMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 0).getDate();
 
-    // Média diária do mês
     const mediaDiaria = totalAtual / Math.max(1, Math.floor((agora.getTime() - inicioMes.getTime()) / 86400000) + 1);
     const projecaoFimMes = Math.round(mediaDiaria * diasNoMes);
 
@@ -70,77 +69,67 @@ export default function MetaEleitoralPanel({ totalAtual }: MetaEleitoralProps) {
       const diasParaMeta = meta > 0 ? Math.ceil((meta - totalAtual) / mediaDiaria) : 0;
       return diasParaMeta > 0 ? `Meta em ${diasParaMeta} dias` : 'Meta atingida!';
     }
-    return `Projeção: ${projecaoFimMes.toLocaleString()} até o fim do mês`;
+    return `Projeção: ${projecaoFimMes.toLocaleString()}`;
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Target className="w-4 h-4 text-blue-600" />
-            Meta Eleitoral
-          </CardTitle>
+    <Card className="cursor-pointer hover:shadow-md transition-shadow border-t-[3px] border-t-blue-600 h-full">
+      <CardContent className="px-3 py-2 lg:p-4">
+        {/* Header com ícone e ação */}
+        <div className="flex items-center justify-between mb-2">
+          <Target className="w-4 h-4 lg:w-5 lg:h-5 text-slate-400" />
           {editando ? (
             <div className="flex items-center gap-1">
-              <button onClick={salvarMeta} className="p-1 rounded hover:bg-green-50 text-green-600"><Check className="w-3.5 h-3.5" /></button>
-              <button onClick={() => { setEditando(false); setInputMeta(String(meta)); }} className="p-1 rounded hover:bg-red-50 text-red-600"><X className="w-3.5 h-3.5" /></button>
+              <button onClick={salvarMeta} className="p-0.5 rounded hover:bg-green-50 text-green-600"><Check className="w-3 h-3" /></button>
+              <button onClick={() => { setEditando(false); setInputMeta(String(meta)); }} className="p-0.5 rounded hover:bg-red-50 text-red-600"><X className="w-3 h-3" /></button>
             </div>
           ) : (
-            <button onClick={() => setEditando(true)} className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600">
-              <Pencil className="w-3.5 h-3.5" />
+            <button onClick={() => setEditando(true)} className="p-0.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600">
+              <Pencil className="w-3 h-3" />
             </button>
           )}
         </div>
-      </CardHeader>
-      <CardContent>
+
         {loading ? (
-          <div className="h-[160px] bg-slate-50 rounded animate-pulse" />
+          <div className="h-[80px] lg:h-[100px] bg-slate-50 rounded animate-pulse" />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Meta editável */}
             {editando ? (
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={inputMeta}
-                  onChange={(e) => setInputMeta(e.target.value)}
-                  className="w-full text-sm border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min={1}
-                  autoFocus
-                  onKeyDown={(e) => { if (e.key === 'Enter') salvarMeta(); }}
-                />
-              </div>
+              <input
+                type="number"
+                value={inputMeta}
+                onChange={(e) => setInputMeta(e.target.value)}
+                className="w-full text-sm border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                min={1}
+                autoFocus
+                onKeyDown={(e) => { if (e.key === 'Enter') salvarMeta(); }}
+              />
             ) : (
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold text-slate-800">{totalAtual.toLocaleString()}</p>
-                  <p className="text-xs text-slate-500">de {meta.toLocaleString()} eleitores</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-blue-600" />
-                </div>
+              <div>
+                <p className="text-xl lg:text-2xl font-bold text-slate-800">{totalAtual.toLocaleString()}</p>
+                <p className="text-[10px] lg:text-xs text-slate-500">de {meta.toLocaleString()} eleitores</p>
               </div>
             )}
 
-            {/* Barra de progresso */}
-            <div>
-              <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+            {/* Barra de progresso compacta */}
+            <div className="space-y-1">
+              <div className="w-full h-1.5 lg:h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-600 rounded-full transition-all duration-500"
                   style={{ width: `${progresso}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-[10px] text-slate-500">{progresso.toFixed(0)}% concluído</span>
-                <span className="text-[10px] text-slate-500">{faltam > 0 ? `${faltam.toLocaleString()} faltam` : 'Meta atingida!'}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] lg:text-[10px] text-slate-500">{progresso.toFixed(0)}%</span>
+                <span className="text-[9px] lg:text-[10px] text-slate-500">{faltam > 0 ? `${faltam.toLocaleString()} faltam` : 'Atingida!'}</span>
               </div>
             </div>
 
-            {/* Projeção */}
-            <div className="flex items-center gap-1.5 p-2 bg-slate-50 rounded-lg">
-              <TrendingUp className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[10px] text-slate-600">{calcularProjecao()}</span>
+            {/* Projeção como badge */}
+            <div className="flex items-center gap-1 text-[9px] lg:text-[10px] text-green-600 font-medium">
+              <TrendingUp className="w-3 h-3" />
+              <span>{calcularProjecao()}</span>
             </div>
           </div>
         )}

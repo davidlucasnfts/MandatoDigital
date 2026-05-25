@@ -1,25 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, ArrowRight, CheckCircle2, Clock, XCircle, Loader } from '@/lib/icons';
+import { FileText, ArrowRight, CheckCircle2, Clock, XCircle, Loader2 } from '@/lib/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
-
-interface ProposicaoResumo {
-  status: string;
-  total: number;
-}
-
-interface ProposicaoRecente {
-  id: string;
-  titulo: string;
-  status: string;
-  tipo: string;
-  numero: string | null;
-  ano: number | null;
-}
+import { useMockData } from '@/lib/mockData';
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  em_elaboracao: { label: 'Em elaboração', color: 'text-slate-600', bg: 'bg-slate-100', icon: Loader },
+  em_elaboracao: { label: 'Em elaboração', color: 'text-slate-600', bg: 'bg-slate-100', icon: Loader2 },
   em_tramitacao: { label: 'Em tramitação', color: 'text-blue-600', bg: 'bg-blue-50', icon: Clock },
   aprovada: { label: 'Aprovada', color: 'text-green-600', bg: 'bg-green-50', icon: CheckCircle2 },
   arquivada: { label: 'Arquivada', color: 'text-red-600', bg: 'bg-red-50', icon: XCircle },
@@ -27,74 +12,36 @@ const statusConfig: Record<string, { label: string; color: string; bg: string; i
 
 export default function ProposicoesPanel() {
   const navigate = useNavigate();
-  const [resumo, setResumo] = useState<ProposicaoResumo[]>([]);
-  const [recentes, setRecentes] = useState<ProposicaoRecente[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { proposicoesResumo: resumo, proposicoesRecentes: recentes, loading } = useMockData();
 
-  const fetch = useCallback(async () => {
-    setLoading(true);
-    const { data: userData } = await supabase.auth.getUser();
-    const ownerId = userData.user?.id;
-    if (!ownerId) { setLoading(false); return; }
-
-    // Contagem por status
-    const { data: rows } = await supabase
-      .from('proposicoes')
-      .select('status')
-      .eq('owner_id', ownerId);
-
-    const contagem: Record<string, number> = {};
-    rows?.forEach(r => {
-      contagem[r.status] = (contagem[r.status] || 0) + 1;
-    });
-
-    const ordenado = Object.entries(contagem)
-      .map(([status, total]) => ({ status, total }))
-      .sort((a, b) => b.total - a.total);
-    setResumo(ordenado);
-
-    // 3 proposições mais recentes em tramitação
-    const { data: recentesRows } = await supabase
-      .from('proposicoes')
-      .select('id, titulo, status, tipo, numero, ano')
-      .eq('owner_id', ownerId)
-      .order('updated_at', { ascending: false })
-      .limit(3);
-
-    setRecentes(recentesRows || []);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetch(); }, [fetch]);
-
-  const total = resumo.reduce((sum, r) => sum + r.total, 0);
+  const total = resumo.reduce((sum: number, r: any) => sum + r.total, 0);
 
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-0 px-3 lg:px-6 pt-3 lg:pt-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <CardTitle className="text-sm lg:text-base font-semibold flex items-center gap-2">
             <FileText className="w-4 h-4 text-blue-600" />
             Proposições
           </CardTitle>
-          <button onClick={() => navigate('/dashboard/proposicoes')} className="text-xs text-blue-600 hover:underline">
+          <button onClick={() => navigate('/dashboard/proposicoes')} className="text-[10px] lg:text-xs text-blue-600 hover:underline">
             Ver todas
           </button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 lg:px-6 pt-0 pb-2 lg:pb-3">
         {loading ? (
-          <div className="h-[200px] bg-slate-50 rounded animate-pulse" />
+          <div className="h-[160px] lg:h-[200px] bg-slate-50 rounded animate-pulse" />
         ) : total === 0 ? (
-          <div className="text-center py-6">
-            <FileText className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-xs text-slate-400">Nenhuma proposição cadastrada</p>
+          <div className="text-center py-4 lg:py-6">
+            <FileText className="w-6 h-6 lg:w-8 lg:h-8 text-slate-300 mx-auto mb-1 lg:mb-2" />
+            <p className="text-[10px] lg:text-xs text-slate-400">Nenhuma proposição cadastrada</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 lg:space-y-4">
             {/* Resumo por status */}
             <div className="flex flex-wrap gap-2">
-              {resumo.map((r) => {
+              {resumo.map((r: any) => {
                 const cfg = statusConfig[r.status] || statusConfig.em_elaboracao;
                 const Icon = cfg.icon;
                 return (
@@ -111,8 +58,11 @@ export default function ProposicoesPanel() {
             {/* Recentes */}
             {recentes.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-slate-600">Mais recentes</p>
-                {recentes.map((p) => {
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1 h-1 rounded-full bg-blue-500" />
+                  <p className="text-[10px] lg:text-xs font-medium text-slate-500 uppercase tracking-wide">Recentes</p>
+                </div>
+                {recentes.map((p: any) => {
                   const cfg = statusConfig[p.status] || statusConfig.em_elaboracao;
                   return (
                     <div
@@ -138,9 +88,9 @@ export default function ProposicoesPanel() {
 
             <button
               onClick={() => navigate('/dashboard/proposicoes')}
-              className="w-full flex items-center justify-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium py-1.5 rounded hover:bg-blue-50 transition-colors"
+              className="w-full flex items-center justify-center gap-1 text-[10px] lg:text-xs text-blue-600 hover:text-blue-700 font-medium py-1.5 rounded hover:bg-blue-50 transition-colors mt-1"
             >
-              Gerenciar proposições <ArrowRight className="w-3 h-3" />
+              Ver todas <ArrowRight className="w-3 h-3" />
             </button>
           </div>
         )}

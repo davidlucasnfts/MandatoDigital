@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 24/05/2026
-> **Sessão atual:** Correções críticas + Novas funcionalidades Eleitores
+> **Atualizado em:** 25/05/2026
+> **Sessão atual:** Correções Dashboard v2 + Responsividade + Design System
 
 ---
 
@@ -11,6 +11,29 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
+**Dashboard v2.2 — Correções de design + Responsividade — 25/05**
+
+### ✅ O que foi corrigido:
+- Ícones inexistentes causando crash
+- Meta Eleitoral redesenhado (mesmo estilo dos stats)
+- Espaços vazios removidos dos cards
+- Layout simétrico em todos os grids
+- Responsividade mobile otimizada
+- Cache Vite limpo para refletir mudanças
+
+### 📋 Checklist próxima sessão:
+- [ ] Testar dashboard em produção (todos os painéis)
+- [ ] Verificar performance das queries
+- [ ] Testar meta eleitoral (editar e salvar)
+- [ ] Testar vinculo de lider com lider em producao
+- [ ] Testar campos eleitorais (secao, zona, titulo) em producao
+- [ ] Verificar se ícones Tabler estão corretos em todas as abas
+- [ ] Comprar/configurar domínio próprio (se decidir)
+- [ ] Importar mais estados CNEFE se necessario (PB, RN, PI)
+
+---
+
+## Histórico
 **Dashboard v2 — 10 melhorias completas — 24/05**
 
 ### ✅ O que foi entregue hoje:

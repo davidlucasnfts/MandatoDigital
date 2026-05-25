@@ -85,6 +85,8 @@ export {
   IconSun as PartyPopper,
   IconConfetti as PartyPopper2,
   IconSparkles as Sparkles,
+  IconActivity as Activity,
+  IconBallpen as Vote,
   IconStack as Layers,
   IconTable as FileSpreadsheet,
   IconRoute as Route,
@@ -100,10 +102,12 @@ export {
   IconCrown as Crown,
   IconMedal as Medal,
   IconTrophy as Award,
+  IconTrophy as Trophy,
   IconThermometer as Thermometer,
   IconArrowUpRight as ArrowUpRight,
   IconArrowUpLeft as ArrowUpLeft,
   IconLoader2 as Loader2,
+  IconLoader2 as Loader,
   IconDeviceMobile as Smartphone,
   IconDeviceMobile as Mobile,
   IconBuildingCommunity as BuildingCommunity,
@@ -206,7 +210,6 @@ export {
   IconHexagon as Hexagon,
   IconOctagon as Octagon,
   IconPentagon as Pentagon,
-  IconBallpen as Vote,
 } from "@tabler/icons-react";
 
 // Namespace para uso dinâmico (IconPicker e similares)

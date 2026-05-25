@@ -76,6 +76,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Página Produtividade dos Líderes: edição de estimativa + cores do ranking** | **24/05** |
 | **Responsividade mobile na página de Líderes** | **24/05** |
 | **Dashboard v2: 10 melhorias completas** | **24/05** |
+| **Dashboard v2.1: Correção ícones + Responsividade mobile** | **25/05** |
+| **Dashboard v2.2: Redesign Meta Eleitoral + Layout simétrico** | **25/05** |
 
 ---
 
@@ -168,6 +170,36 @@ Regras de design de botões salvas para não repetir erros
 - `src/hooks/useSupabaseData.ts` — `useStats` retorna `tendencias` (comparação mês atual vs anterior)
 - `src/pages/DashboardHome.tsx` — Layout reorganizado com todos os novos painéis
 - `src/components/AniversariantesPanel.tsx` — Barra de progresso de envios adicionada
+
+---
+
+## 📝 Resumo da Sessão 25/05 — Correções Dashboard v2
+
+### Problemas corrigidos
+| # | Problema | Causa | Solução |
+|---|---|---|---|
+| 1 | Ícones causando crash | Nomes de ícones não existiam em `src/lib/icons.ts` | Verificar todos os ícones antes de usar; adicionar aliases faltantes |
+| 2 | Meta Eleitoral com estilo diferente | Card com Header+Content, outros só Content | Refatorar Meta para mesmo padrão dos stats (só Content) |
+| 3 | Espaço vazio nos cards | Padding inconsistente entre Header e Content | Remover padding bottom do Header; usar pt-0 no Content |
+| 4 | Layout assimétrico no desktop | 3 cards stats + 1 card meta (diferente) | Grid 4 colunas uniforme; Meta com mesmo estilo |
+| 5 | Atividade com espaço vazio | Card ocupando 2/3 mas conteúdo pequeno | Redistribuir: Atividade + Eventos + Aniversariantes em 3 colunas |
+| 6 | Responsividade quebrada no mobile | Ícones e textos muito grandes | Criar escala mobile/desktop para todos os elementos |
+
+### Melhorias de Design Aplicadas
+- **Consistência visual**: Todos os cards de stats com mesmo padrão (ícone topo, número, label, badge)
+- **Espaçamento zero**: Removido todo espaço vazio sem função
+- **Grid simétrico**: Layout 4 colunas no desktop, 2 colunas no mobile
+- **Indicadores visuais**: Bolinhas coloridas antes dos títulos de seção
+- **Textos compactos**: Títulos encurtados no mobile ("Meta Eleitoral" → "Meta")
+- **Badges integrados**: Contadores no mesmo estilo dos títulos
+
+### Lições Aprendidas (Self-Healing)
+- SEMPRE verificar ícones em `src/lib/icons.ts` antes de usar
+- SEMPRE manter consistência visual em cards do mesmo grid
+- SEMPRE questionar espaços vazios — zero espaço sem função
+- SEMPRE preferir grids simétricos (2, 3, 4 colunas)
+- SEMPRE testar em 3 breakpoints: mobile, tablet, desktop
+- SEMPRE limpar cache Vite quando código não refletir mudanças
 
 ---
 

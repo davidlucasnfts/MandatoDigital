@@ -1,44 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, ArrowRight, Clock, CheckCircle2, XCircle } from '@/lib/icons';
+import { UserPlus, ArrowRight, Clock, CheckCircle2 } from '@/lib/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
-
-interface ConvitePendente {
-  id: string;
-  nome: string | null;
-  email: string | null;
-  telefone: string | null;
-  created_at: string;
-  indicador: { nome: string } | null;
-}
+import { useMockData } from '@/lib/mockData';
 
 export default function ConvitesPendentesPanel() {
   const navigate = useNavigate();
-  const [convites, setConvites] = useState<ConvitePendente[]>([]);
-  const [totalPendentes, setTotalPendentes] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  const fetch = useCallback(async () => {
-    setLoading(true);
-    const { data: userData } = await supabase.auth.getUser();
-    const ownerId = userData.user?.id;
-    if (!ownerId) { setLoading(false); return; }
-
-    const { data, count } = await supabase
-      .from('convites_eleitores')
-      .select('id, nome, email, telefone, created_at, indicador:indicador_id(nome)', { count: 'exact' })
-      .eq('owner_id', ownerId)
-      .eq('status', 'pendente')
-      .order('created_at', { ascending: false })
-      .limit(3);
-
-    setConvites(data || []);
-    setTotalPendentes(count || 0);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetch(); }, [fetch]);
+  const { convites, totalPendentes, loading } = useMockData();
 
   const formatarTempo = (dataStr: string): string => {
     const data = new Date(dataStr);
@@ -51,37 +18,38 @@ export default function ConvitesPendentesPanel() {
 
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-0 px-3 lg:px-6 pt-3 lg:pt-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <CardTitle className="text-sm lg:text-base font-semibold flex items-center gap-1.5">
             <UserPlus className="w-4 h-4 text-purple-600" />
-            Convites Pendentes
+            <span>Convites</span>
             {totalPendentes > 0 && (
-              <span className="bg-purple-100 text-purple-700 text-xs px-1.5 py-0.5 rounded-full font-semibold">
+              <span className="bg-purple-100 text-purple-700 text-[10px] lg:text-xs px-1.5 py-0.5 rounded-full font-semibold ml-0.5">
                 {totalPendentes}
               </span>
             )}
           </CardTitle>
-          <button onClick={() => navigate('/dashboard/eleitores?tab=convites')} className="text-xs text-blue-600 hover:underline">
+          <button onClick={() => navigate('/dashboard/eleitores?tab=convites')} className="text-[10px] lg:text-xs text-blue-600 hover:underline">
             Ver todos
           </button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 lg:px-6 pt-0 pb-2 lg:pb-3">
         {loading ? (
-          <div className="h-[160px] bg-slate-50 rounded animate-pulse" />
+          <div className="h-[120px] lg:h-[160px] bg-slate-50 rounded animate-pulse" />
         ) : totalPendentes === 0 ? (
-          <div className="text-center py-6">
-            <CheckCircle2 className="w-8 h-8 text-green-300 mx-auto mb-2" />
-            <p className="text-xs text-slate-400">Nenhum convite pendente</p>
+          <div className="text-center py-4 lg:py-6">
+            <CheckCircle2 className="w-6 h-6 lg:w-8 lg:h-8 text-green-300 mx-auto mb-1 lg:mb-2" />
+            <p className="text-[10px] lg:text-xs text-slate-400">Nenhum convite pendente</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            <p className="text-xs text-slate-500">
-              {totalPendentes} eleitor{totalPendentes > 1 ? 'es' : ''} aguardando aprovação
-            </p>
+          <div className="space-y-2 lg:space-y-3">
+            <div className="flex items-center gap-1.5 text-[10px] lg:text-xs text-slate-500 bg-slate-50 rounded-md px-2 py-1">
+              <Clock className="w-3 h-3 text-amber-500" />
+              <span>{totalPendentes} eleitor{totalPendentes > 1 ? 'es' : ''} aguardando aprovação</span>
+            </div>
 
-            {convites.map((c) => (
+            {convites.map((c: any) => (
               <div
                 key={c.id}
                 className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"

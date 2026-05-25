@@ -362,3 +362,12 @@ Vercel → HTTPS → API Proxy (VPS:443) → localhost → PostgreSQL (VPS:5432)
 - **Fontes legíveis** — mínimo 16px para inputs, 14px para texto corrido
 
 | 012 | Testar na produção em vez de local primeiro | 22/05/2026 | SEMPRE testar localmente (`npm run dev`) antes de qualquer deploy. Produção é só para código validado |
+| 013 | Ícones inexistentes causando crash no build | 25/05/2026 | SEMPRE verificar se o ícone existe em `src/lib/icons.ts` antes de usar. Nunca assumir que o nome do Tabler = nome do export |
+| 014 | Cards com alturas diferentes no mesmo grid | 25/05/2026 | SEMPRE usar `h-full` em cards do mesmo grid. Manter consistência visual — se um card tem header+content, todos devem ter |
+| 015 | Espaço vazio sem função em cards | 25/05/2026 | SEMPRE questionar: "esse espaço tem propósito?". Zero espaços vazios sem função. Conteúdo deve preencher o card naturalmente |
+| 016 | Layout assimétrico sem necessidade | 25/05/2026 | SEMPRE preferir grids simétricos (2, 3, 4 colunas). Evitar 1+2, 2+1, etc. A menos que o conteúdo justifique |
+| 017 | Nomes de ícones duplicados no export | 25/05/2026 | SEMPRE verificar se o alias já existe antes de adicionar novo ícone em `src/lib/icons.ts`. Nunca duplicar exports |
+| 018 | Cache do Vite impedindo atualizações | 25/05/2026 | SEMPRE limpar `node_modules/.vite` quando o código não refletir as mudanças. Ou usar Ctrl+Shift+R no navegador |
+| 019 | Componentes com estruturas diferentes no mesmo grid | 25/05/2026 | SEMPRE manter consistência: se os cards de stats têm só CardContent, o Meta também deve ter só CardContent. Nunca misturar CardHeader+CardContent com só CardContent no mesmo grid |
+| 020 | Não verificar responsividade em múltiplos breakpoints | 25/05/2026 | SEMPRE testar em: mobile (375px), tablet (768px), desktop (1440px). Nunca assumir que funciona em todos |
+| 021 | Não consultar Design System antes de criar componentes | 25/05/2026 | SEMPRE verificar `AGENTS.md` regras de design antes de criar novos componentes. Consistência > criatividade |

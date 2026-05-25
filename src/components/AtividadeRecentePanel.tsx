@@ -1,15 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Activity, UserPlus, CheckCircle2, MessageSquare, FileText, Vote, ArrowRight } from '@/lib/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
-
-interface Atividade {
-  tipo: 'eleitor' | 'solicitacao' | 'interacao' | 'proposicao' | 'enquete';
-  titulo: string;
-  descricao: string;
-  data: string;
-}
+import { useMockData } from '@/lib/mockData';
 
 const tipoConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
   eleitor: { icon: UserPlus, color: 'text-blue-600', bg: 'bg-blue-50', label: 'Eleitor' },
@@ -35,100 +26,34 @@ function formatarTempo(dataStr: string): string {
 }
 
 export default function AtividadeRecentePanel() {
-  const navigate = useNavigate();
-  const [atividades, setAtividades] = useState<Atividade[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetch = useCallback(async () => {
-    setLoading(true);
-    const { data: userData } = await supabase.auth.getUser();
-    const ownerId = userData.user?.id;
-    if (!ownerId) { setLoading(false); return; }
-
-    const lista: Atividade[] = [];
-
-    // Últimos eleitores cadastrados
-    const { data: eleitores } = await supabase
-      .from('eleitores')
-      .select('nome, created_at, cidade')
-      .eq('owner_id', ownerId)
-      .order('created_at', { ascending: false })
-      .limit(3);
-
-    eleitores?.forEach(e => {
-      lista.push({
-        tipo: 'eleitor',
-        titulo: e.nome,
-        descricao: e.cidade ? `Cadastrado em ${e.cidade}` : 'Novo cadastro',
-        data: e.created_at,
-      });
-    });
-
-    // Últimas solicitações resolvidas
-    const { data: solicitacoes } = await supabase
-      .from('solicitacoes')
-      .select('titulo, status, updated_at, eleitor_nome')
-      .eq('owner_id', ownerId)
-      .eq('status', 'resolvida')
-      .order('updated_at', { ascending: false })
-      .limit(2);
-
-    solicitacoes?.forEach(s => {
-      lista.push({
-        tipo: 'solicitacao',
-        titulo: s.titulo,
-        descricao: `Resolvida para ${s.eleitor_nome}`,
-        data: s.updated_at,
-      });
-    });
-
-    // Últimas interações
-    const { data: interacoes } = await supabase
-      .from('interacoes')
-      .select('tipo, data, eleitor:eleitor_id(nome)')
-      .eq('owner_id', ownerId)
-      .order('data', { ascending: false })
-      .limit(2);
-
-    interacoes?.forEach(i => {
-      const eleitorNome = i.eleitor?.nome || 'eleitor';
-      lista.push({
-        tipo: 'interacao',
-        titulo: `${i.tipo.charAt(0).toUpperCase() + i.tipo.slice(1)}`,
-        descricao: `Com ${eleitorNome}`,
-        data: i.data,
-      });
-    });
-
-    // Ordena por data (mais recente primeiro) e pega top 6
-    lista.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
-    setAtividades(lista.slice(0, 6));
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetch(); }, [fetch]);
+  const { atividades, loading } = useMockData();
 
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-0 px-3 lg:px-6 pt-3 lg:pt-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <CardTitle className="text-sm lg:text-base font-semibold flex items-center gap-1.5">
             <Activity className="w-4 h-4 text-blue-600" />
-            Atividade Recente
+            <span>Atividade</span>
+            {atividades.length > 0 && (
+              <span className="bg-blue-100 text-blue-700 text-[10px] lg:text-xs px-1.5 py-0.5 rounded-full font-semibold ml-0.5">
+                {atividades.length}
+              </span>
+            )}
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 lg:px-6 pt-0 pb-2 lg:pb-3">
         {loading ? (
-          <div className="h-[200px] bg-slate-50 rounded animate-pulse" />
+          <div className="h-[160px] lg:h-[200px] bg-slate-50 rounded animate-pulse" />
         ) : atividades.length === 0 ? (
-          <div className="text-center py-6">
-            <Activity className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-xs text-slate-400">Nenhuma atividade recente</p>
+          <div className="text-center py-4 lg:py-6">
+            <Activity className="w-6 h-6 lg:w-8 lg:h-8 text-slate-300 mx-auto mb-1 lg:mb-2" />
+            <p className="text-[10px] lg:text-xs text-slate-400">Nenhuma atividade recente</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {atividades.map((a, i) => {
+          <div className="space-y-1.5 lg:space-y-2">
+            {atividades.map((a: any, i: number) => {
               const cfg = tipoConfig[a.tipo];
               const Icon = cfg.icon;
               return (
