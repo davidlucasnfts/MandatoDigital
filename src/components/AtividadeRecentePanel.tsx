@@ -1,5 +1,5 @@
-import { Activity, UserPlus, CheckCircle2, MessageSquare, FileText, Vote, ArrowRight } from '@/lib/icons';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Activity, UserPlus, CheckCircle2, MessageSquare, FileText, Vote } from 'lucide-react';
+import { PanelCard } from '@/components/dashboard';
 import { useMockData } from '@/lib/mockData';
 
 const tipoConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
@@ -28,50 +28,54 @@ function formatarTempo(dataStr: string): string {
 export default function AtividadeRecentePanel() {
   const { atividades, loading } = useMockData();
 
+  if (loading) {
+    return (
+      <PanelCard title="Atividade" icon={Activity} iconColor="text-blue-600" iconBg="bg-blue-50" badge={0} delay={13}>
+        <div className="h-[160px] lg:h-[200px] bg-slate-50 rounded animate-pulse" />
+      </PanelCard>
+    );
+  }
+
   return (
-    <Card>
-      <CardHeader className="pb-0 px-3 lg:px-6 pt-3 lg:pt-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm lg:text-base font-semibold flex items-center gap-1.5">
-            <Activity className="w-4 h-4 text-blue-600" />
-            <span>Atividade</span>
-            {atividades.length > 0 && (
-              <span className="bg-blue-100 text-blue-700 text-[10px] lg:text-xs px-1.5 py-0.5 rounded-full font-semibold ml-0.5">
-                {atividades.length}
-              </span>
-            )}
-          </CardTitle>
+    <PanelCard
+      title="Atividade"
+      icon={Activity}
+      iconColor="text-blue-600"
+      iconBg="bg-blue-50"
+      badge={atividades.length > 0 ? atividades.length : undefined}
+      delay={13}
+    >
+      {atividades.length === 0 ? (
+        <div className="text-center py-4 lg:py-6">
+          <Activity className="w-6 h-6 lg:w-8 lg:h-8 text-slate-300 mx-auto mb-1 lg:mb-2" />
+          <p className="text-[10px] lg:text-xs text-slate-400">Nenhuma atividade recente</p>
         </div>
-      </CardHeader>
-      <CardContent className="px-3 lg:px-6 pt-0 pb-2 lg:pb-3">
-        {loading ? (
-          <div className="h-[160px] lg:h-[200px] bg-slate-50 rounded animate-pulse" />
-        ) : atividades.length === 0 ? (
-          <div className="text-center py-4 lg:py-6">
-            <Activity className="w-6 h-6 lg:w-8 lg:h-8 text-slate-300 mx-auto mb-1 lg:mb-2" />
-            <p className="text-[10px] lg:text-xs text-slate-400">Nenhuma atividade recente</p>
-          </div>
-        ) : (
-          <div className="space-y-1.5 lg:space-y-2">
-            {atividades.map((a: any, i: number) => {
-              const cfg = tipoConfig[a.tipo];
-              const Icon = cfg.icon;
-              return (
-                <div key={i} className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
-                    <Icon className={`w-3.5 h-3.5 ${cfg.color}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-slate-800 truncate">{a.titulo}</p>
-                    <p className="text-[10px] text-slate-500">{a.descricao}</p>
-                  </div>
-                  <span className="text-[10px] text-slate-400 flex-shrink-0">{formatarTempo(a.data)}</span>
+      ) : (
+        <div className="space-y-1">
+          {atividades.map((a: any, i: number) => {
+            const cfg = tipoConfig[a.tipo];
+            const Icon = cfg.icon;
+            return (
+              <div
+                key={i}
+                className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 transition-colors
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 cursor-pointer"
+                tabIndex={0}
+                role="button"
+              >
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
+                  <Icon className={`w-3.5 h-3.5 ${cfg.color}`} />
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-slate-800 truncate">{a.titulo}</p>
+                  <p className="text-[10px] text-slate-500">{a.descricao}</p>
+                </div>
+                <span className="text-[10px] text-slate-400 flex-shrink-0 font-medium">{formatarTempo(a.data)}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </PanelCard>
   );
 }

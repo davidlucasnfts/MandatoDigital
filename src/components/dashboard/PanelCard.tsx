@@ -1,6 +1,6 @@
-import { type LucideIcon } from "lucide-react";
-import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { type LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import type { ReactNode } from 'react';
 
 interface PanelCardProps {
   title: string;
@@ -11,6 +11,8 @@ interface PanelCardProps {
     label: string;
     onClick: () => void;
   };
+  badge?: number | string;
+  badgeColor?: string;
   children: ReactNode;
   delay?: number;
   className?: string;
@@ -19,12 +21,14 @@ interface PanelCardProps {
 export function PanelCard({
   title,
   icon: Icon,
-  iconColor = "text-blue-600",
-  iconBg = "bg-blue-50",
+  iconColor = 'text-blue-600',
+  iconBg = 'bg-blue-50',
   action,
+  badge,
+  badgeColor = 'bg-blue-100 text-blue-700',
   children,
   delay = 0,
-  className = "",
+  className = '',
 }: PanelCardProps) {
   return (
     <motion.div
@@ -35,19 +39,24 @@ export function PanelCard({
     >
       <div className="h-full rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 lg:px-6 pt-4 lg:pt-5 pb-0">
+        <div className="flex items-center justify-between px-3 lg:px-6 pt-3 lg:pt-4 pb-0">
           <div className="flex items-center gap-2">
-            <div className={`w-7 h-7 rounded-lg ${iconBg} flex items-center justify-center`}>
-              <Icon className={`w-4 h-4 ${iconColor}`} />
+            <div className={`w-6 h-6 lg:w-7 lg:h-7 rounded-lg ${iconBg} flex items-center justify-center`}>
+              <Icon className={`w-3.5 h-3.5 lg:w-4 lg:h-4 ${iconColor}`} />
             </div>
             <h3 className="text-sm lg:text-base font-semibold text-slate-800">
               {title}
             </h3>
+            {badge !== undefined && badge !== 0 && (
+              <span className={`${badgeColor} text-[10px] lg:text-xs px-1.5 py-0.5 rounded-full font-semibold`}>
+                {badge}
+              </span>
+            )}
           </div>
           {action && (
             <button
               onClick={action.onClick}
-              className="text-[10px] lg:text-xs font-medium text-blue-600 hover:text-blue-700 
+              className="text-[10px] lg:text-xs font-medium text-blue-600 hover:text-blue-700
                 px-2 py-1 rounded-md hover:bg-blue-50 transition-colors
                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
             >
@@ -57,7 +66,7 @@ export function PanelCard({
         </div>
 
         {/* Content */}
-        <div className="px-4 lg:px-6 pt-3 pb-4 lg:pb-5">
+        <div className="px-3 lg:px-6 pt-2 lg:pt-3 pb-3 lg:pb-4">
           {children}
         </div>
       </div>
