@@ -17,7 +17,7 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
-import { StatCard, PanelCard, MetaPanel, EmptyState, CommandMenu } from "@/components/dashboard-v2";
+import { StatCard, PanelCard, EmptyState, CommandMenu } from "@/components/dashboard";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 // ─── MOCK DATA ───────────────────────────────────────────────────────────────
@@ -166,7 +166,7 @@ export default function DashboardV2() {
             onClick={() => navigate("/dashboard/tarefas")}
             delay={2}
           />
-          <MetaPanel totalAtual={1247} metaInicial={1500} delay={3} />
+          <StatCard label="Meta Eleitoral" value="1.247 / 1.500" icon={TrendingUp} color="blue" trend={{ value: 83, positive: true }} delay={3} />
         </div>
 
         {/* ─── CHARTS ─────────────────────────────────────────────────────────── */}
