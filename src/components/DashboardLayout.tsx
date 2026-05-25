@@ -33,10 +33,10 @@ function useNavGroups() {
       items: [
         { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
         { to: '/dashboard/eleitores', icon: Users, label: 'Eleitores' },
-        { to: '/dashboard/comunidades', icon: BuildingCommunity, label: 'Comunidades' },
+        { to: '/dashboard/lideres', icon: Crown, label: 'Líderes' },
+        { to: '/dashboard/mapa', icon: MapPin, label: 'Mapa' },
         { to: '/dashboard/solicitacoes', icon: ClipboardList, label: 'Solicitações' },
         { to: '/dashboard/comunicacao', icon: MessageSquare, label: 'Comunicação' },
-        { to: '/dashboard/mapa', icon: MapPin, label: 'Mapa' },
       ],
     },
     {
@@ -44,12 +44,12 @@ function useNavGroups() {
       items: [
         { to: '/dashboard/agenda', icon: Calendar, label: 'Agenda' },
         { to: '/dashboard/tarefas', icon: FileText, label: 'Tarefas' },
-        { to: '/dashboard/documentos', icon: FolderOpen, label: 'Documentos' },
         { to: '/dashboard/proposicoes', icon: Gavel, label: 'Proposições' },
         { to: '/dashboard/produtividade', icon: TrendingUp, label: 'Produtividade' },
-        { to: '/dashboard/lideres', icon: Crown, label: 'Líderes' },
-        { to: '/dashboard/enquetes', icon: ChartBar, label: 'Enquetes' },
         { to: '/dashboard/relatorios', icon: ReportAnalytics, label: 'Relatórios' },
+        { to: '/dashboard/enquetes', icon: ChartBar, label: 'Enquetes' },
+        { to: '/dashboard/comunidades', icon: BuildingCommunity, label: 'Comunidades' },
+        { to: '/dashboard/documentos', icon: FolderOpen, label: 'Documentos' },
       ],
     },
     ...(can.manageTeam ? [{
