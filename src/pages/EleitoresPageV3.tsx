@@ -183,17 +183,17 @@ export default function EleitoresPageV3() {
                   </div>
                 </div>
                 {/* Ações principais */}
-                <div className="flex flex-col gap-1.5">
-                  <button onClick={() => setEditEleitor(previewEleitor)} className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded transition-colors">
-                    <Pencil className="w-3 h-3"/>Editar
+                <div className="flex flex-col gap-2">
+                  <button onClick={() => setEditEleitor(previewEleitor)} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors shadow-sm hover:shadow-md">
+                    <Pencil className="w-3.5 h-3.5"/>Editar
                   </button>
                   {previewEleitor.nivel === 'lider' && (
-                    <button onClick={() => setConviteLider(previewEleitor)} className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 rounded transition-colors">
-                      <Link2 className="w-3 h-3"/>Link
+                    <button onClick={() => setConviteLider(previewEleitor)} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors shadow-sm hover:shadow-md">
+                      <Link2 className="w-3.5 h-3.5"/>Gerar Link
                     </button>
                   )}
-                  <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }} className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded transition-colors">
-                    <Trash2 className="w-3 h-3"/>Excluir
+                  <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors border border-red-200">
+                    <Trash2 className="w-3.5 h-3.5"/>Excluir
                   </button>
                 </div>
               </div>
