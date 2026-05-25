@@ -33,6 +33,7 @@ function useNavGroups() {
       items: [
         { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
         { to: '/dashboard/eleitores', icon: Users, label: 'Eleitores' },
+        { to: '/dashboard/eleitores-v2', icon: Users, label: 'Eleitores V2', end: true },
         { to: '/dashboard/lideres', icon: Crown, label: 'Líderes' },
         { to: '/dashboard/mapa', icon: MapPin, label: 'Mapa' },
         { to: '/dashboard/solicitacoes', icon: ClipboardList, label: 'Solicitações' },
