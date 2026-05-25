@@ -11,17 +11,21 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Dashboard v2.2 — Correções de design + Responsividade — 25/05**
+**Líderes V3 — Design System em Produção — 25/05**
 
-### ✅ O que foi corrigido:
-- Ícones inexistentes causando crash
-- Meta Eleitoral redesenhado (mesmo estilo dos stats)
-- Espaços vazios removidos dos cards
-- Layout simétrico em todos os grids
-- Responsividade mobile otimizada
-- Cache Vite limpo para refletir mudanças
+### ✅ O que foi entregue:
+- Página de Líderes V3 aplicada como principal (toggle removido, versão antiga descartada)
+- 4 StatCards no topo (Total, Estimativa, Vinculados, Conversão) — removido Projeção (redundante com Estimativa)
+- Podium Top 3 dentro de PanelCard
+- Filtros em PanelCard com busca, ordenação, comunidade, bairro
+- Preview inline ao clicar na linha (mesmo padrão Eleitores)
+- Tabela otimizada com 6 colunas (Ranking, Líder, Local, Meta, Progresso, Status)
+- Edição de estimativa inline na tabela e no preview
+- EmptyState component + skeleton loading
+- Build passando, zero erros TypeScript
 
 ### 📋 Checklist próxima sessão:
+- [ ] Testar Líderes em produção (preview, filtros, edição de meta)
 - [ ] Testar dashboard em produção (todos os painéis)
 - [ ] Verificar performance das queries
 - [ ] Testar meta eleitoral (editar e salvar)

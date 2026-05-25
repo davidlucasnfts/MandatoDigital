@@ -81,6 +81,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Skill Design System criada** | **25/05** |
 | **Dashboard V2 Premium (página de teste): Command Menu, Skeletons, Empty States, Acessibilidade, Animações** | **25/05** |
 | **Dashboard v2.3: Fusão v2 Premium + atual — componentes base, animações, CommandMenu, acessibilidade** | **25/05** |
+| **Eleitores V3: Design System aplicado (StatCards, PanelCard, preview inline, tabela otimizada)** | **25/05** |
+| **Líderes V3: Design System aplicado (StatCards, PanelCard, preview inline, tabela, podium)** | **25/05** |
 
 ---
 
