@@ -281,63 +281,55 @@ export default function LideresProdutividadePage() {
               </div>
             </div>
 
-            {/* Métricas em Grid */}
-            <div className="p-4 lg:p-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Métricas em Grid + Localização */}
+            <div className="p-4 lg:p-6 grid grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Estimativa */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Target className="w-3.5 h-3.5" />Estimativa de Votos
+              <div className="space-y-1">
+                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <Target className="w-3 h-3" />Estimativa
                 </h4>
                 {editandoEstimativa === liderSelecionado.id ? (
-                  <div className="flex items-center gap-2">
-                    <Input type="number" value={novaEstimativa} onChange={e => setNovaEstimativa(e.target.value)} className="w-20 h-8 text-sm" min={0} autoFocus />
-                    <button onClick={() => { atualizarEstimativa.mutate({ liderId: liderSelecionado.id, estimativaVotos: novaEstimativa ? parseInt(novaEstimativa) : null }); setEditandoEstimativa(null); }} className="text-green-600 hover:text-green-700"><Check className="w-4 h-4" /></button>
-                    <button onClick={() => setEditandoEstimativa(null)} className="text-red-600 hover:text-red-700"><X className="w-4 h-4" /></button>
+                  <div className="flex items-center gap-1">
+                    <Input type="number" value={novaEstimativa} onChange={e => setNovaEstimativa(e.target.value)} className="w-16 h-7 text-xs" min={0} autoFocus />
+                    <button onClick={() => { atualizarEstimativa.mutate({ liderId: liderSelecionado.id, estimativaVotos: novaEstimativa ? parseInt(novaEstimativa) : null }); setEditandoEstimativa(null); }} className="text-green-600 hover:text-green-700"><Check className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => setEditandoEstimativa(null)} className="text-red-600 hover:text-red-700"><X className="w-3.5 h-3.5" /></button>
                   </div>
                 ) : (
-                  <div className="text-2xl font-bold text-blue-600">{liderSelecionado.estimativa_votos || 0}</div>
+                  <div className="text-xl font-bold text-blue-600">{liderSelecionado.estimativa_votos || 0}</div>
                 )}
               </div>
 
               {/* Vinculados */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5" />Eleitores Vinculados
+              <div className="space-y-1">
+                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <Users className="w-3 h-3" />Vinculados
                 </h4>
-                <div className="text-2xl font-bold text-green-600">{liderSelecionado.eleitores_vinculados}</div>
+                <div className="text-xl font-bold text-green-600">{liderSelecionado.eleitores_vinculados}</div>
               </div>
 
-              {/* Taxa de Conversão */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <TrendingUp className="w-3.5 h-3.5" />Taxa de Conversão
+              {/* Conversão + Progresso */}
+              <div className="space-y-1">
+                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />Conversão
                 </h4>
-                <div className="text-2xl font-bold text-amber-600">{liderSelecionado.taxa_conversao}%</div>
-              </div>
-
-              {/* Progresso */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5" />Progresso
-                </h4>
-                <div className="text-2xl font-bold text-slate-700">{liderSelecionado.progresso}%</div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full transition-all ${liderSelecionado.progresso >= 100 ? 'bg-green-500' : liderSelecionado.progresso >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${liderSelecionado.progresso}%` }} />
+                <div className="flex items-center gap-2">
+                  <div className="text-xl font-bold text-amber-600">{liderSelecionado.taxa_conversao}%</div>
+                  <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden max-w-[80px]">
+                    <div className={`h-full rounded-full transition-all ${liderSelecionado.progresso >= 100 ? 'bg-green-500' : liderSelecionado.progresso >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${liderSelecionado.progresso}%` }} />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Info adicional */}
-            <div className="px-4 lg:px-6 pb-4 lg:pb-6">
-              <div className="flex flex-wrap gap-3 text-xs text-slate-600">
+              {/* Local */}
+              <div className="col-span-2 lg:col-span-3 flex flex-wrap gap-2 pt-1 border-t border-slate-100">
                 {liderSelecionado.comunidade_nome && (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-lg">
-                    <Building2 className="w-3.5 h-3.5 text-slate-400" />{liderSelecionado.comunidade_nome}
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <Building2 className="w-3 h-3 text-slate-400" />{liderSelecionado.comunidade_nome}
                   </div>
                 )}
                 {liderSelecionado.bairro && (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-lg">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" />{liderSelecionado.bairro}{liderSelecionado.cidade ? `, ${liderSelecionado.cidade}` : ''}
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <MapPin className="w-3 h-3 text-slate-400" />{liderSelecionado.bairro}{liderSelecionado.cidade ? `, ${liderSelecionado.cidade}` : ''}
                   </div>
                 )}
               </div>
