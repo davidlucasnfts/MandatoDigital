@@ -11,15 +11,15 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Líderes V3 — Design System em Produção — 25/05**
+**Eleitores V3.1 + Líderes V3 — Design System em Produção — 25/05**
 
 ### ✅ O que foi entregue:
-- Página de Líderes V3 aplicada como principal (toggle removido, versão antiga descartada)
+- **Eleitores V3.1:** Preview inline na tabela (igual Líderes) — ao clicar no eleitor, detalhes aparecem logo abaixo da linha, sem scroll para cima
+- **Líderes V3:** Página aplicada como principal com Design System completo
 - 4 StatCards no topo (Total, Estimativa, Vinculados, Conversão) — removido Projeção (redundante com Estimativa)
 - Podium Top 3 dentro de PanelCard
 - Filtros em PanelCard com busca, ordenação, comunidade, bairro
-- Preview inline ao clicar na linha (mesmo padrão Eleitores)
-- Tabela otimizada com 6 colunas (Ranking, Líder, Local, Meta, Progresso, Status)
+- Tabela otimizada com colunas essenciais
 - Edição de estimativa inline na tabela e no preview
 - EmptyState component + skeleton loading
 - Build passando, zero erros TypeScript

@@ -34,6 +34,7 @@ export default function EleitoresPageV3() {
   const [statusFilter, setStatusFilter] = useState('');
   const [liderFilter, setLiderFilter] = useState('');
   const [abaAtiva, setAbaAtiva] = useState<'todos' | 'pendentes'>('todos');
+  // Preview inline sempre ativo (padrão desde V3)
 
   const filtered = useMemo(() => {
     let rows = eleitores;
@@ -72,7 +73,7 @@ export default function EleitoresPageV3() {
               {filtered.length} eleitores {abaAtiva === 'pendentes' ? 'pendentes' : 'cadastrados'}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="h-9 text-xs" onClick={() => setImportOpen(true)}>
               <Upload className="w-3.5 h-3.5 mr-1.5"/>Importar
             </Button>
@@ -154,8 +155,8 @@ export default function EleitoresPageV3() {
         </PanelCard>
       </motion.div>
 
-      {/* Preview Card Melhorado */}
-      {previewEleitor && (
+      {/* Preview Card — Topo (modo legado, só aparece se toggle desligado) */}
+      {previewEleitor && !previewInline && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-3">
           <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             {/* Header do Preview */}
@@ -359,54 +360,148 @@ export default function EleitoresPageV3() {
                   </tr>
                 ) : (
                   filtered.map(e => (
-                    <tr key={e.id} className="border-b border-slate-50 hover:bg-blue-50/50 transition-colors cursor-pointer" onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)}>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-blue-600 font-semibold text-xs">{getIniciais(e.nome || '')}</span>
-                          </div>
-                          <div>
-                            <div className="font-medium text-slate-800">{e.nome}</div>
-                            {e.lider_id && (
-                              <div className="text-[10px] text-purple-500 flex items-center gap-1">
-                                <Crown className="w-3 h-3"/>{getLiderNome(e.lider_id)}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-slate-500 hidden sm:table-cell">
-                        <div className="text-xs">{e.telefone || '—'}</div>
-                        <div className="text-[10px] text-slate-400">{e.email || '—'}</div>
-                      </td>
-                      <td className="py-3 px-4 text-slate-500 text-xs hidden lg:table-cell">
-                        {e.cidade || '—'}/{e.estado || '—'}
-                        {e.bairro && <div className="text-[10px] text-slate-400">{e.bairro}</div>}
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${nivelColors[e.nivel || 'eleitor']}`}>{e.nivel || 'eleitor'}</span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[e.status || 'ativo']}`}>{e.status || 'ativo'}</span>
-                      </td>
-                      <td className="py-3 px-4 hidden md:table-cell">
-                        <button onClick={(ev) => { ev.stopPropagation(); setInteracoesEleitor(e); }} className="flex items-center gap-1 px-2 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium transition-colors">
-                          <MessageSquare className="w-3 h-3" />{todasInteracoes.filter(i => i.eleitor_id === e.id).length}
-                        </button>
-                      </td>
-                      {abaAtiva === 'pendentes' && (
-                        <td className="py-3 px-2">
-                          <div className="flex flex-col gap-1">
-                            <button onClick={async (ev) => { ev.stopPropagation(); await update(e.id, { status: 'ativo' }); fetch(); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100 rounded">
-                              <CheckCircle className="w-3 h-3"/>Aprovar
-                            </button>
-                            <button onClick={async (ev) => { ev.stopPropagation(); if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded">
-                              <XCircle className="w-3 h-3"/>Recusar
-                            </button>
+                    <>
+                      <tr key={e.id} className="border-b border-slate-50 hover:bg-blue-50/50 transition-colors cursor-pointer" onClick={() => setPreviewEleitor(previewEleitor?.id === e.id ? null : e)}>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span className="text-blue-600 font-semibold text-xs">{getIniciais(e.nome || '')}</span>
+                            </div>
+                            <div>
+                              <div className="font-medium text-slate-800">{e.nome}</div>
+                              {e.lider_id && (
+                                <div className="text-[10px] text-purple-500 flex items-center gap-1">
+                                  <Crown className="w-3 h-3"/>{getLiderNome(e.lider_id)}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </td>
+                        <td className="py-3 px-4 text-slate-500 hidden sm:table-cell">
+                          <div className="text-xs">{e.telefone || '—'}</div>
+                          <div className="text-[10px] text-slate-400">{e.email || '—'}</div>
+                        </td>
+                        <td className="py-3 px-4 text-slate-500 text-xs hidden lg:table-cell">
+                          {e.cidade || '—'}/{e.estado || '—'}
+                          {e.bairro && <div className="text-[10px] text-slate-400">{e.bairro}</div>}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${nivelColors[e.nivel || 'eleitor']}`}>{e.nivel || 'eleitor'}</span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[e.status || 'ativo']}`}>{e.status || 'ativo'}</span>
+                        </td>
+                        <td className="py-3 px-4 hidden md:table-cell">
+                          <button onClick={(ev) => { ev.stopPropagation(); setInteracoesEleitor(e); }} className="flex items-center gap-1 px-2 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium transition-colors">
+                            <MessageSquare className="w-3 h-3" />{todasInteracoes.filter(i => i.eleitor_id === e.id).length}
+                          </button>
+                        </td>
+                        {abaAtiva === 'pendentes' && (
+                          <td className="py-3 px-2">
+                            <div className="flex flex-col gap-1">
+                              <button onClick={async (ev) => { ev.stopPropagation(); await update(e.id, { status: 'ativo' }); fetch(); }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100 rounded">
+                                <CheckCircle className="w-3 h-3"/>Aprovar
+                              </button>
+                              <button onClick={async (ev) => { ev.stopPropagation(); if (confirm('Recusar este cadastro?')) { await remove(e.id); fetch(); } }} className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded">
+                                <XCircle className="w-3 h-3"/>Recusar
+                              </button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                      {/* Preview Inline */}
+                      {previewEleitor?.id === e.id && (
+                        <tr key={`${e.id}-preview`}>
+                          <td colSpan={abaAtiva === 'pendentes' ? 7 : 6} className="p-0 border-0">
+                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden mx-4 my-2">
+                              {/* Header */}
+                              <div className="p-4 lg:p-6 border-b border-slate-100">
+                                <div className="flex items-start justify-between gap-4">
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                      <span className="text-blue-600 font-bold text-lg lg:text-xl">{getIniciais(previewEleitor.nome || '')}</span>
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg lg:text-xl font-bold text-slate-800">{previewEleitor.nome}</h3>
+                                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                                        <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${nivelColors[previewEleitor.nivel || 'eleitor']}`}>{previewEleitor.nivel || 'eleitor'}</span>
+                                        <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${statusColors[previewEleitor.status || 'ativo']}`}>{previewEleitor.status || 'ativo'}</span>
+                                        {previewEleitor.nivel === 'lider' && (
+                                          <span className="text-xs bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full font-medium">{getAfiliadosCount(previewEleitor.id)} afiliados</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col gap-2">
+                                    <button onClick={() => setEditEleitor(previewEleitor)} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors shadow-sm hover:shadow-md"><Pencil className="w-3.5 h-3.5"/>Editar</button>
+                                    {previewEleitor.nivel === 'lider' && (
+                                      <button onClick={() => setConviteLider(previewEleitor)} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors shadow-sm hover:shadow-md"><Link2 className="w-3.5 h-3.5"/>Gerar Link</button>
+                                    )}
+                                    <button onClick={async () => { if (confirm('Excluir este eleitor?')) { await remove(previewEleitor.id); setPreviewEleitor(null); fetch(); } }} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors shadow-sm hover:shadow-md"><Trash2 className="w-3.5 h-3.5"/>Excluir</button>
+                                  </div>
+                                </div>
+                              </div>
+                              {/* Info Grid */}
+                              <div className="p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="space-y-3">
+                                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Mail className="w-3.5 h-3.5"/>Contato</h4>
+                                  <div className="space-y-2">
+                                    {previewEleitor.email && <div className="flex items-center gap-2 text-sm text-slate-700"><Mail className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{previewEleitor.email}</div>}
+                                    {previewEleitor.telefone && <div className="flex items-center gap-2 text-sm text-slate-700"><Phone className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{previewEleitor.telefone}</div>}
+                                    {previewEleitor.cpf && <div className="flex items-center gap-2 text-sm text-slate-700"><Hash className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>CPF: {previewEleitor.cpf}</div>}
+                                  </div>
+                                </div>
+                                <div className="space-y-3">
+                                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5"/>Endereço</h4>
+                                  <div className="space-y-2">
+                                    {(previewEleitor.endereco || previewEleitor.cidade) && <div className="text-sm text-slate-700">{previewEleitor.endereco && `${previewEleitor.endereco}, `}{previewEleitor.bairro && `${previewEleitor.bairro}, `}{previewEleitor.cidade || '—'}/{previewEleitor.estado || '—'}</div>}
+                                    {previewEleitor.cep && <div className="text-xs text-slate-500">CEP: {previewEleitor.cep}</div>}
+                                    {previewEleitor.comunidade_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{getComunidadeNome(previewEleitor.comunidade_id) || '—'}</div>}
+                                  </div>
+                                </div>
+                                <div className="space-y-3">
+                                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Vote className="w-3.5 h-3.5"/>Dados Eleitorais</h4>
+                                  <div className="space-y-2">
+                                    {previewEleitor.titulo_eleitor && <div className="flex items-center gap-2 text-sm text-slate-700"><Vote className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>Título: {previewEleitor.titulo_eleitor}</div>}
+                                    {previewEleitor.zona && <div className="flex items-center gap-2 text-sm text-slate-700"><Section className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>Zona {previewEleitor.zona} / Seção {previewEleitor.secao || '—'}</div>}
+                                    {previewEleitor.data_nascimento && <div className="flex items-center gap-2 text-sm text-slate-700"><Calendar className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{new Date(previewEleitor.data_nascimento).toLocaleDateString('pt-BR')}</div>}
+                                  </div>
+                                </div>
+                                {(previewEleitor.lider_id || previewEleitor.lider_vinculado_id) && (
+                                  <div className="space-y-3">
+                                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Crown className="w-3.5 h-3.5"/>Liderança</h4>
+                                    <div className="space-y-2">
+                                      {previewEleitor.lider_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Crown className="w-3.5 h-3.5 text-purple-400 flex-shrink-0"/>Líder: {getLiderNome(previewEleitor.lider_id)}</div>}
+                                      {previewEleitor.lider_vinculado_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Link2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>Vinculado a: {getLiderNome(previewEleitor.lider_vinculado_id)}</div>}
+                                    </div>
+                                  </div>
+                                )}
+                                {previewEleitor.tags && previewEleitor.tags.length > 0 && (
+                                  <div className="space-y-3">
+                                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Tag className="w-3.5 h-3.5"/>Tags</h4>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {previewEleitor.tags.map((t: string, i: number) => <span key={i} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{t}</span>)}
+                                    </div>
+                                  </div>
+                                )}
+                                <div className="space-y-3">
+                                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5"/>Interações</h4>
+                                  <button onClick={() => setInteracoesEleitor(previewEleitor)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium transition-colors">
+                                    <MessageSquare className="w-3.5 h-3.5" />{todasInteracoes.filter(i => i.eleitor_id === previewEleitor.id).length} interações
+                                  </button>
+                                </div>
+                              </div>
+                              {/* Botão Fechar */}
+                              <div className="flex justify-center pb-4">
+                                <button onClick={() => setPreviewEleitor(null)} className="flex items-center gap-1 px-4 py-2 text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
+                                  <ChevronDown className="w-4 h-4"/>Fechar
+                                </button>
+                              </div>
+                            </motion.div>
+                          </td>
+                        </tr>
                       )}
-                    </tr>
+                    </>
                   ))
                 )}
               </tbody>
