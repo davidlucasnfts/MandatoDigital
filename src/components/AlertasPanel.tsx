@@ -34,10 +34,11 @@ export default function AlertasPanel({ tarefasUrgentes, solicitacoesPendentes, e
     tarefasUrgentes.forEach(t => {
       const hoje = new Date().toISOString().split('T')[0];
       const atrasada = t.data_prazo && t.data_prazo < hoje;
+      const prazoTexto = t.data_prazo || 'não definido';
       lista.push({
         tipo: 'tarefa',
         titulo: t.titulo,
-        descricao: atrasada ? `Atrasada (prazo: ${t.data_prazo})` : `Prazo hoje (${t.data_prazo})`,
+        descricao: atrasada ? `Atrasada (prazo: ${prazoTexto})` : `Prazo hoje (${prazoTexto})`,
         data: t.data_prazo,
         urgente: atrasada,
       });
@@ -86,7 +87,7 @@ export default function AlertasPanel({ tarefasUrgentes, solicitacoesPendentes, e
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + i * 0.1, duration: 0.3 }}
             >
-              <Card className={`border-l-[3px] ${a.urgente ? 'border-l-red-500' : 'border-l-amber-400'}`}>
+              <Card className={`border-l-[3px] h-full ${a.urgente ? 'border-l-red-500' : 'border-l-amber-400'}`}>
                 <CardContent className="p-3">
                   <div className="flex items-start gap-2.5">
                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
