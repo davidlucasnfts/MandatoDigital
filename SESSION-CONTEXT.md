@@ -123,10 +123,40 @@ CNEFE_API_URL=http://82.197.73.101
 
 ---
 
+## Dashboard V2 Premium (Skill Design System)
+
+> **Criado em:** 25/05/2026
+> **Status:** Salvo para análise/comparação futura
+> **Local:** `src/pages/DashboardV2.tsx` + `src/components/dashboard-v2/`
+
+### Componentes criados:
+- `StatCard` — Cards de stats com hover animado (-translate-y-0.5)
+- `PanelCard` — Cards padronizados com header + content
+- `MetaPanel` — Meta eleitoral com barra de progresso animada
+- `EmptyState` — Estados vazios com ícone + descrição + CTA
+- `CommandMenu` — Busca global (Ctrl+K)
+- `SkeletonCard` — Skeletons anatômicos para loading
+
+### Diferenças vs Dashboard Atual:
+| Aspecto | Atual (v2.2) | V2 (Skill) |
+|---|---|---|
+| Command Menu | ❌ Não tem | ✅ Ctrl+K |
+| Hover cards | Só sombra | Levanta card |
+| Empty states | Texto simples | Ícone + CTA |
+| Barras progresso | Estáticas | Animadas |
+| Acessibilidade | Básica | aria-label, focus ring |
+| Meta Eleitoral | Card diferente | Mesmo padrão |
+
+### Como acessar:
+- Desenvolvimento: `http://localhost:3000/dashboard/teste-v2`
+- **Atenção:** Rota `/dashboard/teste-v2` está no App.tsx
+
+---
+
 ## Checklist Próxima Sessão
 
 ```
-□ Testar dashboard v2 em produção (todos os 10 painéis)
+□ Testar dashboard v2.2 em produção (todos os painéis)
 □ Verificar performance das queries (muitas requisições no dashboard)
 □ Testar meta eleitoral (editar e salvar)
 □ Testar vinculo de lider com lider em producao
@@ -134,6 +164,7 @@ CNEFE_API_URL=http://82.197.73.101
 □ Verificar se ícones Tabler estão corretos em todas as abas
 □ Comprar/configurar domínio próprio (se decidir)
 □ Importar mais estados CNEFE se necessário (PB, RN, PI)
+□ Decidir se aplica melhorias do V2 no dashboard principal
 ```
 
 ---

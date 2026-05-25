@@ -6,6 +6,7 @@ import LandingPage from '@/pages/LandingPage';
 import AfiliarPage from '@/pages/AfiliarPage';
 import DashboardLayout from '@/components/DashboardLayout';
 import DashboardHome from '@/pages/DashboardHome';
+import DashboardV2 from '@/pages/DashboardV2';
 import EleitoresPage from '@/pages/EleitoresPage';
 import ComunidadesPage from '@/pages/ComunidadesPage';
 import SolicitacoesPage from '@/pages/SolicitacoesPage';
@@ -55,6 +56,7 @@ function App() {
         element={auth.isAuthenticated ? <DashboardLayout {...auth} /> : <Navigate to="/" replace />}
       >
         <Route index element={<DashboardHome />} />
+        <Route path="teste-v2" element={<DashboardV2 />} />
         <Route path="eleitores" element={<EleitoresPage />} />
         <Route path="comunidades" element={<ComunidadesPage />} />
         <Route path="solicitacoes" element={<SolicitacoesPage />} />

@@ -78,6 +78,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Dashboard v2: 10 melhorias completas** | **24/05** |
 | **Dashboard v2.1: Correção ícones + Responsividade mobile** | **25/05** |
 | **Dashboard v2.2: Redesign Meta Eleitoral + Layout simétrico** | **25/05** |
+| **Skill Design System criada** | **25/05** |
+| **Dashboard V2 Premium (página de teste): Command Menu, Skeletons, Empty States, Acessibilidade, Animações** | **25/05** |
 
 ---
 
