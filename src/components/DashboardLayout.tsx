@@ -35,7 +35,7 @@ function useNavGroups() {
         { to: '/dashboard/eleitores', icon: Users, label: 'Eleitores' },
         { to: '/dashboard/lideres', icon: Crown, label: 'Líderes' },
         { to: '/dashboard/mapa', icon: MapPin, label: 'Mapa' },
-        { to: '/dashboard/mapa/teste-v3', icon: MapPin, label: 'Mapa V3', end: true },
+        { to: '/dashboard/mapa/teste-v1', icon: MapPin, label: 'Mapa V1', end: true },
         { to: '/dashboard/solicitacoes', icon: ClipboardList, label: 'Solicitações' },
         { to: '/dashboard/comunicacao', icon: MessageSquare, label: 'Comunicação' },
       ],

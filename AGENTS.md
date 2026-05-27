@@ -171,8 +171,9 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 ### Exemplos no projeto
 | Página Original | Página Teste | Rota | Status |
 |-----------------|--------------|------|--------|
-| `MapaPage.tsx` | `MapaPageV3.tsx` | `/dashboard/mapa/teste-v3` | Em teste |
+| `MapaPage.tsx` | `MapaPageV1.tsx` | `/dashboard/mapa/teste-v1` | Em teste |
 | `DashboardHome.tsx` | `DashboardV2.tsx` | `/dashboard/teste-v2` | Arquivado |
+| `EleitoresPage.tsx` | `EleitoresPageV2.tsx` | `/dashboard/eleitores-v2` | Removido |
 
 ---
 

@@ -111,7 +111,7 @@ function otimizarRota(pontos: Array<[number, number]>): Array<[number, number]> 
   return rota;
 }
 
-export default function MapaPageV3() {
+export default function MapaPageV1() {
   const { data: eleitores, loading: loadingEleitores } = useEleitores();
   const { data: comunidades, loading: loadingComunidades } = useComunidades();
 
