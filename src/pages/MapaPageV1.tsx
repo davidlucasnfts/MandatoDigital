@@ -310,227 +310,132 @@ export default function MapaPageV1() {
         </div>
       </motion.div>
 
-      <div className="grid lg:grid-cols-4 gap-4">
-        {/* Sidebar */}
-        <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-1 space-y-3 max-h-[calc(100vh-140px)] overflow-y-auto">
-          {/* Busca */}
-          <PanelCard
-            title="Buscar"
-            icon={Search}
-            iconColor="text-slate-600"
-            iconBg="bg-slate-100"
-            delay={4}
-          >
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor por nome..." className="pl-9 h-9 text-sm" />
-              {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
-            </div>
-          </PanelCard>
+      {/* Toolbar de controles do mapa */}
+      <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
+        <Card className="shadow-sm">
+          <CardContent className="p-2 lg:p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Busca */}
+              <div className="relative flex-1 min-w-[200px] max-w-[280px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor..." className="pl-9 h-9 text-sm" />
+                {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
+              </div>
 
-          {/* Filtros */}
-          <PanelCard
-            title="Filtros"
-            icon={Filter}
-            iconColor="text-blue-600"
-            iconBg="bg-blue-50"
-            badge={temFiltros ? 'Ativo' : undefined}
-            badgeColor="bg-amber-100 text-amber-700"
-            action={temFiltros ? { label: 'Limpar', onClick: limparFiltros } : undefined}
-            delay={5}
-          >
-            <div className="space-y-3">
-              {/* Comunidades */}
-              <div>
-                <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Comunidades</h4>
-                {comunidades.length === 0 ? (
-                  <EmptyState
-                    icon={BuildingCommunity}
-                    title="Nenhuma comunidade"
-                    description="Cadastre comunidades para filtrar"
-                  />
-                ) : (
-                  <div className="space-y-1 max-h-[140px] overflow-y-auto">
-                    {comunidades.map(c => (
-                      <button key={c.id} onClick={() => setFiltroComunidade(filtroComunidade === c.id ? null : c.id)}
-                        className={`w-full flex items-center gap-2 p-1.5 rounded-lg text-left text-xs transition-colors ${filtroComunidade === c.id ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
-                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.cor }} />
-                        <span className="flex-1 truncate">{c.nome}</span>
-                        {c.cidade && <span className="text-[10px] text-slate-400">{c.cidade}</span>}
-                      </button>
-                    ))}
-                  </div>
+              {/* Separador */}
+              <div className="hidden lg:block w-px h-8 bg-slate-200" />
+
+              {/* Filtros rápidos */}
+              <div className="flex items-center gap-1.5">
+                <select
+                  value={filtroComunidade || ''}
+                  onChange={e => setFiltroComunidade(e.target.value || null)}
+                  className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:border-slate-300 transition-colors"
+                >
+                  <option value="">Todas comunidades</option>
+                  {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+                </select>
+
+                <select
+                  value={filtroNivel || ''}
+                  onChange={e => setFiltroNivel(e.target.value || null)}
+                  className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:border-slate-300 transition-colors"
+                >
+                  <option value="">Todos níveis</option>
+                  <option value="lider">Líder</option>
+                  <option value="eleitor">Eleitor</option>
+                </select>
+
+                <select
+                  value={filtroStatus || ''}
+                  onChange={e => setFiltroStatus(e.target.value || null)}
+                  className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:border-slate-300 transition-colors"
+                >
+                  <option value="">Todos status</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                  <option value="pendente">Pendente</option>
+                </select>
+
+                {temFiltros && (
+                  <button
+                    onClick={limparFiltros}
+                    className="h-9 px-2.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1"
+                  >
+                    <X className="w-3.5 h-3.5" /> Limpar
+                  </button>
                 )}
               </div>
 
-              {/* Nível */}
-              <div className="pt-2 border-t border-slate-100">
-                <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Nível</h4>
-                <div className="flex flex-wrap gap-1">
-                  {niveis.map(n => (
-                    <button key={n} onClick={() => setFiltroNivel(filtroNivel === n ? null : n)}
-                      className={`px-2 py-1 rounded-md text-[11px] capitalize transition-colors ${filtroNivel === n ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>{n}</button>
-                  ))}
-                </div>
-              </div>
+              {/* Separador */}
+              <div className="hidden lg:block w-px h-8 bg-slate-200" />
 
-              {/* Status */}
-              <div className="pt-2 border-t border-slate-100">
-                <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Status</h4>
-                <div className="flex flex-wrap gap-1">
-                  {statusList.map(s => (
-                    <button key={s} onClick={() => setFiltroStatus(filtroStatus === s ? null : s)}
-                      className={`px-2 py-1 rounded-md text-[11px] capitalize transition-colors ${filtroStatus === s ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>{s}</button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Bairro */}
-              {todosBairros.length > 0 && (
-                <div className="pt-2 border-t border-slate-100">
-                  <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Bairro</h4>
-                  <select value={filtroBairro || ''} onChange={e => setFiltroBairro(e.target.value || null)} className="w-full h-8 px-2 rounded-md border border-input bg-background text-xs">
-                    <option value="">Todos os bairros</option>
-                    {todosBairros.map(b => <option key={b} value={b}>{b}</option>)}
-                  </select>
-                </div>
-              )}
-
-              {/* Tags */}
-              {todasTags.length > 0 && (
-                <div className="pt-2 border-t border-slate-100">
-                  <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Tags</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {todasTags.map(t => (
-                      <button key={t} onClick={() => setFiltroTag(filtroTag === t ? null : t)}
-                        className={`px-2 py-0.5 rounded-full text-[10px] transition-colors ${filtroTag === t ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>{t}</button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </PanelCard>
-
-          {/* Camadas */}
-          <PanelCard
-            title="Camadas"
-            icon={Layers}
-            iconColor="text-cyan-600"
-            iconBg="bg-cyan-50"
-            delay={6}
-          >
-            <div className="space-y-2">
-              {/* Seletor de camada base */}
-              <div className="pb-2 border-b border-slate-100">
-                <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Mapa base</h4>
-                <div className="flex gap-1">
+              {/* Camadas */}
+              <div className="flex items-center gap-1">
+                {/* Mapa base */}
+                <div className="flex rounded-lg border border-slate-200 overflow-hidden">
                   {[
                     { key: 'voyager' as const, label: 'Ruas', icon: MapPinned },
-                    { key: 'satellite' as const, label: 'Satélite', icon: World },
+                    { key: 'satellite' as const, label: 'Sat', icon: World },
                     { key: 'dark' as const, label: 'Escuro', icon: MapPin },
                   ].map(c => (
                     <button
                       key={c.key}
                       onClick={() => setCamadaBase(c.key)}
-                      className={`flex-1 flex items-center justify-center gap-1 text-[10px] py-1.5 px-1 rounded-lg border transition-colors ${camadaBase === c.key ? 'bg-blue-50 border-blue-300 text-blue-700 font-medium' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                      title={c.label}
+                      className={`flex items-center gap-1 px-2 py-1.5 text-[10px] transition-colors ${camadaBase === c.key ? 'bg-blue-50 text-blue-700 font-medium' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
                     >
-                      <c.icon className="w-3 h-3" /> {c.label}
+                      <c.icon className="w-3 h-3" /> <span className="hidden sm:inline">{c.label}</span>
                     </button>
                   ))}
                 </div>
-              </div>
 
-              {/* Checkboxes de camadas com ícones Lucide */}
-              <label className="flex items-center gap-2 cursor-pointer py-1">
-                <input type="checkbox" checked={mostrarLideres} onChange={e => setMostrarLideres(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                  <Crown className="w-3.5 h-3.5 text-purple-500" />
-                  Líderes ({countLideres})
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer py-1">
-                <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-blue-500" />
-                  Eleitores ({countEleitores})
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer py-1">
-                <input type="checkbox" checked={mostrarComunidades} onChange={e => setMostrarComunidades(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                  <BuildingCommunity className="w-3.5 h-3.5 text-cyan-500" />
-                  Comunidades ({comunidadesNoMapa.length})
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer py-1">
-                <input type="checkbox" checked={mostrarCidadesFallback} onChange={e => setMostrarCidadesFallback(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-amber-500" />
-                  Cidades sem coord. ({porCidade.length})
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer py-1">
-                <input type="checkbox" checked={mostrarHeatmap} onChange={e => setMostrarHeatmap(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                <span className="text-xs text-slate-600 flex items-center gap-1">
-                  <Thermometer className="w-3.5 h-3.5 text-red-500" /> Heatmap
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer py-1">
-                <input type="checkbox" checked={mostrarRota} onChange={e => setMostrarRota(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                <span className="text-xs text-slate-600 flex items-center gap-1">
-                  <Route className="w-3.5 h-3.5 text-green-500" /> Rota de visita ({rotaPontos.length} pts)
-                </span>
-              </label>
+                {/* Toggles de camadas */}
+                <label className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
+                  <input type="checkbox" checked={mostrarLideres} onChange={e => setMostrarLideres(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-purple-600" />
+                  <Crown className="w-3 h-3 text-purple-500" />
+                  <span className="text-[10px] text-slate-600 hidden sm:inline">Líderes</span>
+                </label>
+
+                <label className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
+                  <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600" />
+                  <User className="w-3 h-3 text-blue-500" />
+                  <span className="text-[10px] text-slate-600 hidden sm:inline">Eleitores</span>
+                </label>
+
+                <label className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
+                  <input type="checkbox" checked={mostrarComunidades} onChange={e => setMostrarComunidades(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-cyan-600" />
+                  <BuildingCommunity className="w-3 h-3 text-cyan-500" />
+                  <span className="text-[10px] text-slate-600 hidden sm:inline">Comun.</span>
+                </label>
+
+                <label className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
+                  <input type="checkbox" checked={mostrarHeatmap} onChange={e => setMostrarHeatmap(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-red-600" />
+                  <Thermometer className="w-3 h-3 text-red-500" />
+                  <span className="text-[10px] text-slate-600 hidden sm:inline">Heat</span>
+                </label>
+
+                <label className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
+                  <input type="checkbox" checked={mostrarRota} onChange={e => setMostrarRota(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-green-600" />
+                  <Route className="w-3 h-3 text-green-500" />
+                  <span className="text-[10px] text-slate-600 hidden sm:inline">Rota</span>
+                </label>
+              </div>
             </div>
-          </PanelCard>
+          </CardContent>
+        </Card>
+      </motion.div>
 
-          {/* Rota de visita */}
-          <PanelCard
-            title="Rota de Visita"
-            icon={Route}
-            iconColor="text-green-600"
-            iconBg="bg-green-50"
-            badge={mostrarRota && rotaPontos.length > 0 ? `${rotaPontos.length}` : undefined}
-            badgeColor="bg-green-100 text-green-700"
-            delay={7}
-          >
-            {mostrarRota && rotaPontos.length > 0 ? (
-              <div className="space-y-2">
-                <p className="text-[10px] text-slate-500">{rotaPontos.length} paradas otimizadas (vizinho mais próximo)</p>
-                <div className="max-h-[120px] overflow-y-auto space-y-1">
-                  {rotaPontos.slice(0, 10).map((p, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs">
-                      <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">{i + 1}</span>
-                      <span className="text-slate-600 truncate">{p[0].toFixed(5)}, {p[1].toFixed(5)}</span>
-                    </div>
-                  ))}
-                  {rotaPontos.length > 10 && (
-                    <p className="text-[10px] text-slate-400 text-center">+ {rotaPontos.length - 10} paradas</p>
-                  )}
-                </div>
-                <button
-                  onClick={copiarRota}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
-                >
-                  <Share2 className="w-3.5 h-3.5" /> Copiar rota
-                </button>
-              </div>
-            ) : (
-              <EmptyState
-                icon={Route}
-                title="Nenhuma rota ativa"
-                description="Ative a camada 'Rota de visita' e certifique-se de haver eleitores com coordenadas"
-              />
-            )}
-          </PanelCard>
-
+      <div className="grid lg:grid-cols-4 gap-4">
+        {/* Sidebar - Filtros avançados + Stats */}
+        <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-1 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto">
           {/* Estatísticas */}
           <PanelCard
             title="Estatísticas"
             icon={BarChart3}
             iconColor="text-purple-600"
             iconBg="bg-purple-50"
-            delay={8}
+            delay={3}
           >
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -582,6 +487,46 @@ export default function MapaPageV1() {
             </div>
           </PanelCard>
 
+          {/* Rota de visita */}
+          <PanelCard
+            title="Rota de Visita"
+            icon={Route}
+            iconColor="text-green-600"
+            iconBg="bg-green-50"
+            badge={mostrarRota && rotaPontos.length > 0 ? `${rotaPontos.length}` : undefined}
+            badgeColor="bg-green-100 text-green-700"
+            delay={4}
+          >
+            {mostrarRota && rotaPontos.length > 0 ? (
+              <div className="space-y-2">
+                <p className="text-[10px] text-slate-500">{rotaPontos.length} paradas otimizadas</p>
+                <div className="max-h-[120px] overflow-y-auto space-y-1">
+                  {rotaPontos.slice(0, 10).map((p, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">{i + 1}</span>
+                      <span className="text-slate-600 truncate">{p[0].toFixed(5)}, {p[1].toFixed(5)}</span>
+                    </div>
+                  ))}
+                  {rotaPontos.length > 10 && (
+                    <p className="text-[10px] text-slate-400 text-center">+ {rotaPontos.length - 10} paradas</p>
+                  )}
+                </div>
+                <button
+                  onClick={copiarRota}
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
+                >
+                  <Share2 className="w-3.5 h-3.5" /> Copiar rota
+                </button>
+              </div>
+            ) : (
+              <EmptyState
+                icon={Route}
+                title="Nenhuma rota ativa"
+                description="Ative a camada 'Rota' na toolbar acima"
+              />
+            )}
+          </PanelCard>
+
           {/* Cidades sem coordenadas */}
           {porCidade.length > 0 && (
             <PanelCard
@@ -591,7 +536,7 @@ export default function MapaPageV1() {
               iconBg="bg-amber-50"
               badge={porCidade.length}
               badgeColor="bg-amber-100 text-amber-700"
-              delay={9}
+              delay={5}
             >
               <div className="space-y-1 max-h-[180px] overflow-y-auto">
                 {porCidade.map(c => (
@@ -607,7 +552,7 @@ export default function MapaPageV1() {
         </motion.div>
 
         {/* Mapa */}
-        <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-3">
+        <motion.div custom={3} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-3">
           <Card className="h-full min-h-[500px] lg:min-h-[600px]">
             <CardContent className="p-0 h-full overflow-visible">
               {loading ? (
