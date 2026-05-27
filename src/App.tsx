@@ -13,6 +13,7 @@ import SolicitacoesPage from '@/pages/SolicitacoesPage';
 import ComunicacaoPage from '@/pages/ComunicacaoPage';
 import MapaPage from '@/pages/MapaPage';
 import MapaPageV1 from '@/pages/MapaPageV1';
+import MapaPageV2 from '@/pages/MapaPageV2';
 import AgendaPage from '@/pages/AgendaPage';
 import TarefasPage from '@/pages/TarefasPage';
 import DocumentosPage from '@/pages/DocumentosPage';
@@ -55,6 +56,7 @@ function App() {
         <Route path="comunicacao" element={<ComunicacaoPage />} />
         <Route path="mapa" element={<MapaPage />} />
         <Route path="mapa/teste-v1" element={<MapaPageV1 />} />
+        <Route path="mapa/teste-v2" element={<MapaPageV2 />} />
         <Route path="agenda" element={<AgendaPage />} />
         <Route path="tarefas" element={<TarefasPage />} />
         <Route path="documentos" element={<DocumentosPage />} />
