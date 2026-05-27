@@ -128,6 +128,54 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ---
 
+## 🔄 Padrão de Refatoração — Páginas de Teste
+
+> **Regra obrigatória:** SEMPRE criar página de teste ao refatorar páginas existentes
+
+### Quando usar
+- Refatorar página existente (aplicar Design System, melhorar layout, etc.)
+- Criar nova versão de página já funcional
+- Testar melhorias antes de aplicar na página principal
+
+### Passo a passo
+
+1. **Criar página de teste**
+   - Nomear como `{Nome}PageV3.tsx` (ou V2, V4, etc.)
+   - Salvar em `src/pages/`
+   - Copiar lógica da página original, aplicar melhorias
+
+2. **Adicionar rota em `App.tsx`**
+   ```tsx
+   import MapaPageV3 from '@/pages/MapaPageV3';
+   // ...
+   <Route path="mapa/teste-v3" element={<MapaPageV3 />} />
+   ```
+
+3. **Adicionar link temporário no sidebar (`DashboardLayout.tsx`)**
+   ```tsx
+   { to: '/dashboard/mapa/teste-v3', icon: MapPin, label: 'Mapa V3', end: true },
+   ```
+   - Usar `end: true` para evitar conflito com rota pai (`/mapa`)
+   - Colocar logo abaixo da página original
+
+4. **Testar localmente**
+   - `npm run dev`
+   - Acessar via sidebar ou URL direta
+   - Comparar com versão original
+
+5. **Aprovação do usuário**
+   - Só aplicar na página principal após aprovação explícita
+   - Depois de aprovado: copiar conteúdo da V3 para página original
+   - Remover rota de teste e link do sidebar
+
+### Exemplos no projeto
+| Página Original | Página Teste | Rota | Status |
+|-----------------|--------------|------|--------|
+| `MapaPage.tsx` | `MapaPageV3.tsx` | `/dashboard/mapa/teste-v3` | Em teste |
+| `DashboardHome.tsx` | `DashboardV2.tsx` | `/dashboard/teste-v2` | Arquivado |
+
+---
+
 ## 🛠️ Skills Disponíveis (quando usar)
 
 > **Skills globais:** `C:\Users\David Lucas\.kimi\skills\` (50 skills)
@@ -371,3 +419,4 @@ Vercel → HTTPS → API Proxy (VPS:443) → localhost → PostgreSQL (VPS:5432)
 | 019 | Componentes com estruturas diferentes no mesmo grid | 25/05/2026 | SEMPRE manter consistência: se os cards de stats têm só CardContent, o Meta também deve ter só CardContent. Nunca misturar CardHeader+CardContent com só CardContent no mesmo grid |
 | 020 | Não verificar responsividade em múltiplos breakpoints | 25/05/2026 | SEMPRE testar em: mobile (375px), tablet (768px), desktop (1440px). Nunca assumir que funciona em todos |
 | 021 | Não consultar Design System antes de criar componentes | 25/05/2026 | SEMPRE verificar `AGENTS.md` regras de design antes de criar novos componentes. Consistência > criatividade |
+| 022 | Esquecer de criar página de teste ao refatorar | 26/05/2026 | SEMPRE que refatorar uma página existente, criar versão V3 (ou V2) como página de teste. Adicionar rota em `App.tsx` e link temporário no `DashboardLayout.tsx`. Nunca sobrescrever página principal sem teste prévio |
