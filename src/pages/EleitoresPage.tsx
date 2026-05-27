@@ -45,6 +45,18 @@ export default function EleitoresPageV3() {
       }
     }
   }, [searchParams, eleitores, setSearchParams]);
+  // Scroll automático até o preview quando aberto (ex: vindo do mapa)
+  useEffect(() => {
+    if (previewEleitor) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`eleitor-preview-${previewEleitor.id}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [previewEleitor]);
   const [search, setSearch] = useState('');
   const [comunidadeFilter, setComunidadeFilter] = useState('');
   const [nivelFilter, setNivelFilter] = useState('');
@@ -429,7 +441,7 @@ export default function EleitoresPageV3() {
                       </tr>
                       {/* Preview Inline */}
                       {previewEleitor?.id === e.id && (
-                        <tr key={`${e.id}-preview`}>
+                        <tr key={`${e.id}-preview`} id={`eleitor-preview-${e.id}`}>
                           <td colSpan={abaAtiva === 'pendentes' ? 7 : 6} className="p-0 border-0">
                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden mx-4 my-2">
                               {/* Header */}

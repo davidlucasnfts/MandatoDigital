@@ -75,6 +75,7 @@ export {
   IconChevronRight as ChevronRight,
   IconChevronUp as ChevronUp,
   IconLayoutDashboard as LayoutDashboard,
+  IconHome as Home,
   IconBuilding as Building2,
   IconBuildingSkyscraper as Building3,
   IconMap as MapPinned,

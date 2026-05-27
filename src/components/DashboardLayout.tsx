@@ -38,6 +38,7 @@ function useNavGroups() {
         { to: '/dashboard/mapa/teste-v1', icon: MapPin, label: 'Mapa V1', end: true },
         { to: '/dashboard/mapa/teste-v2', icon: MapPin, label: 'Mapa V2', end: true },
         { to: '/dashboard/solicitacoes', icon: ClipboardList, label: 'Solicitações' },
+        { to: '/dashboard/solicitacoes/teste-v3', icon: ClipboardList, label: 'Solicitações V3', end: true },
         { to: '/dashboard/comunicacao', icon: MessageSquare, label: 'Comunicação' },
       ],
     },

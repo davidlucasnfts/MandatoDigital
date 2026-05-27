@@ -1,8 +1,9 @@
 // Geocodificacao Here API (free tier: 30k/mes)
-// Fallback: CNEFE -> centro da cidade
+// Fallback: Cache -> CNEFE -> Here API -> centro da cidade
 
 import { geocodeCep, geocodeEndereco as geocodeCnefe } from "./geocoding";
 import { trackGeocodingRequest, getRecommendedProvider } from "./geocoding-monitor";
+import { supabase } from "./supabase";
 
 interface HereConfig {
   apiKey: string;
@@ -291,7 +292,73 @@ export async function geocodeWithNumber(
 }
 
 /**
- * Geocodifica por CEP: CNEFE primeiro (custo zero), Here API como fallback
+ * Busca coordenadas no cache via tRPC (backend)
+ */
+/**
+ * Busca coordenadas no cache (Supabase — tabela pública, sem RLS)
+ */
+async function getCepCache(cep: string): Promise<GeoCoords | null> {
+  const clean = cep.replace(/\D/g, "");
+  try {
+    console.log("[Cache] Buscando cache:", clean);
+    const { data, error } = await supabase
+      .from("cep_cache")
+      .select("latitude, longitude, source")
+      .eq("cep", clean)
+      .maybeSingle();
+    if (error) {
+      console.log("[Cache] erro:", error.message);
+      return null;
+    }
+    console.log("[Cache] Resposta:", data);
+    if (data) {
+      console.log("[geocodeCepSmart] Cache hit:", clean);
+      return {
+        lat: parseFloat(data.latitude),
+        lng: parseFloat(data.longitude),
+        source: data.source as "here" | "cnefe" | "fallback",
+        displayName: `CEP ${clean} (cache)`,
+        confidence: 0.95,
+      };
+    }
+  } catch (err) {
+    console.log("[Cache] exceção:", err);
+  }
+  return null;
+}
+
+/**
+ * Salva coordenadas no cache (Supabase — tabela pública, sem RLS)
+ */
+async function saveCepCache(
+  cep: string,
+  coords: GeoCoords,
+  endereco?: { logradouro?: string; bairro?: string; cidade?: string; estado?: string }
+): Promise<void> {
+  const clean = cep.replace(/\D/g, "");
+  try {
+    const { error } = await supabase.from("cep_cache").upsert({
+      cep: clean,
+      logradouro: endereco?.logradouro || null,
+      bairro: endereco?.bairro || null,
+      cidade: endereco?.cidade || null,
+      estado: endereco?.estado || null,
+      latitude: coords.lat.toString(),
+      longitude: coords.lng.toString(),
+      source: coords.source,
+    }, { onConflict: "cep" });
+    if (error) {
+      console.error("[Cache] erro ao salvar:", error.message);
+    } else {
+      console.log("[geocodeCepSmart] Cache salvo:", clean);
+    }
+  } catch (err) {
+    console.error("[Cache] exceção ao salvar:", err);
+  }
+}
+
+/**
+ * Geocodifica por CEP: Cache -> CNEFE -> Here API
  */
 export async function geocodeCepSmart(
   cep: string,
@@ -302,15 +369,21 @@ export async function geocodeCepSmart(
   const clean = cep.replace(/\D/g, "");
   if (clean.length !== 8) return null;
 
-  // 1. SEMPRE tenta CNEFE primeiro (custo zero, dados proprios)
+  // 0. Verifica cache primeiro (zero custo)
+  const cacheResult = await getCepCache(clean);
+  if (cacheResult) return cacheResult;
+
+  // 1. Tenta CNEFE (custo zero, dados proprios)
   console.log("[geocodeCepSmart] Tentando CNEFE...");
   const cnefeResult = await geocodeCep(cep, cidade, estado, logradouro);
   if (cnefeResult) {
     console.log("[geocodeCepSmart] CNEFE sucesso:", cnefeResult.displayName);
-    return {
+    const result = {
       ...cnefeResult,
       confidence: 0.6,
     };
+    await saveCepCache(clean, result, { logradouro, cidade, estado });
+    return result;
   }
 
   // 2. Fallback: Here API (quando CNEFE nao encontra)
@@ -328,13 +401,15 @@ export async function geocodeCepSmart(
         const item = data.items?.[0];
         if (item?.position) {
           console.log("[geocodeCepSmart] Here API sucesso:", item.title);
-          return {
+          const result = {
             lat: item.position.lat,
             lng: item.position.lng,
-            source: "here",
+            source: "here" as const,
             displayName: item.title || cep,
             confidence: 0.9,
           };
+          await saveCepCache(clean, result, { logradouro, cidade, estado });
+          return result;
         }
       }
     } catch (err) {

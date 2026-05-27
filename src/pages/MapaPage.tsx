@@ -412,7 +412,7 @@ export default function MapaPage() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={mostrarComunidades} onChange={e => setMostrarComunidades(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
                     <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <img src="https://img.icons8.com/color/16/conference.png" alt="comunidade" className="w-4 h-4" />
+                      <div className="w-4 h-4 rounded-sm bg-green-500" />
                       Comunidades ({comunidadesNoMapa.length})
                     </span>
                   </label>
@@ -550,26 +550,6 @@ export default function MapaPage() {
                     <Polyline positions={rotaPontos} pathOptions={{ color: '#2563eb', weight: 3, opacity: 0.7, dashArray: '8, 6' }} />
                   )}
 
-                  {/* Comunidades */}
-                  {mostrarComunidades && comunidadesNoMapa.map(c => (
-                    <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)}
-                      eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
-                      <Popup>
-                        <div className="text-xs min-w-[160px]">
-                          <div className="font-semibold text-slate-800 flex items-center gap-1 mb-1">
-                            <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
-                            {c.nome}
-                          </div>
-                          <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
-                          {c.latitude && <div className="text-[10px] text-green-600 mt-1">📍 Posição exata</div>}
-                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
-                            <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
-                          </div>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  ))}
-
                   {/* Eleitores COM coordenadas — com cluster */}
                   {mostrarEleitores && (
                     <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIcon} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
@@ -617,6 +597,26 @@ export default function MapaPage() {
                     </MarkerClusterGroup>
                   )}
 
+                  {/* Comunidades — renderizadas DEPOIS para ficarem por cima */}
+                  {mostrarComunidades && comunidadesNoMapa.map(c => (
+                    <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)}
+                      eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
+                      <Popup>
+                        <div className="text-xs min-w-[160px]">
+                          <div className="font-semibold text-slate-800 flex items-center gap-1 mb-1">
+                            <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
+                            {c.nome}
+                          </div>
+                          <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
+                          {c.latitude && <div className="text-[10px] text-green-600 mt-1">📍 Posição exata</div>}
+                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
+                            <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
+                          </div>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+
                   {/* Eleitores SEM coordenadas */}
                   {mostrarCidadesFallback && porCidade.map(c => (
                     <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }}>
@@ -625,6 +625,23 @@ export default function MapaPage() {
                       </Tooltip>
                     </Marker>
                   ))}
+
+                  {/* Legenda flutuante */}
+                  <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200 px-3 py-2.5 space-y-1.5">
+                    <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Legenda</div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                      <div className="w-3 h-3 rounded-full bg-purple-500" /> Líder
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                      <div className="w-3 h-3 rounded-full bg-blue-500" /> Eleitor ativo
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                      <div className="w-3 h-3 rounded-full bg-amber-400" /> Eleitor pendente
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                      <div className="w-3 h-3 rounded-full bg-green-500" /> Comunidade
+                    </div>
+                  </div>
                 </MapContainer>
               )}
             </CardContent>

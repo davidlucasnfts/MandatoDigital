@@ -176,6 +176,19 @@ export const cnefeEnderecos = pgTable("cnefe_enderecos", {
   codigoUnico: varchar("codigo_unico", { length: 50 }).unique(),
 });
 
+export const cepCache = pgTable("cep_cache", {
+  id: serial("id").primaryKey(),
+  cep: varchar("cep", { length: 8 }).notNull().unique(),
+  logradouro: varchar("logradouro", { length: 200 }),
+  bairro: varchar("bairro", { length: 100 }),
+  cidade: varchar("cidade", { length: 100 }),
+  estado: varchar("estado", { length: 2 }),
+  latitude: text("latitude").notNull(),
+  longitude: text("longitude").notNull(),
+  source: varchar("source", { length: 20 }).notNull().default("here"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
 export type Equipe = typeof equipe.$inferSelect;
 export type InsertEquipe = typeof equipe.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -194,3 +207,5 @@ export type EnqueteResposta = typeof enqueteRespostas.$inferSelect;
 export type InsertEnqueteResposta = typeof enqueteRespostas.$inferInsert;
 export type CnefeEndereco = typeof cnefeEnderecos.$inferSelect;
 export type InsertCnefeEndereco = typeof cnefeEnderecos.$inferInsert;
+export type CepCache = typeof cepCache.$inferSelect;
+export type InsertCepCache = typeof cepCache.$inferInsert;

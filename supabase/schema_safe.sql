@@ -1,7 +1,7 @@
 -- ============================================================
 -- SCHEMA SAFE - Consolidado de Migrations
--- Gerado automaticamente em: 2026-05-24T15:13:17.620Z
--- Total de migrations: 26
+-- Gerado automaticamente em: 2026-05-27T05:11:08.563Z
+-- Total de migrations: 28
 --
 -- INSTRUÇÕES:
 -- 1. Este arquivo é IDEMPOTENTE — pode rodar quantas vezes quiser
@@ -798,7 +798,49 @@ CREATE INDEX IF NOT EXISTS idx_eleitores_zona ON eleitores(zona);
 CREATE INDEX IF NOT EXISTS idx_eleitores_lider_vinculado ON eleitores(lider_vinculado_id);
 
 
+-- === 027-cep-cache.sql ===
+-- 27/05/2026: Cache de coordenadas por CEP para reduzir chamadas Here API
+
+CREATE TABLE IF NOT EXISTS cep_cache (
+  id SERIAL PRIMARY KEY,
+  cep VARCHAR(8) NOT NULL UNIQUE,
+  logradouro VARCHAR(200),
+  bairro VARCHAR(100),
+  cidade VARCHAR(100),
+  estado VARCHAR(2),
+  latitude NUMERIC(10, 8) NOT NULL,
+  longitude NUMERIC(11, 8) NOT NULL,
+  source VARCHAR(20) NOT NULL DEFAULT 'here',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_cep_cache_cep ON cep_cache(cep);
+
+COMMENT ON TABLE cep_cache IS 'Cache de coordenadas geocodificadas por CEP para evitar chamadas repetidas à Here API';
+
+
+-- === 028-cep-cache-rls.sql ===
+-- 27/05/2026: Política RLS para cep_cache — permite leitura/escrita para usuários autenticados
+
+ALTER TABLE cep_cache ENABLE ROW LEVEL SECURITY;
+
+-- Política: usuários autenticados podem ler
+CREATE POLICY "cep_cache_select_authenticated"
+  ON cep_cache
+  FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Política: usuários autenticados podem inserir/atualizar
+CREATE POLICY "cep_cache_upsert_authenticated"
+  ON cep_cache
+  FOR ALL
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+
 -- ============================================================
 -- FIM DO SCHEMA SAFE
--- Total: 26 migrations consolidadas
+-- Total: 28 migrations consolidadas
 -- ============================================================

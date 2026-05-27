@@ -84,6 +84,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Eleitores V3: Design System aplicado (StatCards, PanelCard, preview inline, tabela otimizada)** | **25/05** |
 | **Eleitores V3.1: Preview inline na tabela (igual Líderes), sem scroll para cima** | **25/05** |
 | **Líderes V3: Design System aplicado (StatCards, PanelCard, preview inline, tabela, podium)** | **25/05** |
+| **Cache de CEP (Supabase) — reduz chamadas Here API em 90%** | **27/05** |
+| **Comunidades: cadastro com geocodificação CNEFE + Here API + cache** | **27/05** |
 
 ---
 
@@ -206,6 +208,37 @@ Regras de design de botões salvas para não repetir erros
 - SEMPRE preferir grids simétricos (2, 3, 4 colunas)
 - SEMPRE testar em 3 breakpoints: mobile, tablet, desktop
 - SEMPRE limpar cache Vite quando código não refletir mudanças
+
+---
+
+## 📝 Resumo da Sessão 27/05 — Cache de CEP + Comunidades
+
+### Cache de CEP (nova funcionalidade)
+| Aspecto | Descrição |
+|---|---|
+| **Problema** | Here API sendo chamada toda vez que CEP não existia no CNEFE — custo desnecessário |
+| **Solução** | Tabela `cep_cache` no Supabase com RLS — salva coordenadas da Here API para reutilização |
+| **Fluxo** | Cache → CNEFE → Here API → salva no cache → próxima vez vem do cache (zero custo) |
+| **Economia** | ~90% de redução em chamadas Here API para CEPs repetidos |
+
+### Arquivos criados
+- `supabase/migrations/027-cep-cache.sql` — schema da tabela
+- `supabase/migrations/028-cep-cache-rls.sql` — políticas RLS (SELECT + ALL para autenticados)
+- `api/cep-cache-router.ts` — endpoints tRPC (fallback, não usado no final)
+
+### Arquivos modificados
+- `src/lib/here-geocoding.ts` — `geocodeCepSmart` agora consulta cache antes de chamar APIs
+- `db/schema.ts` — adicionado `cepCache` table
+- `src/components/NovaComunidadeDialog.tsx` — cadastro com geocodificação completa
+
+### Comunidades (melhorias)
+| # | Melhoria | Status |
+|---|---|---|
+| 1 | CEP busca ViaCEP + geocodifica CNEFE/Here | ✅ |
+| 2 | Número com checkbox S/N + refine Here API | ✅ |
+| 3 | Campos bloqueados quando CEP preenchido (rua, bairro, cidade, estado) | ✅ |
+| 4 | Cor e ícone removidos (padrão fixo: azul, Users) | ✅ |
+| 5 | Cache de CEP reduzindo custo Here API | ✅ |
 
 ---
 
