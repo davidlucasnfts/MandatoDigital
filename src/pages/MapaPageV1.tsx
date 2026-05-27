@@ -16,7 +16,7 @@ import { getCoordenadasCidade } from '@/data/coordenadasCidades';
 import { createComunidadeIcon, createEleitorIcon, createLiderIcon } from '@/lib/mapIcons';
 import { trpc } from '@/providers/trpc';
 import HeatmapLayer from '@/components/HeatmapLayer';
-import { StatCard, PanelCard, EmptyState, AnimatedBar, AnimatedMiniBar } from '@/components/dashboard';
+import { StatCard, PanelCard, EmptyState, AnimatedBar } from '@/components/dashboard';
 import type { Eleitor, Comunidade } from '@/lib/supabase';
 
 import { MapContainer, TileLayer, Marker, Tooltip, Popup, useMap, Polyline } from 'react-leaflet';
@@ -141,11 +141,6 @@ export default function MapaPageV1() {
   // FlyTo
   const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
 
-  // Sidebar expansível
-  const [camadasExpandido, setCamadasExpandido] = useState(true);
-  const [statsExpandido, setStatsExpandido] = useState(true);
-  const [rotaExpandido, setRotaExpandido] = useState(false);
-
   const geocodeAll = trpc.geocoding.geocodeAll.useMutation({
     onSuccess: (data) => {
       if (data.success) {
@@ -236,8 +231,6 @@ export default function MapaPageV1() {
 
   const centroBrasil: [number, number] = [-14.2350, -51.9253];
   const loading = loadingEleitores || loadingComunidades;
-  const niveis = ['lider', 'eleitor'];
-  const statusList = ['ativo', 'inativo', 'pendente'];
   const temFiltros = filtroComunidade || filtroNivel || filtroStatus || filtroBairro || filtroTag || buscaNome;
 
   const limparFiltros = () => { setFiltroComunidade(null); setFiltroNivel(null); setFiltroStatus(null); setFiltroBairro(null); setFiltroTag(null); setBuscaNome(''); };
@@ -253,10 +246,10 @@ export default function MapaPageV1() {
   const countLideres = eleitoresComCoords.filter(e => e.nivel === 'lider').length;
 
   return (
-    <div className="space-y-4">
-      {/* Header com StatCards */}
+    <div className="space-y-3">
+      {/* Header */}
       <motion.div custom={0} variants={fadeIn} initial="hidden" animate="visible">
-        <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-blue-600" />
@@ -275,53 +268,204 @@ export default function MapaPageV1() {
             )}
           </div>
         </div>
-        {geocodingStatus && <p className="text-xs text-slate-500 mt-1 mb-3">{geocodingStatus}</p>}
+        {geocodingStatus && <p className="text-xs text-slate-500 mt-1">{geocodingStatus}</p>}
+      </motion.div>
 
-        {/* StatCards */}
+      {/* StatCards */}
+      <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
-          <StatCard
-            label="Total no Mapa"
-            value={stats.total}
-            icon={Users}
-            color="blue"
-            delay={0}
-          />
-          <StatCard
-            label="Com Coordenadas"
-            value={stats.comCoords}
-            icon={MapPin}
-            color="green"
-            delay={1}
-          />
-          <StatCard
-            label="Líderes no Mapa"
-            value={stats.lideres}
-            icon={Crown}
-            color="purple"
-            delay={2}
-          />
-          <StatCard
-            label="Cidades Fallback"
-            value={porCidade.length}
-            icon={Building2}
-            color="amber"
-            delay={3}
-          />
+          <StatCard label="Total no Mapa" value={stats.total} icon={Users} color="blue" delay={0} />
+          <StatCard label="Com Coordenadas" value={stats.comCoords} icon={MapPin} color="green" delay={1} />
+          <StatCard label="Líderes no Mapa" value={stats.lideres} icon={Crown} color="purple" delay={2} />
+          <StatCard label="Cidades Fallback" value={porCidade.length} icon={Building2} color="amber" delay={3} />
         </div>
       </motion.div>
 
-      {/* Toolbar + Mapa (sem sidebar) */}
-      <div className="grid lg:grid-cols-4 gap-4">
-        {/* Coluna esquerda: Stats + Rota + Cidades */}
-        <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-1 space-y-3 max-h-[calc(100vh-180px)] overflow-y-auto">
-          {/* Estatísticas */}
-          <PanelCard
-            title="Estatísticas"
-            icon={BarChart3}
-            iconColor="text-purple-600"
-            iconBg="bg-purple-50"
-            delay={1}
-          >
+      {/* Toolbar de controles */}
+      <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible">
+        <PanelCard title="Controles" icon={Layers} iconColor="text-blue-600" iconBg="bg-blue-50" delay={4}>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Busca */}
+            <div className="relative flex-1 min-w-[180px] max-w-[260px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor..." className="pl-9 h-9 text-sm" />
+              {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
+            </div>
+
+            {/* Filtros */}
+            <div className="flex items-center gap-1.5">
+              <select value={filtroComunidade || ''} onChange={e => setFiltroComunidade(e.target.value || null)} className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600">
+                <option value="">Todas comunidades</option>
+                {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+              </select>
+              <select value={filtroNivel || ''} onChange={e => setFiltroNivel(e.target.value || null)} className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600">
+                <option value="">Todos níveis</option>
+                <option value="lider">Líder</option>
+                <option value="eleitor">Eleitor</option>
+              </select>
+              <select value={filtroStatus || ''} onChange={e => setFiltroStatus(e.target.value || null)} className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600">
+                <option value="">Todos status</option>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+                <option value="pendente">Pendente</option>
+              </select>
+              {temFiltros && (
+                <button onClick={limparFiltros} className="h-9 px-2.5 text-xs font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm hover:shadow-md transition-all flex items-center gap-1">
+                  <X className="w-3.5 h-3.5" /> Limpar
+                </button>
+              )}
+            </div>
+
+            {/* Camadas */}
+            <div className="flex items-center gap-1">
+              <button onClick={() => setCamadaBase('voyager')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'voyager' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <MapPinned className="w-3 h-3" /> Ruas
+              </button>
+              <button onClick={() => setCamadaBase('satellite')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'satellite' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <World className="w-3 h-3" /> Satélite
+              </button>
+              <button onClick={() => setCamadaBase('dark')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'dark' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <MapPin className="w-3 h-3" /> Escuro
+              </button>
+            </div>
+
+            {/* Toggles */}
+            <div className="flex items-center gap-1">
+              <button onClick={() => setMostrarLideres(!mostrarLideres)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarLideres ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <Crown className="w-3 h-3" /> Líderes
+              </button>
+              <button onClick={() => setMostrarEleitores(!mostrarEleitores)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarEleitores ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <User className="w-3 h-3" /> Eleitores
+              </button>
+              <button onClick={() => setMostrarComunidades(!mostrarComunidades)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarComunidades ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <BuildingCommunity className="w-3 h-3" /> Comun.
+              </button>
+              <button onClick={() => setMostrarHeatmap(!mostrarHeatmap)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarHeatmap ? 'bg-red-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <Thermometer className="w-3 h-3" /> Heat
+              </button>
+              <button onClick={() => setMostrarRota(!mostrarRota)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarRota ? 'bg-green-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <Route className="w-3 h-3" /> Rota
+              </button>
+            </div>
+          </div>
+        </PanelCard>
+      </motion.div>
+
+      {/* Mapa - largura total */}
+      <motion.div custom={3} variants={fadeIn} initial="hidden" animate="visible">
+        <Card className="h-[500px] lg:h-[600px]">
+          <CardContent className="p-0 h-full overflow-visible relative">
+            {loading ? (
+              <div className="h-full bg-slate-100 flex flex-col items-center justify-center text-slate-400 space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-slate-200 animate-pulse flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-slate-400" />
+                </div>
+                <p className="text-sm">Carregando mapa...</p>
+                <div className="w-48 h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 animate-pulse rounded-full" style={{ width: '60%' }} />
+                </div>
+              </div>
+            ) : eleitoresComCoords.length === 0 && comunidadesNoMapa.length === 0 ? (
+              <div className="h-full flex items-center justify-center">
+                <EmptyState icon={MapPin} title="Nenhum ponto no mapa" description="Cadastre eleitores com endereço ou comunidades para visualizar no mapa" action={{ label: 'Cadastrar eleitor', onClick: () => {} }} />
+              </div>
+            ) : (
+              <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+                <TileLayerController camada={camadaBase} />
+                <TileLayer attribution={tileLayers[camadaBase].attribution} url={tileLayers[camadaBase].url} subdomains={tileLayers[camadaBase].subdomains} maxZoom={19} key={camadaBase} />
+                <MapController flyTo={flyTo} />
+
+                {mostrarHeatmap && heatmapPoints.length > 0 && <HeatmapLayer points={heatmapPoints} radius={25} blur={15} max={1.5} />}
+                {mostrarRota && rotaPontos.length > 1 && <Polyline positions={rotaPontos} pathOptions={{ color: '#2563eb', weight: 3, opacity: 0.7, dashArray: '8, 6' }} />}
+
+                {/* Comunidades */}
+                {mostrarComunidades && comunidadesNoMapa.map(c => (
+                  <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)} eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
+                    <Popup>
+                      <div className="text-xs min-w-[180px]">
+                        <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-1">
+                          <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
+                          {c.nome}
+                        </div>
+                        <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
+                        {c.latitude && <div className="text-[10px] text-green-600 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Posição exata</div>}
+                        <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
+                          <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+
+                {/* Eleitores e Líderes */}
+                {(mostrarEleitores || mostrarLideres) && (
+                  <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIcon} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                    {eleitoresComCoords.filter(e => {
+                      if (e.nivel === 'lider') return mostrarLideres;
+                      return mostrarEleitores;
+                    }).map(e => (
+                      <Marker key={e.id} position={[e.latitude!, e.longitude!]} icon={e.nivel === 'lider' ? createLiderIcon(e.status) : createEleitorIcon(e.status)} eventHandlers={{ click: () => setEleitorSelecionado(e) }}>
+                      <Popup>
+                        <div className="text-xs min-w-[200px]">
+                          <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                            {e.nivel === 'lider' && <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center"><Crown className="w-2.5 h-2.5 text-white" /></span>}
+                            {e.nome}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <Badge variant="outline" className={`text-[10px] capitalize ${e.nivel === 'lider' ? 'border-purple-200 text-purple-700 bg-purple-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}>{e.nivel}</Badge>
+                            <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
+                          </div>
+                          <div className="mt-2 space-y-0.5 text-slate-500">
+                            {e.endereco && <div>{e.endereco}</div>}
+                            {e.bairro && <div>{e.bairro}</div>}
+                            <div>{e.cidade}, {e.estado}</div>
+                            {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
+                          </div>
+                          {e.tags && e.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
+                            </div>
+                          )}
+                          {/* Botões de ação */}
+                          <div className="mt-3 pt-2 border-t border-slate-100 flex flex-col gap-1.5">
+                            <button onClick={() => setEleitorSelecionado(e)} className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm transition-all">
+                              <Eye className="w-3 h-3" /> Ver detalhes
+                            </button>
+                            <div className="flex gap-1.5">
+                              <button onClick={() => {}} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] font-semibold bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-sm transition-all">
+                                <Link2 className="w-3 h-3" /> Link
+                              </button>
+                              <button onClick={() => {}} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm transition-all">
+                                <Trash2 className="w-3 h-3" /> Excluir
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </Popup>
+                    </Marker>
+                    ))}
+                  </MarkerClusterGroup>
+                )}
+
+                {/* Eleitores SEM coordenadas */}
+                {mostrarCidadesFallback && porCidade.map(c => (
+                  <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }}>
+                    <Tooltip direction="top" offset={[0, -20]}>
+                      <span className="text-xs font-medium">{c.cidade}: {c.count} eleitor{c.count > 1 ? 'es' : ''} (sem coordenadas)</span>
+                    </Tooltip>
+                  </Marker>
+                ))}
+              </MapContainer>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Stats em cards horizontais abaixo do mapa */}
+      <motion.div custom={4} variants={fadeIn} initial="hidden" animate="visible">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          {/* Distribuição */}
+          <PanelCard title="Distribuição" icon={BarChart3} iconColor="text-purple-600" iconBg="bg-purple-50" delay={5}>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Total</span>
@@ -339,366 +483,63 @@ export default function MapaPageV1() {
                 <span className="text-slate-500">Pendentes</span>
                 <span className="font-semibold text-amber-600">{stats.pendentes}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Com coordenadas</span>
-                <span className="font-semibold text-blue-600">{stats.comCoords}</span>
-              </div>
               <div className="pt-2 border-t border-slate-100">
-                <div className="text-[10px] text-slate-400 mb-1">Distribuição por nível</div>
-                <AnimatedBar
-                  progress={stats.total > 0 ? (stats.lideres / stats.total) * 100 : 0}
-                  color="bg-purple-500"
-                  height="h-2"
-                  delay={0.5}
-                />
+                <div className="text-[10px] text-slate-400 mb-1">Por nível</div>
+                <AnimatedBar progress={stats.total > 0 ? (stats.lideres / stats.total) * 100 : 0} color="bg-purple-500" height="h-2" delay={0.5} />
                 <div className="flex justify-between text-[10px] text-slate-400 mt-1">
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-purple-500" />Líderes {stats.lideres}</span>
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-500" />Eleitores {stats.total - stats.lideres}</span>
                 </div>
               </div>
+            </div>
+          </PanelCard>
+
+          {/* Cobertura */}
+          <PanelCard title="Cobertura" icon={MapPin} iconColor="text-green-600" iconBg="bg-green-50" delay={6}>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Com coordenadas</span>
+                <span className="font-semibold text-blue-600">{stats.comCoords}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Sem coordenadas</span>
+                <span className="font-semibold text-slate-600">{stats.semCoords}</span>
+              </div>
               <div className="pt-2 border-t border-slate-100">
                 <div className="text-[10px] text-slate-400 mb-1">Cobertura geográfica</div>
-                <AnimatedBar
-                  progress={stats.total > 0 ? (stats.comCoords / stats.total) * 100 : 0}
-                  color="bg-green-500"
-                  height="h-2"
-                  delay={0.7}
-                />
+                <AnimatedBar progress={stats.total > 0 ? (stats.comCoords / stats.total) * 100 : 0} color="bg-green-500" height="h-2" delay={0.7} />
                 <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                  <span>Com coordenadas</span>
+                  <span>Mapeado</span>
                   <span>{stats.total > 0 ? Math.round((stats.comCoords / stats.total) * 100) : 0}%</span>
                 </div>
               </div>
             </div>
           </PanelCard>
 
-          {/* Rota de visita */}
-          <PanelCard
-            title="Rota de Visita"
-            icon={Route}
-            iconColor="text-green-600"
-            iconBg="bg-green-50"
-            badge={mostrarRota && rotaPontos.length > 0 ? `${rotaPontos.length}` : undefined}
-            badgeColor="bg-green-100 text-green-700"
-            delay={2}
-          >
+          {/* Rota / Cidades */}
+          <PanelCard title="Rota de Visita" icon={Route} iconColor="text-green-600" iconBg="bg-green-50" badge={mostrarRota && rotaPontos.length > 0 ? `${rotaPontos.length}` : undefined} badgeColor="bg-green-100 text-green-700" delay={7}>
             {mostrarRota && rotaPontos.length > 0 ? (
               <div className="space-y-2">
                 <p className="text-[10px] text-slate-500">{rotaPontos.length} paradas otimizadas</p>
-                <div className="max-h-[120px] overflow-y-auto space-y-1">
-                  {rotaPontos.slice(0, 10).map((p, i) => (
+                <div className="max-h-[100px] overflow-y-auto space-y-1">
+                  {rotaPontos.slice(0, 5).map((p, i) => (
                     <div key={i} className="flex items-center gap-2 text-xs">
                       <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">{i + 1}</span>
                       <span className="text-slate-600 truncate">{p[0].toFixed(5)}, {p[1].toFixed(5)}</span>
                     </div>
                   ))}
-                  {rotaPontos.length > 10 && (
-                    <p className="text-[10px] text-slate-400 text-center">+ {rotaPontos.length - 10} paradas</p>
-                  )}
+                  {rotaPontos.length > 5 && <p className="text-[10px] text-slate-400 text-center">+ {rotaPontos.length - 5} paradas</p>}
                 </div>
-                <button
-                  onClick={copiarRota}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
-                >
+                <button onClick={copiarRota} className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all">
                   <Share2 className="w-3.5 h-3.5" /> Copiar rota
                 </button>
               </div>
             ) : (
-              <EmptyState
-                icon={Route}
-                title="Nenhuma rota ativa"
-                description="Ative a camada 'Rota' na toolbar acima"
-              />
+              <EmptyState icon={Route} title="Nenhuma rota ativa" description="Ative a camada 'Rota' nos controles acima" />
             )}
           </PanelCard>
-
-          {/* Cidades sem coordenadas */}
-          {porCidade.length > 0 && (
-            <PanelCard
-              title="Cidades (sem coord.)"
-              icon={Building2}
-              iconColor="text-amber-600"
-              iconBg="bg-amber-50"
-              badge={porCidade.length}
-              badgeColor="bg-amber-100 text-amber-700"
-              delay={3}
-            >
-              <div className="space-y-1 max-h-[180px] overflow-y-auto">
-                {porCidade.map(c => (
-                  <button key={c.cidade} onClick={() => setCidadeSelecionada(c.cidade)}
-                    className={`w-full flex items-center justify-between p-1.5 rounded-lg text-left text-xs transition-colors ${cidadeSelecionada === c.cidade ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
-                    <span className="truncate">{c.cidade}</span>
-                    <span className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">{c.count}</span>
-                  </button>
-                ))}
-              </div>
-            </PanelCard>
-          )}
-        </motion.div>
-
-        {/* Mapa + Toolbar */}
-        <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-3 space-y-3">
-          {/* Toolbar de controles */}
-          <PanelCard
-            title="Controles"
-            icon={Layers}
-            iconColor="text-blue-600"
-            iconBg="bg-blue-50"
-            delay={0}
-          >
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Busca */}
-              <div className="relative flex-1 min-w-[180px] max-w-[260px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor..." className="pl-9 h-9 text-sm" />
-                {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
-              </div>
-
-              {/* Filtros */}
-              <div className="flex items-center gap-1.5">
-                <select
-                  value={filtroComunidade || ''}
-                  onChange={e => setFiltroComunidade(e.target.value || null)}
-                  className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600"
-                >
-                  <option value="">Todas comunidades</option>
-                  {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-                </select>
-
-                <select
-                  value={filtroNivel || ''}
-                  onChange={e => setFiltroNivel(e.target.value || null)}
-                  className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600"
-                >
-                  <option value="">Todos níveis</option>
-                  <option value="lider">Líder</option>
-                  <option value="eleitor">Eleitor</option>
-                </select>
-
-                <select
-                  value={filtroStatus || ''}
-                  onChange={e => setFiltroStatus(e.target.value || null)}
-                  className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600"
-                >
-                  <option value="">Todos status</option>
-                  <option value="ativo">Ativo</option>
-                  <option value="inativo">Inativo</option>
-                  <option value="pendente">Pendente</option>
-                </select>
-
-                {temFiltros && (
-                  <button
-                    onClick={limparFiltros}
-                    className="h-9 px-2.5 text-xs font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm hover:shadow-md transition-all flex items-center gap-1"
-                  >
-                    <X className="w-3.5 h-3.5" /> Limpar
-                  </button>
-                )}
-              </div>
-
-              {/* Camadas */}
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCamadaBase('voyager')}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'voyager' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <MapPinned className="w-3 h-3" /> Ruas
-                </button>
-                <button
-                  onClick={() => setCamadaBase('satellite')}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'satellite' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <World className="w-3 h-3" /> Satélite
-                </button>
-                <button
-                  onClick={() => setCamadaBase('dark')}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'dark' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <MapPin className="w-3 h-3" /> Escuro
-                </button>
-              </div>
-
-              {/* Toggles */}
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setMostrarLideres(!mostrarLideres)}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarLideres ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <Crown className="w-3 h-3" /> Líderes
-                </button>
-                <button
-                  onClick={() => setMostrarEleitores(!mostrarEleitores)}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarEleitores ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <User className="w-3 h-3" /> Eleitores
-                </button>
-                <button
-                  onClick={() => setMostrarComunidades(!mostrarComunidades)}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarComunidades ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <BuildingCommunity className="w-3 h-3" /> Comun.
-                </button>
-                <button
-                  onClick={() => setMostrarHeatmap(!mostrarHeatmap)}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarHeatmap ? 'bg-red-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <Thermometer className="w-3 h-3" /> Heat
-                </button>
-                <button
-                  onClick={() => setMostrarRota(!mostrarRota)}
-                  className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarRota ? 'bg-green-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  <Route className="w-3 h-3" /> Rota
-                </button>
-              </div>
-            </div>
-          </PanelCard>
-
-          <Card className="h-full min-h-[500px] lg:min-h-[600px]">
-            <CardContent className="p-0 h-full overflow-visible">
-              {loading ? (
-                <div className="h-[500px] lg:h-[600px] bg-slate-100 flex flex-col items-center justify-center text-slate-400 space-y-3">
-                  <div className="w-12 h-12 rounded-xl bg-slate-200 animate-pulse flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-slate-400" />
-                  </div>
-                  <p className="text-sm">Carregando mapa...</p>
-                  <div className="w-48 h-2 bg-slate-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 animate-pulse rounded-full" style={{ width: '60%' }} />
-                  </div>
-                </div>
-              ) : eleitoresComCoords.length === 0 && comunidadesNoMapa.length === 0 ? (
-                <div className="h-[500px] lg:h-[600px] flex items-center justify-center">
-                  <EmptyState
-                    icon={MapPin}
-                    title="Nenhum ponto no mapa"
-                    description="Cadastre eleitores com endereço ou comunidades para visualizar no mapa"
-                    action={{ label: 'Cadastrar eleitor', onClick: () => {} }}
-                  />
-                </div>
-              ) : (
-                <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', minHeight: '500px', width: '100%' }}>
-                  <TileLayerController camada={camadaBase} />
-                  <TileLayer
-                    attribution={tileLayers[camadaBase].attribution}
-                    url={tileLayers[camadaBase].url}
-                    subdomains={tileLayers[camadaBase].subdomains}
-                    maxZoom={19}
-                    key={camadaBase}
-                  />
-                  <MapController flyTo={flyTo} />
-
-                  {/* Heatmap */}
-                  {mostrarHeatmap && heatmapPoints.length > 0 && (
-                    <HeatmapLayer points={heatmapPoints} radius={25} blur={15} max={1.5} />
-                  )}
-
-                  {/* Rota de visita */}
-                  {mostrarRota && rotaPontos.length > 1 && (
-                    <Polyline positions={rotaPontos} pathOptions={{ color: '#2563eb', weight: 3, opacity: 0.7, dashArray: '8, 6' }} />
-                  )}
-
-                  {/* Comunidades */}
-                  {mostrarComunidades && comunidadesNoMapa.map(c => (
-                    <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)}
-                      eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
-                      <Popup>
-                        <div className="text-xs min-w-[180px]">
-                          <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-1">
-                            <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
-                            {c.nome}
-                          </div>
-                          <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
-                          {c.latitude && <div className="text-[10px] text-green-600 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Posição exata</div>}
-                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
-                            <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
-                          </div>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  ))}
-
-                  {/* Eleitores e Líderes COM coordenadas — com cluster */}
-                  {(mostrarEleitores || mostrarLideres) && (
-                    <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIcon} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
-                      {eleitoresComCoords.filter(e => {
-                        if (e.nivel === 'lider') return mostrarLideres;
-                        return mostrarEleitores;
-                      }).map(e => (
-                        <Marker
-                          key={e.id}
-                          position={[e.latitude!, e.longitude!]}
-                          icon={e.nivel === 'lider' ? createLiderIcon(e.status) : createEleitorIcon(e.status)}
-                          eventHandlers={{ click: () => setEleitorSelecionado(e) }}
-                        >
-                          <Popup>
-                            <div className="text-xs min-w-[200px]">
-                              <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
-                                {e.nivel === 'lider' && (
-                                  <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center">
-                                    <Crown className="w-2.5 h-2.5 text-white" />
-                                  </span>
-                                )}
-                                {e.nome}
-                              </div>
-                              <div className="flex items-center gap-2 mt-1.5">
-                                <Badge variant="outline" className={`text-[10px] capitalize ${e.nivel === 'lider' ? 'border-purple-200 text-purple-700 bg-purple-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}>{e.nivel}</Badge>
-                                <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
-                              </div>
-                              <div className="mt-2 space-y-0.5 text-slate-500">
-                                {e.endereco && <div>{e.endereco}</div>}
-                                {e.bairro && <div>{e.bairro}</div>}
-                                <div>{e.cidade}, {e.estado}</div>
-                                {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
-                              </div>
-                              {e.tags && e.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                  {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
-                                </div>
-                              )}
-                              {/* Botões de ação no popup - padrão Design System */}
-                              <div className="mt-3 pt-2 border-t border-slate-100 flex flex-col gap-1.5">
-                                <button
-                                  onClick={() => setEleitorSelecionado(e)}
-                                  className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm transition-all"
-                                >
-                                  <Eye className="w-3 h-3" /> Ver detalhes
-                                </button>
-                                <div className="flex gap-1.5">
-                                  <button
-                                    onClick={() => {}}
-                                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] font-semibold bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-sm transition-all"
-                                  >
-                                    <Link2 className="w-3 h-3" /> Link
-                                  </button>
-                                  <button
-                                    onClick={() => {}}
-                                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm transition-all"
-                                  >
-                                    <Trash2 className="w-3 h-3" /> Excluir
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </Popup>
-                        </Marker>
-                      ))}
-                    </MarkerClusterGroup>
-                  )}
-
-                  {/* Eleitores SEM coordenadas */}
-                  {mostrarCidadesFallback && porCidade.map(c => (
-                    <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }}>
-                      <Tooltip direction="top" offset={[0, -20]}>
-                        <span className="text-xs font-medium">{c.cidade}: {c.count} eleitor{c.count > 1 ? 'es' : ''} (sem coordenadas)</span>
-                      </Tooltip>
-                    </Marker>
-                  ))}
-                </MapContainer>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
       {/* Dialog: eleitores da cidade */}
       <Dialog open={!!cidadeSelecionada} onOpenChange={() => setCidadeSelecionada(null)}>
@@ -716,9 +557,7 @@ export default function MapaPageV1() {
                   <p className="text-sm font-medium text-slate-800">{e.nome}</p>
                   <p className="text-xs text-slate-500">{e.telefone} · {e.bairro}</p>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium capitalize ${
-                  e.nivel === 'lider' ? 'bg-purple-100 text-purple-700' : e.nivel === 'eleitor' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
-                }`}>{e.nivel}</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium capitalize ${e.nivel === 'lider' ? 'bg-purple-100 text-purple-700' : e.nivel === 'eleitor' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{e.nivel}</span>
               </div>
             ))}
           </div>
@@ -747,9 +586,7 @@ export default function MapaPageV1() {
                 {eleitorSelecionado.cep && <p className="text-slate-400">CEP: {eleitorSelecionado.cep}</p>}
               </div>
               {eleitorSelecionado.latitude && eleitorSelecionado.longitude && (
-                <div className="text-xs text-slate-400 bg-slate-50 p-2 rounded">
-                  Coordenadas: {eleitorSelecionado.latitude.toFixed(6)}, {eleitorSelecionado.longitude.toFixed(6)}
-                </div>
+                <div className="text-xs text-slate-400 bg-slate-50 p-2 rounded">Coordenadas: {eleitorSelecionado.latitude.toFixed(6)}, {eleitorSelecionado.longitude.toFixed(6)}</div>
               )}
               {eleitorSelecionado.tags && eleitorSelecionado.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
@@ -760,25 +597,15 @@ export default function MapaPageV1() {
                 {eleitorSelecionado.telefone && <p>Tel: {eleitorSelecionado.telefone}</p>}
                 {eleitorSelecionado.email && <p>{eleitorSelecionado.email}</p>}
               </div>
-              {/* Botões de ação no dialog - padrão Design System */}
               <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                <button
-                  onClick={() => {}}
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
-                >
+                <button onClick={() => {}} className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all">
                   <Pencil className="w-3.5 h-3.5" /> Editar eleitor
                 </button>
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => {}}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-sm hover:shadow-md transition-all"
-                  >
+                  <button onClick={() => {}} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-sm hover:shadow-md transition-all">
                     <Link2 className="w-3.5 h-3.5" /> Link
                   </button>
-                  <button
-                    onClick={() => {}}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm hover:shadow-md transition-all"
-                  >
+                  <button onClick={() => {}} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm hover:shadow-md transition-all">
                     <Trash2 className="w-3.5 h-3.5" /> Excluir
                   </button>
                 </div>
@@ -799,9 +626,7 @@ export default function MapaPageV1() {
           </DialogHeader>
           {comunidadeSelecionada && (
             <div className="space-y-3 text-sm">
-              <div className="text-slate-500">
-                {comunidadeSelecionada.bairro ? `${comunidadeSelecionada.bairro}, ${comunidadeSelecionada.cidade}` : comunidadeSelecionada.cidade}
-              </div>
+              <div className="text-slate-500">{comunidadeSelecionada.bairro ? `${comunidadeSelecionada.bairro}, ${comunidadeSelecionada.cidade}` : comunidadeSelecionada.cidade}</div>
               {comunidadeSelecionada.descricao && <p className="text-slate-600">{comunidadeSelecionada.descricao}</p>}
               <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
                 <div className="text-center">
@@ -810,18 +635,11 @@ export default function MapaPageV1() {
                 </div>
                 {comunidadeSelecionada.latitude && <div className="text-[10px] text-green-600 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Posição exata no mapa</div>}
               </div>
-              {/* Botões de ação */}
               <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                <button
-                  onClick={() => {}}
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
-                >
+                <button onClick={() => {}} className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all">
                   <Eye className="w-3.5 h-3.5" /> Ver comunidade
                 </button>
-                <button
-                  onClick={() => {}}
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-sm hover:shadow-md transition-all"
-                >
+                <button onClick={() => {}} className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-sm hover:shadow-md transition-all">
                   <Pencil className="w-3.5 h-3.5" /> Editar comunidade
                 </button>
               </div>
