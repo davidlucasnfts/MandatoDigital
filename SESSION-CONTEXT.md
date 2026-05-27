@@ -24,6 +24,17 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 - EmptyState component + skeleton loading
 - Build passando, zero erros TypeScript
 
+### 🔄 Em teste (próxima sessão):
+- **Solicitações V3:** Página de teste criada com Design System
+  - 4 StatCards clicáveis (Total, Pendentes, Em Andamento, Concluídas)
+  - PanelCard de Filtros com busca, status e prioridade
+  - Preview inline ao clicar na linha
+  - Toggle de status rápido no preview
+  - Botões de ação padronizados
+  - EmptyState com CTA
+  - Kanban preservado
+  - Rota: `/dashboard/solicitacoes/teste-v3`
+
 ### 📋 Checklist próxima sessão:
 - [ ] Testar Líderes em produção (preview, filtros, edição de meta)
 - [ ] Testar dashboard em produção (todos os painéis)
@@ -160,6 +171,8 @@ CNEFE_API_URL=http://82.197.73.101
 ## Checklist Próxima Sessão
 
 ```
+□ TESTAR Solicitacoes V3 em: http://localhost:3003/dashboard/solicitacoes/teste-v3
+□ Aprovar/rejeitar Solicitacoes V3 → se aprovado, copiar para SolicitacoesPage.tsx
 □ Testar dashboard v2.2 em produção (todos os painéis)
 □ Verificar performance das queries (muitas requisições no dashboard)
 □ Testar meta eleitoral (editar e salvar)
