@@ -72,9 +72,9 @@ export function createLiderIcon(_status: string = 'ativo'): L.DivIcon {
   return divIcon(pinBase('#7c3aed', crownIcon), 36);
 }
 
-// Comunidade
+// Comunidade — ícone menor que eleitores/líderes para não destacar demais
 export function createComunidadeIcon(color: string): L.DivIcon {
-  return divIcon(pinBase(color, buildingIcon), 36);
+  return divIcon(pinBase(color, buildingIcon), 28);
 }
 
 // Cluster

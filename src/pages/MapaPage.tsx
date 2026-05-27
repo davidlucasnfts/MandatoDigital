@@ -47,6 +47,19 @@ function createClusterIcon(cluster: any) {
   });
 }
 
+function createClusterIconComunidade(cluster: any) {
+  const count = cluster.getChildCount();
+  let size = 28, color = '#22c55e';
+  if (count >= 10) { size = 36; color = '#16a34a'; }
+  else if (count >= 5) { size = 32; color = '#4ade80'; }
+  return L.divIcon({
+    html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:${count >= 10 ? 12 : 11}px;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.25);">${count}</div>`,
+    className: 'marker-cluster-comunidade',
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+}
+
 function MapController({ flyTo }: { flyTo?: [number, number] | null }) {
   const map = useMap();
   useEffect(() => { if (flyTo) map.flyTo(flyTo, 14, { duration: 1.2 }); }, [flyTo, map]);

@@ -44,7 +44,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
     nome: c?.nome || '',
     descricao: c?.descricao || '',
     lider_id: c?.lider_id || null,
-    cor: '#2563EB',
+    cor: '#22c55e',
     icone: 'Users',
     cep: c?.cep || '',
     logradouro: c?.logradouro || '',
