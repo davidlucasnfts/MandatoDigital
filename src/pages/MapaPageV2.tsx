@@ -408,7 +408,7 @@ export default function MapaPageV2() {
               {/* Botão para ver ficha completa */}
               <div className="pt-3 border-t border-slate-100">
                 <button
-                  onClick={() => { setEleitorSelecionado(null); navigate('/dashboard/eleitores'); }}
+                  onClick={() => { const id = eleitorSelecionado.id; setEleitorSelecionado(null); navigate(`/dashboard/eleitores?preview=${id}`); }}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
                 >
                   <Eye className="w-3.5 h-3.5" /> Ver ficha completa

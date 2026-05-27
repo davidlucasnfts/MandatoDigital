@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Users, Search, Plus, Download, Upload, CheckCircle, XCircle, MessageSquare, ChevronDown, MapPin, Phone, Mail, Crown, Building2, Hash, Vote, Section, Calendar, Tag, Pencil, Trash2, Link2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ const nivelColors: Record<string, string> = { lider: 'bg-purple-100 text-purple-
 const statusColors: Record<string, string> = { ativo: 'bg-green-50 text-green-600', pendente: 'bg-amber-50 text-amber-600', inativo: 'bg-slate-100 text-slate-500' };
 
 export default function EleitoresPageV3() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: eleitores, loading, fetch, remove, update } = useEleitores();
   const { data: comunidades } = useComunidades();
   const { data: todasInteracoes } = useInteracoes();
@@ -28,6 +30,21 @@ export default function EleitoresPageV3() {
   const [interacoesEleitor, setInteracoesEleitor] = useState<Eleitor | null>(null);
   const [previewEleitor, setPreviewEleitor] = useState<Eleitor | null>(null);
   const [conviteLider, setConviteLider] = useState<Eleitor | null>(null);
+
+  // Abrir preview automaticamente se ?preview=ID estiver na URL
+  useEffect(() => {
+    const previewId = searchParams.get('preview');
+    if (previewId && eleitores.length > 0) {
+      const eleitor = eleitores.find(e => e.id === previewId);
+      if (eleitor) {
+        setPreviewEleitor(eleitor);
+        // Remove o param da URL para não ficar preso ao recarregar
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('preview');
+        setSearchParams(newParams, { replace: true });
+      }
+    }
+  }, [searchParams, eleitores, setSearchParams]);
   const [search, setSearch] = useState('');
   const [comunidadeFilter, setComunidadeFilter] = useState('');
   const [nivelFilter, setNivelFilter] = useState('');
