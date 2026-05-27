@@ -52,6 +52,7 @@ export default function EleitoresPageV3() {
   const [liderFilter, setLiderFilter] = useState('');
   const [abaAtiva, setAbaAtiva] = useState<'todos' | 'pendentes'>('todos');
   // Preview inline sempre ativo (padrão desde V3)
+  const previewInline = true;
 
   const filtered = useMemo(() => {
     let rows = eleitores;

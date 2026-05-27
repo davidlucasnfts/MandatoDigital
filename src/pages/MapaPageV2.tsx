@@ -201,30 +201,36 @@ export default function MapaPageV2() {
               )}
             </div>
 
-            {/* Camadas */}
-            <div className="flex items-center gap-1">
-              <button onClick={() => setCamadaBase('voyager')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'voyager' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-                <MapPinned className="w-3 h-3" /> Ruas
-              </button>
-              <button onClick={() => setCamadaBase('satellite')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'satellite' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-                <World className="w-3 h-3" /> Satélite
-              </button>
-              <button onClick={() => setCamadaBase('dark')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'dark' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-                <MapPin className="w-3 h-3" /> Escuro
-              </button>
+            {/* Grupo: Mapa Base */}
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Mapa Base</span>
+              <div className="flex items-center gap-1">
+                <button onClick={() => setCamadaBase('voyager')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'voyager' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  <MapPinned className="w-3 h-3" /> Ruas
+                </button>
+                <button onClick={() => setCamadaBase('satellite')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'satellite' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  <World className="w-3 h-3" /> Satélite
+                </button>
+                <button onClick={() => setCamadaBase('dark')} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'dark' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  <MapPin className="w-3 h-3" /> Escuro
+                </button>
+              </div>
             </div>
 
-            {/* Toggles */}
-            <div className="flex items-center gap-1">
-              <button onClick={() => setMostrarLideres(!mostrarLideres)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarLideres ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-                <Crown className="w-3 h-3" /> Líderes
-              </button>
-              <button onClick={() => setMostrarEleitores(!mostrarEleitores)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarEleitores ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-                <User className="w-3 h-3" /> Eleitores
-              </button>
-              <button onClick={() => setMostrarComunidades(!mostrarComunidades)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarComunidades ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-                <BuildingCommunity className="w-3 h-3" /> Comun.
-              </button>
+            {/* Grupo: Camadas */}
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Camadas</span>
+              <div className="flex items-center gap-1">
+                <button onClick={() => setMostrarLideres(!mostrarLideres)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarLideres ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  <Crown className="w-3 h-3" /> Líderes
+                </button>
+                <button onClick={() => setMostrarEleitores(!mostrarEleitores)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarEleitores ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  <User className="w-3 h-3" /> Eleitores
+                </button>
+                <button onClick={() => setMostrarComunidades(!mostrarComunidades)} className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarComunidades ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  <BuildingCommunity className="w-3 h-3" /> Comunidades
+                </button>
+              </div>
             </div>
           </div>
         </PanelCard>
