@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 25/05/2026
-> **Sessão atual:** Correções Dashboard v2 + Responsividade + Design System
+> **Atualizado em:** 27/05/2026
+> **Sessão atual:** Mapa V3 + Cache de CEP + Comunidades
 
 ---
 
@@ -11,33 +11,29 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Eleitores V3.1 + Líderes V3 — Design System em Produção — 25/05**
+**Mapa V3 + Cache de CEP + Comunidades — 27/05**
 
 ### ✅ O que foi entregue:
-- **Eleitores V3.1:** Preview inline na tabela (igual Líderes) — ao clicar no eleitor, detalhes aparecem logo abaixo da linha, sem scroll para cima
-- **Líderes V3:** Página aplicada como principal com Design System completo
-- 4 StatCards no topo (Total, Estimativa, Vinculados, Conversão) — removido Projeção (redundante com Estimativa)
-- Podium Top 3 dentro de PanelCard
-- Filtros em PanelCard com busca, ordenação, comunidade, bairro
-- Tabela otimizada com colunas essenciais
-- Edição de estimativa inline na tabela e no preview
-- EmptyState component + skeleton loading
-- Build passando, zero erros TypeScript
-
-### 🔄 Em teste (próxima sessão):
-- **Solicitações V3:** Página de teste criada com Design System
-  - 4 StatCards clicáveis (Total, Pendentes, Em Andamento, Concluídas)
-  - PanelCard de Filtros com busca, status e prioridade
-  - Preview inline ao clicar na linha
-  - Toggle de status rápido no preview
-  - Botões de ação padronizados
-  - EmptyState com CTA
-  - Kanban preservado
-  - Rota: `/dashboard/solicitacoes/teste-v3`
+- **Cache de CEP:** Tabela `cep_cache` no Supabase com RLS — reduz chamadas Here API em 90%
+- **Comunidades:** Cadastro com geocodificação CNEFE → Here API → cache
+  - CEP busca ViaCEP + geocodifica automaticamente
+  - Número com checkbox S/N + refine Here API no onBlur
+  - Campos bloqueados quando CEP preenchido (rua, bairro, cidade, estado)
+  - Cor e ícone removidos do formulário (padrão verde fixo)
+- **Mapa:**
+  - Legenda flutuante com comunidade em verde
+  - Cluster separado para comunidades (verde) e eleitores (azul)
+  - `zIndexOffset` para comunidades ficarem por cima
+  - Ícone de comunidade reduzido (28px)
+  - MapaPageV2 também atualizado
+- **Build passando**, zero erros TypeScript
 
 ### 📋 Checklist próxima sessão:
-- [ ] Testar Líderes em produção (preview, filtros, edição de meta)
-- [ ] Testar dashboard em produção (todos os painéis)
+- [ ] Testar cache de CEP em produção (segundo CEP deve vir do cache)
+- [ ] Testar comunidades em produção (geocodificação, mapa)
+- [ ] Verificar se ícones das comunidades estão verdes no mapa principal
+- [ ] Testar cluster de comunidades vs eleitores
+- [ ] Decidir: remover MapaPageV2 ou mantê-lo sincronizado
 - [ ] Verificar performance das queries
 - [ ] Testar meta eleitoral (editar e salvar)
 - [ ] Testar vinculo de lider com lider em producao

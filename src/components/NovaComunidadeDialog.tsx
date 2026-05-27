@@ -174,7 +174,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
         nome: form.nome.trim(),
         descricao: form.descricao || undefined,
         lider_id: form.lider_id || null,
-        cor: form.cor || '#2563EB',
+        cor: '#22c55e',
         icone: form.icone || 'Users',
         cep: cepLimpo || null,
         logradouro: form.logradouro || null,

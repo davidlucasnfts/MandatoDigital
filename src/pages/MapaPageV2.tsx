@@ -33,7 +33,7 @@ const clusterColors = {
   ativo: '#3b82f6',
   pendente: '#f59e0b',
   lider: '#7c3aed',
-  comunidade: '#06b6d4',
+  comunidade: '#22c55e',
 };
 
 function createClusterIcon(cluster: any, color: string = clusterColors.ativo) {
@@ -301,9 +301,11 @@ export default function MapaPageV2() {
                   <MapController flyTo={flyTo} />
                   <MapBoundsController points={todosOsPontos} trigger={fitTrigger} />
 
-                  {/* Comunidades */}
-                  {mostrarComunidades && comunidadesNoMapa.map(c => (
-                    <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)} eventHandlers={{ click: () => setComunidadeSelecionada(c), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
+                  {/* Comunidades — com cluster separado */}
+                  {mostrarComunidades && (
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.comunidade)} maxClusterRadius={80} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                      {comunidadesNoMapa.map(c => (
+                        <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)} zIndexOffset={1000} eventHandlers={{ click: () => setComunidadeSelecionada(c), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
                       <Popup>
                         <div className="text-xs min-w-[180px]">
                           <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-1">
@@ -317,7 +319,9 @@ export default function MapaPageV2() {
                         </div>
                       </Popup>
                     </Marker>
-                  ))}
+                      ))}
+                    </MarkerClusterGroup>
+                  )}
 
                   {/* Eleitores e Líderes */}
                   {(mostrarEleitores || mostrarLideres) && (

@@ -610,25 +610,30 @@ export default function MapaPage() {
                     </MarkerClusterGroup>
                   )}
 
-                  {/* Comunidades — renderizadas DEPOIS para ficarem por cima */}
-                  {mostrarComunidades && comunidadesNoMapa.map(c => (
-                    <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)}
-                      eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
-                      <Popup>
-                        <div className="text-xs min-w-[160px]">
-                          <div className="font-semibold text-slate-800 flex items-center gap-1 mb-1">
-                            <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
-                            {c.nome}
-                          </div>
-                          <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
-                          {c.latitude && <div className="text-[10px] text-green-600 mt-1">📍 Posição exata</div>}
-                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
-                            <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
-                          </div>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  ))}
+                  {/* Comunidades — com cluster separado */}
+                  {mostrarComunidades && (
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIconComunidade} maxClusterRadius={80} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                      {comunidadesNoMapa.map(c => (
+                        <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)}
+                          zIndexOffset={1000}
+                          eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
+                          <Popup>
+                            <div className="text-xs min-w-[160px]">
+                              <div className="font-semibold text-slate-800 flex items-center gap-1 mb-1">
+                                <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
+                                {c.nome}
+                              </div>
+                              <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
+                              {c.latitude && <div className="text-[10px] text-green-600 mt-1">📍 Posição exata</div>}
+                              <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
+                                <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
+                              </div>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </MarkerClusterGroup>
+                  )}
 
                   {/* Eleitores SEM coordenadas */}
                   {mostrarCidadesFallback && porCidade.map(c => (
