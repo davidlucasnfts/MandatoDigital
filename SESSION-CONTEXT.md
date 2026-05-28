@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 27/05/2026
-> **Sessão atual:** Mapa V3 + Cache de CEP + Comunidades
+> **Sessão atual:** Solicitações V3 — Preview inline + Modal refatorado
 
 ---
 
@@ -11,92 +11,70 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
+**Solicitações V3 — 27/05**
+
+### ✅ O que foi entregue:
+- **Modal Nova Solicitação refatorado:**
+  - Busca de eleitor com autocomplete (nome/telefone)
+  - Prioridade como botões visuais (Urgente/Alta/Média/Baixa)
+  - Seções organizadas: Informações Básicas, Prazo, Evento, Local
+  - Campo Local/Endereço novo (migration 029/030/031)
+  - Responsável movido para Informações Básicas
+  - Datas futuras corrigidas (prazo e evento permitem futuro)
+  - Ícone no botão primário, loading com spinner
+
+- **Preview inline na tabela (accordion):**
+  - Preview aparece **embaixo da linha clicada** (não no topo)
+  - Linha selecionada fica com fundo azul destacado
+  - Toggle: clique abre/fecha, clique em outra troca
+  - Header com círculo de prioridade + título + badges + ações
+  - Grid 2col mobile / 3col desktop com todos os campos
+  - Toggle de status rápido no preview
+
+- **Cards de stats no topo:**
+  - Total, Pendentes, Em Andamento, Concluídas
+  - Clicáveis para filtrar
+  - Contador de urgentes no subtítulo
+
+- **Filtros avançados:**
+  - Painel colapsável
+  - Chips de status e prioridade
+  - Botão limpar filtros
+
+- **Design System aplicado:**
+  - Botões todos sólidos (nunca outline+sólido misturados)
+  - Labels em text-slate-400 (padrão preview)
+  - Ícones Lucide, nunca emoji
+  - Grid simétrico
+
+- **Correções de bug:**
+  - Erro 400: colunas data_solicitacao, data_evento, local, owner_id faltando
+  - Migrations 029, 030, 031 criadas e aplicadas
+  - Erro MapaPageV2: `)` fora do lugar corrigido
+
+### ❌ Problemas pendentes:
+- **Atualização automática:** Lista não atualiza imediatamente após criar solicitação (precisa F5)
+- **Descrição longa:** Quebra layout na tabela (line-clamp não está funcionando perfeitamente)
+- **Scroll do preview:** Quando abre, não faz scroll automático para ficar visível
+
+### 📋 Checklist próxima sessão:
+- [ ] Corrigir atualização automática da lista após insert
+- [ ] Corrigir descrição longa que extrapola célula da tabela
+- [ ] Adicionar scroll automático ao abrir preview
+- [ ] Testar preview em mobile (responsividade)
+- [ ] Aprovar V3 → copiar para SolicitacoesPage.tsx
+- [ ] Remover rota de teste `/solicitacoes/teste-v3`
+
+---
+
+## Histórico
 **Mapa V3 + Cache de CEP + Comunidades — 27/05**
 
 ### ✅ O que foi entregue:
 - **Cache de CEP:** Tabela `cep_cache` no Supabase com RLS — reduz chamadas Here API em 90%
 - **Comunidades:** Cadastro com geocodificação CNEFE → Here API → cache
-  - CEP busca ViaCEP + geocodifica automaticamente
-  - Número com checkbox S/N + refine Here API no onBlur
-  - Campos bloqueados quando CEP preenchido (rua, bairro, cidade, estado)
-  - Cor e ícone removidos do formulário (padrão verde fixo)
-- **Mapa:**
-  - Legenda flutuante com comunidade em verde
-  - Cluster separado para comunidades (verde) e eleitores (azul)
-  - `zIndexOffset` para comunidades ficarem por cima
-  - Ícone de comunidade reduzido (28px)
-  - MapaPageV2 também atualizado
+- **Mapa:** Legenda flutuante, cluster separado, zIndex, ícones
 - **Build passando**, zero erros TypeScript
-
-### 📋 Checklist próxima sessão:
-- [ ] Testar cache de CEP em produção (segundo CEP deve vir do cache)
-- [ ] Testar comunidades em produção (geocodificação, mapa)
-- [ ] Verificar se ícones das comunidades estão verdes no mapa principal
-- [ ] Testar cluster de comunidades vs eleitores
-- [ ] Decidir: remover MapaPageV2 ou mantê-lo sincronizado
-- [ ] Verificar performance das queries
-- [ ] Testar meta eleitoral (editar e salvar)
-- [ ] Testar vinculo de lider com lider em producao
-- [ ] Testar campos eleitorais (secao, zona, titulo) em producao
-- [ ] Verificar se ícones Tabler estão corretos em todas as abas
-- [ ] Comprar/configurar domínio próprio (se decidir)
-- [ ] Importar mais estados CNEFE se necessario (PB, RN, PI)
-
----
-
-## Histórico
-**Dashboard v2 — 10 melhorias completas — 24/05**
-
-### ✅ O que foi entregue hoje:
-
-#### 1. Cards com tendência (↑↓ %)
-- `useStats` agora calcula variação mês atual vs mês anterior
-- Badge verde (positivo) / vermelho (negativo) em cada card
-- Ícones `TrendingUp`/`TrendingDown` do Tabler
-
-#### 2. Painel Território
-- Top 5 bairros com mais eleitores (barras de progresso)
-- Cobertura geográfica: % de eleitores geolocalizados no mapa
-- Link direto para o mapa territorial
-
-#### 3. Produtividade dos Líderes (mini ranking)
-- Top 3 líderes com mais eleitores vinculados
-- Mostra estimativa de votos e taxa de conversão
-- Link para página completa de produtividade
-
-#### 4. Proposições em tramitação
-- Contagem por status (em elaboração, tramitação, aprovada, arquivada)
-- 3 proposições mais recentes com badge colorido
-- Link para gerenciar proposições
-
-#### 5. Enquetes ativas
-- Total de enquetes ativas + total de respostas
-- Lista das 3 enquetes mais recentes com contagem de respostas
-
-#### 6. Atividade recente (feed)
-- Últimos eleitores cadastrados
-- Solicitações resolvidas
-- Interações registradas
-- Formato de tempo relativo (agora, 5min, 2h, 3d)
-
-#### 7. Meta eleitoral — barra de progresso
-- Meta configurável (salva em `configuracoes`)
-- Barra de progresso visual
-- Projeção: "Na velocidade atual, atinge a meta em X dias"
-
-#### 8. Aniversariantes — estatística de envios
-- Barra de progresso: % de mensagens já enviadas no período
-- Contador "X de Y enviados"
-
-#### 9. Comunicação — status dos canais
-- Quantos eleitores têm e-mail / WhatsApp
-- Total de envios de aniversário no ano
-- Base segmentável
-
-#### 10. Convites pendentes de aprovação
-- Lista de eleitores aguardando aprovação
-- Tempo de espera (hoje, ontem, X dias)
-- Link para aprovar
 
 ---
 
@@ -107,6 +85,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 | **Produção (Vercel)** | https://mandato-digital-xi.vercel.app |
 | **API Proxy CNEFE** | http://82.197.73.101 |
 | **VPS (SSH)** | ssh -p 2222 root@82.197.73.101 |
+| **Solicitações V3 (teste)** | /dashboard/solicitacoes/teste-v3 |
 
 ---
 
@@ -114,10 +93,10 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 
 | # | Ação | Onde fazer | Prioridade |
 |---|---|---|---|
-| 1 | Comprar domínio (Registro.br, Porkbun ou KingHost) | Site do registrador | Média |
-| 2 | Configurar DNS para apontar VPS | Painel do registrador | Média |
-| 3 | Configurar Certbot (HTTPS) | VPS (quando tiver domínio) | Média |
-| 4 | Configurar Cloudflare Tunnel | Cloudflare (opcional) | Baixa |
+| 1 | Rodar migration 031 no Supabase (se ainda não rodou) | SQL Editor | Alta |
+| 2 | Comprar domínio (Registro.br, Porkbun ou KingHost) | Site do registrador | Média |
+| 3 | Configurar DNS para apontar VPS | Painel do registrador | Média |
+| 4 | Configurar Certbot (HTTPS) | VPS (quando tiver domínio) | Média |
 
 ---
 
@@ -148,36 +127,23 @@ CNEFE_API_URL=http://82.197.73.101
 - `CommandMenu` — Busca global (Ctrl+K)
 - `SkeletonCard` — Skeletons anatômicos para loading
 
-### Diferenças vs Dashboard Atual:
-| Aspecto | Atual (v2.2) | V2 (Skill) |
-|---|---|---|
-| Command Menu | ❌ Não tem | ✅ Ctrl+K |
-| Hover cards | Só sombra | Levanta card |
-| Empty states | Texto simples | Ícone + CTA |
-| Barras progresso | Estáticas | Animadas |
-| Acessibilidade | Básica | aria-label, focus ring |
-| Meta Eleitoral | Card diferente | Mesmo padrão |
-
-### Como acessar:
-- Desenvolvimento: `http://localhost:3000/dashboard/teste-v2`
-- **Atenção:** Rota `/dashboard/teste-v2` está no App.tsx
-
 ---
 
 ## Checklist Próxima Sessão
 
 ```
-□ TESTAR Solicitacoes V3 em: http://localhost:3003/dashboard/solicitacoes/teste-v3
-□ Aprovar/rejeitar Solicitacoes V3 → se aprovado, copiar para SolicitacoesPage.tsx
+□ Corrigir atualização automática da lista após criar solicitação
+□ Corrigir descrição longa que extrapola célula da tabela
+□ Adicionar scroll automático ao abrir preview inline
+□ Testar preview em mobile (responsividade)
+□ Aprovar/rejeitar Solicitacoes V3 → copiar para SolicitacoesPage.tsx
+□ Remover rota de teste /solicitacoes/teste-v3
 □ Testar dashboard v2.2 em produção (todos os painéis)
-□ Verificar performance das queries (muitas requisições no dashboard)
+□ Verificar performance das queries
 □ Testar meta eleitoral (editar e salvar)
 □ Testar vinculo de lider com lider em producao
 □ Testar campos eleitorais (secao, zona, titulo) em producao
 □ Verificar se ícones Tabler estão corretos em todas as abas
-□ Comprar/configurar domínio próprio (se decidir)
-□ Importar mais estados CNEFE se necessário (PB, RN, PI)
-□ Decidir se aplica melhorias do V2 no dashboard principal
 ```
 
 ---
@@ -191,3 +157,7 @@ CNEFE_API_URL=http://82.197.73.101
 | 010 | DATABASE_URL com valor placeholder na Vercel | 24/05/2026 | Sempre verificar se env vars estão corretas após qualquer mudança |
 | 011 | Senha com `!` quebra URL PostgreSQL | 24/05/2026 | Usar encodeURIComponent na senha ou evitar caracteres especiais |
 | 012 | schema_safe.sql desatualizado | 24/05/2026 | Sempre rodar `npm run db:schema-safe` após nova migration |
+| 013 | Preview fora do padrão do projeto | 27/05/2026 | Sempre seguir padrão de Líderes: círculo + título + badges + grid 3col |
+| 014 | Campo `local` não existe no banco | 27/05/2026 | Sempre verificar schema antes de adicionar campo novo |
+| 015 | Erro 400 por coluna faltante | 27/05/2026 | Sempre rodar migration no Supabase antes de testar |
+| 016 | `)` fora do lugar em JSX | 27/05/2026 | Sempre verificar fechamento de tags em map/filter |

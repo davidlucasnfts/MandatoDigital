@@ -1,7 +1,7 @@
 -- ============================================================
 -- SCHEMA SAFE - Consolidado de Migrations
--- Gerado automaticamente em: 2026-05-27T05:11:08.563Z
--- Total de migrations: 28
+-- Gerado automaticamente em: 2026-05-28T04:05:18.432Z
+-- Total de migrations: 31
 --
 -- INSTRUÇÕES:
 -- 1. Este arquivo é IDEMPOTENTE — pode rodar quantas vezes quiser
@@ -840,7 +840,52 @@ CREATE POLICY "cep_cache_upsert_authenticated"
   WITH CHECK (true);
 
 
+-- === 029-solicitacao-local.sql ===
+-- ============================================================
+-- MIGRATION 029: Adiciona campo local na tabela solicitacoes
+-- Data: 27/05/2026
+-- Descricao: Campo para endereco/local da demanda solicitada
+-- ============================================================
+
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS local TEXT;
+
+
+-- === 030-solicitacoes-colunas-faltantes.sql ===
+-- ============================================================
+-- MIGRATION 030: Garante colunas faltantes na tabela solicitacoes
+-- Data: 27/05/2026
+-- Descricao: Adiciona data_solicitacao, data_evento e local
+-- caso a migration 008 nao tenha sido aplicada
+-- ============================================================
+
+-- Colunas de data (migration 008)
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS data_solicitacao DATE DEFAULT CURRENT_DATE;
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS data_evento DATE;
+
+-- Coluna de local (migration 029)
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS local TEXT;
+
+
+-- === 031-solicitacoes-schema-completo.sql ===
+-- ============================================================
+-- MIGRATION 031: Garante schema completo da tabela solicitacoes
+-- Data: 27/05/2026
+-- Descricao: Adiciona todas as colunas que podem estar faltando
+-- ============================================================
+
+-- Coluna owner_id (migration 002)
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+UPDATE solicitacoes SET owner_id = user_id WHERE owner_id IS NULL;
+
+-- Colunas de data (migration 008)
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS data_solicitacao DATE DEFAULT CURRENT_DATE;
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS data_evento DATE;
+
+-- Coluna local (migration 029/030)
+ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS local TEXT;
+
+
 -- ============================================================
 -- FIM DO SCHEMA SAFE
--- Total: 28 migrations consolidadas
+-- Total: 31 migrations consolidadas
 -- ============================================================

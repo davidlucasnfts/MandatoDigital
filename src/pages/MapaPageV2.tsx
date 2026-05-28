@@ -36,14 +36,52 @@ const clusterColors = {
   comunidade: '#22c55e',
 };
 
-function createClusterIcon(cluster: any, color: string = clusterColors.ativo) {
+function createClusterIcon(cluster: any, color: string = clusterColors.ativo, type: 'eleitor' | 'comunidade' | 'lider' = 'eleitor') {
   const count = cluster.getChildCount();
-  let size = 30;
-  if (count >= 100) size = 44;
-  else if (count >= 50) size = 38;
-  else if (count >= 20) size = 34;
+  const size = 48;
+  
+  // SVGs estilo Open Peeps (hand-drawn sketch)
+  const getIconSvg = () => {
+    if (type === 'comunidade') {
+      // Comunidade - grupo de pessoas verde
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+        <circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
+        <circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
+        <path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" fill="rgba(255,255,255,0.2)"/>
+        <path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" fill="rgba(255,255,255,0.2)"/>
+      </svg>`;
+    }
+    if (type === 'lider') {
+      // Líder - pessoa apontando com camisa roxa/lilás
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+        <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
+        <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
+        <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 22l1.5-7" stroke-linecap="round"/>
+      </svg>`;
+    }
+    // Eleitor - pessoa básica com camisa azul
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+      <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
+      <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
+      <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
+    </svg>`;
+  };
+
+  const bgColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
+  const countColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
+
   return L.divIcon({
-    html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:${count >= 100 ? 13 : count >= 50 ? 12 : 11}px;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${count}</div>`,
+    html: `
+      <div style="position:relative;width:${size}px;height:${size}px;">
+        <div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+            ${getIconSvg()}
+            <span style="color:white;font-weight:900;font-size:12px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.3);">${count}</span>
+          </div>
+        </div>
+      </div>
+    `,
     className: 'marker-cluster-custom',
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
@@ -303,7 +341,7 @@ export default function MapaPageV2() {
 
                   {/* Comunidades — com cluster separado */}
                   {mostrarComunidades && (
-                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.comunidade)} maxClusterRadius={80} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.comunidade, 'comunidade')} maxClusterRadius={80} spiderfyOnMaxZoom showCoverageOnHover={false}>
                       {comunidadesNoMapa.map(c => (
                         <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)} zIndexOffset={1000} eventHandlers={{ click: () => setComunidadeSelecionada(c), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
                       <Popup>
@@ -323,22 +361,19 @@ export default function MapaPageV2() {
                     </MarkerClusterGroup>
                   )}
 
-                  {/* Eleitores e Líderes */}
-                  {(mostrarEleitores || mostrarLideres) && (
-                    <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIcon} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
-                      {eleitoresComCoords.filter(e => {
-                        if (e.nivel === 'lider') return mostrarLideres;
-                        return mostrarEleitores;
-                      }).map(e => (
-                        <Marker key={e.id} position={[e.latitude!, e.longitude!]} icon={e.nivel === 'lider' ? createLiderIcon(e.status) : createEleitorIcon(e.status)} eventHandlers={{ click: () => setEleitorSelecionado(e), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
+                  {/* Líderes */}
+                  {mostrarLideres && (
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.lider, 'lider')} maxClusterRadius={70} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                      {eleitoresComCoords.filter(e => e.nivel === 'lider').map(e => (
+                        <Marker key={e.id} position={[e.latitude!, e.longitude!]} icon={createLiderIcon(e.status)} eventHandlers={{ click: () => setEleitorSelecionado(e), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
                         <Popup>
                           <div className="text-xs min-w-[200px]">
                             <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
-                              {e.nivel === 'lider' && <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center"><Crown className="w-2.5 h-2.5 text-white" /></span>}
+                              <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center"><Crown className="w-2.5 h-2.5 text-white" /></span>
                               {e.nome}
                             </div>
                             <div className="flex items-center gap-2 mt-1.5">
-                              <Badge variant="outline" className={`text-[10px] capitalize ${e.nivel === 'lider' ? 'border-purple-200 text-purple-700 bg-purple-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}>{e.nivel}</Badge>
+                              <Badge variant="outline" className="text-[10px] capitalize border-purple-200 text-purple-700 bg-purple-50">{e.nivel}</Badge>
                               <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
                             </div>
                             <div className="mt-2 space-y-0.5 text-slate-500">
@@ -358,6 +393,38 @@ export default function MapaPageV2() {
                       ))}
                     </MarkerClusterGroup>
                   )}
+
+                  {/* Eleitores */}
+                  {mostrarEleitores && (
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.ativo, 'eleitor')} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                      {eleitoresComCoords.filter(e => e.nivel !== 'lider').map(e => (
+                        <Marker key={e.id} position={[e.latitude!, e.longitude!]} icon={createEleitorIcon(e.status)} eventHandlers={{ click: () => setEleitorSelecionado(e), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
+                        <Popup>
+                          <div className="text-xs min-w-[200px]">
+                            <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                              {e.nome}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <Badge variant="outline" className="text-[10px] capitalize border-blue-200 text-blue-700 bg-blue-50">{e.nivel}</Badge>
+                              <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
+                            </div>
+                            <div className="mt-2 space-y-0.5 text-slate-500">
+                              {e.endereco && <div>{e.endereco}</div>}
+                              {e.bairro && <div>{e.bairro}</div>}
+                              <div>{e.cidade}, {e.estado}</div>
+                              {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
+                            </div>
+                            {e.tags && e.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
+                              </div>
+                            )}
+                          </div>
+                        </Popup>
+                      </Marker>
+                      )}
+                    </MarkerClusterGroup>
+                  )}
                 </MapContainer>
 
                 {/* Botão Centralizar — DEPOIS do MapContainer no DOM = fica por cima */}
@@ -373,16 +440,13 @@ export default function MapaPageV2() {
                 <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200 px-3 py-2.5 space-y-1.5">
                   <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Legenda</div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <div className="w-3 h-3 rounded-full bg-purple-500" /> Líder
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/></svg> Líder (apontando)
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <div className="w-3 h-3 rounded-full bg-blue-500" /> Eleitor ativo
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg> Eleitor
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <div className="w-3 h-3 rounded-full bg-amber-400" /> Eleitor pendente
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <div className="w-3 h-3 rounded-full bg-green-500" /> Comunidade
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" opacity="0.5"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" opacity="0.5"/></svg> Comunidade
                   </div>
                 </div>
               </div>

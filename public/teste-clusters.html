@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opções de Ilustrações - Clusters</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+h1 { 
+  color: #0f172a; 
+  font-size: 26px; 
+  margin-bottom: 8px;
+  text-align: center;
+}
+.sub { 
+  color: #64748b; 
+  font-size: 15px; 
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* ===== BIBLIOTECA ===== */
+.lib-section {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.lib-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.lib-header h2 {
+  color: #1e293b;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lib-tag {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tag-free { background: #dcfce7; color: #166534; }
+.tag-opensource { background: #dbeafe; color: #1e40af; }
+.tag-attribution { background: #fef3c7; color: #92400e; }
+
+.lib-desc {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.lib-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+.lib-link:hover { text-decoration: underline; }
+
+/* ===== GRID DE EXEMPLos ===== */
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.example-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  border: 2px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.example-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.example-visual {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.example-card.eleitor .example-visual { background: #dbeafe; }
+.example-card.comunidade .example-visual { background: #dcfce7; }
+.example-card.lider .example-visual { background: #ede9fe; }
+
+.example-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+.example-desc {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ===== ESTILO ESPECÍFICO - OPEN PEEPS ===== */
+.style-openpeeps .example-visual {
+  background: white;
+  border: 3px solid #e2e8f0;
+}
+
+/* ===== ESTILO ESPECÍFICO - 3D ===== */
+.style-3d .example-visual {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* ===== ESTILO ESPECÍFICO - FLAT ===== */
+.style-flat .example-visual svg {
+  width: 50px;
+  height: 50px;
+}
+
+/* ===== RECOMENDAÇÃO ===== */
+.recommendation {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  border-radius: 16px;
+  padding: 30px;
+  color: white;
+  margin-top: 40px;
+}
+
+.recommendation h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.rec-card {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.rec-card h3 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.rec-card p {
+  font-size: 13px;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.rec-card .winner {
+  display: inline-block;
+  background: #22c55e;
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .examples-grid,
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🎨 Opções de Ilustrações para Clusters</h1>
+<p class="sub">Comparativo de bibliotecas externas — substituindo ícones vetoriais por ilustrações</p>
+
+<!-- ===== OPEN PEEPS ===== -->
+<div class="lib-section style-openpeeps">
+  <div class="lib-header">
+    <h2>👤 Open Peeps</h2>
+    <span class="lib-tag tag-opensource">Open Source</span>
+  </div>
+  <p class="lib-desc">
+    Ilustrações hand-drawn de pessoas. Estilo sketch/arte. Pode misturar cabeças, corpos, poses. 
+    <a href="https://www.openpeeps.com" target="_blank" class="lib-link">openpeeps.com →</a>
+  </p>
+  <div class="examples-grid">
+    <div class="example-card eleitor">
+      <div class="example-visual">🧍</div>
+      <div class="example-label">Eleitor</div>
+      <div class="example-desc">Pessoa em pé, pose neutra</div>
+    </div>
+    <div class="example-card comunidade">
+      <div class="example-visual">👫</div>
+      <div class="example-label">Comunidade</div>
+      <div class="example-desc">Grupo de 2-3 pessoas</div>
+    </div>
+    <div class="example-card lider">
+      <div class="example-visual">🙋</div>
+      <div class="example-label">Líder</div>
+      <div class="example-desc">Pessoa com braço levantado</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== unDraw ===== -->
+<div class="lib-section style-flat">
+  <div class="lib-header">
+    <h2>🎭 unDraw</h2>
+    <span class="lib-tag tag-opensource">Open Source</span>
+  </div>
+  <p class="lib-desc">
+    Ilustrações flat modernas. Cor principal customizável. Estilo limpo e minimalista.
+    <a href="https://undraw.co" target="_blank" class="lib-link">undraw.co →</a>
+  </p>
+  <div class="examples-grid">
+    <div class="example-card eleitor">
+      <div class="example-visual">
+        <svg viewBox="0 0 200 200" fill="none"><circle cx="100" cy="60" r="30" fill="#3b82f6"/><path d="M50 180c0-30 22-50 50-50s50 20 50 50" fill="#3b82f6"/></svg>
+      </div>
+      <div class="example-label">Eleitor</div>
+      <div class="example-desc">Silhueta azul, estilo flat</div>
+    </div>
+    <div class="example-card comunidade">
+      <div class="example-visual">
+        <svg viewBox="0 0 200 200" fill="none"><circle cx="70" cy="60" r="25" fill="#22c55e"/><circle cx="130" cy="60" r="25" fill="#22c55e"/><path d="M40 180c0-25 18-40 40-40s40 15 40 40" fill="#22c55e"/><path d="M100 180c0-25 18-40 40-40s40 15 40 40" fill="#22c55e"/></svg>
+      </div>
+      <div class="example-label">Comunidade</div>
+      <div class="example-desc">Duas silhuetas verdes</div>
+    </div>
+    <div class="example-card lider">
+      <div class="example-visual">
+        <svg viewBox="0 0 200 200" fill="none"><polygon points="100,20 120,60 160,60 130,90 140,130 100,110 60,130 70,90 40,60 80,60" fill="#8b5cf6"/><circle cx="100" cy="160" r="15" fill="#8b5cf6"/></svg>
+      </div>
+      <div class="example-label">Líder</div>
+      <div class="example-desc">Estrela/coroa roxa</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3D ICONS (ICONS8) ===== -->
+<div class="lib-section style-3d">
+  <div class="lib-header">
+    <h2>💎 3D Icons (Icons8)</h2>
+    <span class="lib-tag tag-free">Gratuito</span>
+  </div>
+  <p class="lib-desc">
+    Ícones 3D realistas em PNG. Sombras, profundidade, acabamento profissional.
+    <a href="https://icons8.com/3d" target="_blank" class="lib-link">icons8.com/3d →</a>
+  </p>
+  <div class="examples-grid">
+    <div class="example-card eleitor">
+      <div class="example-visual">👤</div>
+      <div class="example-label">Eleitor</div>
+      <div class="example-desc">Avatar 3D realista</div>
+    </div>
+    <div class="example-card comunidade">
+      <div class="example-visual">👥</div>
+      <div class="example-label">Comunidade</div>
+      <div class="example-desc">Grupo 3D com sombra</div>
+    </div>
+    <div class="example-card lider">
+      <div class="example-visual">👑</div>
+      <div class="example-label">Líder</div>
+      <div class="example-desc">Coroa 3D dourada</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FLATICON ===== -->
+<div class="lib-section style-flat">
+  <div class="lib-header">
+    <h2>🎯 Flaticon</h2>
+    <span class="lib-tag tag-attribution">Atribuição</span>
+  </div>
+  <p class="lib-desc">
+    Maior biblioteca de ícones do mundo. PNG/SVG em diversos estilos. Requer crédito.
+    <a href="https://flaticon.com" target="_blank" class="lib-link">flaticon.com →</a>
+  </p>
+  <div class="examples-grid">
+    <div class="example-card eleitor">
+      <div class="example-visual">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="#3b82f6"/><rect x="30" y="55" width="40" height="30" rx="5" fill="#3b82f6"/></svg>
+      </div>
+      <div class="example-label">Eleitor</div>
+      <div class="example-desc">Ícone azul, estilo material</div>
+    </div>
+    <div class="example-card comunidade">
+      <div class="example-visual">
+        <svg viewBox="0 0 100 100"><circle cx="35" cy="35" r="15" fill="#22c55e"/><circle cx="65" cy="35" r="15" fill="#22c55e"/><rect x="20" y="55" width="30" height="25" rx="5" fill="#22c55e"/><rect x="50" y="55" width="30" height="25" rx="5" fill="#22c55e"/></svg>
+      </div>
+      <div class="example-label">Comunidade</div>
+      <div class="example-desc">Dois ícones verdes</div>
+    </div>
+    <div class="example-card lider">
+      <div class="example-visual">
+        <svg viewBox="0 0 100 100"><polygon points="50,15 60,35 80,35 65,50 70,70 50,60 30,70 35,50 20,35 40,35" fill="#fbbf24" stroke="#d97706" stroke-width="2"/></svg>
+      </div>
+      <div class="example-label">Líder</div>
+      <div class="example-desc">Coroa dourada detalhada</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SVGREPO ===== -->
+<div class="lib-section">
+  <div class="lib-header">
+    <h2>📦 SVGRepo</h2>
+    <span class="lib-tag tag-free">Gratuito</span>
+  </div>
+  <p class="lib-desc">
+    Repositório massivo de SVGs. Todos editáveis, escaláveis, cores customizáveis.
+    <a href="https://svgrepo.com" target="_blank" class="lib-link">svgrepo.com →</a>
+  </p>
+  <div class="examples-grid">
+    <div class="example-card eleitor">
+      <div class="example-visual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="example-label">Eleitor</div>
+      <div class="example-desc">SVG editável, cor azul</div>
+    </div>
+    <div class="example-card comunidade">
+      <div class="example-visual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="example-label">Comunidade</div>
+      <div class="example-desc">SVG editável, cor verde</div>
+    </div>
+    <div class="example-card lider">
+      <div class="example-visual">
+        <svg viewBox="0 0 24 24" fill="#7c3aed"><path d="M5 16L3 5l5 3 4-7 4 7 5-3-2 11H5zm2 4h10v2H7v-2z"/></svg>
+      </div>
+      <div class="example-label">Líder</div>
+      <div class="example-desc">SVG preenchido, cor roxa</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RECOMENDAÇÃO ===== -->
+<div class="recommendation">
+  <h2>🏆 Recomendação por Cenário</h2>
+  <div class="recommendation-grid">
+    <div class="rec-card">
+      <h3>Para um visual mais humano</h3>
+      <p>Open Peeps ou unDraw. Ilustrações de pessoas transmitem melhor o conceito de eleitores e comunidade.</p>
+      <span class="winner">Mais moderno</span>
+    </div>
+    <div class="rec-card">
+      <h3>Para um visual premium</h3>
+      <p>3D Icons (Icons8) ou Flaticon. Ícones com profundidade e acabamento profissional.</p>
+      <span class="winner">Mais chamativo</span>
+    </div>
+    <div class="rec-card">
+      <h3>Para controle total</h3>
+      <p>SVGRepo. Milhares de SVGs editáveis. Você escolhe o estilo e muda as cores.</p>
+      <span class="winner">Mais flexível</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

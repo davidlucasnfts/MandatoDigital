@@ -128,6 +128,86 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ---
 
+## 📋 Padrão de Preview/Detalhes (Cards Expandidos)
+
+> **Regra obrigatória:** Todos os previews de itens selecionados devem seguir o mesmo padrão visual
+
+### Estrutura do Preview
+
+```tsx
+{selecionado && (
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-3">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      {/* HEADER: Avatar/Ícone + Título + Badges + Ações */}
+      <div className="p-4 lg:p-6 border-b border-slate-100">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-4">
+            {/* Círculo colorido com ícone ou ranking */}
+            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-xxx-100">
+              <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-xxx-600" />
+            </div>
+            <div>
+              <h3 className="text-lg lg:text-xl font-bold text-slate-800">{nome}</h3>
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                {/* Badges de status */}
+              </div>
+            </div>
+          </div>
+          {/* Ações: botões sólidos, empilhados verticalmente */}
+          <div className="flex flex-col gap-2">
+            <button className="bg-blue-600 text-white...">Editar</button>
+            <button className="bg-red-600 text-white...">Excluir</button>
+          </div>
+        </div>
+        {/* Descrição abaixo do header, se houver */}
+        {descricao && <p className="text-sm text-slate-500 mt-3">{descricao}</p>}
+      </div>
+
+      {/* GRID DE DETALHES: 2 colunas mobile, 3 desktop */}
+      <div className="p-4 lg:p-6 grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Cada campo com label em text-slate-400 + valor */}
+      </div>
+
+      {/* AÇÕES SECUNDÁRIAS (opcional): toggle de status, etc */}
+    </div>
+
+    {/* Botão Fechar centralizado */}
+    <div className="flex justify-center">
+      <button className="bg-slate-100 text-slate-600...">
+        <ChevronDown />Fechar
+      </button>
+    </div>
+  </motion.div>
+)}
+```
+
+### Regras Visuais
+
+| Elemento | Padrão |
+|----------|--------|
+| Ícone/Avatar | Círculo `w-14 h-14` com fundo colorido (cor da entidade) |
+| Título | `text-lg lg:text-xl font-bold text-slate-800` |
+| Badges | Abaixo do título, flex-wrap gap-2 |
+| Ações | Coluna direita, botões empilhados, **todos sólidos** |
+| Descrição | Abaixo do header, `text-sm text-slate-500 mt-3` |
+| Grid detalhes | `grid-cols-2 lg:grid-cols-3 gap-4` |
+| Labels | `text-[10px] font-semibold text-slate-400 uppercase` |
+| Valores | `text-sm font-medium text-slate-800` |
+| Botão Fechar | Centralizado, `ChevronDown`, `bg-slate-100` |
+
+### Exemplos no projeto
+- **LíderesProdutividadePage.tsx** — preview de líder (referência correta)
+- **SolicitacoesPageV3.tsx** — preview de solicitação
+
+### Anti-padrões (nunca fazer)
+- ❌ Ícone pequeno (w-8) no lugar do círculo grande
+- ❌ Ações com estilos misturados (sólido + outline)
+- ❌ Descrição no mesmo nível do título (sem mt-3)
+- ❌ Grid assimétrico (1+2, 2+1)
+- ❌ Labels em text-slate-500 (deve ser 400)
+
+---
+
 ## 🔄 Padrão de Refatoração — Páginas de Teste
 
 > **Regra obrigatória:** SEMPRE criar página de teste ao refatorar páginas existentes

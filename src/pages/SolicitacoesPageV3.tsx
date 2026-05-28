@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   ClipboardList, Plus, Search, AlertCircle, Clock, CheckCircle, XCircle,
-  Pencil, Trash2, Filter, X, ChevronDown, Calendar, User, Tag,
-  AlertTriangle, ArrowRight
+  Pencil, Trash2, Filter, X, ChevronDown, Calendar, CalendarDays, User, Tag,
+  AlertTriangle, ArrowRight, MapPin
 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,6 +68,7 @@ export default function SolicitacoesPageV3() {
   const [novaOpen, setNovaOpen] = useState(false);
   const [editSolicitacao, setEditSolicitacao] = useState<Solicitacao | null>(null);
   const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<Solicitacao | null>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
   const filtered = useMemo(() => solicitacoes.filter(s => {
@@ -96,6 +97,15 @@ export default function SolicitacoesPageV3() {
     ev.stopPropagation();
     await update(id, { status: status as Solicitacao['status'] });
   };
+
+  // Scroll automático para o preview quando abrir (offset para não ficar atrás do header)
+  useEffect(() => {
+    if (solicitacaoSelecionada && previewRef.current) {
+      const yOffset = -80; // offset para não ficar atrás do header fixo
+      const y = previewRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, [solicitacaoSelecionada]);
 
   const statItems = [
     { label: 'Total', value: stats.total, icon: ClipboardList, color: 'blue' as const },
@@ -237,136 +247,7 @@ export default function SolicitacoesPageV3() {
         </PanelCard>
       </motion.div>
 
-      {/* Preview da Solicitação Selecionada */}
-      {solicitacaoSelecionada && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-3">
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-            {/* Header */}
-            <div className="p-4 lg:p-6 border-b border-slate-100">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${statusColors[solicitacaoSelecionada.status || 'pendente']}`}>
-                      {statusLabel[solicitacaoSelecionada.status || 'pendente']}
-                    </span>
-                    <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${prioridadeColors[solicitacaoSelecionada.prioridade || 'media']}`}>
-                      {prioridadeLabel[solicitacaoSelecionada.prioridade || 'media']}
-                    </span>
-                    {solicitacaoSelecionada.categoria && (
-                      <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-medium">
-                        {solicitacaoSelecionada.categoria}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg lg:text-xl font-bold text-slate-800">{solicitacaoSelecionada.titulo}</h3>
-                  {solicitacaoSelecionada.descricao && (
-                    <p className="text-sm text-slate-500 mt-1">{solicitacaoSelecionada.descricao}</p>
-                  )}
-                </div>
-                {/* Ações */}
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => { setEditSolicitacao(solicitacaoSelecionada); }}
-                    className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors shadow-sm hover:shadow-md"
-                  >
-                    <Pencil className="w-3.5 h-3.5" />Editar
-                  </button>
-                  <button
-                    onClick={() => { if (confirm('Excluir esta solicitação?')) { remove(solicitacaoSelecionada.id); setSolicitacaoSelecionada(null); } }}
-                    className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />Excluir
-                  </button>
-                </div>
-              </div>
-            </div>
 
-            {/* Detalhes em Grid */}
-            <div className="p-4 lg:p-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Eleitor */}
-              <div className="space-y-1">
-                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <User className="w-3 h-3" />Eleitor
-                </h4>
-                <div className="text-sm font-medium text-slate-800">{solicitacaoSelecionada.eleitor_nome || '—'}</div>
-              </div>
-
-              {/* Responsável */}
-              <div className="space-y-1">
-                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <User className="w-3 h-3" />Responsável
-                </h4>
-                <div className="text-sm font-medium text-slate-800">{solicitacaoSelecionada.responsavel || '—'}</div>
-              </div>
-
-              {/* Data Solicitação */}
-              <div className="space-y-1">
-                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />Solicitação
-                </h4>
-                <div className="text-sm font-medium text-slate-800">
-                  {solicitacaoSelecionada.data_solicitacao ? new Date(solicitacaoSelecionada.data_solicitacao).toLocaleDateString('pt-BR') : '—'}
-                </div>
-              </div>
-
-              {/* Prazo */}
-              <div className="space-y-1">
-                <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />Prazo
-                </h4>
-                <div className="text-sm font-medium text-slate-800">
-                  {solicitacaoSelecionada.data_prazo ? new Date(solicitacaoSelecionada.data_prazo).toLocaleDateString('pt-BR') : '—'}
-                </div>
-              </div>
-
-              {/* Data Evento */}
-              {solicitacaoSelecionada.data_evento && (
-                <div className="space-y-1 col-span-2 lg:col-span-4">
-                  <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />Data do Evento
-                  </h4>
-                  <div className="text-sm font-medium text-blue-600">
-                    {new Date(solicitacaoSelecionada.data_evento).toLocaleDateString('pt-BR')}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Toggle de Status Rápido */}
-            <div className="px-4 lg:px-6 pb-4 lg:pb-6">
-              <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Alterar Status</h4>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: 'pendente', label: 'Pendente', color: 'amber' },
-                  { key: 'andamento', label: 'Em Andamento', color: 'blue' },
-                  { key: 'concluido', label: 'Concluído', color: 'green' },
-                  { key: 'cancelado', label: 'Cancelado', color: 'red' },
-                ].map(s => (
-                  <button
-                    key={s.key}
-                    onClick={() => { update(solicitacaoSelecionada.id, { status: s.key as Solicitacao['status'] }); }}
-                    disabled={solicitacaoSelecionada.status === s.key}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      solicitacaoSelecionada.status === s.key
-                        ? `bg-${s.color}-100 text-${s.color}-700 cursor-default`
-                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Botão Fechar */}
-          <div className="flex justify-center">
-            <button onClick={() => setSolicitacaoSelecionada(null)} className="flex items-center gap-1 px-4 py-2 text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
-              <ChevronDown className="w-4 h-4" />Fechar
-            </button>
-          </div>
-        </motion.div>
-      )}
 
       {/* Lista / Kanban */}
       {view === 'table' ? (
@@ -399,78 +280,190 @@ export default function SolicitacoesPageV3() {
                       </td>
                     </tr>
                   ) : (
-                    filtered.map(s => (
-                      <tr
-                        key={s.id}
-                        className="border-b border-slate-50 hover:bg-blue-50/50 transition-colors cursor-pointer"
-                        onClick={() => setSolicitacaoSelecionada(solicitacaoSelecionada?.id === s.id ? null : s)}
-                      >
-                        {/* Ações */}
-                        <td className="py-3 px-2">
-                          <div className="flex flex-col gap-1">
-                            <button
-                              onClick={(ev) => { ev.stopPropagation(); setEditSolicitacao(s); }}
-                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"
-                            >
-                              <Pencil className="w-3 h-3" />Editar
-                            </button>
-                            <button
-                              onClick={(ev) => { ev.stopPropagation(); if (confirm('Excluir esta solicitação?')) remove(s.id); }}
-                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"
-                            >
-                              <Trash2 className="w-3 h-3" />Excluir
-                            </button>
-                          </div>
-                        </td>
-                        {/* Título */}
-                        <td className="py-3 px-4">
-                          <div className="font-medium text-slate-800">{s.titulo}</div>
-                          {s.descricao && <div className="text-xs text-slate-400 line-clamp-1">{s.descricao}</div>}
-                        </td>
-                        {/* Eleitor */}
-                        <td className="py-3 px-4 text-slate-600 text-xs hidden sm:table-cell">{s.eleitor_nome || '—'}</td>
-                        {/* Categoria */}
-                        <td className="py-3 px-4 hidden md:table-cell">
-                          {s.categoria ? <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{s.categoria}</span> : '—'}
-                        </td>
-                        {/* Prioridade */}
-                        <td className="py-3 px-4">
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${prioridadeColors[s.prioridade || 'media']}`}>
-                            {s.prioridade}
-                          </span>
-                        </td>
-                        {/* Status + Toggle */}
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${statusColors[s.status || 'pendente']}`}>
-                              {s.status}
-                            </span>
-                            <div className="flex gap-0.5">
-                              {s.status !== 'pendente' && (
-                                <button onClick={(ev) => handleStatusToggle(ev, s.id, 'pendente')} className="w-5 h-5 rounded bg-amber-100 text-amber-600 text-[10px] hover:bg-amber-200 transition-colors" title="Pendente">P</button>
-                              )}
-                              {s.status !== 'andamento' && (
-                                <button onClick={(ev) => handleStatusToggle(ev, s.id, 'andamento')} className="w-5 h-5 rounded bg-blue-100 text-blue-600 text-[10px] hover:bg-blue-200 transition-colors" title="Em Andamento">A</button>
-                              )}
-                              {s.status !== 'concluido' && (
-                                <button onClick={(ev) => handleStatusToggle(ev, s.id, 'concluido')} className="w-5 h-5 rounded bg-green-100 text-green-600 text-[10px] hover:bg-green-200 transition-colors" title="Concluído">C</button>
-                              )}
-                              {s.status !== 'cancelado' && (
-                                <button onClick={(ev) => handleStatusToggle(ev, s.id, 'cancelado')} className="w-5 h-5 rounded bg-red-100 text-red-600 text-[10px] hover:bg-red-200 transition-colors" title="Cancelado">X</button>
-                              )}
+                    filtered.flatMap(s => {
+                      const isSelected = solicitacaoSelecionada?.id === s.id;
+                      const rows = [
+                        <tr
+                          key={s.id}
+                          className={`border-b transition-colors cursor-pointer ${isSelected ? 'bg-blue-50/80 border-blue-100' : 'border-slate-50 hover:bg-blue-50/50'}`}
+                          onClick={() => setSolicitacaoSelecionada(isSelected ? null : s)}
+                        >
+                          {/* Ações */}
+                          <td className="py-3 px-2">
+                            <div className="flex flex-col gap-1">
+                              <button
+                                onClick={(ev) => { ev.stopPropagation(); setEditSolicitacao(s); }}
+                                className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"
+                              >
+                                <Pencil className="w-3 h-3" />Editar
+                              </button>
+                              <button
+                                onClick={(ev) => { ev.stopPropagation(); if (confirm('Excluir esta solicitação?')) remove(s.id); }}
+                                className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
+                              >
+                                <Trash2 className="w-3 h-3" />Excluir
+                              </button>
                             </div>
-                          </div>
-                        </td>
-                        {/* Prazo */}
-                        <td className="py-3 px-4 text-xs text-slate-500 hidden lg:table-cell">
-                          {s.data_evento ? (
-                            <span className="text-blue-600">📅 {new Date(s.data_evento).toLocaleDateString('pt-BR')}</span>
-                          ) : (
-                            s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : '—'
-                          )}
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                          {/* Título */}
+                          <td className="py-3 px-4 max-w-[200px] sm:max-w-[280px] lg:max-w-xs">
+                            <div className="font-medium text-slate-800 truncate">{s.titulo}</div>
+                            {s.descricao && <div className="text-xs text-slate-400 line-clamp-1 break-words">{s.descricao}</div>}
+                          </td>
+                          {/* Eleitor */}
+                          <td className="py-3 px-4 text-slate-600 text-xs hidden sm:table-cell">{s.eleitor_nome || '—'}</td>
+                          {/* Categoria */}
+                          <td className="py-3 px-4 hidden md:table-cell">
+                            {s.categoria ? <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{s.categoria}</span> : '—'}
+                          </td>
+                          {/* Prioridade */}
+                          <td className="py-3 px-4">
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${prioridadeColors[s.prioridade || 'media']}`}>
+                              {s.prioridade}
+                            </span>
+                          </td>
+                          {/* Status + Toggle */}
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${statusColors[s.status || 'pendente']}`}>
+                                {s.status}
+                              </span>
+                              <div className="flex gap-0.5">
+                                {s.status !== 'pendente' && (
+                                  <button onClick={(ev) => handleStatusToggle(ev, s.id, 'pendente')} className="w-5 h-5 rounded bg-amber-100 text-amber-600 text-[10px] hover:bg-amber-200 transition-colors" title="Mudar para Pendente">P</button>
+                                )}
+                                {s.status !== 'andamento' && (
+                                  <button onClick={(ev) => handleStatusToggle(ev, s.id, 'andamento')} className="w-5 h-5 rounded bg-blue-100 text-blue-600 text-[10px] hover:bg-blue-200 transition-colors" title="Mudar para Em Andamento">A</button>
+                                )}
+                                {s.status !== 'concluido' && (
+                                  <button onClick={(ev) => handleStatusToggle(ev, s.id, 'concluido')} className="w-5 h-5 rounded bg-green-100 text-green-600 text-[10px] hover:bg-green-200 transition-colors" title="Mudar para Concluído">C</button>
+                                )}
+                                {s.status !== 'cancelado' && (
+                                  <button onClick={(ev) => handleStatusToggle(ev, s.id, 'cancelado')} className="w-5 h-5 rounded bg-red-100 text-red-600 text-[10px] hover:bg-red-200 transition-colors" title="Mudar para Cancelado">X</button>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          {/* Prazo */}
+                          <td className="py-3 px-4 text-xs text-slate-500 hidden lg:table-cell">
+                            {s.data_evento ? (
+                              <span className="inline-flex items-center gap-1 text-blue-600">
+                                <CalendarDays className="w-3 h-3" />
+                                {new Date(s.data_evento).toLocaleDateString('pt-BR')}
+                              </span>
+                            ) : (
+                              s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : '—'
+                            )}
+                          </td>
+                        </tr>
+                      ];
+                      // Se estiver selecionado, adiciona o preview logo após
+                      if (isSelected) {
+                        rows.push(
+                          <tr key={`${s.id}-preview`} className="border-b border-blue-100">
+                            <td colSpan={7} className="p-0">
+                              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="bg-blue-50/30">
+                                <div className="p-4 lg:p-6">
+                                  <div className="flex items-start justify-between gap-4 mb-4">
+                                    <div className="flex items-center gap-4">
+                                      <div className={`w-14 h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                        s.prioridade === 'urgente' ? 'bg-red-100' :
+                                        s.prioridade === 'alta' ? 'bg-orange-100' :
+                                        s.prioridade === 'media' ? 'bg-amber-100' :
+                                        'bg-green-100'
+                                      }`}>
+                                        <AlertTriangle className={`w-6 h-6 lg:w-7 lg:h-7 ${
+                                          s.prioridade === 'urgente' ? 'text-red-600' :
+                                          s.prioridade === 'alta' ? 'text-orange-600' :
+                                          s.prioridade === 'media' ? 'text-amber-600' :
+                                          'text-green-600'
+                                        }`} />
+                                      </div>
+                                      <div>
+                                        <h3 className="text-lg lg:text-xl font-bold text-slate-800">{s.titulo}</h3>
+                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                                          <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${statusColors[s.status || 'pendente']}`}>
+                                            {statusLabel[s.status || 'pendente']}
+                                          </span>
+                                          <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${prioridadeColors[s.prioridade || 'media']}`}>
+                                            {prioridadeLabel[s.prioridade || 'media']}
+                                          </span>
+                                          {s.categoria && (
+                                            <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-medium">{s.categoria}</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                      <button onClick={() => setEditSolicitacao(s)} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors shadow-sm hover:shadow-md">
+                                        <Pencil className="w-3.5 h-3.5" />Editar
+                                      </button>
+                                      <button onClick={() => { if (confirm('Excluir esta solicitação?')) { remove(s.id); setSolicitacaoSelecionada(null); } }} className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors shadow-sm hover:shadow-md">
+                                        <Trash2 className="w-3.5 h-3.5" />Excluir
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {s.descricao && (
+                                    <p className="text-sm text-slate-500 mb-4 max-w-2xl break-words">{s.descricao}</p>
+                                  )}
+                                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div className="space-y-1">
+                                      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1"><User className="w-3 h-3" />Eleitor</h4>
+                                      <div className="text-sm font-medium text-slate-800">{s.eleitor_nome || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1"><User className="w-3 h-3" />Responsável</h4>
+                                      <div className="text-sm font-medium text-slate-800">{s.responsavel || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1"><MapPin className="w-3 h-3" />Local</h4>
+                                      <div className="text-sm font-medium text-slate-800">{s.local || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1"><Calendar className="w-3 h-3" />Solicitação</h4>
+                                      <div className="text-sm font-medium text-slate-800">{s.data_solicitacao ? new Date(s.data_solicitacao).toLocaleDateString('pt-BR') : '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1"><Clock className="w-3 h-3" />Prazo</h4>
+                                      <div className="text-sm font-medium text-slate-800">{s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1"><CalendarDays className="w-3 h-3" />Evento</h4>
+                                      <div className={`text-sm font-medium ${s.data_evento ? 'text-blue-600' : 'text-slate-800'}`}>{s.data_evento ? new Date(s.data_evento).toLocaleDateString('pt-BR') : '—'}</div>
+                                    </div>
+                                  </div>
+                                  <div className="mt-4 pt-3 border-t border-slate-200">
+                                    <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Alterar Status</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                      {[
+                                        { key: 'pendente', label: 'Pendente', color: 'amber' },
+                                        { key: 'andamento', label: 'Em Andamento', color: 'blue' },
+                                        { key: 'concluido', label: 'Concluído', color: 'green' },
+                                        { key: 'cancelado', label: 'Cancelado', color: 'red' },
+                                      ].map(st => (
+                                        <button
+                                          key={st.key}
+                                          onClick={() => { update(s.id, { status: st.key as Solicitacao['status'] }); }}
+                                          disabled={s.status === st.key}
+                                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                                            s.status === st.key
+                                              ? `bg-${st.color}-100 text-${st.color}-700 cursor-default`
+                                              : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                                          }`}
+                                        >
+                                          {st.label}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            </td>
+                          </tr>
+                        );
+                      }
+                      return rows;
+                    })
                   )}
                 </tbody>
               </table>
@@ -487,8 +480,8 @@ export default function SolicitacoesPageV3() {
               <div className="flex items-start justify-between">
                 <div className="font-medium text-sm text-slate-800 mb-1 flex-1">{s.titulo}</div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => setEditSolicitacao(s)} className="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded transition-colors" title="Editar"><Pencil className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => { if (confirm('Excluir esta solicitação?')) remove(s.id); }} className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded transition-colors" title="Excluir"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => setEditSolicitacao(s)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm transition-colors" title="Editar"><Pencil className="w-3 h-3" />Editar</button>
+                  <button onClick={() => { if (confirm('Excluir esta solicitação?')) remove(s.id); }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm transition-colors" title="Excluir"><Trash2 className="w-3 h-3" />Excluir</button>
                 </div>
               </div>
               <div className="text-xs text-slate-500 mb-2">{s.eleitor_nome}</div>

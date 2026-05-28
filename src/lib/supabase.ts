@@ -93,6 +93,7 @@ export type Solicitacao = {
   data_solicitacao: string | null;
   data_evento: string | null;
   data_prazo: string | null;
+  local: string;
   responsavel: string;
   user_id: string;
   owner_id: string | null;

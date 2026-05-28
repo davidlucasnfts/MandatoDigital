@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body { font-family: system-ui, sans-serif; background: #f8fafc; padding: 40px; display: flex; gap: 60px; justify-content: center; flex-wrap: wrap; }
+.card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; width: 280px; }
+.card h3 { margin: 0 0 20px 0; font-size: 16px; color: #334155; }
+.cluster-wrap { display: flex; gap: 30px; justify-content: center; margin: 20px 0; }
+
+/* ESTILO 1: Pin estilo Google Maps */
+.pin {
+  position: relative;
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(59,130,246,0.4);
+}
+.pin.comunidade { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 3px 10px rgba(34,197,94,0.4); }
+.pin-inner {
+  transform: rotate(45deg);
+  color: white; font-weight: bold; font-size: 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.pin svg { width: 14px; height: 14px; }
+
+/* ESTILO 2: Badge redondo com ícone + número */
+.badge {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.badge.eleitor { background: #3b82f6; }
+.badge.comunidade { background: #22c55e; }
+.badge svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; }
+.badge span { color: white; font-weight: bold; font-size: 12px; }
+
+/* ESTILO 3: Ícone 3D-ish com sombra */
+.ddd {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  background: linear-gradient(145deg, #60a5fa, #2563eb);
+  box-shadow: 
+    inset 0 -3px 8px rgba(0,0,0,0.2),
+    inset 0 3px 8px rgba(255,255,255,0.3),
+    0 4px 12px rgba(37,99,235,0.35);
+  border: 2px solid rgba(255,255,255,0.3);
+}
+.ddd.comunidade {
+  background: linear-gradient(145deg, #4ade80, #16a34a);
+  box-shadow: 
+    inset 0 -3px 8px rgba(0,0,0,0.2),
+    inset 0 3px 8px rgba(255,255,255,0.3),
+    0 4px 12px rgba(22,163,74,0.35);
+}
+.ddd svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; }
+.ddd span { color: white; font-weight: bold; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
+.label { font-size: 12px; color: #64748b; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- ESTILO 1: Pin Google Maps -->
+<div class="card">
+  <h3>🎯 Estilo 1: Pin Maps</h3>
+  <div class="cluster-wrap">
+    <div>
+      <div class="pin">
+        <div class="pin-inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          5
+        </div>
+      </div>
+      <div class="label">Eleitores</div>
+    </div>
+    <div>
+      <div class="pin comunidade">
+        <div class="pin-inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          3
+        </div>
+      </div>
+      <div class="label">Comunidades</div>
+    </div>
+  </div>
+  <p style="font-size:11px;color:#94a3b8;margin-top:10px;">Gota estilo Google Maps<br>com ícone + contador</p>
+</div>
+
+<!-- ESTILO 2: Badge Redondo -->
+<div class="card">
+  <h3>🔵 Estilo 2: Badge Ícone</h3>
+  <div class="cluster-wrap">
+    <div>
+      <div class="badge eleitor">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>5</span>
+      </div>
+      <div class="label">Eleitores</div>
+    </div>
+    <div>
+      <div class="badge comunidade">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>3</span>
+      </div>
+      <div class="label">Comunidades</div>
+    </div>
+  </div>
+  <p style="font-size:11px;color:#94a3b8;margin-top:10px;">Círculo simples com ícone<br>e número centralizado</p>
+</div>
+
+<!-- ESTILO 3: 3D com Sombra -->
+<div class="card">
+  <h3>💎 Estilo 3: 3D Realista</h3>
+  <div class="cluster-wrap">
+    <div>
+      <div class="ddd">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>5</span>
+      </div>
+      <div class="label">Eleitores</div>
+    </div>
+    <div>
+      <div class="ddd comunidade">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>3</span>
+      </div>
+      <div class="label">Comunidades</div>
+    </div>
+  </div>
+  <p style="font-size:11px;color:#94a3b8;margin-top:10px;">Gradiente + sombras + brilho<br>efeito botão 3D</p>
+</div>
+
+</body>
+</html>

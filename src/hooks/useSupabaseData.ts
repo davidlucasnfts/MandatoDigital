@@ -87,8 +87,17 @@ export function useSolicitacoes() {
   const insert = async (row: Omit<Solicitacao, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
     const ownerId = userData.user?.id;
-    const { data: inserted } = await supabase.from('solicitacoes').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
-    if (inserted) setData(prev => [inserted, ...prev]);
+    const { data: inserted, error } = await supabase.from('solicitacoes').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
+    if (error) {
+      console.error('[useSolicitacoes] Insert error:', error);
+      throw error;
+    }
+    if (inserted) {
+      setData(prev => [inserted, ...prev]);
+    } else {
+      // Se não retornou dados, faz fetch para garantir
+      await fetch();
+    }
     return inserted;
   };
 
