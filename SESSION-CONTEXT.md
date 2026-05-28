@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 27/05/2026
-> **Sessão atual:** Solicitações V3 — Preview inline + Modal refatorado
+> **Atualizado em:** 28/05/2026
+> **Sessão atual:** Mapa — Clusters com ícones coloridos (Eleitor/Comunidade/Líder)
 
 ---
 
@@ -11,6 +11,43 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
+**Mapa — Clusters com ícones coloridos — 28/05**
+
+### ✅ O que foi entregue:
+- **Clusters de Mapa refatorados:**
+  - Eleitor: círculo azul `#2563eb` com ícone de pessoa
+  - Comunidade: círculo verde `#16a34a` com ícone de grupo
+  - Líder: círculo roxo `#7c3aed` com ícone apontando
+  - Contador branco dentro do círculo
+  - Sombra 3D (gradiente + sombra interna)
+  - Clusters separados: Líderes agora têm cluster próprio
+  - Legenda atualizada com SVGs dos ícones
+
+### 🧪 Páginas de teste criadas:
+| Página | URL | Descrição |
+|---|---|---|
+| `teste-clusters.html` | `/teste-clusters.html` | Comparação de bibliotecas de ícones (Tabler, Phosphor, Lucide) |
+| `teste-openpeeps.html` | `/teste-openpeeps.html` | Catálogo completo Open Peeps (ilustrações hand-drawn) |
+
+### ❌ Erros / Aprendizados:
+- **Criação de imagens 3D com CSS é limitada** — não fica profissional
+- **Emoji nativo não muda de cor** — depende do sistema operacional
+- **Phosphor Icons** tem peso `fill` bonito, mas exports são complexos no Node
+- **Open Peeps** é a melhor opção para ilustrações humanizadas (500M+ combinações)
+- **SVGs customizados** são a solução mais flexível e leve
+
+### 📋 Checklist próxima sessão:
+- [ ] Testar MapaPageV2 em produção (clusters azul/verde/roxo)
+- [ ] Decidir: manter SVGs atuais ou migrar para Open Peeps
+- [ ] Se Open Peeps: baixar SVGs específicos (eleitor azul, comunidade verde, líder roxo)
+- [ ] Aplicar clusters aprovados na página MapaPage.tsx principal
+- [ ] Remover MapaPageV1 e V2 após aprovação
+- [ ] Testar Solicitações V3 em produção
+- [ ] Aprovar/rejeitar Solicitações V3 → copiar para SolicitacoesPage.tsx
+
+---
+
+## Histórico
 **Solicitações V3 — 27/05**
 
 ### ✅ O que foi entregue:

@@ -87,6 +87,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Líderes V3: Design System aplicado (StatCards, PanelCard, preview inline, tabela, podium)** | **25/05** |
 | **Cache de CEP (Supabase) — reduz chamadas Here API em 90%** | **27/05** |
 | **Comunidades: cadastro com geocodificação CNEFE + Here API + cache** | **27/05** |
+| **Mapa: clusters com ícones coloridos (Eleitor azul, Comunidade verde, Líder roxo)** | **28/05** |
+| **Análise de bibliotecas de ícones (Tabler, Phosphor, Lucide, Open Peeps)** | **28/05** |
 
 ---
 
@@ -240,6 +242,49 @@ Regras de design de botões salvas para não repetir erros
 | 3 | Campos bloqueados quando CEP preenchido (rua, bairro, cidade, estado) | ✅ |
 | 4 | Cor e ícone removidos (padrão fixo: azul, Users) | ✅ |
 | 5 | Cache de CEP reduzindo custo Here API | ✅ |
+
+---
+
+## 📝 Resumo da Sessão 28/05 — Mapa: Clusters com Ícones Coloridos
+
+### O que foi feito
+| # | Item | Status |
+|---|---|---|
+| 1 | Clusters separados (Eleitor/Comunidade/Líder) | ✅ |
+| 2 | Ícone Eleitor: círculo azul `#2563eb` com SVG pessoa | ✅ |
+| 3 | Ícone Comunidade: círculo verde `#16a34a` com SVG grupo | ✅ |
+| 4 | Ícone Líder: círculo roxo `#7c3aed` com SVG apontando | ✅ |
+| 5 | Contador branco dentro do círculo | ✅ |
+| 6 | Sombra 3D (gradiente + sombra interna) | ✅ |
+| 7 | Legenda atualizada com SVGs | ✅ |
+| 8 | Páginas de teste criadas | ✅ |
+
+### Análise de Bibliotecas
+| Biblioteca | Avaliação | Decisão |
+|---|---|---|
+| Tabler Icons | Bom, tem fill | Opção B |
+| Phosphor Icons | Ótimo fill, grande | Opção B |
+| Lucide | Simples, sem fill crown | Descartado |
+| Open Peeps | Melhor para humanizar | **Favorito** |
+| SVG customizado | Mais flexível | **Usado agora** |
+
+### Erros / Aprendizados
+- CSS 3D limitado para ícones realistas
+- Emoji não muda de cor (depende do SO)
+- Open Peeps tem 500M+ combinações, ideal para ilustrações
+
+### Páginas de Teste
+| Arquivo | URL | Conteúdo |
+|---|---|---|
+| `teste-clusters.html` | `/teste-clusters.html` | Comparação bibliotecas |
+| `teste-openpeeps.html` | `/teste-openpeeps.html` | Catálogo Open Peeps |
+
+### Próxima Sessão — Decisões Pendentes
+1. **Testar MapaPageV2** em produção
+2. **Decidir**: manter SVGs atuais ou migrar para Open Peeps
+3. **Se Open Peeps**: baixar SVGs específicos (eleitor azul, comunidade verde, líder roxo)
+4. **Aplicar** clusters aprovados na página principal
+5. **Remover** MapaPageV1 e V2 após aprovação
 
 ---
 
