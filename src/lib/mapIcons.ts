@@ -22,38 +22,33 @@ function circleBase(color: string, inner: string, size: number = 36): string {
   </div>`;
 }
 
-// ============= ÍCONES INTERNOS (20x20) — SVGs PREENCHIDOS =============
+// ============= ÍCONES INTERNOS (20x20) — SVGs ESTILO CLUSTER =============
+// Mesmos SVGs usados nos clusters, para manter consistência visual
 
-// 👑 COROA DOURADA — LÍDER
-const crownIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-  <path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/>
-  <circle cx="3" cy="5" r="2" fill="#fbbf24"/>
-  <circle cx="10" cy="2.5" r="2" fill="#fbbf24"/>
-  <circle cx="17" cy="5" r="2" fill="#fbbf24"/>
-  <rect x="3" y="12" width="14" height="2.5" rx="0.5" fill="#fbbf24"/>
+// 👤 ELEITOR — outline branco (igual cluster eleitor)
+const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
+  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
+  <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
 </svg>`;
 
-// 👤 PESSOA PREENCHIDA — ELEITOR ATIVO
-const personIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-  <circle cx="12" cy="7" r="4" fill="#93c5fd"/>
-  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/>
+// ⚠️ ELEITOR PENDENTE — mesmo ícone, cor do círculo muda no container
+const personPendingIcon = personIcon;
+
+// 👑 LÍDER — outline branco (igual cluster líder)
+const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
+  <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
+  <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M9 22l1.5-7" stroke-linecap="round"/>
 </svg>`;
 
-// ⚠️ PESSOA PREENCHIDA — ELEITOR PENDENTE (borda laranja)
-const personPendingIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-  <circle cx="12" cy="7" r="4" fill="#fde68a"/>
-  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#fbbf24"/>
-</svg>`;
-
-// 🏢 PRÉDIO PREENCHIDO — COMUNIDADE
-const buildingIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-  <rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/>
-  <rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
-  <rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
-  <rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
-  <rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
-  <rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
-  <rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/>
+// 🏢 COMUNIDADE — outline branco (igual cluster comunidade)
+const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
+  <path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" fill="rgba(255,255,255,0.2)"/>
+  <path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" fill="rgba(255,255,255,0.2)"/>
 </svg>`;
 
 // ============= FUNÇÕES EXPORTADAS =============

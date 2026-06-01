@@ -52,7 +52,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 | Dashboard V2 | `DashboardV2.tsx` | 25/05 | Arquivado — funcionalidades migradas para v2.3 |
 | Solicitações V3 | `SolicitacoesPageV3.tsx` | 27/05 | **Aguardando aprovação** — preview inline, modal refatorado |
 | Mapa V1 | `MapaPageV1.tsx` | 28/05 | Arquivado — teste de clusters com ícones |
-| Mapa V2 | `MapaPageV2.tsx` | 01/06 | **Aplicado na principal** — mantido como backup |
+| Mapa V2 | `MapaPageV2.tsx` | 01/06 | **Editando** — cópia de trabalho para novas melhorias no mapa |
 
 ---
 
