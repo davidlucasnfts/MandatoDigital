@@ -25,6 +25,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | Multi-usuário RBAC (admin/editor/visualizador) | 05/05 |
 | Relatórios PDF/CSV (6 gráficos, KPIs, filtros) | 06/05 |
 | Solicitações V3 — Preview inline, modal refatorado, filtros avançados | 27/05 |
+| **Mapa V2 — Ícones SVG nos clusters e legenda, clusters separados, sem "Sem bairro"** | **01/06** |
+| **Modo Demo — Dados mockados para demo@mandato.digital em 8 abas** | **01/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
