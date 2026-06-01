@@ -1,23 +1,32 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
-  MapPin, Filter, Users, X, Building2, Navigation, MapPinned, Loader2,
-  Eye, Layers, Search, Route, Thermometer, BarChart3, ChevronDown, ChevronUp,
-  CheckCircle2, Trash2, Share2
+  MapPin, Users, X, Building2, Navigation, MapPinned, Loader2,
+  Eye, Layers, Search, Crown, User, BuildingCommunity,
+  World, BarChart3, Target, Home
 } from '@/lib/icons';
+
+// Ícones SVG personalizados para StatCards (mesmo padrão dos clusters)
+function IconeLider({ className }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg>;
+}
+function IconeEleitor({ className }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" fill="#93c5fd"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/></svg>;
+}
+function IconeComunidade({ className }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>;
+}
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getCoordenadasCidade } from '@/data/coordenadasCidades';
 import { createComunidadeIcon, createEleitorIcon, createLiderIcon } from '@/lib/mapIcons';
-import { trpc } from '@/providers/trpc';
-import HeatmapLayer from '@/components/HeatmapLayer';
+import { StatCard, PanelCard, EmptyState, AnimatedBar } from '@/components/dashboard';
 import type { Eleitor, Comunidade } from '@/lib/supabase';
 
-import { MapContainer, TileLayer, Marker, Tooltip, Popup, useMap, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -31,32 +40,72 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const customIcon = new L.Icon({ iconUrl: markerIcon, shadowUrl: markerShadow, iconSize: [25, 41], iconAnchor: [12, 41] });
 
-const statusColors: Record<string, string> = { ativo: '#22c55e', inativo: '#94a3b8', pendente: '#f59e0b' };
+const clusterColors = {
+  ativo: '#3b82f6',
+  pendente: '#f59e0b',
+  lider: '#7c3aed',
+  comunidade: '#22c55e',
+};
 
-function createClusterIcon(cluster: any) {
+// Offset em espiral para clusters do mesmo ponto (evita sobreposição)
+const clusterOffsets: Record<string, [number, number]> = {
+  eleitor: [0, 0],
+  lider: [18, -18],
+  comunidade: [-18, -18],
+};
+
+function createClusterIcon(cluster: any, color: string = clusterColors.ativo, type: 'eleitor' | 'comunidade' | 'lider' = 'eleitor') {
   const count = cluster.getChildCount();
-  let size = 30, color = '#2563eb';
-  if (count >= 100) { size = 44; color = '#dc2626'; }
-  else if (count >= 50) { size = 38; color = '#ea580c'; }
-  else if (count >= 20) { size = 34; color = '#ca8a04'; }
+  const size = 44;
+
+  // Ícones SVG por tipo (preenchidos em cores)
+  const getIconSvg = () => {
+    if (type === 'comunidade') {
+      // Comunidade - PRÉDIO preenchido
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="2" width="18" height="20" rx="2" fill="#4ade80"/>
+        <rect x="3" y="2" width="18" height="20" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
+        <rect x="6" y="5" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
+        <rect x="14" y="5" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
+        <rect x="6" y="11" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
+        <rect x="14" y="11" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
+        <rect x="9" y="17" width="6" height="5" rx="1" fill="white" opacity="0.9"/>
+      </svg>`;
+    }
+    if (type === 'lider') {
+      // Líder - COROA DOURADA (igual ao marcador individual)
+      return `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/>
+        <circle cx="3" cy="5" r="1.8" fill="#fbbf24"/>
+        <circle cx="10" cy="2.5" r="1.8" fill="#fbbf24"/>
+        <circle cx="17" cy="5" r="1.8" fill="#fbbf24"/>
+        <rect x="3" y="12" width="14" height="2.2" rx="0.5" fill="#fbbf24"/>
+      </svg>`;
+    }
+    // Eleitor - PESSOA BÁSICA preenchida
+    return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="7" r="4" fill="#93c5fd"/>
+      <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/>
+    </svg>`;
+  };
+
+  const bgColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
+  const [offsetX, offsetY] = clusterOffsets[type];
+
   return L.divIcon({
-    html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:${count >= 100 ? 13 : count >= 50 ? 12 : 11}px;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${count}</div>`,
+    html: `
+      <div style="position:relative;width:${size}px;height:${size}px;transform:translate(${offsetX}px,${offsetY}px);">
+        <div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+            ${getIconSvg()}
+            <span style="color:white;font-weight:900;font-size:11px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.3);">${count}</span>
+          </div>
+        </div>
+      </div>
+    `,
     className: 'marker-cluster-custom',
     iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  });
-}
-
-function createClusterIconComunidade(cluster: any) {
-  const count = cluster.getChildCount();
-  let size = 28, color = '#22c55e';
-  if (count >= 10) { size = 36; color = '#16a34a'; }
-  else if (count >= 5) { size = 32; color = '#4ade80'; }
-  return L.divIcon({
-    html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:${count >= 10 ? 12 : 11}px;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.25);">${count}</div>`,
-    className: 'marker-cluster-comunidade',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    iconAnchor: [size / 2 + offsetX, size / 2 + offsetY],
   });
 }
 
@@ -66,13 +115,19 @@ function MapController({ flyTo }: { flyTo?: [number, number] | null }) {
   return null;
 }
 
-// Controle de camadas de tile (Voyager / Satelite / Dark)
 function TileLayerController({ camada }: { camada: 'voyager' | 'satellite' | 'dark' }) {
   const map = useMap();
+  useEffect(() => { map.invalidateSize(); }, [camada, map]);
+  return null;
+}
+
+function MapBoundsController({ points, trigger }: { points: [number, number][]; trigger: number }) {
+  const map = useMap();
   useEffect(() => {
-    // Forca refresh do tile quando muda a camada
-    map.invalidateSize();
-  }, [camada, map]);
+    if (points.length === 0) return;
+    const bounds = L.latLngBounds(points.map(p => L.latLng(p[0], p[1])));
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16, animate: true });
+  }, [points, trigger, map]);
   return null;
 }
 
@@ -84,7 +139,7 @@ const tileLayers = {
   },
   satellite: {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    attribution: 'Tiles &copy; Esri',
     subdomains: '',
   },
   dark: {
@@ -94,150 +149,69 @@ const tileLayers = {
   },
 };
 
-function agruparPorCidade(eleitores: Eleitor[]) {
-  const map = new Map<string, Eleitor[]>();
-  eleitores.forEach(e => { const cidade = e.cidade || 'Sem cidade'; const lista = map.get(cidade) || []; lista.push(e); map.set(cidade, lista); });
-  return Array.from(map.entries()).map(([cidade, lista]) => ({ cidade, count: lista.length, eleitores: lista, coords: getCoordenadasCidade(cidade) })).filter(c => c.coords !== null).sort((a, b) => b.count - a.count);
-}
-
-// Heurística simples de rota: ordena pontos pelo ângulo em relação ao centroide (vizinho mais próximo aproximado)
-function otimizarRota(pontos: Array<[number, number]>): Array<[number, number]> {
-  if (pontos.length <= 2) return pontos;
-  const visitados = new Set<number>();
-  const rota: Array<[number, number]> = [];
-  let atual = 0;
-  visitados.add(atual);
-  rota.push(pontos[atual]);
-
-  while (visitados.size < pontos.length) {
-    let maisProximo = -1;
-    let menorDist = Infinity;
-    for (let i = 0; i < pontos.length; i++) {
-      if (visitados.has(i)) continue;
-      const dx = pontos[atual][0] - pontos[i][0];
-      const dy = pontos[atual][1] - pontos[i][1];
-      const dist = dx * dx + dy * dy;
-      if (dist < menorDist) { menorDist = dist; maisProximo = i; }
-    }
-    if (maisProximo === -1) break;
-    visitados.add(maisProximo);
-    rota.push(pontos[maisProximo]);
-    atual = maisProximo;
-  }
-  return rota;
-}
-
-export default function MapaPage() {
+export default function MapaPageV2() {
+  const navigate = useNavigate();
   const { data: eleitores, loading: loadingEleitores } = useEleitores();
   const { data: comunidades, loading: loadingComunidades } = useComunidades();
 
-  // Filtros
+  // Filtros essenciais
   const [filtroComunidade, setFiltroComunidade] = useState<string | null>(null);
   const [filtroNivel, setFiltroNivel] = useState<string | null>(null);
   const [filtroStatus, setFiltroStatus] = useState<string | null>(null);
-  const [filtroBairro, setFiltroBairro] = useState<string | null>(null);
-  const [filtroTag, setFiltroTag] = useState<string | null>(null);
   const [buscaNome, setBuscaNome] = useState('');
 
-  // Camadas
+  // Camadas essenciais
+  const [mostrarLideres, setMostrarLideres] = useState(true);
   const [mostrarEleitores, setMostrarEleitores] = useState(true);
   const [mostrarComunidades, setMostrarComunidades] = useState(true);
-  const [mostrarCidadesFallback, setMostrarCidadesFallback] = useState(true);
-  const [mostrarHeatmap, setMostrarHeatmap] = useState(false);
-  const [mostrarRota, setMostrarRota] = useState(false);
   const [camadaBase, setCamadaBase] = useState<'voyager' | 'satellite' | 'dark'>('voyager');
 
   // Dialogs
-  const [cidadeSelecionada, setCidadeSelecionada] = useState<string | null>(null);
   const [eleitorSelecionado, setEleitorSelecionado] = useState<Eleitor | null>(null);
   const [comunidadeSelecionada, setComunidadeSelecionada] = useState<Comunidade | null>(null);
-  const [geocodingStatus, setGeocodingStatus] = useState<string | null>(null);
 
-  // FlyTo
+  // FlyTo + FitBounds
   const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
-
-  // Sidebar expansível
-  const [filtrosExpandido, setFiltrosExpandido] = useState(true);
-  const [camadasExpandido, setCamadasExpandido] = useState(true);
-  const [statsExpandido, setStatsExpandido] = useState(true);
-  const [rotaExpandido, setRotaExpandido] = useState(false);
-
-  const geocodeAll = trpc.geocoding.geocodeAll.useMutation({
-    onSuccess: (data) => {
-      if (data.success) {
-        setGeocodingStatus(data.message || `Processados: ${data.processed} | Falhas: ${data.failed}`);
-        if (data.processed > 0) setTimeout(() => window.location.reload(), 2500);
-      } else { setGeocodingStatus(`Erro: ${(data as any).error || 'Falha'}`); }
-    },
-    onError: (err: any) => { setGeocodingStatus(`Erro: ${err?.message || 'Falha'}`); },
-  });
-
-  const todasTags = useMemo(() => { const s = new Set<string>(); eleitores.forEach(e => e.tags?.forEach(t => s.add(t))); return Array.from(s).sort(); }, [eleitores]);
-  const todosBairros = useMemo(() => { const s = new Set<string>(); eleitores.forEach(e => { if (e.bairro) s.add(e.bairro); }); return Array.from(s).sort(); }, [eleitores]);
+  const [fitTrigger, setFitTrigger] = useState(0);
 
   const eleitoresFiltrados = useMemo(() => eleitores.filter(e => {
     if (filtroComunidade && e.comunidade_id !== filtroComunidade) return false;
     if (filtroNivel && e.nivel !== filtroNivel) return false;
     if (filtroStatus && e.status !== filtroStatus) return false;
-    if (filtroBairro && e.bairro !== filtroBairro) return false;
-    if (filtroTag && !e.tags?.includes(filtroTag)) return false;
     if (buscaNome) {
       const q = buscaNome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       const nome = e.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (!nome.includes(q)) return false;
     }
     return true;
-  }), [eleitores, filtroComunidade, filtroNivel, filtroStatus, filtroBairro, filtroTag, buscaNome]);
+  }), [eleitores, filtroComunidade, filtroNivel, filtroStatus, buscaNome]);
 
   const eleitoresComCoords = useMemo(() => eleitoresFiltrados.filter(e => e.latitude && e.longitude), [eleitoresFiltrados]);
-  const eleitoresSemCoords = useMemo(() => eleitoresFiltrados.filter(e => !e.latitude || !e.longitude), [eleitoresFiltrados]);
-  const porCidade = useMemo(() => agruparPorCidade(eleitoresSemCoords), [eleitoresSemCoords]);
 
-  // Dados para heatmap: [lat, lng, intensidade]
-  const heatmapPoints = useMemo(() => {
-    return eleitoresComCoords.map(e => [e.latitude!, e.longitude!, e.nivel === 'lider' ? 1.0 : 0.6] as [number, number, number]);
-  }, [eleitoresComCoords]);
+  const comunidadesNoMapa = useMemo(() => comunidades.filter(c => c.latitude && c.longitude).map(c => ({
+    ...c,
+    coords: [c.latitude!, c.longitude!] as [number, number]
+  })), [comunidades]);
 
-  // Rota de visita
-  const rotaPontos = useMemo(() => {
-    if (!mostrarRota || eleitoresComCoords.length < 2) return [];
-    const pts = eleitoresComCoords.map(e => [e.latitude!, e.longitude!] as [number, number]);
-    return otimizarRota(pts);
-  }, [mostrarRota, eleitoresComCoords]);
-
-  // Geocodificar bairros das comunidades
-  const [bairrosCoords, setBairrosCoords] = useState<Map<string, [number, number]>>(new Map());
-  const geocodeBairro = trpc.geocoding.geocodeBairro.useMutation();
-  const comunidadesParaGeocodificar = useMemo(() => comunidades.filter(c => c.cidade && c.bairro && (!c.latitude || !c.longitude)), [comunidades]);
-
-  useEffect(() => {
-    const fetchCoords = async () => {
-      const newCoords = new Map<string, [number, number]>();
-      for (const c of comunidadesParaGeocodificar) {
-        const key = `${c.bairro}-${c.cidade}`;
-        if (bairrosCoords.has(key)) { newCoords.set(key, bairrosCoords.get(key)!); continue; }
-        try {
-          const coords = await geocodeBairro.mutateAsync({ bairro: c.bairro!, cidade: c.cidade!, estado: '' });
-          if (coords) newCoords.set(key, [coords.lat, coords.lng]);
-        } catch { /* ignora */ }
-      }
-      if (newCoords.size > 0) setBairrosCoords(prev => new Map([...prev, ...newCoords]));
-    };
-    if (comunidadesParaGeocodificar.length > 0) fetchCoords();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [comunidadesParaGeocodificar.map(c => c.id).join(',')]);
-
-  const comunidadesNoMapa = useMemo(() => comunidades.filter(c => c.cidade).map(c => {
-    if (c.latitude && c.longitude) return { ...c, coords: [c.latitude, c.longitude] as [number, number] };
-    if (c.bairro) { const key = `${c.bairro}-${c.cidade}`; const bCoords = bairrosCoords.get(key); if (bCoords) return { ...c, coords: bCoords }; }
-    const cidadeCoords = getCoordenadasCidade(c.cidade!);
-    if (cidadeCoords) return { ...c, coords: cidadeCoords };
-    return null;
-  }).filter(Boolean) as Array<Comunidade & { coords: [number, number] }>, [comunidades, bairrosCoords]);
+  // Todos os pontos visíveis no mapa (para fitBounds)
+  const todosOsPontos = useMemo(() => {
+    const pts: [number, number][] = [];
+    if (mostrarComunidades) comunidadesNoMapa.forEach(c => pts.push(c.coords));
+    if (mostrarEleitores || mostrarLideres) {
+      eleitoresComCoords.forEach(e => {
+        if (e.nivel === 'lider' && !mostrarLideres) return;
+        if (e.nivel !== 'lider' && !mostrarEleitores) return;
+        pts.push([e.latitude!, e.longitude!]);
+      });
+    }
+    return pts;
+  }, [comunidadesNoMapa, eleitoresComCoords, mostrarComunidades, mostrarEleitores, mostrarLideres]);
 
   useEffect(() => {
-    if (filtroComunidade) { const c = comunidadesNoMapa.find(c => c.id === filtroComunidade); if (c) setFlyTo(c.coords); }
-    else { setFlyTo(null); }
+    if (filtroComunidade) {
+      const c = comunidadesNoMapa.find(c => c.id === filtroComunidade);
+      if (c) setFlyTo(c.coords);
+    } else { setFlyTo(null); }
   }, [filtroComunidade, comunidadesNoMapa]);
 
   const stats = useMemo(() => {
@@ -249,25 +223,28 @@ export default function MapaPage() {
     return { total, lideres, ativos, pendentes, comCoords };
   }, [eleitoresFiltrados, eleitoresComCoords]);
 
-  const eleitoresDaCidade = useMemo(() => { if (!cidadeSelecionada) return []; return porCidade.find(c => c.cidade === cidadeSelecionada)?.eleitores || []; }, [cidadeSelecionada, porCidade]);
+  // Top bairros (concentração geográfica) — só eleitores COM bairro preenchido
+  const topBairros = useMemo(() => {
+    const contagem = new Map<string, number>();
+    eleitoresComCoords.forEach(e => {
+      const bairro = e.bairro?.trim();
+      if (!bairro) return; // Ignora eleitores sem bairro
+      contagem.set(bairro, (contagem.get(bairro) || 0) + 1);
+    });
+    return Array.from(contagem.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+  }, [eleitoresComCoords]);
 
   const centroBrasil: [number, number] = [-14.2350, -51.9253];
   const loading = loadingEleitores || loadingComunidades;
-  const niveis = ['lider', 'eleitor'];
-  const statusList = ['ativo', 'inativo', 'pendente'];
-  const temFiltros = filtroComunidade || filtroNivel || filtroStatus || filtroBairro || filtroTag || buscaNome;
+  const temFiltros = filtroComunidade || filtroNivel || filtroStatus || buscaNome;
 
-  const limparFiltros = () => { setFiltroComunidade(null); setFiltroNivel(null); setFiltroStatus(null); setFiltroBairro(null); setFiltroTag(null); setBuscaNome(''); };
-
-  // Copiar rota como texto
-  const copiarRota = () => {
-    if (rotaPontos.length === 0) return;
-    const texto = rotaPontos.map((p, i) => `${i + 1}. ${p[0].toFixed(6)}, ${p[1].toFixed(6)}`).join('\n');
-    navigator.clipboard.writeText(texto).then(() => alert('Rota copiada para a área de transferência!'));
-  };
+  const limparFiltros = () => { setFiltroComunidade(null); setFiltroNivel(null); setFiltroStatus(null); setBuscaNome(''); };
+  const centralizarMapa = useCallback(() => setFitTrigger(t => t + 1), []);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header */}
       <motion.div custom={0} variants={fadeIn} initial="hidden" animate="visible">
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -277,420 +254,295 @@ export default function MapaPage() {
               Mapa Territorial
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              {stats.total} eleitor{stats.total > 1 ? 'es' : ''} visíveis · {stats.comCoords} com coordenadas exatas
+              {stats.total} eleitor{stats.total > 1 ? 'es' : ''} visíveis · {stats.comCoords} com coordenadas
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            {eleitoresSemCoords.length > 0 && (
-              <Button variant="outline" size="sm" className="text-xs" onClick={() => { setGeocodingStatus('Processando...'); geocodeAll.mutate(); }} disabled={geocodeAll.isPending}>
-                {geocodeAll.isPending ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <MapPinned className="w-3 h-3 mr-1" />}
-                Geocodificar {eleitoresSemCoords.length}
-              </Button>
-            )}
-          </div>
         </div>
-        {geocodingStatus && <p className="text-xs text-slate-500 mt-1">{geocodingStatus}</p>}
       </motion.div>
 
-      <div className="grid lg:grid-cols-4 gap-4">
-        {/* Sidebar */}
-        <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-1 space-y-3 max-h-[calc(100vh-140px)] overflow-y-auto">
-          {/* Busca */}
-          <Card>
-            <CardContent className="p-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor por nome..." className="pl-9 h-9 text-sm" />
-                {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
+      {/* StatCards */}
+      <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
+          <StatCard label="Total no Mapa" value={stats.total} icon={IconeEleitor} color="blue" delay={0} />
+          <StatCard label="Com Coordenadas" value={stats.comCoords} icon={MapPin} color="green" delay={1} />
+          <StatCard label="Líderes no Mapa" value={stats.lideres} icon={IconeLider} color="purple" delay={2} />
+          <StatCard label="Comunidades" value={comunidadesNoMapa.length} icon={IconeComunidade} color="cyan" delay={3} />
+        </div>
+      </motion.div>
+
+      {/* Filtros */}
+      <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible">
+        <PanelCard title="Filtros" icon={Search} iconColor="text-blue-600" iconBg="bg-blue-50" delay={4}>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[180px] max-w-[260px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor..." className="pl-9 h-9 text-sm" />
+              {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
+            </div>
+            <select value={filtroComunidade || ''} onChange={e => setFiltroComunidade(e.target.value || null)} className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600">
+              <option value="">Todas comunidades</option>
+              {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+            </select>
+            <select value={filtroNivel || ''} onChange={e => setFiltroNivel(e.target.value || null)} className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600">
+              <option value="">Todos níveis</option>
+              <option value="lider">Líder</option>
+              <option value="eleitor">Eleitor</option>
+            </select>
+            <select value={filtroStatus || ''} onChange={e => setFiltroStatus(e.target.value || null)} className="h-9 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600">
+              <option value="">Todos status</option>
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+              <option value="pendente">Pendente</option>
+            </select>
+            {temFiltros && (
+              <button onClick={limparFiltros} className="h-9 px-2.5 text-xs font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm hover:shadow-md transition-all flex items-center gap-1">
+                <X className="w-3.5 h-3.5" /> Limpar
+              </button>
+            )}
+          </div>
+        </PanelCard>
+      </motion.div>
+
+      {/* Mapa Base + Camadas */}
+      <motion.div custom={3} variants={fadeIn} initial="hidden" animate="visible">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <PanelCard title="Mapa Base" icon={MapPinned} iconColor="text-emerald-600" iconBg="bg-emerald-50" delay={5}>
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => setCamadaBase('voyager')} className={`flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'voyager' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <MapPinned className="w-3 h-3" /> Ruas
+              </button>
+              <button onClick={() => setCamadaBase('satellite')} className={`flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'satellite' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <World className="w-3 h-3" /> Satélite
+              </button>
+              <button onClick={() => setCamadaBase('dark')} className={`flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${camadaBase === 'dark' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <MapPin className="w-3 h-3" /> Escuro
+              </button>
+            </div>
+          </PanelCard>
+          <PanelCard title="Camadas" icon={Layers} iconColor="text-purple-600" iconBg="bg-purple-50" delay={6}>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {/* Líderes — horizontal compacto, wrap no mobile */}
+              <button onClick={() => setMostrarLideres(!mostrarLideres)} className={`flex items-center gap-1 px-1.5 py-1 rounded transition-all whitespace-nowrap ${mostrarLideres ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg>
+                <span className="text-[10px] font-semibold">Líderes</span>
+                <div className={`w-3.5 h-2 rounded-full relative flex-shrink-0 ${mostrarLideres ? 'bg-white/30' : 'bg-slate-300'}`}>
+                  <div className={`w-2 h-2 bg-white rounded-full absolute top-0 transition-all ${mostrarLideres ? 'right-0' : 'left-0'}`} />
+                </div>
+              </button>
+              {/* Eleitores — horizontal compacto, wrap no mobile */}
+              <button onClick={() => setMostrarEleitores(!mostrarEleitores)} className={`flex items-center gap-1 px-1.5 py-1 rounded transition-all whitespace-nowrap ${mostrarEleitores ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" fill="#93c5fd"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/></svg>
+                <span className="text-[10px] font-semibold">Eleitores</span>
+                <div className={`w-3.5 h-2 rounded-full relative flex-shrink-0 ${mostrarEleitores ? 'bg-white/30' : 'bg-slate-300'}`}>
+                  <div className={`w-2 h-2 bg-white rounded-full absolute top-0 transition-all ${mostrarEleitores ? 'right-0' : 'left-0'}`} />
+                </div>
+              </button>
+              {/* Comunidades — horizontal compacto, wrap no mobile */}
+              <button onClick={() => setMostrarComunidades(!mostrarComunidades)} className={`flex items-center gap-1 px-1.5 py-1 rounded transition-all whitespace-nowrap ${mostrarComunidades ? 'bg-green-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>
+                <span className="text-[10px] font-semibold">Comunidades</span>
+                <div className={`w-3.5 h-2 rounded-full relative flex-shrink-0 ${mostrarComunidades ? 'bg-white/30' : 'bg-slate-300'}`}>
+                  <div className={`w-2 h-2 bg-white rounded-full absolute top-0 transition-all ${mostrarComunidades ? 'right-0' : 'left-0'}`} />
+                </div>
+              </button>
+            </div>
+          </PanelCard>
+        </div>
+      </motion.div>
+
+      {/* Mapa - largura total, altura aumentada */}
+      <motion.div custom={4} variants={fadeIn} initial="hidden" animate="visible">
+        <Card className="h-[65vh] min-h-[500px]">
+          <CardContent className="p-0 h-full relative">
+            {loading ? (
+              <div className="h-full bg-slate-100 flex flex-col items-center justify-center text-slate-400 space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-slate-200 animate-pulse flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-slate-400" />
+                </div>
+                <p className="text-sm">Carregando mapa...</p>
+                <div className="w-48 h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 animate-pulse rounded-full" style={{ width: '60%' }} />
+                </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Filtros */}
-          <Card>
-            <CardContent className="p-3 space-y-3">
-              <button onClick={() => setFiltrosExpandido(!filtrosExpandido)} className="w-full flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-slate-500" />
-                  <h3 className="font-semibold text-sm text-slate-700">Filtros</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  {temFiltros && <button onClick={(e) => { e.stopPropagation(); limparFiltros(); }} className="text-[10px] text-red-500 hover:underline">Limpar</button>}
-                  {filtrosExpandido ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                </div>
-              </button>
-              {filtrosExpandido && (
-                <>
-                  <div>
-                    <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Comunidades</h4>
-                    <div className="space-y-1 max-h-[140px] overflow-y-auto">
-                      {comunidades.map(c => (
-                        <button key={c.id} onClick={() => setFiltroComunidade(filtroComunidade === c.id ? null : c.id)}
-                          className={`w-full flex items-center gap-2 p-1.5 rounded-lg text-left text-xs transition-colors ${filtroComunidade === c.id ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
-                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.cor }} />
-                          <span className="flex-1 truncate">{c.nome}</span>
-                          {c.cidade && <span className="text-[10px] text-slate-400">{c.cidade}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="pt-2 border-t border-slate-100">
-                    <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Nível</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {niveis.map(n => (
-                        <button key={n} onClick={() => setFiltroNivel(filtroNivel === n ? null : n)}
-                          className={`px-2 py-1 rounded-md text-[11px] capitalize transition-colors ${filtroNivel === n ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>{n}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="pt-2 border-t border-slate-100">
-                    <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Status</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {statusList.map(s => (
-                        <button key={s} onClick={() => setFiltroStatus(filtroStatus === s ? null : s)}
-                          className={`px-2 py-1 rounded-md text-[11px] capitalize transition-colors ${filtroStatus === s ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>{s}</button>
-                      ))}
-                    </div>
-                  </div>
-                  {todosBairros.length > 0 && (
-                    <div className="pt-2 border-t border-slate-100">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Bairro</h4>
-                      <select value={filtroBairro || ''} onChange={e => setFiltroBairro(e.target.value || null)} className="w-full h-8 px-2 rounded-md border border-input bg-background text-xs">
-                        <option value="">Todos os bairros</option>
-                        {todosBairros.map(b => <option key={b} value={b}>{b}</option>)}
-                      </select>
-                    </div>
-                  )}
-                  {todasTags.length > 0 && (
-                    <div className="pt-2 border-t border-slate-100">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Tags</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {todasTags.map(t => (
-                          <button key={t} onClick={() => setFiltroTag(filtroTag === t ? null : t)}
-                            className={`px-2 py-0.5 rounded-full text-[10px] transition-colors ${filtroTag === t ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>{t}</button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Camadas */}
-          <Card>
-            <CardContent className="p-3 space-y-2">
-              <button onClick={() => setCamadasExpandido(!camadasExpandido)} className="w-full flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-slate-500" />
-                  <h3 className="font-semibold text-sm text-slate-700">Camadas</h3>
-                </div>
-                {camadasExpandido ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-              </button>
-              {camadasExpandido && (
-                <div className="space-y-2 pt-1">
-                  {/* Seletor de camada base */}
-                  <div className="pb-2 border-b border-slate-100">
-                    <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Mapa base</h4>
-                    <div className="flex gap-1">
-                      {[
-                        { key: 'voyager' as const, label: 'Ruas', icon: '🗺️' },
-                        { key: 'satellite' as const, label: 'Satélite', icon: '🛰️' },
-                        { key: 'dark' as const, label: 'Escuro', icon: '🌙' },
-                      ].map(c => (
-                        <button
-                          key={c.key}
-                          onClick={() => setCamadaBase(c.key)}
-                          className={`flex-1 text-[10px] py-1 px-1.5 rounded border transition-colors ${camadaBase === c.key ? 'bg-blue-50 border-blue-300 text-blue-700 font-medium' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
-                        >
-                          {c.icon} {c.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <img src="https://img.icons8.com/color/16/user.png" alt="eleitor" className="w-4 h-4" />
-                      Eleitores ({eleitoresComCoords.filter(e => e.nivel !== 'lider').length})
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={mostrarEleitores} onChange={e => setMostrarEleitores(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <img src="https://img.icons8.com/color/16/crown.png" alt="lider" className="w-4 h-4" />
-                      Líderes ({eleitoresComCoords.filter(e => e.nivel === 'lider').length})
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={mostrarComunidades} onChange={e => setMostrarComunidades(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1.5">
-                      <div className="w-4 h-4 rounded-sm bg-green-500" />
-                      Comunidades ({comunidadesNoMapa.length})
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={mostrarCidadesFallback} onChange={e => setMostrarCidadesFallback(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600">Cidades sem coordenadas ({porCidade.length})</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={mostrarHeatmap} onChange={e => setMostrarHeatmap(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1"><Thermometer className="w-3 h-3" /> Heatmap</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={mostrarRota} onChange={e => setMostrarRota(e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
-                    <span className="text-xs text-slate-600 flex items-center gap-1"><Route className="w-3 h-3" /> Rota de visita ({rotaPontos.length} pts)</span>
-                  </label>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Rota de visita */}
-          {mostrarRota && rotaPontos.length > 0 && (
-            <Card>
-              <CardContent className="p-3 space-y-2">
-                <button onClick={() => setRotaExpandido(!rotaExpandido)} className="w-full flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Route className="w-4 h-4 text-blue-600" />
-                    <h3 className="font-semibold text-sm text-slate-700">Rota de Visita</h3>
-                  </div>
-                  {rotaExpandido ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                </button>
-                {rotaExpandido && (
-                  <div className="space-y-2 pt-1">
-                    <p className="text-[10px] text-slate-500">{rotaPontos.length} paradas otimizadas (vizinho mais próximo)</p>
-                    <div className="max-h-[150px] overflow-y-auto space-y-1">
-                      {rotaPontos.map((p, i) => (
-                        <div key={i} className="flex items-center gap-2 text-xs">
-                          <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">{i + 1}</span>
-                          <span className="text-slate-600 truncate">{p[0].toFixed(5)}, {p[1].toFixed(5)}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <Button size="sm" variant="outline" className="w-full text-xs mt-2" onClick={copiarRota}>
-                      <Share2 className="w-3 h-3 mr-1" /> Copiar rota
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Estatísticas */}
-          <Card>
-            <CardContent className="p-3 space-y-2">
-              <button onClick={() => setStatsExpandido(!statsExpandido)} className="w-full flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-slate-500" />
-                  <h3 className="font-semibold text-sm text-slate-700">Estatísticas</h3>
-                </div>
-                {statsExpandido ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-              </button>
-              {statsExpandido && (
-                <div className="space-y-2 pt-1">
-                  <div className="flex justify-between text-sm"><span className="text-slate-500">Total</span><span className="font-semibold text-slate-800">{stats.total}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-500">Líderes</span><span className="font-semibold text-purple-600">{stats.lideres}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-500">Ativos</span><span className="font-semibold text-green-600">{stats.ativos}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-500">Pendentes</span><span className="font-semibold text-amber-600">{stats.pendentes}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-500">Com coordenadas</span><span className="font-semibold text-blue-600">{stats.comCoords}</span></div>
-                  <div className="pt-2 border-t border-slate-100">
-                    <div className="text-[10px] text-slate-400 mb-1">Distribuição por nível</div>
-                    <div className="flex h-2 rounded-full overflow-hidden">
-                      {stats.total > 0 && (
-                        <>
-                          <div className="bg-purple-500" style={{ width: `${(stats.lideres / stats.total) * 100}%` }} />
-                          <div className="bg-blue-500" style={{ width: `${((stats.total - stats.lideres) / stats.total) * 100}%` }} />
-                        </>
-                      )}
-                    </div>
-                    <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-purple-500" />Líderes</span>
-                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-500" />Eleitores</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Cidades sem coordenadas */}
-          {porCidade.length > 0 && (
-            <Card>
-              <CardContent className="p-3 max-h-[200px] overflow-y-auto">
-                <h4 className="text-[10px] font-semibold text-slate-500 uppercase mb-2">Cidades (sem coord.)</h4>
-                <div className="space-y-1">
-                  {porCidade.map(c => (
-                    <button key={c.cidade} onClick={() => setCidadeSelecionada(c.cidade)}
-                      className={`w-full flex items-center justify-between p-1.5 rounded-lg text-left text-xs transition-colors ${cidadeSelecionada === c.cidade ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
-                      <span className="truncate">{c.cidade}</span>
-                      <span className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">{c.count}</span>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </motion.div>
-
-        {/* Mapa */}
-        <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible" className="lg:col-span-3">
-          <Card className="h-full min-h-[600px]">
-            <CardContent className="p-0 h-full overflow-visible">
-              {loading ? (
-                <div className="h-[600px] bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">
-                  <MapPin className="w-8 h-8 mr-2" /> Carregando mapa...
-                </div>
-              ) : (
-                <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', minHeight: '600px', width: '100%' }}>
+            ) : todosOsPontos.length === 0 ? (
+              <div className="h-full flex items-center justify-center">
+                <EmptyState icon={MapPin} title="Nenhum ponto no mapa" description="Cadastre eleitores com endereço ou comunidades com coordenadas para visualizar no mapa" action={{ label: 'Cadastrar eleitor', onClick: () => navigate('/dashboard/eleitores') }} />
+              </div>
+            ) : (
+              <div className="relative w-full h-full" style={{ zIndex: 1 }}>
+                <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', width: '100%', zIndex: 1 }}>
                   <TileLayerController camada={camadaBase} />
-                  <TileLayer
-                    attribution={tileLayers[camadaBase].attribution}
-                    url={tileLayers[camadaBase].url}
-                    subdomains={tileLayers[camadaBase].subdomains}
-                    maxZoom={19}
-                    key={camadaBase}
-                  />
+                  <TileLayer attribution={tileLayers[camadaBase].attribution} url={tileLayers[camadaBase].url} subdomains={tileLayers[camadaBase].subdomains} maxZoom={19} key={camadaBase} />
                   <MapController flyTo={flyTo} />
-
-                  {/* Heatmap */}
-                  {mostrarHeatmap && heatmapPoints.length > 0 && (
-                    <HeatmapLayer points={heatmapPoints} radius={25} blur={15} max={1.5} />
-                  )}
-
-                  {/* Rota de visita */}
-                  {mostrarRota && rotaPontos.length > 1 && (
-                    <Polyline positions={rotaPontos} pathOptions={{ color: '#2563eb', weight: 3, opacity: 0.7, dashArray: '8, 6' }} />
-                  )}
-
-                  {/* Eleitores COM coordenadas — com cluster */}
-                  {mostrarEleitores && (
-                    <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIcon} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
-                      {eleitoresComCoords.map(e => (
-                        <Marker
-                          key={e.id}
-                          position={[e.latitude!, e.longitude!]}
-                          icon={e.nivel === 'lider' ? createLiderIcon(e.status) : createEleitorIcon(e.status)}
-                          eventHandlers={{ click: () => setEleitorSelecionado(e) }}
-                        >
-                          <Popup>
-                            <div className="text-xs min-w-[180px]">
-                              <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
-                                {e.nivel === 'lider' && (
-                                  <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                  </span>
-                                )}
-                                {e.nome}
-                              </div>
-                              <div className="flex items-center gap-2 mt-1">
-                                <Badge variant="outline" className={`text-[10px] capitalize ${e.nivel === 'lider' ? 'border-purple-200 text-purple-700 bg-purple-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}>{e.nivel}</Badge>
-                                <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
-                              </div>
-                              <div className="mt-2 space-y-0.5 text-slate-500">
-                                {e.endereco && <div>{e.endereco}</div>}
-                                {e.bairro && <div>{e.bairro}</div>}
-                                <div>{e.cidade}, {e.estado}</div>
-                                {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
-                              </div>
-                              {e.tags && e.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                  {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
-                                </div>
-                              )}
-                              <div className="mt-2 pt-2 border-t border-slate-100 flex gap-2">
-                                <button onClick={() => setEleitorSelecionado(e)} className="text-[10px] text-blue-600 hover:underline flex items-center gap-1">
-                                  <Eye className="w-3 h-3" /> Ver detalhes
-                                </button>
-                              </div>
-                            </div>
-                          </Popup>
-                        </Marker>
-                      ))}
-                    </MarkerClusterGroup>
-                  )}
+                  <MapBoundsController points={todosOsPontos} trigger={fitTrigger} />
 
                   {/* Comunidades — com cluster separado */}
                   {mostrarComunidades && (
-                    <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterIconComunidade} maxClusterRadius={80} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.comunidade, 'comunidade')} maxClusterRadius={80} spiderfyOnMaxZoom showCoverageOnHover={false}>
                       {comunidadesNoMapa.map(c => (
-                        <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)}
-                          zIndexOffset={1000}
-                          eventHandlers={{ click: () => setComunidadeSelecionada(c) }}>
-                          <Popup>
-                            <div className="text-xs min-w-[160px]">
-                              <div className="font-semibold text-slate-800 flex items-center gap-1 mb-1">
-                                <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
-                                {c.nome}
-                              </div>
-                              <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
-                              {c.latitude && <div className="text-[10px] text-green-600 mt-1">📍 Posição exata</div>}
-                              <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
-                                <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
-                              </div>
-                            </div>
-                          </Popup>
-                        </Marker>
+                        <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon('#16a34a')} zIndexOffset={1000} eventHandlers={{ click: () => setComunidadeSelecionada(c), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
+                      <Popup>
+                        <div className="text-xs min-w-[180px]">
+                          <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-1">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>
+                            {c.nome}
+                          </div>
+                          <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
+                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
+                            <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
+                          </div>
+                        </div>
+                      </Popup>
+                    </Marker>
                       ))}
                     </MarkerClusterGroup>
                   )}
 
-                  {/* Eleitores SEM coordenadas */}
-                  {mostrarCidadesFallback && porCidade.map(c => (
-                    <Marker key={c.cidade} position={c.coords!} icon={customIcon} eventHandlers={{ click: () => setCidadeSelecionada(c.cidade) }}>
-                      <Tooltip direction="top" offset={[0, -20]}>
-                        <span className="text-xs font-medium">{c.cidade}: {c.count} eleitor{c.count > 1 ? 'es' : ''} (sem coordenadas)</span>
-                      </Tooltip>
-                    </Marker>
-                  ))}
+                  {/* Líderes */}
+                  {mostrarLideres && (
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.lider, 'lider')} maxClusterRadius={70} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                      {eleitoresComCoords.filter(e => e.nivel === 'lider').map(e => (
+                        <Marker key={e.id} position={[e.latitude!, e.longitude!]} icon={createLiderIcon(e.status)} eventHandlers={{ click: () => setEleitorSelecionado(e), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
+                        <Popup>
+                          <div className="text-xs min-w-[200px]">
+                            <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg>
+                              {e.nome}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <Badge variant="outline" className="text-[10px] capitalize border-purple-200 text-purple-700 bg-purple-50">{e.nivel}</Badge>
+                              <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
+                            </div>
+                            <div className="mt-2 space-y-0.5 text-slate-500">
+                              {e.endereco && <div>{e.endereco}</div>}
+                              {e.bairro && <div>{e.bairro}</div>}
+                              <div>{e.cidade}, {e.estado}</div>
+                              {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
+                            </div>
+                            {e.tags && e.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
+                              </div>
+                            )}
+                          </div>
+                        </Popup>
+                      </Marker>
+                      ))}
+                    </MarkerClusterGroup>
+                  )}
 
-                  {/* Legenda flutuante */}
-                  <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200 px-3 py-2.5 space-y-1.5">
-                    <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Legenda</div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                      <div className="w-3 h-3 rounded-full bg-purple-500" /> Líder
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                      <div className="w-3 h-3 rounded-full bg-blue-500" /> Eleitor ativo
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                      <div className="w-3 h-3 rounded-full bg-amber-400" /> Eleitor pendente
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                      <div className="w-3 h-3 rounded-full bg-green-500" /> Comunidade
-                    </div>
-                  </div>
+                  {/* Eleitores */}
+                  {mostrarEleitores && (
+                    <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.ativo, 'eleitor')} maxClusterRadius={60} spiderfyOnMaxZoom showCoverageOnHover={false}>
+                      {eleitoresComCoords.filter(e => e.nivel !== 'lider').map(e => (
+                        <Marker key={e.id} position={[e.latitude!, e.longitude!]} icon={createEleitorIcon(e.status)} eventHandlers={{ click: () => setEleitorSelecionado(e), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
+                        <Popup>
+                          <div className="text-xs min-w-[200px]">
+                            <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                              {e.nome}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <Badge variant="outline" className="text-[10px] capitalize border-blue-200 text-blue-700 bg-blue-50">{e.nivel}</Badge>
+                              <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
+                            </div>
+                            <div className="mt-2 space-y-0.5 text-slate-500">
+                              {e.endereco && <div>{e.endereco}</div>}
+                              {e.bairro && <div>{e.bairro}</div>}
+                              <div>{e.cidade}, {e.estado}</div>
+                              {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
+                            </div>
+                            {e.tags && e.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
+                              </div>
+                            )}
+                          </div>
+                        </Popup>
+                      </Marker>
+                    ))}
+                    </MarkerClusterGroup>
+                  )}
                 </MapContainer>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
 
-      {/* Dialog: eleitores da cidade */}
-      <Dialog open={!!cidadeSelecionada} onOpenChange={() => setCidadeSelecionada(null)}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-blue-600" />
-              {cidadeSelecionada} — {eleitoresDaCidade.length} eleitor{eleitoresDaCidade.length > 1 ? 'es' : ''}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2">
-            {eleitoresDaCidade.map(e => (
-              <div key={e.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-slate-800">{e.nome}</p>
-                  <p className="text-xs text-slate-500">{e.telefone} · {e.bairro}</p>
+                {/* Botão Centralizar — DEPOIS do MapContainer no DOM = fica por cima */}
+                <button
+                  onClick={centralizarMapa}
+                  className="absolute top-3 right-3 z-[1000] bg-white rounded-lg shadow-md border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-1.5"
+                  title="Centralizar no conteúdo"
+                >
+                  <Target className="w-3.5 h-3.5" /> Centralizar
+                </button>
+
+                {/* Legenda flutuante — DEPOIS do MapContainer no DOM = fica por cima */}
+                <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200 px-3 py-2.5 space-y-1.5">
+                  <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Legenda</div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg> Líder
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" fill="#93c5fd"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/></svg> Eleitor
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg> Comunidade
+                  </div>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium capitalize ${
-                  e.nivel === 'lider' ? 'bg-purple-100 text-purple-700' : e.nivel === 'eleitor' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
-                }`}>{e.nivel}</span>
               </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Stats abaixo do mapa */}
+      <motion.div custom={5} variants={fadeIn} initial="hidden" animate="visible">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {/* Concentração por Bairro */}
+          <PanelCard title="Concentração por Bairro" icon={Home} iconColor="text-orange-600" iconBg="bg-orange-50" delay={5}>
+            {topBairros.length > 0 ? (
+              <div className="space-y-2.5">
+                {topBairros.map(([bairro, count], i) => {
+                  const percent = stats.comCoords > 0 ? (count / stats.comCoords) * 100 : 0;
+                  const colors = ['bg-orange-500', 'bg-orange-400', 'bg-orange-300', 'bg-orange-200', 'bg-orange-100'];
+                  return (
+                    <div key={bairro}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-slate-600 truncate max-w-[70%]">{bairro}</span>
+                        <span className="font-semibold text-slate-800">{count}</span>
+                      </div>
+                      <AnimatedBar progress={percent} color={colors[i] || 'bg-orange-200'} height="h-1.5" delay={0.1 * i} />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400">Nenhum bairro identificado nos eleitores com coordenadas.</p>
+            )}
+          </PanelCard>
+
+          {/* Cobertura — só mostra se não for 100% */}
+          {stats.total > 0 && stats.comCoords < stats.total && (
+            <PanelCard title="Cobertura Geográfica" icon={MapPin} iconColor="text-green-600" iconBg="bg-green-50" delay={6}>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">Com coordenadas</span>
+                  <span className="font-semibold text-blue-600">{stats.comCoords}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">Sem coordenadas</span>
+                  <span className="font-semibold text-slate-600">{stats.total - stats.comCoords}</span>
+                </div>
+                <div className="pt-2 border-t border-slate-100">
+                  <div className="text-[10px] text-slate-400 mb-1">Mapeamento</div>
+                  <AnimatedBar progress={stats.total > 0 ? (stats.comCoords / stats.total) * 100 : 0} color="bg-green-500" height="h-2" delay={0.7} />
+                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                    <span>Mapeado</span>
+                    <span>{stats.total > 0 ? Math.round((stats.comCoords / stats.total) * 100) : 0}%</span>
+                  </div>
+                </div>
+              </div>
+            </PanelCard>
+          )}
+        </div>
+      </motion.div>
 
       {/* Dialog: detalhes do eleitor */}
       <Dialog open={!!eleitorSelecionado} onOpenChange={() => setEleitorSelecionado(null)}>
@@ -727,6 +579,14 @@ export default function MapaPage() {
                 {eleitorSelecionado.telefone && <p>Tel: {eleitorSelecionado.telefone}</p>}
                 {eleitorSelecionado.email && <p>{eleitorSelecionado.email}</p>}
               </div>
+              <div className="pt-3 border-t border-slate-100">
+                <button
+                  onClick={() => { const id = eleitorSelecionado.id; setEleitorSelecionado(null); navigate(`/dashboard/eleitores?preview=${id}`); }}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
+                >
+                  <Eye className="w-3.5 h-3.5" /> Ver ficha completa
+                </button>
+              </div>
             </div>
           )}
         </DialogContent>
@@ -737,7 +597,7 @@ export default function MapaPage() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Building2 className="w-5 h-5" style={{ color: comunidadeSelecionada?.cor }} />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>
               {comunidadeSelecionada?.nome}
             </DialogTitle>
           </DialogHeader>
@@ -752,7 +612,6 @@ export default function MapaPage() {
                   <div className="text-lg font-bold text-slate-800">{comunidadeSelecionada.total_eleitores || 0}</div>
                   <div className="text-[10px] text-slate-500">eleitores</div>
                 </div>
-                {comunidadeSelecionada.latitude && <div className="text-[10px] text-green-600">📍 Posição exata no mapa</div>}
               </div>
             </div>
           )}
