@@ -202,11 +202,12 @@ export default function MapaPageV2() {
     return { total, lideres, ativos, pendentes, comCoords };
   }, [eleitoresFiltrados, eleitoresComCoords]);
 
-  // Top bairros (concentração geográfica)
+  // Top bairros (concentração geográfica) — só eleitores COM bairro preenchido
   const topBairros = useMemo(() => {
     const contagem = new Map<string, number>();
     eleitoresComCoords.forEach(e => {
-      const bairro = e.bairro?.trim() || 'Sem bairro';
+      const bairro = e.bairro?.trim();
+      if (!bairro) return; // Ignora eleitores sem bairro
       contagem.set(bairro, (contagem.get(bairro) || 0) + 1);
     });
     return Array.from(contagem.entries())

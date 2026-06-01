@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Crown, TrendingUp, Users, Target, Zap,
@@ -8,6 +8,8 @@ import {
 import { PanelCard, EmptyState } from '@/components/dashboard';
 import { Input } from '@/components/ui/input';
 import { trpc } from '@/providers/trpc';
+import { demoLideresProdutividade, isDemoUser } from '@/lib/demoData';
+import { supabase } from '@/lib/supabase';
 
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }) };
 
@@ -20,8 +22,19 @@ const statusMetaColors: Record<string, { bg: string; text: string; label: string
 type Ordenacao = 'ranking' | 'nome' | 'estimativa' | 'vinculados' | 'conversao';
 
 export default function LideresProdutividadePage() {
-  const { data, isLoading, refetch } = trpc.lideres.produtividade.useQuery();
+  const [isDemo, setIsDemo] = useState(false);
+  
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsDemo(isDemoUser(user?.email));
+    });
+  }, []);
+
+  const { data: realData, isLoading: realLoading, refetch } = trpc.lideres.produtividade.useQuery({ enabled: !isDemo });
   const atualizarEstimativa = trpc.lideres.atualizarEstimativa.useMutation({ onSuccess: () => refetch() });
+  
+  const data = isDemo ? demoLideresProdutividade : realData;
+  const isLoading = isDemo ? false : realLoading;
 
   const [busca, setBusca] = useState('');
   const [liderSelecionado, setLiderSelecionado] = useState<any>(null);

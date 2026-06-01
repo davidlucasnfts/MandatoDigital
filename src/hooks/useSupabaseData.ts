@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Eleitor, Comunidade, Solicitacao, Tarefa, Evento, Interacao, EnvioAniversario, ConviteEleitor } from '@/lib/supabase';
+import { demoEleitores, demoComunidades, demoSolicitacoes, demoTarefas, demoEventos, isDemoUser } from '@/lib/demoData';
 
 // ===================== ELEITORES =====================
 export function useEleitores() {
@@ -9,6 +10,12 @@ export function useEleitores() {
 
   const fetch = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (isDemoUser(user?.email)) {
+      setData(demoEleitores);
+      setLoading(false);
+      return;
+    }
     const { data: rows } = await supabase.from('eleitores').select('*').order('created_at', { ascending: false });
     setData(rows || []);
     setLoading(false);
@@ -44,6 +51,12 @@ export function useComunidades() {
 
   const fetch = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (isDemoUser(user?.email)) {
+      setData(demoComunidades);
+      setLoading(false);
+      return;
+    }
     const { data: rows } = await supabase.from('comunidades').select('*').order('created_at', { ascending: false });
     setData(rows || []);
     setLoading(false);
@@ -79,6 +92,12 @@ export function useSolicitacoes() {
 
   const fetch = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (isDemoUser(user?.email)) {
+      setData(demoSolicitacoes);
+      setLoading(false);
+      return;
+    }
     const { data: rows } = await supabase.from('solicitacoes').select('*').order('created_at', { ascending: false });
     setData(rows || []);
     setLoading(false);
@@ -123,6 +142,12 @@ export function useTarefas() {
 
   const fetch = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (isDemoUser(user?.email)) {
+      setData(demoTarefas as Tarefa[]);
+      setLoading(false);
+      return;
+    }
     const { data: rows } = await supabase.from('tarefas').select('*').order('created_at', { ascending: false });
     setData(rows || []);
     setLoading(false);
@@ -158,6 +183,12 @@ export function useEventos() {
 
   const fetch = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (isDemoUser(user?.email)) {
+      setData(demoEventos as Evento[]);
+      setLoading(false);
+      return;
+    }
     const { data: rows } = await supabase.from('eventos').select('*').order('data', { ascending: true });
     setData(rows || []);
     setLoading(false);

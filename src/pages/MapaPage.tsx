@@ -6,17 +6,6 @@ import {
   Eye, Layers, Search, Crown, User, BuildingCommunity,
   World, BarChart3, Target, Home
 } from '@/lib/icons';
-
-// Ícones SVG personalizados para StatCards (mesmo padrão dos clusters)
-function IconeLider({ className }: { className?: string }) {
-  return <svg className={className} viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg>;
-}
-function IconeEleitor({ className }: { className?: string }) {
-  return <svg className={className} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" fill="#93c5fd"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/></svg>;
-}
-function IconeComunidade({ className }: { className?: string }) {
-  return <svg className={className} viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>;
-}
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -47,65 +36,55 @@ const clusterColors = {
   comunidade: '#22c55e',
 };
 
-// Offset em espiral para clusters do mesmo ponto (evita sobreposição)
-const clusterOffsets: Record<string, [number, number]> = {
-  eleitor: [0, 0],
-  lider: [18, -18],
-  comunidade: [-18, -18],
-};
-
 function createClusterIcon(cluster: any, color: string = clusterColors.ativo, type: 'eleitor' | 'comunidade' | 'lider' = 'eleitor') {
   const count = cluster.getChildCount();
-  const size = 44;
-
-  // Ícones SVG por tipo (preenchidos em cores)
+  const size = 48;
+  
+  // SVGs estilo Open Peeps (hand-drawn sketch)
   const getIconSvg = () => {
     if (type === 'comunidade') {
-      // Comunidade - PRÉDIO preenchido
-      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="2" width="18" height="20" rx="2" fill="#4ade80"/>
-        <rect x="3" y="2" width="18" height="20" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
-        <rect x="6" y="5" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
-        <rect x="14" y="5" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
-        <rect x="6" y="11" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
-        <rect x="14" y="11" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
-        <rect x="9" y="17" width="6" height="5" rx="1" fill="white" opacity="0.9"/>
+      // Comunidade - grupo de pessoas verde
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+        <circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
+        <circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
+        <path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" fill="rgba(255,255,255,0.2)"/>
+        <path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" fill="rgba(255,255,255,0.2)"/>
       </svg>`;
     }
     if (type === 'lider') {
-      // Líder - COROA DOURADA (igual ao marcador individual)
-      return `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/>
-        <circle cx="3" cy="5" r="1.8" fill="#fbbf24"/>
-        <circle cx="10" cy="2.5" r="1.8" fill="#fbbf24"/>
-        <circle cx="17" cy="5" r="1.8" fill="#fbbf24"/>
-        <rect x="3" y="12" width="14" height="2.2" rx="0.5" fill="#fbbf24"/>
+      // Líder - pessoa apontando com camisa roxa/lilás
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+        <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
+        <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
+        <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 22l1.5-7" stroke-linecap="round"/>
       </svg>`;
     }
-    // Eleitor - PESSOA BÁSICA preenchida
-    return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="7" r="4" fill="#93c5fd"/>
-      <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/>
+    // Eleitor - pessoa básica com camisa azul
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+      <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
+      <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
+      <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
     </svg>`;
   };
 
   const bgColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
-  const [offsetX, offsetY] = clusterOffsets[type];
+  const countColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
 
   return L.divIcon({
     html: `
-      <div style="position:relative;width:${size}px;height:${size}px;transform:translate(${offsetX}px,${offsetY}px);">
+      <div style="position:relative;width:${size}px;height:${size}px;">
         <div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
             ${getIconSvg()}
-            <span style="color:white;font-weight:900;font-size:11px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.3);">${count}</span>
+            <span style="color:white;font-weight:900;font-size:12px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.3);">${count}</span>
           </div>
         </div>
       </div>
     `,
     className: 'marker-cluster-custom',
     iconSize: [size, size],
-    iconAnchor: [size / 2 + offsetX, size / 2 + offsetY],
+    iconAnchor: [size / 2, size / 2],
   });
 }
 
@@ -263,10 +242,10 @@ export default function MapaPageV2() {
       {/* StatCards */}
       <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
-          <StatCard label="Total no Mapa" value={stats.total} icon={IconeEleitor} color="blue" delay={0} />
+          <StatCard label="Total no Mapa" value={stats.total} icon={Users} color="blue" delay={0} />
           <StatCard label="Com Coordenadas" value={stats.comCoords} icon={MapPin} color="green" delay={1} />
-          <StatCard label="Líderes no Mapa" value={stats.lideres} icon={IconeLider} color="purple" delay={2} />
-          <StatCard label="Comunidades" value={comunidadesNoMapa.length} icon={IconeComunidade} color="cyan" delay={3} />
+          <StatCard label="Líderes no Mapa" value={stats.lideres} icon={Crown} color="purple" delay={2} />
+          <StatCard label="Comunidades" value={comunidadesNoMapa.length} icon={BuildingCommunity} color="cyan" delay={3} />
         </div>
       </motion.div>
 
@@ -320,30 +299,15 @@ export default function MapaPageV2() {
             </div>
           </PanelCard>
           <PanelCard title="Camadas" icon={Layers} iconColor="text-purple-600" iconBg="bg-purple-50" delay={6}>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {/* Líderes — horizontal compacto, wrap no mobile */}
-              <button onClick={() => setMostrarLideres(!mostrarLideres)} className={`flex items-center gap-1 px-1.5 py-1 rounded transition-all whitespace-nowrap ${mostrarLideres ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
-                <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg>
-                <span className="text-[10px] font-semibold">Líderes</span>
-                <div className={`w-3.5 h-2 rounded-full relative flex-shrink-0 ${mostrarLideres ? 'bg-white/30' : 'bg-slate-300'}`}>
-                  <div className={`w-2 h-2 bg-white rounded-full absolute top-0 transition-all ${mostrarLideres ? 'right-0' : 'left-0'}`} />
-                </div>
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => setMostrarLideres(!mostrarLideres)} className={`flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarLideres ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <Crown className="w-3 h-3" /> Líderes
               </button>
-              {/* Eleitores — horizontal compacto, wrap no mobile */}
-              <button onClick={() => setMostrarEleitores(!mostrarEleitores)} className={`flex items-center gap-1 px-1.5 py-1 rounded transition-all whitespace-nowrap ${mostrarEleitores ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" fill="#93c5fd"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/></svg>
-                <span className="text-[10px] font-semibold">Eleitores</span>
-                <div className={`w-3.5 h-2 rounded-full relative flex-shrink-0 ${mostrarEleitores ? 'bg-white/30' : 'bg-slate-300'}`}>
-                  <div className={`w-2 h-2 bg-white rounded-full absolute top-0 transition-all ${mostrarEleitores ? 'right-0' : 'left-0'}`} />
-                </div>
+              <button onClick={() => setMostrarEleitores(!mostrarEleitores)} className={`flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarEleitores ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <User className="w-3 h-3" /> Eleitores
               </button>
-              {/* Comunidades — horizontal compacto, wrap no mobile */}
-              <button onClick={() => setMostrarComunidades(!mostrarComunidades)} className={`flex items-center gap-1 px-1.5 py-1 rounded transition-all whitespace-nowrap ${mostrarComunidades ? 'bg-green-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>
-                <span className="text-[10px] font-semibold">Comunidades</span>
-                <div className={`w-3.5 h-2 rounded-full relative flex-shrink-0 ${mostrarComunidades ? 'bg-white/30' : 'bg-slate-300'}`}>
-                  <div className={`w-2 h-2 bg-white rounded-full absolute top-0 transition-all ${mostrarComunidades ? 'right-0' : 'left-0'}`} />
-                </div>
+              <button onClick={() => setMostrarComunidades(!mostrarComunidades)} className={`flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold rounded-lg transition-all ${mostrarComunidades ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                <BuildingCommunity className="w-3 h-3" /> Comunidades
               </button>
             </div>
           </PanelCard>
@@ -369,8 +333,8 @@ export default function MapaPageV2() {
                 <EmptyState icon={MapPin} title="Nenhum ponto no mapa" description="Cadastre eleitores com endereço ou comunidades com coordenadas para visualizar no mapa" action={{ label: 'Cadastrar eleitor', onClick: () => navigate('/dashboard/eleitores') }} />
               </div>
             ) : (
-              <div className="relative w-full h-full" style={{ zIndex: 1 }}>
-                <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', width: '100%', zIndex: 1 }}>
+              <div className="relative w-full h-full">
+                <MapContainer center={centroBrasil} zoom={4} minZoom={3} maxBounds={BOUNDS_BRASIL} maxBoundsViscosity={1.0} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                   <TileLayerController camada={camadaBase} />
                   <TileLayer attribution={tileLayers[camadaBase].attribution} url={tileLayers[camadaBase].url} subdomains={tileLayers[camadaBase].subdomains} maxZoom={19} key={camadaBase} />
                   <MapController flyTo={flyTo} />
@@ -380,11 +344,11 @@ export default function MapaPageV2() {
                   {mostrarComunidades && (
                     <MarkerClusterGroup chunkedLoading iconCreateFunction={(cluster) => createClusterIcon(cluster, clusterColors.comunidade, 'comunidade')} maxClusterRadius={80} spiderfyOnMaxZoom showCoverageOnHover={false}>
                       {comunidadesNoMapa.map(c => (
-                        <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon('#16a34a')} zIndexOffset={1000} eventHandlers={{ click: () => setComunidadeSelecionada(c), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
+                        <Marker key={`comunidade-${c.id}`} position={c.coords} icon={createComunidadeIcon(c.cor)} zIndexOffset={1000} eventHandlers={{ click: () => setComunidadeSelecionada(c), mouseover: (ev) => ev.target.openPopup(), mouseout: (ev) => ev.target.closePopup() }}>
                       <Popup>
                         <div className="text-xs min-w-[180px]">
                           <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-1">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>
+                            <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
                             {c.nome}
                           </div>
                           <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
@@ -406,7 +370,7 @@ export default function MapaPageV2() {
                         <Popup>
                           <div className="text-xs min-w-[200px]">
                             <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
-                              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg>
+                              <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center"><Crown className="w-2.5 h-2.5 text-white" /></span>
                               {e.nome}
                             </div>
                             <div className="flex items-center gap-2 mt-1.5">
@@ -477,13 +441,13 @@ export default function MapaPageV2() {
                 <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200 px-3 py-2.5 space-y-1.5">
                   <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Legenda</div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M1 15h18L16.5 6l-4 2.5L10 3.5 7.5 8.5l-4-2.5L1 15z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.2"/><circle cx="3" cy="5" r="1.5" fill="#fbbf24"/><circle cx="10" cy="2.5" r="1.5" fill="#fbbf24"/><circle cx="17" cy="5" r="1.5" fill="#fbbf24"/><rect x="3" y="12" width="14" height="2" rx="0.5" fill="#fbbf24"/></svg> Líder
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/></svg> Líder (apontando)
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" fill="#93c5fd"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="#60a5fa"/></svg> Eleitor
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg> Eleitor
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg> Comunidade
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" opacity="0.5"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" opacity="0.5"/></svg> Comunidade
                   </div>
                 </div>
               </div>
@@ -597,7 +561,7 @@ export default function MapaPageV2() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="1" width="20" height="22" rx="2" fill="#4ade80"/><rect x="2" y="1" width="20" height="22" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="5" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="4" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="5" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="14" y="11" width="5" height="5" rx="1" fill="white" opacity="0.9"/><rect x="8" y="18" width="8" height="5" rx="1" fill="white" opacity="0.9"/></svg>
+              <Building2 className="w-5 h-5" style={{ color: comunidadeSelecionada?.cor }} />
               {comunidadeSelecionada?.nome}
             </DialogTitle>
           </DialogHeader>
