@@ -6,15 +6,11 @@ import LandingPage from '@/pages/LandingPage';
 import AfiliarPage from '@/pages/AfiliarPage';
 import DashboardLayout from '@/components/DashboardLayout';
 import DashboardHome from '@/pages/DashboardHome';
-import DashboardV2 from '@/pages/DashboardV2';
 import EleitoresPage from '@/pages/EleitoresPage';
 import ComunidadesPage from '@/pages/ComunidadesPage';
 import SolicitacoesPage from '@/pages/SolicitacoesPage';
-import SolicitacoesPageV3 from '@/pages/SolicitacoesPageV3';
 import ComunicacaoPage from '@/pages/ComunicacaoPage';
 import MapaPage from '@/pages/MapaPage';
-import MapaPageV1 from '@/pages/MapaPageV1';
-import MapaPageV2 from '@/pages/MapaPageV2';
 import AgendaPage from '@/pages/AgendaPage';
 import TarefasPage from '@/pages/TarefasPage';
 import DocumentosPage from '@/pages/DocumentosPage';
@@ -50,15 +46,11 @@ function App() {
         element={auth.isAuthenticated ? <DashboardLayout {...auth} /> : <Navigate to="/" replace />}
       >
         <Route index element={<DashboardHome />} />
-        <Route path="teste-v2" element={<DashboardV2 />} />
         <Route path="eleitores" element={<EleitoresPage />} />
         <Route path="comunidades" element={<ComunidadesPage />} />
         <Route path="solicitacoes" element={<SolicitacoesPage />} />
-        <Route path="solicitacoes/teste-v3" element={<SolicitacoesPageV3 />} />
         <Route path="comunicacao" element={<ComunicacaoPage />} />
         <Route path="mapa" element={<MapaPage />} />
-        <Route path="mapa/teste-v1" element={<MapaPageV1 />} />
-        <Route path="mapa/teste-v2" element={<MapaPageV2 />} />
         <Route path="agenda" element={<AgendaPage />} />
         <Route path="tarefas" element={<TarefasPage />} />
         <Route path="documentos" element={<DocumentosPage />} />

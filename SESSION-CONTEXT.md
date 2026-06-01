@@ -33,12 +33,26 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 - **Páginas de teste em produção** — DashboardV2, SolicitacoesPageV3, MapaPageV1/V2 ficaram nas rotas
 - **Revert forçado** — perdeu Mapa V2 e Modo Demo, depois recuperados
 
-### 📋 Checklist próxima sessão:
-- [ ] Remover rotas de teste do App.tsx (teste-v2, teste-v3, teste-v1, teste-v2)
-- [ ] Adicionar páginas de teste no .gitignore para não subir em deploys futuros
+### ✅ Checklist desta sessão (CONCLUÍDO):
+- [x] Remover rotas de teste do App.tsx (teste-v2, teste-v3, teste-v1, teste-v2)
+- [x] Documentar Regra de Ouro no AGENTS.md + catálogo de páginas de teste no SESSION-CONTEXT.md
 - [ ] Testar Solicitações V3 em produção
 - [ ] Aprovar/rejeitar Solicitações V3 → copiar para SolicitacoesPage.tsx
 - [ ] Verificar se ícones SVG estão corretos em todas as abas
+
+---
+
+## 🧪 Páginas de Teste Disponíveis
+
+> **Regra:** Arquivos ficam salvos no projeto. Rotas são removidas antes do commit.
+> Na próxima sessão, pedir ao Kimi para reativar se quiser testar.
+
+| Página | Arquivo | Última atualização | Status |
+|---|---|---|---|
+| Dashboard V2 | `DashboardV2.tsx` | 25/05 | Arquivado — funcionalidades migradas para v2.3 |
+| Solicitações V3 | `SolicitacoesPageV3.tsx` | 27/05 | **Aguardando aprovação** — preview inline, modal refatorado |
+| Mapa V1 | `MapaPageV1.tsx` | 28/05 | Arquivado — teste de clusters com ícones |
+| Mapa V2 | `MapaPageV2.tsx` | 01/06 | **Aplicado na principal** — mantido como backup |
 
 ---
 
@@ -48,7 +62,6 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 |---|---|
 | **Produção (Vercel)** | https://mandato-digital-xi.vercel.app |
 | **API Proxy CNEFE** | http://82.197.73.101 |
-| **Solicitações V3 (teste)** | /dashboard/solicitacoes/teste-v3 |
 
 ---
 
