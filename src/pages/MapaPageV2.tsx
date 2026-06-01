@@ -422,7 +422,7 @@ export default function MapaPageV2() {
                           </div>
                         </Popup>
                       </Marker>
-                      )}
+                    ))}
                     </MarkerClusterGroup>
                   )}
                 </MapContainer>
