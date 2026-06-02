@@ -341,21 +341,25 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
       {/* Modal central para preview */}
       {solicitacaoSelecionada && (
         <>
-          {/* Overlay */}
+          {/* Overlay — cobre TODA a tela */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-40 flex items-start justify-center p-4 pt-16 sm:pt-24"
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setSelecionada(null)}
+          />
+          {/* Modal — centralizado */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 sm:pt-24 pointer-events-none"
             onClick={() => setSelecionada(null)}
           >
-            {/* Modal */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
+            <div
+              className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -374,7 +378,7 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
                 onRemove={(id) => { onRemove(id); setSelecionada(null); }}
                 onUpdate={onUpdate}
               />
-            </motion.div>
+            </div>
           </motion.div>
         </>
       )}
