@@ -102,17 +102,17 @@ function SolicitacaoPreview({ s, onEdit, onRemove, onUpdate }: {
     >
       <div className="p-4 lg:p-6 overflow-hidden">
         {/* Header: ícone + título + badges + ações */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-4">
-          <div className="flex items-center gap-4 min-w-0">
-            <div className={`w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center flex-shrink-0 ${
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
               s.prioridade === 'urgente' ? 'bg-red-100' : s.prioridade === 'alta' ? 'bg-orange-100' : s.prioridade === 'media' ? 'bg-amber-100' : 'bg-green-100'
             }`}>
-              <AlertTriangle className={`w-6 h-6 lg:w-7 lg:h-7 ${
+              <AlertTriangle className={`w-5 h-5 sm:w-6 sm:h-6 ${
                 s.prioridade === 'urgente' ? 'text-red-600' : s.prioridade === 'alta' ? 'text-orange-600' : s.prioridade === 'media' ? 'text-amber-600' : 'text-green-600'
               }`} />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-lg lg:text-xl font-bold text-slate-800 break-all">{s.titulo}</h3>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base sm:text-lg font-bold text-slate-800 break-all leading-tight">{s.titulo}</h3>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${statusColors[s.status || 'pendente']}`}>{statusLabel[s.status || 'pendente']}</span>
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${prioridadeColors[s.prioridade || 'media']}`}>{prioridadeLabel[s.prioridade || 'media']}</span>
@@ -120,11 +120,11 @@ function SolicitacaoPreview({ s, onEdit, onRemove, onUpdate }: {
               </div>
             </div>
           </div>
-          <div className="flex flex-row sm:flex-col gap-2">
-            <button onClick={() => onEdit(s)} className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm">
+          <div className="flex flex-row gap-2">
+            <button onClick={() => onEdit(s)} className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm flex-1">
               <Pencil className="w-3.5 h-3.5" />Editar
             </button>
-            <button onClick={() => { if (confirm('Excluir esta solicitação?')) onRemove(s.id); }} className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm">
+            <button onClick={() => { if (confirm('Excluir esta solicitação?')) onRemove(s.id); }} className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm flex-1">
               <Trash2 className="w-3.5 h-3.5" />Excluir
             </button>
           </div>
