@@ -3,528 +3,222 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teste — Ícones do Mapa (Completo)</title>
+  <title>Ícones SVG — Eleitor e Comunidade</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; padding: 20px; color: #334155; }
-    h1 { font-size: 20px; margin-bottom: 4px; color: #0f172a; }
-    .subtitle { color: #64748b; font-size: 13px; margin-bottom: 20px; }
-    .section-title { font-size: 14px; font-weight: 600; color: #475569; margin: 24px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-    .card { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .card-title { font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
-    .card-badge { font-size: 10px; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 99px; }
-    .row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; }
-    .row:last-child { margin-bottom: 0; }
-    .label { font-size: 11px; color: #64748b; font-weight: 500; min-width: 80px; }
-    .marker-wrap { display: flex; align-items: center; justify-content: center; }
-    .desc { font-size: 11px; color: #94a3b8; margin-top: 10px; line-height: 1.4; }
-
-    /* Container do marcador */
-    .m { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-
-    /* ====== ESTILOS DE BASE ====== */
-    /* Círculo padrão */
-    .circle-e { width: 36px; height: 36px; border-radius: 50%; background: #2563eb; border: 3px solid white; box-shadow: 0 3px 10px rgba(37,99,235,0.35); }
-    .circle-l { width: 36px; height: 36px; border-radius: 50%; background: #7c3aed; border: 3px solid white; box-shadow: 0 3px 10px rgba(124,58,237,0.35); }
-    .circle-c { width: 32px; height: 32px; border-radius: 50%; background: #16a34a; border: 3px solid white; box-shadow: 0 3px 10px rgba(22,163,74,0.35); }
-
-    /* Degradê */
-    .grad-e { background: linear-gradient(135deg, #60a5fa, #2563eb); }
-    .grad-l { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
-    .grad-c { background: linear-gradient(135deg, #4ade80, #16a34a); }
-
-    /* Flat */
-    .flat-e { background: #3b82f6; border-width: 2px; box-shadow: none; }
-    .flat-l { background: #8b5cf6; border-width: 2px; box-shadow: none; }
-    .flat-c { background: #22c55e; border-width: 2px; box-shadow: none; }
-
-    /* Pin */
-    .pin { width: 30px; height: 38px; position: relative; }
-    .pin::before { content: ''; position: absolute; inset: 0; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2.5px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
-    .pin-e::before { background: #2563eb; }
-    .pin-l::before { background: #7c3aed; }
-    .pin-c::before { background: #16a34a; }
-    .pin svg { position: relative; z-index: 1; transform: rotate(45deg); }
-
-    /* Badge duplo */
-    .badge-e { outline: 2px solid #bfdbfe; outline-offset: 1.5px; }
-    .badge-l { outline: 2px solid #ddd6fe; outline-offset: 1.5px; }
-    .badge-c { outline: 2px solid #bbf7d0; outline-offset: 1.5px; }
-
-    /* Grande */
-    .big { width: 42px; height: 42px; }
-    .big-c { width: 38px; height: 38px; }
-
-    /* Sem fundo */
-    .nofund { background: transparent; border: none; box-shadow: none; width: auto; height: auto; }
-
-    /* 3D */
-    .d3-e { box-shadow: 0 4px 0 #1d4ed8, 0 6px 10px rgba(37,99,235,0.3); }
-    .d3-l { box-shadow: 0 4px 0 #6d28d9, 0 6px 10px rgba(124,58,237,0.3); }
-    .d3-c { box-shadow: 0 4px 0 #15803d, 0 6px 10px rgba(22,163,74,0.3); }
-
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; padding: 24px; }
+    h1 { font-size: 20px; color: #0f172a; margin-bottom: 4px; }
+    .subtitle { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+    .section-title { font-size: 15px; font-weight: 600; color: #334155; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+    .card { background: white; border-radius: 10px; padding: 20px 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+    .card-label { font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500; }
+    .marker { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+    .marker-e { background: #2563eb; }
+    .marker-c { background: #16a34a; }
+    .marker svg { display: block; }
+    .code { font-size: 10px; color: #94a3b8; margin-top: 10px; font-family: monospace; background: #f8fafc; padding: 2px 6px; border-radius: 4px; display: inline-block; }
+    .footer { margin-top: 32px; padding: 16px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center; }
     code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
-    .footer { margin-top: 24px; padding: 16px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center; }
   </style>
 </head>
 <body>
-  <h1>🗺️ Catálogo Completo de Ícones para o Mapa</h1>
-  <p class="subtitle">Cada cartão mostra as 3 entidades (Eleitor, Líder, Comunidade) no mesmo estilo visual. Escolha o conjunto que preferir.</p>
 
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 1: SILHUETA SIMPLES (estilo OpenStreetMap / padrão) -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 1 — Silhueta Simples (Outline branco)</div>
+  <h1>🗺️ Opções de SVG — Eleitor e Comunidade</h1>
+  <p class="subtitle">Escolha o SVG que preferir para cada tipo. Todos são vetoriais (não pixelam).</p>
+
+  <!-- ==================== ELEITOR ==================== -->
+  <div class="section-title">👤 Eleitor — Opções de SVG</div>
   <div class="grid">
+
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Estilo Padrão</span>
-        <span class="card-badge">A1</span>
+      <div class="card-label">Pessoa em pé</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.25)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-      </div>
-      <div class="desc">Ícones SVG outline branco dentro de círculo colorido. Visual limpo e moderno. É o atual.</div>
+      <div class="code">E1</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Silhueta Preenchida</span>
-        <span class="card-badge">A2</span>
+      <div class="card-label">User clássico</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="7" r="4" opacity="0.95"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" opacity="0.95"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="6" r="4" opacity="0.95"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5" opacity="0.95"/><path d="M10.5 15h3l-1-3 4 2-2 3" opacity="0.95"/><path d="M9 22l1.5-7" opacity="0.95"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="9" cy="7" r="3.5" opacity="0.95"/><circle cx="17" cy="7" r="3.5" opacity="0.95"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" opacity="0.95"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" opacity="0.95"/></svg></div>
-      </div>
-      <div class="desc">Mesmas silhuetas, mas preenchidas em branco sólido. Mais visíveis de longe.</div>
+      <div class="code">E2</div>
     </div>
+
+    <div class="card">
+      <div class="card-label">User + check</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg>
+      </div>
+      <div class="code">E3</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Homem</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M10 10h4"/><path d="M10.5 21v-6a1.5 1.5 0 0 1 3 0v6"/></svg>
+      </div>
+      <div class="code">E4</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Mulher</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M10 10h4"/><path d="M12 21v-7"/><path d="M9 14l3-3 3 3"/></svg>
+      </div>
+      <div class="code">E5</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Idoso</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 11a2 2 0 0 1-2-2"/><path d="M10 11a2 2 0 0 0 2-2"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h1"/><path d="M13 15h1a4 4 0 0 1 4 4v2"/></svg>
+      </div>
+      <div class="code">E6</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Criança</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M8 21v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </div>
+      <div class="code">E7</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Família</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><path d="M5 21v-3a3 3 0 0 1 3-3h1"/><path d="M15 15h1a3 3 0 0 1 3 3v3"/></svg>
+      </div>
+      <div class="code">E8</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Cidadão</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/><path d="M12 11v3"/></svg>
+      </div>
+      <div class="code">E9</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Mão levantada</div>
+      <div class="marker marker-e">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+      </div>
+      <div class="code">E10</div>
+    </div>
+
   </div>
 
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 2: ÍCONES ALTERNATIVOS POR TIPO -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 2 — Ícones Alternativos (Eleitor: User, Líder: Crown/Star, Comunidade: Building)</div>
+  <!-- ==================== COMUNIDADE ==================== -->
+  <div class="section-title">🏘️ Comunidade — Opções de SVG</div>
   <div class="grid">
+
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Outline clássico</span>
-        <span class="card-badge">B1</span>
+      <div class="card-label">Grupo de pessoas</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><path d="M5 21v-2a3 3 0 0 1 3-3h1"/><path d="M15 16h1a3 3 0 0 1 3 3v2"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M12 6h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M8 6h.01"/><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><path d="M6 19V9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10"/></svg></div>
-      </div>
-      <div class="desc">User clássico + Estrela + Prédio. Ícones universais, fáceis de reconhecer.</div>
+      <div class="code">C1</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Preenchido sólido</span>
-        <span class="card-badge">B2</span>
+      <div class="card-label">Prédio</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="m12 3 2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><path d="M6 19V9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10"/></svg></div>
-      </div>
-      <div class="desc">Mesmos ícones, preenchidos em branco. Visual mais forte no mapa.</div>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 3: COROA / TROFÉU / BANDEIRA -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 3 — Líder: Autoridade (Crown, Trophy, Flag)</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Coroa dourada</span>
-        <span class="card-badge">C1</span>
-      </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12"/><path d="M6 16v4"/><path d="M18 16v4"/><path d="M12 4v12"/><circle cx="6" cy="4" r="2" fill="white"/><circle cx="12" cy="4" r="2" fill="white"/><circle cx="18" cy="4" r="2" fill="white"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2 3 6 3s6-1.5 6-3v-5"/></svg></div>
-      </div>
-      <div class="desc">Coroa real para líder, escudo para comunidade. Visual institucional.</div>
+      <div class="code">C2</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Troféu + Bandeira</span>
-        <span class="card-badge">C2</span>
+      <div class="card-label">Casa</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4l10-3v19"/><path d="M15 17h5"/><path d="M15 12h5"/><path d="M15 7h5"/></svg></div>
-      </div>
-      <div class="desc">Troféu para líder (conquista), bandeira para comunidade (território).</div>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 4: CASA / IGREJA / ESCOLA (comunidades específicas) -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 4 — Comunidade: Tipos Específicos (Casa, Igreja, Escola, Hospital)</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Casa / Lar</span>
-        <span class="card-badge">D1</span>
-      </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 10 8.5"/><path d="M12 3 2 11.5"/><path d="M12 13v8"/><path d="M12 21a4 4 0 0 0 4-4v-3H8v3a4 4 0 0 0 4 4z"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      </div>
-      <div class="desc">Casa para comunidade. Ideal se as comunidades forem bairros/lares.</div>
+      <div class="code">C3</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Igreja / Cruz</span>
-        <span class="card-badge">D2</span>
+      <div class="card-label">Igreja</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M8 7h8"/><path d="M6 21h12"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M8 7h8"/><path d="M8 12h8"/><circle cx="12" cy="3" r="1" fill="white"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M8 7h8"/><path d="M6 21h12"/></svg></div>
-      </div>
-      <div class="desc">Igreja/cruz para comunidade. Indica ponto de encontro comunitário.</div>
+      <div class="code">C4</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Escola / Educação</span>
-        <span class="card-badge">D3</span>
+      <div class="card-label">Escola</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2 3 6 3s6-1.5 6-3v-5"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2 3 6 3s6-1.5 6-3v-5"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2 3 6 3s6-1.5 6-3v-5"/></svg></div>
-      </div>
-      <div class="desc">Escola/bandeirinha para comunidade. Representa educação/crescimento.</div>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 5: MÃOS / CORAÇÃO / GRUPO (comunidade = união) -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 5 — Comunidade: União (Coração, Mãos, Grupo)</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Coração</span>
-        <span class="card-badge">E1</span>
-      </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" fill="rgba(255,255,255,0.3)"/></svg></div>
-      </div>
-      <div class="desc">Coração para comunidade. Representa cuidado e união.</div>
+      <div class="code">C5</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Aperto de mãos</span>
-        <span class="card-badge">E2</span>
+      <div class="card-label">Hospital</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M12 8v6"/><path d="M9 11h6"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5l-9 9-4-4"/><path d="M21 3l-9 9-4-4L2 15"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78 7.65 7.65 7.65-7.65.77-.78a5.4 5.4 0 0 0 0-7.65z"/><path d="M12 5.36 8.65 8.71"/><path d="M15.35 8.71 12 12.06"/></svg></div>
-      </div>
-      <div class="desc">Aperto de mãos/coração para comunidade. Indica parceria e cooperação.</div>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 6: PIN / MAP MARKER / LOCATION -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 6 — Formatos de Pin Diferentes</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Pin gota (Google Maps)</span>
-        <span class="card-badge">F1</span>
-      </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m pin pin-e"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m pin pin-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m pin pin-c"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-      </div>
-      <div class="desc">Formato de gota, igual Google Maps. Ícone rotacionado 45°.</div>
+      <div class="code">C6</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Pin com buraco</span>
-        <span class="card-badge">F2</span>
+      <div class="card-label">Loja</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18"/><path d="M3 9v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="M6 9V7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v2"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e" style="position:relative;"><div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 35%, rgba(255,255,255,0.4), transparent 60%);"></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.2)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l" style="position:relative;"><div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 35%, rgba(255,255,255,0.4), transparent 60%);"></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.2)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c" style="position:relative;"><div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 35%, rgba(255,255,255,0.4), transparent 60%);"></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.2)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.2)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-      </div>
-      <div class="desc">Círculo com brilho/gradiente radial. Efeito 3D sutil.</div>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 7: NÚMEROS / LETRAS / BADGES -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 7 — Letras/Números (sem ícone, só identificação)</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Letra inicial</span>
-        <span class="card-badge">G1</span>
-      </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e" style="font-weight:900;font-size:14px;color:white;">E</div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l" style="font-weight:900;font-size:14px;color:white;">L</div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c" style="font-weight:900;font-size:12px;color:white;">C</div>
-      </div>
-      <div class="desc">Apenas a letra inicial no círculo. Minimalista ao extremo.</div>
+      <div class="code">C7</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Emoji simples</span>
-        <span class="card-badge">G2</span>
+      <div class="card-label">Árvores / Parque</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e" style="font-size:16px;">🙋</div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l" style="font-size:16px;">⭐</div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c" style="font-size:14px;">🏘️</div>
-      </div>
-      <div class="desc">Emojis diretamente no círculo. Coloridos e reconhecíveis.</div>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- OPÇÃO 8: ESTILOS DE BORDA -->
-  <!-- ============================================================ -->
-  <div class="section-title">Opção 8 — Variações de Borda e Sombra</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Borda dupla</span>
-        <span class="card-badge">H1</span>
-      </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m" style="width:36px;height:36px;border-radius:50%;background:#2563eb;border:2px solid white;outline:2px solid #bfdbfe;outline-offset:2px;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m" style="width:36px;height:36px;border-radius:50%;background:#7c3aed;border:2px solid white;outline:2px solid #ddd6fe;outline-offset:2px;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.25)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m" style="width:32px;height:32px;border-radius:50%;background:#16a34a;border:2px solid white;outline:2px solid #bbf7d0;outline-offset:2px;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-      </div>
-      <div class="desc">Borda branca + ring colorido ao redor. Destaque máximo.</div>
+      <div class="code">C8</div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Sombra longa (3D flat)</span>
-        <span class="card-badge">H2</span>
+      <div class="card-label">Coração</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
       </div>
-      <div class="row">
-        <span class="label">Eleitor</span>
-        <div class="m circle-e d3-e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Líder</span>
-        <div class="m circle-l d3-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.25)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-      </div>
-      <div class="row">
-        <span class="label">Comunidade</span>
-        <div class="m circle-c d3-c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-      </div>
-      <div class="desc">Efeito 3D flat com sombra projetada para baixo. Visual moderno.</div>
+      <div class="code">C9</div>
     </div>
-  </div>
 
-  <!-- ============================================================ -->
-  <!-- COMPARATIVO FINAL -->
-  <!-- ============================================================ -->
-  <div class="section-title">Comparativo Rápido — Todos os Estilos lado a lado</div>
-  <div class="grid">
-    <div class="card" style="grid-column: 1 / -1;">
-      <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
-        <div style="text-align: center; padding: 12px;">
-          <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
-            <div class="m circle-e"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-            <div class="m circle-l"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.25)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-            <div class="m circle-c"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-          </div>
-          <div style="font-size: 10px; color: #64748b;">A1 — Silhueta Outline</div>
-        </div>
-        <div style="text-align: center; padding: 12px;">
-          <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
-            <div class="m circle-e"><svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-            <div class="m circle-l"><svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-            <div class="m circle-c"><svg width="12" height="12" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-          </div>
-          <div style="font-size: 10px; color: #64748b;">A2 — Preenchido</div>
-        </div>
-        <div style="text-align: center; padding: 12px;">
-          <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
-            <div class="m circle-e"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <div class="m circle-l"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="m12 3 2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z"/></svg></div>
-            <div class="m circle-c"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><path d="M6 19V9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10"/></svg></div>
-          </div>
-          <div style="font-size: 10px; color: #64748b;">B1 — User + Star + Building</div>
-        </div>
-        <div style="text-align: center; padding: 12px;">
-          <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
-            <div class="m circle-e"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-            <div class="m circle-l"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M19 5l-9 9-4-4"/><path d="M21 3l-9 9-4-4L2 15"/></svg></div>
-            <div class="m circle-c"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
-          </div>
-          <div style="font-size: 10px; color: #64748b;">E1 — Check + Coração</div>
-        </div>
-        <div style="text-align: center; padding: 12px;">
-          <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
-            <div class="m" style="width:30px;height:38px;position:relative;display:flex;align-items:center;justify-content:center;"><div style="position:absolute;inset:0;background:#2563eb;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);"></div><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-            <div class="m" style="width:30px;height:38px;position:relative;display:flex;align-items:center;justify-content:center;"><div style="position:absolute;inset:0;background:#7c3aed;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);"></div><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-            <div class="m" style="width:28px;height:36px;position:relative;display:flex;align-items:center;justify-content:center;"><div style="position:absolute;inset:0;background:#16a34a;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);"></div><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-          </div>
-          <div style="font-size: 10px; color: #64748b;">F1 — Pin Gota</div>
-        </div>
-        <div style="text-align: center; padding: 12px;">
-          <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
-            <div class="m" style="width:36px;height:36px;border-radius:50%;background:#2563eb;border:2px solid white;outline:2px solid #bfdbfe;outline-offset:2px;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.25)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
-            <div class="m" style="width:36px;height:36px;border-radius:50%;background:#7c3aed;border:2px solid white;outline:2px solid #ddd6fe;outline-offset:2px;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.25)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg></div>
-            <div class="m" style="width:32px;height:32px;border-radius:50%;background:#16a34a;border:2px solid white;outline:2px solid #bbf7d0;outline-offset:2px;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.25)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg></div>
-          </div>
-          <div style="font-size: 10px; color: #64748b;">H1 — Borda Dupla</div>
-        </div>
+    <div class="card">
+      <div class="card-label">Aperto de mãos</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78 7.65 7.65 7.65-7.65.77-.78a5.4 5.4 0 0 0 0-7.65Z"/><path d="M12 5.36 8.65 8.71"/><path d="M15.35 8.71 12 12.06"/></svg>
       </div>
+      <div class="code">C10</div>
     </div>
+
+    <div class="card">
+      <div class="card-label">Bandeira</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"/><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/></svg>
+      </div>
+      <div class="code">C11</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Marcador de mapa</div>
+      <div class="marker marker-c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div class="code">C12</div>
+    </div>
+
   </div>
 
   <div class="footer">
-    <strong>URLs de teste:</strong><br>
-    Catálogo de ícones: <code>http://localhost:3000/teste-icones-mapa.html</code><br>
-    Mapa de teste: <code>http://localhost:3000/dashboard/mapa/teste-v2</code><br><br>
-    Me diga o código da opção que você prefere (ex: <strong>A1</strong>, <strong>B1</strong>, <strong>E1</strong>, etc.)
+    <strong>Como escolher:</strong> me diga o código do Eleitor e o código da Comunidade.<br>
+    Exemplo: <strong>"Eleitor E2 + Comunidade C3"</strong><br><br>
+    URL: <code>http://localhost:3000/teste-icones-mapa.html</code>
   </div>
 
 </body>
