@@ -68,7 +68,7 @@ export function createLiderIcon(_status: string = 'ativo'): L.DivIcon {
 
 // Comunidade — formato sticker com prédio 3D
 export function createComunidadeIcon(_color: string): L.DivIcon {
-  return divIcon(stickerBase('#16a34a', buildingIcon, 36), 36, [18, 18]);
+  return divIcon(stickerBase('#16a34a', buildingIcon, 40), 40, [20, 20]);
 }
 
 // Cluster
