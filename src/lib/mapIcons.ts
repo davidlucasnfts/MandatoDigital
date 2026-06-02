@@ -42,14 +42,14 @@ const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22
   <rect x="5" y="18" width="14" height="3" rx="1" fill="#f59e0b"/>
 </svg>`;
 
-// 🏢 COMUNIDADE — C13: Prédio 3D colorido
-const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <rect x="4" y="3" width="16" height="18" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/>
-  <rect x="7" y="6" width="4" height="4" rx="1" fill="#86efac"/>
-  <rect x="13" y="6" width="4" height="4" rx="1" fill="#86efac"/>
-  <rect x="7" y="12" width="4" height="4" rx="1" fill="#86efac"/>
-  <rect x="13" y="12" width="4" height="4" rx="1" fill="#86efac"/>
-  <rect x="9" y="18" width="6" height="3" rx="1" fill="#14532d"/>
+// 🏢 COMUNIDADE — C13: Prédio 3D colorido (aumentado para 24x24)
+const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <rect x="3" y="2" width="18" height="20" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/>
+  <rect x="6" y="5" width="4.5" height="4.5" rx="1" fill="#86efac"/>
+  <rect x="13.5" y="5" width="4.5" height="4.5" rx="1" fill="#86efac"/>
+  <rect x="6" y="11.5" width="4.5" height="4.5" rx="1" fill="#86efac"/>
+  <rect x="13.5" y="11.5" width="4.5" height="4.5" rx="1" fill="#86efac"/>
+  <rect x="8" y="17.5" width="8" height="4" rx="1" fill="#14532d"/>
 </svg>`;
 
 // ============= FUNÇÕES EXPORTADAS =============
