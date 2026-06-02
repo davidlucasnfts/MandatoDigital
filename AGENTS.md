@@ -41,6 +41,45 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Push somente no final da sessão** — quando o usuário pedir para encerrar. Durante a sessão, commit local apenas
 - **Sem prints desnecessários** — resultado direto, sem mostrar código que já foi visto
 
+### Checklist Pré-Commit Obrigatório (executar ANTES de todo commit/push)
+
+> **Regra de Ouro:** Nunca commitar sem passar por este checklist. Um item não verificado = commit bloqueado.
+
+```
+□ 1. ROTAS DE TESTE — Verificar App.tsx
+   grep -n "teste-\|PageV[0-9]\|V[0-9]" src/App.tsx
+   → Se encontrar rotas de teste (ex: /teste-v3, /PageV2), REMOVER antes do commit
+   → Exceção: /teste-here (API Here legítima)
+
+□ 2. LINKS DE TESTE — Verificar DashboardLayout.tsx  
+   grep -in "teste\|V[0-9]" src/components/DashboardLayout.tsx
+   → Se encontrar links de teste no sidebar (ex: "Solicitações V3"), REMOVER antes do commit
+
+□ 3. ARQUIVOS ORFÃOS — Verificar se há arquivos .tsx não importados
+   → Arquivos de teste (PageV1, V2, V3) que não têm rota = código morto
+   → Perguntar ao usuário se quer manter ou deletar
+
+□ 4. TYPE CHECK — Executar npx tsc --noEmit
+   → Deve passar sem erros. Zero tolerância para erros de TypeScript.
+
+□ 5. DOCUMENTAÇÃO — Atualizar MEMORY.md e SESSION-CONTEXT.md
+   → Funcionalidade entregue está na tabela de entregues?
+   → Resumo da sessão está detalhado?
+   → SESSION-CONTEXT.md reflete o estado atual?
+
+□ 6. SELF-HEALING — Novo erro aprendido?
+   → Se descobriu uma nova armadilha, adicionar à tabela de erros no AGENTS.md
+   → Número sequencial (036, 037, etc.)
+```
+
+### Erros que este checklist previne (casos reais)
+| # | Erro que passou | Causa | Como o checklist evita |
+|---|---|---|---|
+| 036 | Rota /solicitacoes/teste-v3 subiu em produção | Esqueci de remover do App.tsx | Checklist item 1: grep em App.tsx |
+| 037 | Link "Solicitações V3" no sidebar em produção | Esqueci de remover do DashboardLayout.tsx | Checklist item 2: grep em DashboardLayout.tsx |
+| 038 | Arquivo SolicitacoesPageV3.tsx modificado mas sem rota | Editei arquivo órfão em vez da página principal | Checklist item 3: verificar arquivos importados |
+| 039 | Commit sem type check | Pressa para entregar | Checklist item 4: tsc --noEmit obrigatório |
+
 ### Sincronização de Arquivos de Projeto
 - **Sempre atualizar MEMORY.md e roadmap.html** quando uma funcionalidade for adicionada, removida ou concluída
 - **Sempre atualizar arquivos mencionados** quando o usuário pedir remoção, alteração ou renomeação de qualquer item
@@ -514,3 +553,7 @@ Vercel → HTTPS → API Proxy (VPS:443) → localhost → PostgreSQL (VPS:5432)
 | 033 | `break-words` quebra texto longo sem espaço em 1 palavra/linha | 01/06/2026 | Para textos longos SEM espaços (ex: testes, URLs, hashes), usar `break-all` em vez de `break-words`. O `break-words` só quebra em hífen/espaço; sem eles, cada caractere vira uma "palavra" e quebra linha a cada caractere |
 | 034 | Tabela mobile duplicada embutida na página | 01/06/2026 | SEMPRE usar componente unificado para mobile/desktop com classes responsivas (`hidden sm:block` / `sm:hidden`). NUNCA duplicar tabelas mobile/desktop embutidas na mesma página — código duplicado diverge e causa bugs |
 | 035 | Status "excluido" não existe no banco | 01/06/2026 | SEMPRE verificar constraint CHECK do banco antes de definir status. Se o banco só permite ('pendente','andamento','concluido','cancelado'), nunca tentar usar 'excluido'. Excluir = mudar status para 'cancelado' |
+| 036 | Rota de teste subiu em produção | 01/06/2026 | SEMPRE executar checklist pré-commit item 1: `grep -n "teste-\|PageV[0-9]" src/App.tsx`. Se encontrar rotas de teste, REMOVER antes do commit. Nunca assumir que "já foi removido" |
+| 037 | Link de teste no sidebar em produção | 01/06/2026 | SEMPRE executar checklist pré-commit item 2: `grep -in "teste\|V[0-9]" src/components/DashboardLayout.tsx`. Links de teste no sidebar devem ser removidos junto com as rotas |
+| 038 | Arquivo órfão modificado sem efeito | 01/06/2026 | SEMPRE verificar se o arquivo editado é realmente importado pela aplicação. `SolicitacoesPageV3.tsx` não tinha rota mas foi editado — mudanças não apareciam na produção. Editar só a página principal após aprovação |
+| 039 | Commit sem type check | 01/06/2026 | SEMPRE executar `npx tsc --noEmit` antes de TODO commit. TypeScript strict não perdoa. Um erro de tipo em produção = tela branca para o usuário |
