@@ -103,15 +103,15 @@ export default function LideresProdutividadePage() {
           return (
             <motion.div key={stat.label} custom={i + 1} variants={fadeIn} initial="hidden" animate="visible">
               <div className={`rounded-xl border border-slate-200 bg-white border-t-[3px] ${colors.border} shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 p-3 lg:p-4`}>
-                <div className="flex items-center justify-between mb-2">
-                  <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg ${colors.bg} flex items-center justify-center`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg ${colors.bg} flex items-center justify-center flex-shrink-0`}>
                     <stat.icon className={`w-3.5 h-3.5 lg:w-4 lg:h-4 ${colors.icon}`} />
                   </div>
+                  <div className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">
+                    {isLoading ? '...' : typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
+                  </div>
                 </div>
-                <div className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">
-                  {isLoading ? '...' : typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
-                </div>
-                <div className="text-[10px] lg:text-xs text-slate-500 font-medium mt-1">{stat.label}</div>
+                <div className="text-[10px] lg:text-xs text-slate-500 font-medium">{stat.label}</div>
               </div>
             </motion.div>
           );

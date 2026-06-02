@@ -82,64 +82,47 @@ export default function MetaEleitoralPanel({ totalAtual }: MetaEleitoralProps) {
       <div className="h-full rounded-xl border border-slate-200 bg-white border-t-[3px] border-t-blue-600
         shadow-sm hover:shadow-md transition-shadow duration-200">
         <div className="p-3 lg:p-4">
-          {/* Header com ícone e ação */}
-          <div className="flex items-center justify-between mb-2 lg:mb-3">
-            <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+          {/* Header: ícone + valor + ação na mesma linha */}
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
               <Target className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-blue-600" />
             </div>
-            {editando ? (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={salvarMeta}
-                  className="p-1 rounded-md hover:bg-green-50 text-green-600 transition-colors
-                    focus:outline-none focus:ring-2 focus:ring-green-500"
-                  aria-label="Salvar meta"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => { setEditando(false); setInputMeta(String(meta)); }}
-                  className="p-1 rounded-md hover:bg-red-50 text-red-600 transition-colors
-                    focus:outline-none focus:ring-2 focus:ring-red-500"
-                  aria-label="Cancelar edição"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
+            {loading ? (
+              <div className="h-6 w-16 bg-slate-100 rounded animate-pulse" />
+            ) : editando ? (
+              <input
+                type="number"
+                value={inputMeta}
+                onChange={(e) => setInputMeta(e.target.value)}
+                className="flex-1 text-sm lg:text-base border border-slate-200 rounded-lg px-2 py-1
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                min={1}
+                autoFocus
+                onKeyDown={(e) => { if (e.key === 'Enter') salvarMeta(); }}
+                aria-label="Nova meta de eleitores"
+              />
             ) : (
-              <button
-                onClick={() => setEditando(true)}
-                className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors
-                  focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Editar meta"
-              >
-                <Pencil className="w-3.5 h-3.5" />
-              </button>
+              <p className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">{totalAtual.toLocaleString()}</p>
             )}
+            <div className="ml-auto flex items-center gap-1">
+              {editando ? (
+                <>
+                  <button onClick={salvarMeta} className="p-1 rounded-md hover:bg-green-50 text-green-600 transition-colors" aria-label="Salvar meta"><Check className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => { setEditando(false); setInputMeta(String(meta)); }} className="p-1 rounded-md hover:bg-red-50 text-red-600 transition-colors" aria-label="Cancelar"><X className="w-3.5 h-3.5" /></button>
+                </>
+              ) : (
+                <button onClick={() => setEditando(true)} className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" aria-label="Editar meta"><Pencil className="w-3.5 h-3.5" /></button>
+              )}
+            </div>
           </div>
 
           {loading ? (
-            <div className="h-[80px] lg:h-[100px] bg-slate-50 rounded animate-pulse" />
+            <div className="h-[60px] bg-slate-50 rounded animate-pulse" />
           ) : (
             <div className="space-y-2">
-              {/* Meta editável */}
-              {editando ? (
-                <input
-                  type="number"
-                  value={inputMeta}
-                  onChange={(e) => setInputMeta(e.target.value)}
-                  className="w-full text-sm lg:text-base border border-slate-200 rounded-lg px-3 py-2
-                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  min={1}
-                  autoFocus
-                  onKeyDown={(e) => { if (e.key === 'Enter') salvarMeta(); }}
-                  aria-label="Nova meta de eleitores"
-                />
-              ) : (
-                <div>
-                  <p className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">{totalAtual.toLocaleString()}</p>
-                  <p className="text-[10px] lg:text-xs text-slate-500">de {meta.toLocaleString()} eleitores</p>
-                </div>
+              {/* Label */}
+              {!editando && (
+                <p className="text-[10px] lg:text-xs text-slate-500">de {meta.toLocaleString()} eleitores</p>
               )}
 
               {/* Barra de progresso animada */}
