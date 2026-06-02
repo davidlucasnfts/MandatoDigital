@@ -338,37 +338,43 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
         })}
       </div>
 
-      {/* Drawer lateral para preview */}
+      {/* Modal central para preview */}
       {solicitacaoSelecionada && (
         <>
           {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black/30 z-40"
-            onClick={() => setSelecionada(null)}
-          />
-          {/* Drawer */}
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full sm:w-[420px] lg:w-[480px] bg-white shadow-2xl z-50 overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 z-40 flex items-start justify-center p-4 pt-16 sm:pt-24"
+            onClick={() => setSelecionada(null)}
           >
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between z-10">
-              <span className="text-sm font-semibold text-slate-700">Detalhes da Solicitação</span>
-              <button
-                onClick={() => setSelecionada(null)}
-                className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 text-slate-500" />
-              </button>
-            </div>
-            <SolicitacaoPreview
-              s={solicitacaoSelecionada}
-              onEdit={(s) => { onEdit(s); setSelecionada(null); }}
-              onRemove={(id) => { onRemove(id); setSelecionada(null); }}
-              onUpdate={onUpdate}
-            />
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="sticky top-0 bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between z-10 rounded-t-xl">
+                <span className="text-sm font-semibold text-slate-700">Detalhes da Solicitação</span>
+                <button
+                  onClick={() => setSelecionada(null)}
+                  className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+              <SolicitacaoPreview
+                s={solicitacaoSelecionada}
+                onEdit={(s) => { onEdit(s); setSelecionada(null); }}
+                onRemove={(id) => { onRemove(id); setSelecionada(null); }}
+                onUpdate={onUpdate}
+              />
+            </motion.div>
           </motion.div>
         </>
       )}
