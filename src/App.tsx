@@ -9,7 +9,7 @@ import DashboardHome from '@/pages/DashboardHome';
 import EleitoresPage from '@/pages/EleitoresPage';
 import ComunidadesPage from '@/pages/ComunidadesPage';
 import SolicitacoesPage from '@/pages/SolicitacoesPage';
-import SolicitacoesPageV4 from '@/pages/SolicitacoesPageV4';
+
 import ComunicacaoPage from '@/pages/ComunicacaoPage';
 import MapaPage from '@/pages/MapaPage';
 
@@ -51,7 +51,6 @@ function App() {
         <Route path="eleitores" element={<EleitoresPage />} />
         <Route path="comunidades" element={<ComunidadesPage />} />
         <Route path="solicitacoes" element={<SolicitacoesPage />} />
-        <Route path="solicitacoes/teste-v4" element={<SolicitacoesPageV4 />} />
         <Route path="comunicacao" element={<ComunicacaoPage />} />
         <Route path="mapa" element={<MapaPage />} />
 
