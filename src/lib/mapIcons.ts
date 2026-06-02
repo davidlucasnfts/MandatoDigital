@@ -22,33 +22,34 @@ function circleBase(color: string, inner: string, size: number = 36): string {
   </div>`;
 }
 
-// ============= ÍCONES INTERNOS (20x20) — SVGs ESTILO CLUSTER =============
-// Mesmos SVGs usados nos clusters, para manter consistência visual
+// ============= ÍCONES INTERNOS — SVGs ESCOLHIDOS PELO USUÁRIO =============
+// Eleitor: E13 (degradê radial) | Comunidade: C13 (prédio 3D colorido)
 
-// 👤 ELEITOR — outline branco (igual cluster eleitor)
-const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
-  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
-  <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
+// 👤 ELEITOR — E13: Silhueta com degradê radial azul
+const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+  <defs><radialGradient id="gradE" cx="30%" cy="30%"><stop offset="0%" stop-color="#bfdbfe"/><stop offset="100%" stop-color="#1d4ed8"/></radialGradient></defs>
+  <circle cx="12" cy="7" r="4" fill="url(#gradE)" stroke="white" stroke-width="1.5"/>
+  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="url(#gradE)" stroke="white" stroke-width="1.5"/>
 </svg>`;
 
-// ⚠️ ELEITOR PENDENTE — mesmo ícone, cor do círculo muda no container
+// ⚠️ ELEITOR PENDENTE — mesmo SVG, cor do círculo muda no container
 const personPendingIcon = personIcon;
 
-// 👑 LÍDER — outline branco (igual cluster líder)
-const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
-  <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
-  <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M9 22l1.5-7" stroke-linecap="round"/>
+// 👑 LÍDER — mesmo estilo degradê do eleitor, cor roxa
+const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+  <defs><radialGradient id="gradL" cx="30%" cy="30%"><stop offset="0%" stop-color="#ddd6fe"/><stop offset="100%" stop-color="#6d28d9"/></radialGradient></defs>
+  <circle cx="12" cy="7" r="4" fill="url(#gradL)" stroke="white" stroke-width="1.5"/>
+  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="url(#gradL)" stroke="white" stroke-width="1.5"/>
 </svg>`;
 
-// 🏢 COMUNIDADE — outline branco (igual cluster comunidade)
-const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
-  <circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
-  <path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" fill="rgba(255,255,255,0.2)"/>
-  <path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" fill="rgba(255,255,255,0.2)"/>
+// 🏢 COMUNIDADE — C13: Prédio 3D colorido
+const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+  <rect x="4" y="3" width="16" height="18" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/>
+  <rect x="7" y="6" width="4" height="4" rx="1" fill="#86efac"/>
+  <rect x="13" y="6" width="4" height="4" rx="1" fill="#86efac"/>
+  <rect x="7" y="12" width="4" height="4" rx="1" fill="#86efac"/>
+  <rect x="13" y="12" width="4" height="4" rx="1" fill="#86efac"/>
+  <rect x="9" y="18" width="6" height="3" rx="1" fill="#14532d"/>
 </svg>`;
 
 // ============= FUNÇÕES EXPORTADAS =============
