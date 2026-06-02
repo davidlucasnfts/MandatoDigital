@@ -41,8 +41,41 @@ function createClusterIcon(cluster: any, color: string = clusterColors.ativo, ty
   const size = 48;
   const bgColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
 
+  // SVGs internos dos clusters (mesmos ícones dos marcadores individuais)
+  const getIconSvg = () => {
+    if (type === 'comunidade') {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <rect x="4" y="3" width="16" height="18" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/>
+        <rect x="7" y="6" width="4" height="4" rx="1" fill="#86efac"/>
+        <rect x="13" y="6" width="4" height="4" rx="1" fill="#86efac"/>
+        <rect x="7" y="12" width="4" height="4" rx="1" fill="#86efac"/>
+        <rect x="13" y="12" width="4" height="4" rx="1" fill="#86efac"/>
+        <rect x="9" y="18" width="6" height="3" rx="1" fill="#14532d"/>
+      </svg>`;
+    }
+    if (type === 'lider') {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
+        <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
+        <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 22l1.5-7" stroke-linecap="round"/>
+      </svg>`;
+    }
+    // Eleitor
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
+      <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
+      <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
+    </svg>`;
+  };
+
   return L.divIcon({
-    html: `<div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:14px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);">${count}</div>`,
+    html: `
+      <div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);gap:1px;">
+        ${getIconSvg()}
+        <span style="color:white;font-weight:900;font-size:11px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.3);">${count}</span>
+      </div>
+    `,
     className: 'marker-cluster-custom',
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
