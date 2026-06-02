@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   Pencil, Trash2, CalendarDays, User, MapPin, Calendar, Clock, AlertTriangle,
-  AlertCircle, CheckCircle, XCircle
+  AlertCircle, CheckCircle, XCircle, ChevronDown, ChevronRight
 } from '@/lib/icons';
 import type { Solicitacao } from '@/lib/supabase';
 
@@ -199,7 +199,7 @@ function KanbanCard({ s, isSelected, onClick, onEdit, onRemove, onUpdate }: {
         }`}
       >
         <div className="flex items-start justify-between gap-2">
-          <div className="font-medium text-sm text-slate-800 flex-1 min-w-0">{s.titulo}</div>
+          <div className="font-medium text-sm text-slate-800 flex-1 min-w-0 truncate" title={s.titulo}>{s.titulo}</div>
         </div>
         <div className="text-xs text-slate-500 mt-1 truncate">{s.eleitor_nome || '—'}</div>
         <div className="flex items-center justify-between mt-2">
@@ -222,6 +222,11 @@ function KanbanCard({ s, isSelected, onClick, onEdit, onRemove, onUpdate }: {
 
 export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRemove, onUpdate }: Props) {
   const [selecionada, setSelecionada] = useState<string | null>(null);
+  const [colunasMinimizadas, setColunasMinimizadas] = useState<Record<string, boolean>>({});
+
+  const toggleColuna = (colKey: string) => {
+    setColunasMinimizadas(prev => ({ ...prev, [colKey]: !prev[colKey] }));
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -287,36 +292,46 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
               className={`bg-slate-50 rounded-xl border border-slate-200 border-t-[3px] ${colors.border} min-h-[200px] flex flex-col`}
               data-status={col.key}
             >
-              {/* Header da coluna */}
-              <div className={`flex items-center gap-2 px-3 py-2.5 rounded-t-xl ${colors.headerBg}`}>
+              {/* Header da coluna — clicável para minimizar */}
+              <button
+                onClick={() => toggleColuna(col.key)}
+                className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-t-xl ${colors.headerBg} hover:opacity-80 transition-opacity text-left`}
+              >
                 <div className={`w-7 h-7 rounded-lg ${colors.bg} flex items-center justify-center`}>
                   <Icon className={`w-4 h-4 ${colors.icon}`} />
                 </div>
                 <span className="text-sm font-semibold text-slate-700">{col.label}</span>
                 <span className="text-xs text-slate-400 ml-auto bg-white px-2 py-0.5 rounded-full border border-slate-200">{colItems.length}</span>
-              </div>
+                {colunasMinimizadas[col.key] ? (
+                  <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                )}
+              </button>
 
               {/* Cards */}
-              <SortableContext
-                items={colItems.map(i => i.id)}
-                strategy={verticalListSortingStrategy}
-                id={col.key}
-              >
-                <div className="p-2 space-y-2 flex-1">
-                  {colItems.map(item => (
-                    <SortableItem key={item.id} id={item.id}>
-                      <KanbanCard
-                        s={item}
-                        isSelected={selecionada === item.id}
-                        onClick={() => setSelecionada(selecionada === item.id ? null : item.id)}
-                        onEdit={onEdit}
-                        onRemove={onRemove}
-                        onUpdate={onUpdate}
-                      />
-                    </SortableItem>
-                  ))}
-                </div>
-              </SortableContext>
+              {!colunasMinimizadas[col.key] && (
+                <SortableContext
+                  items={colItems.map(i => i.id)}
+                  strategy={verticalListSortingStrategy}
+                  id={col.key}
+                >
+                  <div className="p-2 space-y-2 flex-1">
+                    {colItems.map(item => (
+                      <SortableItem key={item.id} id={item.id}>
+                        <KanbanCard
+                          s={item}
+                          isSelected={selecionada === item.id}
+                          onClick={() => setSelecionada(selecionada === item.id ? null : item.id)}
+                          onEdit={onEdit}
+                          onRemove={onRemove}
+                          onUpdate={onUpdate}
+                        />
+                      </SortableItem>
+                    ))}
+                  </div>
+                </SortableContext>
+              )}
             </motion.div>
           );
         })}
