@@ -37,7 +37,7 @@ const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="2
 const personPendingIcon = personIcon;
 
 // 👑 LÍDER — L11: Coroa real minimalista dourada
-const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M5 16L3 8l5 3 4-7 4 7 5-3-2 8H5z" fill="#fbbf24" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
   <rect x="5" y="18" width="14" height="3" rx="1" fill="#f59e0b"/>
 </svg>`;
