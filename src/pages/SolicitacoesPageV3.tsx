@@ -1,16 +1,15 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   ClipboardList, Plus, Search, AlertCircle, Clock, CheckCircle, XCircle,
-  Pencil, Trash2, Filter, X, ChevronDown, Calendar, CalendarDays, User, Tag,
-  AlertTriangle, ArrowRight, MapPin
+  Filter, X
 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PanelCard, EmptyState } from '@/components/dashboard';
 
 import { useSolicitacoes } from '@/hooks/useSupabaseData';
-import KanbanBoard from '@/components/KanbanBoard';
+import SolicitacoesKanban from '@/components/SolicitacoesKanban';
 import NovaSolicitacaoDialog from '@/components/NovaSolicitacaoDialog';
 import SolicitacoesLista from '@/components/SolicitacoesLista';
 import type { Solicitacao } from '@/lib/supabase';
@@ -45,13 +44,6 @@ const statusLabel: Record<string, string> = {
   cancelado: 'Cancelado'
 };
 
-const columns = [
-  { key: 'pendente' as const, label: 'Pendente', icon: AlertCircle },
-  { key: 'andamento' as const, label: 'Em Andamento', icon: Clock },
-  { key: 'concluido' as const, label: 'Concluído', icon: CheckCircle },
-  { key: 'cancelado' as const, label: 'Cancelado', icon: XCircle },
-];
-
 const colorMap = {
   blue: { border: 'border-t-blue-600', bg: 'bg-blue-50', icon: 'text-blue-600' },
   green: { border: 'border-t-green-600', bg: 'bg-green-50', icon: 'text-green-600' },
@@ -68,11 +60,7 @@ export default function SolicitacoesPageV3() {
   const [view, setView] = useState<'table' | 'kanban'>('table');
   const [novaOpen, setNovaOpen] = useState(false);
   const [editSolicitacao, setEditSolicitacao] = useState<Solicitacao | null>(null);
-  const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<Solicitacao | null>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [mostrarConcluidas, setMostrarConcluidas] = useState(false);
-  const [mostrarCanceladas, setMostrarCanceladas] = useState(false);
 
   const filtered = useMemo(() => solicitacoes.filter(s => {
     const matchSearch = !search || s.titulo?.toLowerCase().includes(search.toLowerCase()) || s.eleitor_nome?.toLowerCase().includes(search.toLowerCase());
@@ -97,23 +85,7 @@ export default function SolicitacoesPageV3() {
 
   const temFiltros = !!(statusFilter || prioridadeFilter);
 
-  const handleDragEnd = async (itemId: string, newStatus: string) => {
-    await update(itemId, { status: newStatus as Solicitacao['status'] });
-  };
 
-  const handleStatusToggle = async (ev: React.MouseEvent, id: string, status: string) => {
-    ev.stopPropagation();
-    await update(id, { status: status as Solicitacao['status'] });
-  };
-
-  // Scroll automático para o preview quando abrir (offset para não ficar atrás do header)
-  useEffect(() => {
-    if (solicitacaoSelecionada && previewRef.current) {
-      const yOffset = -80; // offset para não ficar atrás do header fixo
-      const y = previewRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-  }, [solicitacaoSelecionada]);
 
   const statItems = [
     { label: 'Total', value: stats.total, icon: ClipboardList, color: 'blue' as const },
@@ -262,149 +234,23 @@ export default function SolicitacoesPageV3() {
         <motion.div custom={6} variants={fadeIn} initial="hidden" animate="visible">
           <PanelCard title="Lista de Solicitações" icon={ClipboardList} iconColor="text-blue-600" iconBg="bg-blue-50" badge={filtered.length} delay={6}>
             <div className="overflow-x-auto -mx-4 lg:-mx-6">
-              {/* Mobile table - 2 columns only */}
-              <table className="w-full text-sm sm:hidden" style={{ tableLayout: 'fixed' }}>
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="text-left py-3 px-1 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap" style={{ width: '56px' }}>Ações</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Solicitação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    Array.from({ length: 5 }).map((_, i) => (
-                      <tr key={i} className="border-b border-slate-50">
-                        <td colSpan={2} className="py-4 px-4"><div className="h-4 bg-slate-100 rounded animate-pulse" /></td>
-                      </tr>
-                    ))
-                  ) : filtered.length === 0 ? (
-                    <tr>
-                      <td colSpan={2} className="py-8">
-                        <EmptyState icon={ClipboardList} title="Nenhuma solicitação encontrada" description="Ajuste os filtros ou crie uma nova solicitação" action={{ label: 'Nova solicitação', onClick: () => setNovaOpen(true) }} />
-                      </td>
-                    </tr>
-                  ) : (
-                    filtered.flatMap(s => {
-                      const isSelected = solicitacaoSelecionada?.id === s.id;
-                      const rows = [
-                        <tr
-                          key={s.id}
-                          className={`border-b transition-colors cursor-pointer ${isSelected ? 'bg-blue-50/80 border-blue-100' : 'border-slate-50 hover:bg-blue-50/50'}`}
-                          onClick={() => setSolicitacaoSelecionada(isSelected ? null : s)}
-                        >
-                          <td className="py-3 px-1 align-top" style={{ width: '56px' }}>
-                            <div className="flex flex-col gap-1">
-                              <button onClick={(ev) => { ev.stopPropagation(); setEditSolicitacao(s); }} className="flex items-center justify-center px-2 py-1.5 text-[10px] font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm" title="Editar">
-                                <Pencil className="w-3 h-3" />
-                              </button>
-                              <button onClick={(ev) => { ev.stopPropagation(); if (confirm('Excluir esta solicitação?')) remove(s.id); }} className="flex items-center justify-center px-2 py-1.5 text-[10px] font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm" title="Excluir">
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4 overflow-hidden">
-                            <div className="font-medium text-slate-800 truncate" style={{ maxWidth: 'calc(100vw - 120px)' }}>{s.titulo}</div>
-                            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${statusColors[s.status || 'pendente']}`}>{s.status}</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${prioridadeColors[s.prioridade || 'media']}`}>{s.prioridade}</span>
-                            </div>
-                          </td>
-                        </tr>
-                      ];
-                      if (isSelected) {
-                        rows.push(
-                          <tr key={`${s.id}-preview`} className="border-b border-blue-100">
-                            <td colSpan={2} className="p-0 overflow-hidden">
-                              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="bg-blue-50/30 overflow-hidden">
-                                <div className="p-4 overflow-hidden">
-                                  <div className="flex flex-col gap-3 mb-4">
-                                    <div className="flex items-center gap-3 min-w-0">
-                                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                        s.prioridade === 'urgente' ? 'bg-red-100' : s.prioridade === 'alta' ? 'bg-orange-100' : s.prioridade === 'media' ? 'bg-amber-100' : 'bg-green-100'
-                                      }`}>
-                                        <AlertTriangle className={`w-5 h-5 ${
-                                          s.prioridade === 'urgente' ? 'text-red-600' : s.prioridade === 'alta' ? 'text-orange-600' : s.prioridade === 'media' ? 'text-amber-600' : 'text-green-600'
-                                        }`} />
-                                      </div>
-                                      <div className="min-w-0">
-                                        <h3 className="text-base font-bold text-slate-800 break-words">{s.titulo}</h3>
-                                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[s.status || 'pendente']}`}>{statusLabel[s.status || 'pendente']}</span>
-                                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${prioridadeColors[s.prioridade || 'media']}`}>{prioridadeLabel[s.prioridade || 'media']}</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                      <button onClick={() => setEditSolicitacao(s)} className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"><Pencil className="w-3 h-3" />Editar</button>
-                                      <button onClick={() => { if (confirm('Excluir esta solicitação?')) { remove(s.id); setSolicitacaoSelecionada(null); } }} className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"><Trash2 className="w-3 h-3" />Excluir</button>
-                                    </div>
-                                  </div>
-                                  {s.descricao && <p className="text-sm text-slate-500 mb-4 break-all">{s.descricao}</p>}
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Eleitor</h4><div className="text-sm font-medium text-slate-800">{s.eleitor_nome || '—'}</div></div>
-                                    <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Responsável</h4><div className="text-sm font-medium text-slate-800">{s.responsavel || '—'}</div></div>
-                                    <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Local</h4><div className="text-sm font-medium text-slate-800">{s.local || '—'}</div></div>
-                                    <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Solicitação</h4><div className="text-sm font-medium text-slate-800">{s.data_solicitacao ? new Date(s.data_solicitacao).toLocaleDateString('pt-BR') : '—'}</div></div>
-                                    <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Prazo</h4><div className="text-sm font-medium text-slate-800">{s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : '—'}</div></div>
-                                    <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Evento</h4><div className={`text-sm font-medium ${s.data_evento ? 'text-blue-600' : 'text-slate-800'}`}>{s.data_evento ? new Date(s.data_evento).toLocaleDateString('pt-BR') : '—'}</div></div>
-                                  </div>
-                                  <div className="mt-4 pt-3 border-t border-slate-200">
-                                    <h4 className="text-[10px] font-semibold text-slate-400 uppercase mb-2">Alterar Status</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                      {[{ key: 'pendente', label: 'Pendente', color: 'amber' }, { key: 'andamento', label: 'Em Andamento', color: 'blue' }, { key: 'concluido', label: 'Concluído', color: 'green' }, { key: 'cancelado', label: 'Cancelado', color: 'red' }].map(st => (
-                                        <button key={st.key} onClick={() => update(s.id, { status: st.key as Solicitacao['status'] })} disabled={s.status === st.key} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${s.status === st.key ? `bg-${st.color}-100 text-${st.color}-700 cursor-default` : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}>{st.label}</button>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </div>
-                              </motion.div>
-                            </td>
-                          </tr>
-                        );
-                      }
-                      return rows;
-                    })
-                  )}
-                </tbody>
-              </table>
-
-              {/* Desktop table - full columns */}
-              <div className="hidden sm:block">
-                <SolicitacoesLista
-                  solicitacoes={filtered}
-                  loading={loading}
-                  onEdit={setEditSolicitacao}
-                  onRemove={remove}
-                  onUpdate={update}
-                />
-              </div>
+              <SolicitacoesLista
+                solicitacoes={filtered}
+                loading={loading}
+                onEdit={setEditSolicitacao}
+                onRemove={remove}
+                onUpdate={update}
+              />
             </div>
           </PanelCard>
         </motion.div>
       ) : (
-        <KanbanBoard
-          items={filtered}
-          columns={columns.map(c => ({ id: c.key, label: c.label, icon: c.icon }))}
-          onDragEnd={handleDragEnd}
-          renderCard={(s) => (
-            <div className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow bg-white rounded-lg border border-slate-200 p-3">
-              <div className="flex items-start justify-between">
-                <div className="font-medium text-sm text-slate-800 mb-1 flex-1">{s.titulo}</div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setEditSolicitacao(s)} className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm transition-colors" title="Editar"><Pencil className="w-3 h-3" />Editar</button>
-                  <button onClick={() => { if (confirm('Excluir esta solicitação?')) remove(s.id); }} className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm transition-colors" title="Excluir"><Trash2 className="w-3 h-3" />Excluir</button>
-                </div>
-              </div>
-              <div className="text-xs text-slate-500 mb-2">{s.eleitor_nome}</div>
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${prioridadeColors[s.prioridade || 'media']}`}>
-                  {s.prioridade}
-                </span>
-                <span className="text-[10px] text-slate-400">{s.data_prazo || '—'}</span>
-              </div>
-            </div>
-          )}
-          getItemStatus={(s) => s.status}
+        <SolicitacoesKanban
+          solicitacoes={filtered}
+          loading={loading}
+          onEdit={setEditSolicitacao}
+          onRemove={remove}
+          onUpdate={update}
         />
       )}
 

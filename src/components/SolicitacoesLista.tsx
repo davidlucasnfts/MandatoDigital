@@ -26,6 +26,13 @@ const statusLabel: Record<string, string> = {
   excluido: 'Excluído'
 };
 
+const prioridadeLabel: Record<string, string> = {
+  urgente: 'Urgente',
+  alta: 'Alta',
+  media: 'Média',
+  baixa: 'Baixa'
+};
+
 interface Props {
   solicitacoes: Solicitacao[];
   loading: boolean;
