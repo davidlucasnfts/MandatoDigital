@@ -28,6 +28,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Mapa V2 — Ícones SVG nos clusters e legenda, clusters separados, sem "Sem bairro"** | **01/06** |
 | **Mapa V2 Refatorado — Ícones E14/L11/C13 padronizados, legenda com SVGs reais, popups e dialogs com ícones, camadas com toggles, filtros estilizados, legenda minimizável, cobertura sempre visível, responsivo mobile** | **01/06** |
 | **Modo Demo — Dados mockados para demo@mandato.digital em 8 abas** | **01/06** |
+| **Solicitações V3 — Página principal: lista com seções colapsáveis + Kanban com modal central, Design System, responsivo** | **01/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -452,6 +453,79 @@ Usuário rejeitou Phosphor Icons (pesos fill/duotone/bold) e Govicons. Precisava
 
 ### Decisão pendente
 Usuário vai acessar as 3 páginas localmente e decidir qual biblioteca adotar.
+
+---
+
+## 📋 Backlog
+- Decidir biblioteca de ícones (Carbon vs Material vs Tabler)
+- Migrar `src/lib/icons.ts` e todos os imports para biblioteca escolhida
+- Importar CNEFE da UF do mandato (ação manual pendente)
+- Prestação de Contas Pública (MÉDIA)
+- App mobile / PWA para campo (MÉDIA)
+- Integração WhatsApp API oficial (MÉDIA)
+- Website integrado (BAIXA)
+
+## 📝 Resumo da Sessão 01/06 — Solicitações V3 Torna Página Principal
+
+### Contexto
+A página de Solicitações tinha uma versão de teste (V3) criada em 27/05 com melhorias visuais, mas nunca havia sido promovida à produção. Esta sessão finalizou a V3 e a tornou a página principal.
+
+### Funcionalidades Entregues
+
+#### 1. Lista de Solicitações (Modo Tabela)
+| # | Melhoria | Descrição |
+|---|---|---|
+| 1 | **Seções colapsáveis** | "Concluídas" e "Canceladas" com badge count, minimizáveis via clique |
+| 2 | **Preview inline expandido** | Clique na linha abre preview com ícone circular, grid de detalhes, alterar status |
+| 3 | **Botões com texto+ícone** | Editar (azul) e Excluir (vermelho) empilhados verticalmente |
+| 4 | **Responsividade** | Tabela mobile (2 colunas) e desktop (7 colunas) separadas |
+| 5 | **Limites de caracteres** | Título 60, Descrição 250 com contadores no modal |
+| 6 | **Refresh sem reload** | Após criar/editar, lista atualiza via callback onSuccess |
+
+#### 2. Kanban (Modo Board)
+| # | Melhoria | Descrição |
+|---|---|---|
+| 1 | **Drag-and-drop entre colunas** | Arrastar card muda status automaticamente |
+| 2 | **Modal central de preview** | Clique no card abre modal overlay (não expande inline na coluna estreita) |
+| 3 | **Colunas minimizáveis** | Header clicável expande/minimiza, mostra preview compacto (5 títulos) |
+| 4 | **Design System no preview** | Mesmo padrão da lista: círculo ícone, grid 2/3 colunas, alterar status |
+| 5 | **Responsividade** | 1 coluna mobile, 2 tablet, 4 desktop |
+| 6 | **Título truncado no card** | `truncate` + tooltip title para não estourar layout |
+
+#### 3. Design System Aplicado
+- Stats cards clicáveis (filtram por status ao clicar)
+- Filtros expansíveis (status, prioridade)
+- Badges coloridos por status/prioridade
+- Cores fixas: Pendente(âmbar), Andamento(azul), Concluído(verde), Cancelado(vermelho)
+- Botões de ação sempre visíveis (sem hover)
+
+#### 4. Correções de Bugs
+| # | Problema | Causa | Solução |
+|---|---|---|---|
+| 1 | Tabela mobile antiga sem seções colapsáveis | Tabela embutida na V3 não usava componente SolicitacoesLista | Removida tabela mobile antiga, usa componente unificado |
+| 2 | Status "excluido" não existe no banco | Constraint CHECK só permite 4 status | Excluir → muda status para "cancelado" |
+| 3 | Título quebrando 1 palavra/linha no preview | `break-words` + container estreito do Kanban | Preview do Kanban em modal central (largura adequada) |
+| 4 | Overlay do modal não cobria tela toda | Padding no container flex do overlay | Separar overlay (inset-0) do container do modal |
+
+### Arquivos Criados
+- `src/components/SolicitacoesKanban.tsx` — Componente Kanban com DnD, modal, colunas minimizáveis
+
+### Arquivos Modificados
+- `src/pages/SolicitacoesPage.tsx` — Copiado da V3, renomeado para produção
+- `src/pages/SolicitacoesPageV3.tsx` — Mantido para histórico
+- `src/components/SolicitacoesLista.tsx` — Preview inline com seções colapsáveis
+- `src/components/NovaSolicitacaoDialog.tsx` — Limites de caracteres + onSuccess callback
+- `src/App.tsx` — Removida rota /solicitacoes/teste-v3
+- `src/components/DashboardLayout.tsx` — Removido link "Solicitações V3"
+
+### Lições Aprendidas (Self-Healing)
+- **Preview inline em Kanban não funciona** — colunas são muito estreitas (~200px). Sempre usar modal/drawer para preview em Kanban.
+- **Overlay de modal deve ser elemento separado** — nunca misturar overlay e conteúdo no mesmo container flex com padding.
+- **`break-words` vs `break-all`** — `break-words` só quebra em hífen/espaço; para textos longos sem espaço (testes), usar `break-all`.
+- **Componente unificado para mobile/desktop** — evitar duplicar tabela mobile/desktop. Um componente com classes responsivas (`hidden sm:block` / `sm:hidden`) é mais manutenível.
+
+### Decisões Pendentes
+- Nenhuma. Página em produção.
 
 ---
 
