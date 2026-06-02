@@ -24,8 +24,8 @@ function stickerBase(color: string, inner: string, size: number = 40): string {
 // ============= ÍCONES INTERNOS — SVGs ESCOLHIDOS PELO USUÁRIO =============
 // Eleitor: original outline branco | Comunidade: C13 (prédio 3D colorido)
 
-// 👤 ELEITOR — original outline branco
-const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+// 👤 ELEITOR — original outline branco (aumentado para 24x24)
+const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
   <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
   <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
   <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
