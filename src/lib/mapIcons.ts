@@ -24,22 +24,22 @@ function stickerBase(color: string, inner: string, size: number = 40): string {
 // ============= ÍCONES INTERNOS — SVGs ESCOLHIDOS PELO USUÁRIO =============
 // Eleitor: original outline branco | Comunidade: C13 (prédio 3D colorido)
 
-// 👤 ELEITOR — original outline branco (aumentado para 24x24)
-const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
-  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
-  <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
+// 👤 ELEITOR — E14: 3D com sombra
+const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <ellipse cx="13" cy="20" rx="5" ry="2" fill="rgba(0,0,0,0.25)"/>
+  <circle cx="12" cy="7" r="4" fill="white" opacity="0.95"/>
+  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="white" opacity="0.95"/>
+  <circle cx="12" cy="7" r="4" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+  <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
 </svg>`;
 
-// ⚠️ ELEITOR PENDENTE — mesmo ícone original
+// ⚠️ ELEITOR PENDENTE — mesmo ícone 3D
 const personPendingIcon = personIcon;
 
-// 👑 LÍDER — original outline branco
-const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
-  <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
-  <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M9 22l1.5-7" stroke-linecap="round"/>
+// 👑 LÍDER — L11: Coroa real minimalista dourada
+const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+  <path d="M5 16L3 8l5 3 4-7 4 7 5-3-2 8H5z" fill="#fbbf24" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+  <rect x="5" y="18" width="14" height="3" rx="1" fill="#f59e0b"/>
 </svg>`;
 
 // 🏢 COMUNIDADE — C13: Prédio 3D colorido
