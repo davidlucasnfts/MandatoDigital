@@ -111,12 +111,8 @@ export function useSolicitacoes() {
       console.error('[useSolicitacoes] Insert error:', error);
       throw error;
     }
-    if (inserted) {
-      setData(prev => [inserted, ...prev]);
-    } else {
-      // Se não retornou dados, faz fetch para garantir
-      await fetch();
-    }
+    // Sempre faz fetch para garantir que a lista está atualizada
+    await fetch();
     return inserted;
   };
 
@@ -127,8 +123,9 @@ export function useSolicitacoes() {
   };
 
   const remove = async (id: string) => {
-    await supabase.from('solicitacoes').delete().eq('id', id);
-    setData(prev => prev.filter(s => s.id !== id));
+    // Ao invés de deletar, marca como excluido
+    const { data: updated } = await supabase.from('solicitacoes').update({ status: 'excluido' }).eq('id', id).select().single();
+    if (updated) setData(prev => prev.map(s => s.id === id ? updated : s));
   };
 
   useEffect(() => { fetch(); }, [fetch]);
