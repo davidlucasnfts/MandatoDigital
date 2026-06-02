@@ -44,7 +44,7 @@ function createClusterIcon(cluster: any, color: string = clusterColors.ativo, ty
   // SVGs internos dos clusters (mesmos ícones dos marcadores individuais)
   const getIconSvg = () => {
     if (type === 'comunidade') {
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none">
         <rect x="4" y="3" width="16" height="18" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/>
         <rect x="7" y="6" width="4" height="4" rx="1" fill="#86efac"/>
         <rect x="13" y="6" width="4" height="4" rx="1" fill="#86efac"/>
@@ -54,7 +54,7 @@ function createClusterIcon(cluster: any, color: string = clusterColors.ativo, ty
       </svg>`;
     }
     if (type === 'lider') {
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
         <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
         <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -62,7 +62,7 @@ function createClusterIcon(cluster: any, color: string = clusterColors.ativo, ty
       </svg>`;
     }
     // Eleitor
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
       <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
       <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
@@ -75,7 +75,7 @@ function createClusterIcon(cluster: any, color: string = clusterColors.ativo, ty
         <div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);">
           ${getIconSvg()}
         </div>
-        <div style="position:absolute;bottom:-2px;right:-2px;background:white;color:${bgColor};font-weight:900;font-size:11px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid ${bgColor};box-shadow:0 1px 4px rgba(0,0,0,0.2);">${count}</div>
+        <div style="position:absolute;bottom:-3px;right:-3px;background:white;color:${bgColor};font-weight:900;font-size:13px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid ${bgColor};box-shadow:0 2px 6px rgba(0,0,0,0.25);">${count}</div>
       </div>
     `,
     className: 'marker-cluster-custom',
