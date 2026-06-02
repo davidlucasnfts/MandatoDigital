@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 01/06/2026
-> **Sessão atual:** Deploy — Mapa V2 + Modo Demo recuperados
+> **Sessão atual:** Mapa V2 Refatorado — Ícones padronizados E14/L11/C13, produção
 
 ---
 
@@ -14,31 +14,45 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 **Deploy — Mapa V2 + Modo Demo — 01/06**
 
 ### ✅ O que foi entregue:
-- **Mapa V2 aplicado na página principal:**
-  - Clusters com ícones SVG (estilo hand-drawn/outline)
-  - Clusters separados: Líderes (roxo), Eleitores (azul), Comunidades (verde)
-  - Ícones SVG na legenda (substituíram círculos coloridos)
-  - Botões de camada com ícones (Crown, User, BuildingCommunity)
-  - "Sem bairro" removido do ranking de concentração
-  - Responsividade mobile (flex-wrap, whitespace-nowrap)
+- **Mapa V2 Refatorado — Ícones padronizados E14/L11/C13:**
+  - Ícone Eleitor: E14 (silhueta 3D com sombra projetada) — azul #2563eb
+  - Ícone Líder: L11 (coroa dourada minimalista) — roxo #7c3aed
+  - Ícone Comunidade: C13 (prédio 3D colorido) — verde #16a34a
+  - Todos os ícones padronizados em: stat cards, toggles de camada, legenda, popups, dialogs
+  - Marcadores individuais: sticker 32px inclinado, anchor na base (não cobre a rua)
+  - Clusters: 33px com ícone central 20px + badge lateral 16px fora do círculo
 
-- **Modo Demo para apresentações:**
-  - Login: `demo@mandato.digital` / `demo2026`
-  - Dados mockados em 8 abas: Dashboard, Eleitores, Comunidades, Solicitações, Mapa, Tarefas, Agenda, Líderes
-  - Cenário: Vereador em João Pessoa/PB, campanha 2026
-  - 10 eleitores, 3 comunidades, 5 solicitações, 5 tarefas, 5 eventos, 3 líderes
+- **UX/UI melhorada no mapa:**
+  - Filtros com dropdowns estilizados (shadcn-like) ao invés de selects nativos
+  - Legenda flutuante minimizável (botão "?" expande/minimiza)
+  - Botão Centralizar só ícone (sem texto)
+  - Cobertura Geográfica sempre visível (check verde em 100%)
+  - StatCards com ícone + número na mesma linha, label embaixo
+  - z-index corrigido: mapa não cobre menu mobile
+
+- **Modo Demo:** Funciona automaticamente com todas as melhorias visuais
 
 ### ⚠️ Erros cometidos e corrigidos:
-- **Deploy sem autorização** — enviei botão Demo na Landing Page sem confirmar
-- **Páginas de teste em produção** — DashboardV2, SolicitacoesPageV3, MapaPageV1/V2 ficaram nas rotas
-- **Revert forçado** — perdeu Mapa V2 e Modo Demo, depois recuperados
+- **Ícone SVG branco sumindo no fundo branco** — SVG de "Com Coordenadas" usava fill="white", ficou invisível no círculo verde. Corrigido para fill="#16a34a"
+- **Mapa cobrindo menu mobile** — Leaflet z-index alto. Corrigido com zIndex: 1 no MapContainer + isolate no container pai
+- **Marcador cobrindo a rua** — anchor no centro do sticker. Corrigido para anchor na base ([16, 30] para sticker 32px)
 
 ### ✅ Checklist desta sessão (CONCLUÍDO):
-- [x] Remover rotas de teste do App.tsx (teste-v2, teste-v3, teste-v1, teste-v2)
-- [x] Documentar Regra de Ouro no AGENTS.md + catálogo de páginas de teste no SESSION-CONTEXT.md
+- [x] Definir ícones E14/L11/C13 após ~30 iterações de teste
+- [x] Aplicar ícones em toda a aba do mapa (stat cards, toggles, legenda, popups, dialogs)
+- [x] Ajustar tamanhos: marcadores 32px, clusters 33px, ícones internos 20px
+- [x] Corrigir anchor dos marcadores (base, não centro)
+- [x] Filtros estilizados (dropdowns customizados)
+- [x] Legenda minimizável
+- [x] Botão Centralizar só ícone
+- [x] Cobertura sempre visível
+- [x] z-index corrigido para mobile
+- [x] Remover rota de teste /mapa/teste-v2
+- [x] Copiar MapaPageV2 → MapaPage.tsx (produção)
+- [x] Atualizar MEMORY.md
+- [x] Commit + push para produção
 - [ ] Testar Solicitações V3 em produção
 - [ ] Aprovar/rejeitar Solicitações V3 → copiar para SolicitacoesPage.tsx
-- [ ] Verificar se ícones SVG estão corretos em todas as abas
 
 ---
 
