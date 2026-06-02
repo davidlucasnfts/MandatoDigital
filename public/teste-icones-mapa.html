@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste — Ícones do Mapa</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; padding: 24px; }
+    h1 { font-size: 22px; color: #1e293b; margin-bottom: 4px; }
+    .subtitle { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+    .card h3 { font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    .row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 10px; background: #f8fafc; border-radius: 8px; }
+    .row:last-child { margin-bottom: 0; }
+    .label { font-size: 12px; color: #475569; font-weight: 500; min-width: 70px; }
+    .marker { flex-shrink: 0; }
+    .desc { font-size: 11px; color: #94a3b8; margin-top: 12px; text-align: center; }
+
+    /* Opção A — Outline branco (atual) */
+    .opt-a-eleitor { width: 36px; height: 36px; border-radius: 50%; background: #2563eb; border: 3px solid white; box-shadow: 0 3px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+    .opt-a-lider { width: 36px; height: 36px; border-radius: 50%; background: #7c3aed; border: 3px solid white; box-shadow: 0 3px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+    .opt-a-comunidade { width: 32px; height: 32px; border-radius: 50%; background: #16a34a; border: 3px solid white; box-shadow: 0 3px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+
+    /* Opção B — Preenchido degradê */
+    .opt-b-eleitor { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #60a5fa, #2563eb); border: 2px solid white; box-shadow: 0 2px 8px rgba(37,99,235,0.4); display: flex; align-items: center; justify-content: center; }
+    .opt-b-lider { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa, #7c3aed); border: 2px solid white; box-shadow: 0 2px 8px rgba(124,58,237,0.4); display: flex; align-items: center; justify-content: center; }
+    .opt-b-comunidade { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #4ade80, #16a34a); border: 2px solid white; box-shadow: 0 2px 8px rgba(22,163,74,0.4); display: flex; align-items: center; justify-content: center; }
+
+    /* Opção C — Estilo Pin (gota) */
+    .opt-c-eleitor { width: 32px; height: 38px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .opt-c-eleitor::before { content: ''; position: absolute; inset: 0; background: #2563eb; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+    .opt-c-lider { width: 32px; height: 38px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .opt-c-lider::before { content: ''; position: absolute; inset: 0; background: #7c3aed; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+    .opt-c-comunidade { width: 30px; height: 36px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .opt-c-comunidade::before { content: ''; position: absolute; inset: 0; background: #16a34a; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+
+    /* Opção D — Círculo maior, ícone centralizado */
+    .opt-d-eleitor { width: 42px; height: 42px; border-radius: 50%; background: #2563eb; border: 3px solid white; box-shadow: 0 4px 16px rgba(37,99,235,0.35); display: flex; align-items: center; justify-content: center; }
+    .opt-d-lider { width: 42px; height: 42px; border-radius: 50%; background: #7c3aed; border: 3px solid white; box-shadow: 0 4px 16px rgba(124,58,237,0.35); display: flex; align-items: center; justify-content: center; }
+    .opt-d-comunidade { width: 38px; height: 38px; border-radius: 50%; background: #16a34a; border: 3px solid white; box-shadow: 0 4px 16px rgba(22,163,74,0.35); display: flex; align-items: center; justify-content: center; }
+
+    /* Opção E — Badge com contorno duplo */
+    .opt-e-eleitor { width: 36px; height: 36px; border-radius: 50%; background: #2563eb; border: 2px solid white; outline: 2px solid #bfdbfe; outline-offset: 1px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+    .opt-e-lider { width: 36px; height: 36px; border-radius: 50%; background: #7c3aed; border: 2px solid white; outline: 2px solid #ddd6fe; outline-offset: 1px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+    .opt-e-comunidade { width: 32px; height: 32px; border-radius: 50%; background: #16a34a; border: 2px solid white; outline: 2px solid #bbf7d0; outline-offset: 1px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+
+    /* Opção F — Minimalista (só ícone, sem círculo) */
+    .opt-f-eleitor { width: 28px; height: 28px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); display: flex; align-items: center; justify-content: center; }
+    .opt-f-lider { width: 28px; height: 28px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); display: flex; align-items: center; justify-content: center; }
+    .opt-f-comunidade { width: 26px; height: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); display: flex; align-items: center; justify-content: center; }
+
+    /* Opção G — Flat design */
+    .opt-g-eleitor { width: 34px; height: 34px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; }
+    .opt-g-lider { width: 34px; height: 34px; border-radius: 50%; background: #8b5cf6; display: flex; align-items: center; justify-content: center; }
+    .opt-g-comunidade { width: 30px; height: 30px; border-radius: 50%; background: #22c55e; display: flex; align-items: center; justify-content: center; }
+
+    /* Ícones SVG dentro */
+    .icon-eleitor svg, .icon-lider svg, .icon-comunidade svg { display: block; }
+  </style>
+</head>
+<body>
+  <h1>🗺️ Opções de Ícones para o Mapa</h1>
+  <p class="subtitle">Escolha qual visual prefere para os marcadores individuais (eleitores, líderes e comunidades)</p>
+
+  <div class="grid">
+
+    <!-- OPÇÃO A -->
+    <div class="card">
+      <h3>Opção A — Outline branco (atual)</h3>
+      <div class="row">
+        <span class="label">Eleitor</span>
+        <div class="marker opt-a-eleitor">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/><path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Líder</span>
+        <div class="marker opt-a-lider">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/><path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 22l1.5-7" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Comunidade</span>
+        <div class="marker opt-a-comunidade">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" fill="rgba(255,255,255,0.2)"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" fill="rgba(255,255,255,0.2)"/></svg>
+        </div>
+      </div>
+      <div class="desc">Círculo colorido com ícone SVG branco outline. Sombra 3D.</div>
+    </div>
+
+    <!-- OPÇÃO B -->
+    <div class="card">
+      <h3>Opção B — Degradê</h3>
+      <div class="row">
+        <span class="label">Eleitor</span>
+        <div class="marker opt-b-eleitor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Líder</span>
+        <div class="marker opt-b-lider">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Comunidade</span>
+        <div class="marker opt-b-comunidade">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg>
+        </div>
+      </div>
+      <div class="desc">Degradê suave no círculo. Visual moderno e clean.</div>
+    </div>
+
+    <!-- OPÇÃO C -->
+    <div class="card">
+      <h3>Opção C — Estilo Pin</h3>
+      <div class="row">
+        <span class="label">Eleitor</span>
+        <div class="marker opt-c-eleitor">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Líder</span>
+        <div class="marker opt-c-lider">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Comunidade</span>
+        <div class="marker opt-c-comunidade">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg>
+        </div>
+      </div>
+      <div class="desc">Formato de gota/pin, igual Google Maps. Ícone rotacionado.</div>
+    </div>
+
+    <!-- OPÇÃO D -->
+    <div class="card">
+      <h3>Opção D — Círculo grande</h3>
+      <div class="row">
+        <span class="label">Eleitor</span>
+        <div class="marker opt-d-eleitor">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.2)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.15)"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Líder</span>
+        <div class="marker opt-d-lider">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.2)"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.15)"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Comunidade</span>
+        <div class="marker opt-d-comunidade">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.2)"/><circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.2)"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" fill="rgba(255,255,255,0.15)"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" fill="rgba(255,255,255,0.15)"/></svg>
+        </div>
+      </div>
+      <div class="desc">Círculo maior (42px), mais visível no mapa. Ícone centralizado.</div>
+    </div>
+
+    <!-- OPÇÃO E -->
+    <div class="card">
+      <h3>Opção E — Badge duplo</h3>
+      <div class="row">
+        <span class="label">Eleitor</span>
+        <div class="marker opt-e-eleitor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Líder</span>
+        <div class="marker opt-e-lider">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Comunidade</span>
+        <div class="marker opt-e-comunidade">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg>
+        </div>
+      </div>
+      <div class="desc">Contorno duplo (borda branca + ring colorido). Estilo notificação.</div>
+    </div>
+
+    <!-- OPÇÃO F -->
+    <div class="card">
+      <h3>Opção F — Minimalista</h3>
+      <div class="row">
+        <span class="label">Eleitor</span>
+        <div class="marker opt-f-eleitor">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="#dbeafe"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Líder</span>
+        <div class="marker opt-f-lider">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4" fill="#ede9fe"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/><path d="M9 22l1.5-7"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Comunidade</span>
+        <div class="marker opt-f-comunidade">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5" fill="#dcfce7"/><circle cx="17" cy="7" r="3.5" fill="#dcfce7"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2"/></svg>
+        </div>
+      </div>
+      <div class="desc">Sem círculo de fundo. Só o ícone colorido com sombra. Clean.</div>
+    </div>
+
+    <!-- OPÇÃO G -->
+    <div class="card">
+      <h3>Opção G — Flat design</h3>
+      <div class="row">
+        <span class="label">Eleitor</span>
+        <div class="marker opt-g-eleitor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="7" r="4" opacity="0.9"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" opacity="0.9"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Líder</span>
+        <div class="marker opt-g-lider">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="6" r="4" opacity="0.9"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5" opacity="0.9"/><path d="M10.5 15h3l-1-3 4 2-2 3" opacity="0.9"/><path d="M9 22l1.5-7" opacity="0.9"/></svg>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Comunidade</span>
+        <div class="marker opt-g-comunidade">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="9" cy="7" r="3.5" opacity="0.9"/><circle cx="17" cy="7" r="3.5" opacity="0.9"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" opacity="0.9"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" opacity="0.9"/></svg>
+        </div>
+      </div>
+      <div class="desc">Ícone preenchido branco, sem stroke. Design plano, moderno.</div>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 32px; padding: 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0;">
+    <h3 style="font-size: 14px; color: #64748b; margin-bottom: 12px;">📋 Comparativo lado a lado</h3>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <div style="padding: 12px 16px; background: #f8fafc; border-radius: 8px; text-align: center;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+          <div class="opt-a-eleitor" style="display:inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/><path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/></svg></div>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">A</div>
+      </div>
+      <div style="padding: 12px 16px; background: #f8fafc; border-radius: 8px; text-align: center;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+          <div class="opt-b-eleitor" style="display:inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">B</div>
+      </div>
+      <div style="padding: 12px 16px; background: #f8fafc; border-radius: 8px; text-align: center;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+          <div class="opt-c-eleitor" style="display:inline-flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;transform:rotate(45deg);"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">C</div>
+      </div>
+      <div style="padding: 12px 16px; background: #f8fafc; border-radius: 8px; text-align: center;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+          <div class="opt-d-eleitor" style="display:inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.2)"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.15)"/></svg></div>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">D</div>
+      </div>
+      <div style="padding: 12px 16px; background: #f8fafc; border-radius: 8px; text-align: center;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+          <div class="opt-e-eleitor" style="display:inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">E</div>
+      </div>
+      <div style="padding: 12px 16px; background: #f8fafc; border-radius: 8px; text-align: center;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+          <div class="opt-f-eleitor" style="display:inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="#dbeafe"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg></div>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">F</div>
+      </div>
+      <div style="padding: 12px 16px; background: #f8fafc; border-radius: 8px; text-align: center;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+          <div class="opt-g-eleitor" style="display:inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="7" r="4" opacity="0.9"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" opacity="0.9"/></svg></div>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">G</div>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top: 24px; font-size: 13px; color: #94a3b8; text-align: center;">
+    Acesse esta página em: <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">http://localhost:5173/teste-icones-mapa.html</code>
+  </p>
+
+</body>
+</html>

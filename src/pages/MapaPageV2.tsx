@@ -39,49 +39,10 @@ const clusterColors = {
 function createClusterIcon(cluster: any, color: string = clusterColors.ativo, type: 'eleitor' | 'comunidade' | 'lider' = 'eleitor') {
   const count = cluster.getChildCount();
   const size = 48;
-  
-  // SVGs estilo Open Peeps (hand-drawn sketch)
-  const getIconSvg = () => {
-    if (type === 'comunidade') {
-      // Comunidade - grupo de pessoas verde
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
-        <circle cx="9" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
-        <circle cx="17" cy="7" r="3.5" fill="rgba(255,255,255,0.3)"/>
-        <path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" fill="rgba(255,255,255,0.2)"/>
-        <path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" fill="rgba(255,255,255,0.2)"/>
-      </svg>`;
-    }
-    if (type === 'lider') {
-      // Líder - pessoa apontando com camisa roxa/lilás
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
-        <circle cx="12" cy="6" r="4" fill="rgba(255,255,255,0.3)"/>
-        <path d="M4 22v-3a4 4 0 0 1 4-4h2.5" fill="rgba(255,255,255,0.2)"/>
-        <path d="M10.5 15h3l-1-3 4 2-2 3" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M9 22l1.5-7" stroke-linecap="round"/>
-      </svg>`;
-    }
-    // Eleitor - pessoa básica com camisa azul
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
-      <circle cx="12" cy="7" r="4" fill="rgba(255,255,255,0.3)"/>
-      <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="rgba(255,255,255,0.2)"/>
-      <path d="M10 14l-1-2h6l-1 2" stroke-width="1.5"/>
-    </svg>`;
-  };
-
   const bgColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
-  const countColor = type === 'comunidade' ? '#16a34a' : type === 'lider' ? '#7c3aed' : '#2563eb';
 
   return L.divIcon({
-    html: `
-      <div style="position:relative;width:${size}px;height:${size}px;">
-        <div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-            ${getIconSvg()}
-            <span style="color:white;font-weight:900;font-size:12px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.3);">${count}</span>
-          </div>
-        </div>
-      </div>
-    `,
+    html: `<div style="background:${bgColor};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:14px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.2), inset 0 3px 8px rgba(255,255,255,0.3);">${count}</div>`,
     className: 'marker-cluster-custom',
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
@@ -441,13 +402,13 @@ export default function MapaPageV2() {
                 <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200 px-3 py-2.5 space-y-1.5">
                   <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Legenda</div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4"/><path d="M4 22v-3a4 4 0 0 1 4-4h2.5"/><path d="M10.5 15h3l-1-3 4 2-2 3"/></svg> Líder (apontando)
+                    <span className="w-3.5 h-3.5 rounded-full bg-purple-600 border border-white shadow-sm inline-block" /> Líder
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3"/></svg> Eleitor
+                    <span className="w-3.5 h-3.5 rounded-full bg-blue-600 border border-white shadow-sm inline-block" /> Eleitor
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><path d="M5 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 13 19v2" opacity="0.5"/><path d="M13 21v-2a3.5 3.5 0 0 1 3.5-3.5h1A3.5 3.5 0 0 1 21 19v2" opacity="0.5"/></svg> Comunidade
+                    <span className="w-3.5 h-3.5 rounded-full bg-green-600 border border-white shadow-sm inline-block" /> Comunidade
                   </div>
                 </div>
               </div>
