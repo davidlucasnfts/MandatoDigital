@@ -112,7 +112,7 @@ function SolicitacaoPreview({ s, onEdit, onRemove, onUpdate }: {
               }`} />
             </div>
             <div className="min-w-0">
-              <h3 className="text-lg lg:text-xl font-bold text-slate-800 break-words">{s.titulo}</h3>
+              <h3 className="text-lg lg:text-xl font-bold text-slate-800 break-all">{s.titulo}</h3>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${statusColors[s.status || 'pendente']}`}>{statusLabel[s.status || 'pendente']}</span>
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${prioridadeColors[s.prioridade || 'media']}`}>{prioridadeLabel[s.prioridade || 'media']}</span>
@@ -310,7 +310,7 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
               </button>
 
               {/* Cards */}
-              {!colunasMinimizadas[col.key] && (
+              {!colunasMinimizadas[col.key] ? (
                 <SortableContext
                   items={colItems.map(i => i.id)}
                   strategy={verticalListSortingStrategy}
@@ -331,6 +331,18 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
                     ))}
                   </div>
                 </SortableContext>
+              ) : (
+                /* Preview compacto quando minimizado */
+                <div className="p-2 space-y-1">
+                  {colItems.slice(0, 5).map(item => (
+                    <div key={item.id} className="text-xs text-slate-500 truncate px-1 py-0.5" title={item.titulo}>
+                      {item.titulo}
+                    </div>
+                  ))}
+                  {colItems.length > 5 && (
+                    <div className="text-[10px] text-slate-400 px-1 py-0.5">+{colItems.length - 5} mais</div>
+                  )}
+                </div>
               )}
             </motion.div>
           );
