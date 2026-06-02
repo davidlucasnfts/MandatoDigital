@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   Pencil, Trash2, CalendarDays, User, MapPin, Calendar, Clock, AlertTriangle,
-  AlertCircle, CheckCircle, XCircle, ChevronDown, ChevronRight
+  AlertCircle, CheckCircle, XCircle, ChevronDown, ChevronRight, X
 } from '@/lib/icons';
 import type { Solicitacao } from '@/lib/supabase';
 
@@ -182,40 +182,30 @@ function SolicitacaoPreview({ s, onEdit, onRemove, onUpdate }: {
   );
 }
 
-function KanbanCard({ s, isSelected, onClick, onEdit, onRemove, onUpdate }: {
+function KanbanCard({ s, isSelected, onClick }: {
   s: Solicitacao;
   isSelected: boolean;
   onClick: () => void;
-  onEdit: (s: Solicitacao) => void;
-  onRemove: (id: string) => void;
-  onUpdate: (id: string, data: Partial<Solicitacao>) => void;
 }) {
   return (
-    <div className="space-y-0">
-      <div
-        onClick={onClick}
-        className={`cursor-pointer rounded-lg border bg-white p-3 transition-all hover:shadow-md ${
-          isSelected ? 'border-blue-300 shadow-sm ring-1 ring-blue-200' : 'border-slate-200'
-        }`}
-      >
-        <div className="flex items-start justify-between gap-2">
-          <div className="font-medium text-sm text-slate-800 flex-1 min-w-0 truncate" title={s.titulo}>{s.titulo}</div>
-        </div>
-        <div className="text-xs text-slate-500 mt-1 truncate">{s.eleitor_nome || '—'}</div>
-        <div className="flex items-center justify-between mt-2">
-          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${prioridadeColors[s.prioridade || 'media']}`}>
-            {prioridadeLabel[s.prioridade || 'media']}
-          </span>
-          <span className="text-[10px] text-slate-400">
-            {s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : (s.data_evento ? new Date(s.data_evento).toLocaleDateString('pt-BR') : '—')}
-          </span>
-        </div>
+    <div
+      onClick={onClick}
+      className={`cursor-pointer rounded-lg border bg-white p-3 transition-all hover:shadow-md ${
+        isSelected ? 'border-blue-300 shadow-sm ring-1 ring-blue-200' : 'border-slate-200'
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="font-medium text-sm text-slate-800 flex-1 min-w-0 truncate" title={s.titulo}>{s.titulo}</div>
       </div>
-      {isSelected && (
-        <div className="mt-2 rounded-lg border border-blue-200 overflow-hidden">
-          <SolicitacaoPreview s={s} onEdit={onEdit} onRemove={onRemove} onUpdate={onUpdate} />
-        </div>
-      )}
+      <div className="text-xs text-slate-500 mt-1 truncate">{s.eleitor_nome || '—'}</div>
+      <div className="flex items-center justify-between mt-2">
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${prioridadeColors[s.prioridade || 'media']}`}>
+          {prioridadeLabel[s.prioridade || 'media']}
+        </span>
+        <span className="text-[10px] text-slate-400">
+          {s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : (s.data_evento ? new Date(s.data_evento).toLocaleDateString('pt-BR') : '—')}
+        </span>
+      </div>
     </div>
   );
 }
@@ -223,6 +213,8 @@ function KanbanCard({ s, isSelected, onClick, onEdit, onRemove, onUpdate }: {
 export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRemove, onUpdate }: Props) {
   const [selecionada, setSelecionada] = useState<string | null>(null);
   const [colunasMinimizadas, setColunasMinimizadas] = useState<Record<string, boolean>>({});
+
+  const solicitacaoSelecionada = selecionada ? solicitacoes.find(s => s.id === selecionada) || null : null;
 
   const toggleColuna = (colKey: string) => {
     setColunasMinimizadas(prev => ({ ...prev, [colKey]: !prev[colKey] }));
@@ -323,9 +315,6 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
                           s={item}
                           isSelected={selecionada === item.id}
                           onClick={() => setSelecionada(selecionada === item.id ? null : item.id)}
-                          onEdit={onEdit}
-                          onRemove={onRemove}
-                          onUpdate={onUpdate}
                         />
                       </SortableItem>
                     ))}
@@ -348,6 +337,41 @@ export default function SolicitacoesKanban({ solicitacoes, loading, onEdit, onRe
           );
         })}
       </div>
+
+      {/* Drawer lateral para preview */}
+      {solicitacaoSelecionada && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black/30 z-40"
+            onClick={() => setSelecionada(null)}
+          />
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed right-0 top-0 h-full w-full sm:w-[420px] lg:w-[480px] bg-white shadow-2xl z-50 overflow-y-auto"
+          >
+            <div className="sticky top-0 bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between z-10">
+              <span className="text-sm font-semibold text-slate-700">Detalhes da Solicitação</span>
+              <button
+                onClick={() => setSelecionada(null)}
+                className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <SolicitacaoPreview
+              s={solicitacaoSelecionada}
+              onEdit={(s) => { onEdit(s); setSelecionada(null); }}
+              onRemove={(id) => { onRemove(id); setSelecionada(null); }}
+              onUpdate={onUpdate}
+            />
+          </motion.div>
+        </>
+      )}
     </DndContext>
   );
 }
