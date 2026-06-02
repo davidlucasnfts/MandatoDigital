@@ -9,9 +9,10 @@ import DashboardHome from '@/pages/DashboardHome';
 import EleitoresPage from '@/pages/EleitoresPage';
 import ComunidadesPage from '@/pages/ComunidadesPage';
 import SolicitacoesPage from '@/pages/SolicitacoesPage';
+import SolicitacoesPageV3 from '@/pages/SolicitacoesPageV3';
 import ComunicacaoPage from '@/pages/ComunicacaoPage';
 import MapaPage from '@/pages/MapaPage';
-import MapaPageV2 from '@/pages/MapaPageV2';
+
 import AgendaPage from '@/pages/AgendaPage';
 import TarefasPage from '@/pages/TarefasPage';
 import DocumentosPage from '@/pages/DocumentosPage';
@@ -50,9 +51,10 @@ function App() {
         <Route path="eleitores" element={<EleitoresPage />} />
         <Route path="comunidades" element={<ComunidadesPage />} />
         <Route path="solicitacoes" element={<SolicitacoesPage />} />
+        <Route path="solicitacoes/teste-v3" element={<SolicitacoesPageV3 />} />
         <Route path="comunicacao" element={<ComunicacaoPage />} />
         <Route path="mapa" element={<MapaPage />} />
-        <Route path="mapa/teste-v2" element={<MapaPageV2 />} />
+
         <Route path="agenda" element={<AgendaPage />} />
         <Route path="tarefas" element={<TarefasPage />} />
         <Route path="documentos" element={<DocumentosPage />} />

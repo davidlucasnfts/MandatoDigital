@@ -1,405 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Opções de Ilustrações - Clusters</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background: #f8fafc;
-  min-height: 100vh;
-  padding: 40px 20px;
-}
-
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-h1 { 
-  color: #0f172a; 
-  font-size: 26px; 
-  margin-bottom: 8px;
-  text-align: center;
-}
-.sub { 
-  color: #64748b; 
-  font-size: 15px; 
-  margin-bottom: 40px;
-  text-align: center;
-}
-
-/* ===== BIBLIOTECA ===== */
-.lib-section {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-}
-
-.lib-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f1f5f9;
-}
-
-.lib-header h2 {
-  color: #1e293b;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.lib-tag {
-  font-size: 11px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.tag-free { background: #dcfce7; color: #166534; }
-.tag-opensource { background: #dbeafe; color: #1e40af; }
-.tag-attribution { background: #fef3c7; color: #92400e; }
-
-.lib-desc {
-  color: #64748b;
-  font-size: 14px;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.lib-link {
-  color: #3b82f6;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-}
-.lib-link:hover { text-decoration: underline; }
-
-/* ===== GRID DE EXEMPLos ===== */
-.examples-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.example-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  border: 2px solid #e2e8f0;
-  transition: all 0.2s;
-}
-
-.example-card:hover {
-  border-color: #3b82f6;
-  transform: translateY(-2px);
-}
-
-.example-visual {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 12px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-}
-
-.example-card.eleitor .example-visual { background: #dbeafe; }
-.example-card.comunidade .example-visual { background: #dcfce7; }
-.example-card.lider .example-visual { background: #ede9fe; }
-
-.example-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
-  margin-bottom: 4px;
-}
-
-.example-desc {
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-/* ===== ESTILO ESPECÍFICO - OPEN PEEPS ===== */
-.style-openpeeps .example-visual {
-  background: white;
-  border: 3px solid #e2e8f0;
-}
-
-/* ===== ESTILO ESPECÍFICO - 3D ===== */
-.style-3d .example-visual {
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-/* ===== ESTILO ESPECÍFICO - FLAT ===== */
-.style-flat .example-visual svg {
-  width: 50px;
-  height: 50px;
-}
-
-/* ===== RECOMENDAÇÃO ===== */
-.recommendation {
-  background: linear-gradient(135deg, #1e293b, #334155);
-  border-radius: 16px;
-  padding: 30px;
-  color: white;
-  margin-top: 40px;
-}
-
-.recommendation h2 {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-
-.recommendation-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.rec-card {
-  background: rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-}
-
-.rec-card h3 {
-  font-size: 14px;
-  margin-bottom: 10px;
-  opacity: 0.9;
-}
-
-.rec-card p {
-  font-size: 13px;
-  opacity: 0.7;
-  line-height: 1.5;
-}
-
-.rec-card .winner {
-  display: inline-block;
-  background: #22c55e;
-  color: white;
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  margin-top: 10px;
-  font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .examples-grid,
-  .recommendation-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Opções de Cluster — Sem sobreposição</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Inter',sans-serif;}</style>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen p-6 lg:p-10">
 
-<div class="container">
+  <div class="max-w-3xl mx-auto space-y-10">
 
-<h1>🎨 Opções de Ilustrações para Clusters</h1>
-<p class="sub">Comparativo de bibliotecas externas — substituindo ícones vetoriais por ilustrações</p>
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800">Opções de Cluster — Sem sobreposição</h1>
+      <p class="text-slate-500 mt-1">Hoje: 3 clusters separados (eleitor, líder, comunidade) ficam um em cima do outro. Solução: agrupar tudo em um cluster único.</p>
+    </div>
 
-<!-- ===== OPEN PEEPS ===== -->
-<div class="lib-section style-openpeeps">
-  <div class="lib-header">
-    <h2>👤 Open Peeps</h2>
-    <span class="lib-tag tag-opensource">Open Source</span>
-  </div>
-  <p class="lib-desc">
-    Ilustrações hand-drawn de pessoas. Estilo sketch/arte. Pode misturar cabeças, corpos, poses. 
-    <a href="https://www.openpeeps.com" target="_blank" class="lib-link">openpeeps.com →</a>
-  </p>
-  <div class="examples-grid">
-    <div class="example-card eleitor">
-      <div class="example-visual">🧍</div>
-      <div class="example-label">Eleitor</div>
-      <div class="example-desc">Pessoa em pé, pose neutra</div>
-    </div>
-    <div class="example-card comunidade">
-      <div class="example-visual">👫</div>
-      <div class="example-label">Comunidade</div>
-      <div class="example-desc">Grupo de 2-3 pessoas</div>
-    </div>
-    <div class="example-card lider">
-      <div class="example-visual">🙋</div>
-      <div class="example-label">Líder</div>
-      <div class="example-desc">Pessoa com braço levantado</div>
-    </div>
-  </div>
-</div>
+    <!-- ============================================================
+         OPÇÃO 1: Cluster único com dots coloridos (recomendada)
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Opção 1</span>
+        <h2 class="text-lg font-semibold text-slate-800">Cluster único + dots de tipo</h2>
+        <span class="text-xs text-slate-400">(recomendada)</span>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Um único círculo com o número total. Abaixo, 3 dots coloridos mostram quais tipos existem no agrupamento.</p>
 
-<!-- ===== unDraw ===== -->
-<div class="lib-section style-flat">
-  <div class="lib-header">
-    <h2>🎭 unDraw</h2>
-    <span class="lib-tag tag-opensource">Open Source</span>
-  </div>
-  <p class="lib-desc">
-    Ilustrações flat modernas. Cor principal customizável. Estilo limpo e minimalista.
-    <a href="https://undraw.co" target="_blank" class="lib-link">undraw.co →</a>
-  </p>
-  <div class="examples-grid">
-    <div class="example-card eleitor">
-      <div class="example-visual">
-        <svg viewBox="0 0 200 200" fill="none"><circle cx="100" cy="60" r="30" fill="#3b82f6"/><path d="M50 180c0-30 22-50 50-50s50 20 50 50" fill="#3b82f6"/></svg>
-      </div>
-      <div class="example-label">Eleitor</div>
-      <div class="example-desc">Silhueta azul, estilo flat</div>
-    </div>
-    <div class="example-card comunidade">
-      <div class="example-visual">
-        <svg viewBox="0 0 200 200" fill="none"><circle cx="70" cy="60" r="25" fill="#22c55e"/><circle cx="130" cy="60" r="25" fill="#22c55e"/><path d="M40 180c0-25 18-40 40-40s40 15 40 40" fill="#22c55e"/><path d="M100 180c0-25 18-40 40-40s40 15 40 40" fill="#22c55e"/></svg>
-      </div>
-      <div class="example-label">Comunidade</div>
-      <div class="example-desc">Duas silhuetas verdes</div>
-    </div>
-    <div class="example-card lider">
-      <div class="example-visual">
-        <svg viewBox="0 0 200 200" fill="none"><polygon points="100,20 120,60 160,60 130,90 140,130 100,110 60,130 70,90 40,60 80,60" fill="#8b5cf6"/><circle cx="100" cy="160" r="15" fill="#8b5cf6"/></svg>
-      </div>
-      <div class="example-label">Líder</div>
-      <div class="example-desc">Estrela/coroa roxa</div>
-    </div>
-  </div>
-</div>
+      <div class="flex items-center gap-4">
+        <!-- Exemplo: 2 eleitores + 1 líder + 1 comunidade = 4 total -->
+        <div class="relative" style="width:44px;height:44px;">
+          <div style="background:#475569;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);">
+            <span style="color:white;font-weight:900;font-size:14px;">4</span>
+          </div>
+          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-0.5">
+            <span class="w-2 h-2 rounded-full bg-blue-600 border border-white"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-600 border border-white"></span>
+            <span class="w-2 h-2 rounded-full bg-green-700 border border-white"></span>
+          </div>
+        </div>
 
-<!-- ===== 3D ICONS (ICONS8) ===== -->
-<div class="lib-section style-3d">
-  <div class="lib-header">
-    <h2>💎 3D Icons (Icons8)</h2>
-    <span class="lib-tag tag-free">Gratuito</span>
-  </div>
-  <p class="lib-desc">
-    Ícones 3D realistas em PNG. Sombras, profundidade, acabamento profissional.
-    <a href="https://icons8.com/3d" target="_blank" class="lib-link">icons8.com/3d →</a>
-  </p>
-  <div class="examples-grid">
-    <div class="example-card eleitor">
-      <div class="example-visual">👤</div>
-      <div class="example-label">Eleitor</div>
-      <div class="example-desc">Avatar 3D realista</div>
-    </div>
-    <div class="example-card comunidade">
-      <div class="example-visual">👥</div>
-      <div class="example-label">Comunidade</div>
-      <div class="example-desc">Grupo 3D com sombra</div>
-    </div>
-    <div class="example-card lider">
-      <div class="example-visual">👑</div>
-      <div class="example-label">Líder</div>
-      <div class="example-desc">Coroa 3D dourada</div>
-    </div>
-  </div>
-</div>
+        <!-- Exemplo: só eleitores -->
+        <div class="relative" style="width:40px;height:40px;">
+          <div style="background:#2563eb;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);">
+            <span style="color:white;font-weight:900;font-size:13px;">2</span>
+          </div>
+        </div>
 
-<!-- ===== FLATICON ===== -->
-<div class="lib-section style-flat">
-  <div class="lib-header">
-    <h2>🎯 Flaticon</h2>
-    <span class="lib-tag tag-attribution">Atribuição</span>
-  </div>
-  <p class="lib-desc">
-    Maior biblioteca de ícones do mundo. PNG/SVG em diversos estilos. Requer crédito.
-    <a href="https://flaticon.com" target="_blank" class="lib-link">flaticon.com →</a>
-  </p>
-  <div class="examples-grid">
-    <div class="example-card eleitor">
-      <div class="example-visual">
-        <svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="#3b82f6"/><rect x="30" y="55" width="40" height="30" rx="5" fill="#3b82f6"/></svg>
+        <!-- Exemplo: eleitores + líderes -->
+        <div class="relative" style="width:42px;height:42px;">
+          <div style="background:#475569;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);">
+            <span style="color:white;font-weight:900;font-size:14px;">7</span>
+          </div>
+          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-0.5">
+            <span class="w-2 h-2 rounded-full bg-blue-600 border border-white"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-600 border border-white"></span>
+          </div>
+        </div>
       </div>
-      <div class="example-label">Eleitor</div>
-      <div class="example-desc">Ícone azul, estilo material</div>
-    </div>
-    <div class="example-card comunidade">
-      <div class="example-visual">
-        <svg viewBox="0 0 100 100"><circle cx="35" cy="35" r="15" fill="#22c55e"/><circle cx="65" cy="35" r="15" fill="#22c55e"/><rect x="20" y="55" width="30" height="25" rx="5" fill="#22c55e"/><rect x="50" y="55" width="30" height="25" rx="5" fill="#22c55e"/></svg>
-      </div>
-      <div class="example-label">Comunidade</div>
-      <div class="example-desc">Dois ícones verdes</div>
-    </div>
-    <div class="example-card lider">
-      <div class="example-visual">
-        <svg viewBox="0 0 100 100"><polygon points="50,15 60,35 80,35 65,50 70,70 50,60 30,70 35,50 20,35 40,35" fill="#fbbf24" stroke="#d97706" stroke-width="2"/></svg>
-      </div>
-      <div class="example-label">Líder</div>
-      <div class="example-desc">Coroa dourada detalhada</div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<!-- ===== SVGREPO ===== -->
-<div class="lib-section">
-  <div class="lib-header">
-    <h2>📦 SVGRepo</h2>
-    <span class="lib-tag tag-free">Gratuito</span>
-  </div>
-  <p class="lib-desc">
-    Repositório massivo de SVGs. Todos editáveis, escaláveis, cores customizáveis.
-    <a href="https://svgrepo.com" target="_blank" class="lib-link">svgrepo.com →</a>
-  </p>
-  <div class="examples-grid">
-    <div class="example-card eleitor">
-      <div class="example-visual">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <!-- ============================================================
+         OPÇÃO 2: Cluster único com cor do tipo dominante
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Opção 2</span>
+        <h2 class="text-lg font-semibold text-slate-800">Cluster único — cor do tipo com mais pontos</h2>
       </div>
-      <div class="example-label">Eleitor</div>
-      <div class="example-desc">SVG editável, cor azul</div>
-    </div>
-    <div class="example-card comunidade">
-      <div class="example-visual">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <div class="example-label">Comunidade</div>
-      <div class="example-desc">SVG editável, cor verde</div>
-    </div>
-    <div class="example-card lider">
-      <div class="example-visual">
-        <svg viewBox="0 0 24 24" fill="#7c3aed"><path d="M5 16L3 5l5 3 4-7 4 7 5-3-2 11H5zm2 4h10v2H7v-2z"/></svg>
-      </div>
-      <div class="example-label">Líder</div>
-      <div class="example-desc">SVG preenchido, cor roxa</div>
-    </div>
-  </div>
-</div>
+      <p class="text-sm text-slate-500 mb-4">A cor do cluster é do tipo que tem mais pontos no agrupamento. Se eleitores > líderes > comunidades = azul.</p>
 
-<!-- ===== RECOMENDAÇÃO ===== -->
-<div class="recommendation">
-  <h2>🏆 Recomendação por Cenário</h2>
-  <div class="recommendation-grid">
-    <div class="rec-card">
-      <h3>Para um visual mais humano</h3>
-      <p>Open Peeps ou unDraw. Ilustrações de pessoas transmitem melhor o conceito de eleitores e comunidade.</p>
-      <span class="winner">Mais moderno</span>
-    </div>
-    <div class="rec-card">
-      <h3>Para um visual premium</h3>
-      <p>3D Icons (Icons8) ou Flaticon. Ícones com profundidade e acabamento profissional.</p>
-      <span class="winner">Mais chamativo</span>
-    </div>
-    <div class="rec-card">
-      <h3>Para controle total</h3>
-      <p>SVGRepo. Milhares de SVGs editáveis. Você escolhe o estilo e muda as cores.</p>
-      <span class="winner">Mais flexível</span>
-    </div>
-  </div>
-</div>
+      <div class="flex items-center gap-4">
+        <div style="background:#2563eb;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);">
+          <span style="color:white;font-weight:900;font-size:13px;">8</span>
+        </div>
+        <div style="background:#7c3aed;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);">
+          <span style="color:white;font-weight:900;font-size:13px;">5</span>
+        </div>
+        <div style="background:#16a34a;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);">
+          <span style="color:white;font-weight:900;font-size:13px;">3</span>
+        </div>
+      </div>
+    </section>
 
-</div>
+    <!-- ============================================================
+         OPÇÃO 3: Cluster único com mini pizza chart
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Opção 3</span>
+        <h2 class="text-lg font-semibold text-slate-800">Cluster único — divisão de cores (pie chart)</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">O círculo é dividido em fatias de cor conforme a proporção de cada tipo. Visualmente mais rico.</p>
+
+      <div class="flex items-center gap-4">
+        <!-- 50% azul + 25% roxo + 25% verde = 4 total -->
+        <div style="width:44px;height:44px;border-radius:50%;background:conic-gradient(#2563eb 0deg 180deg, #7c3aed 180deg 270deg, #16a34a 270deg 360deg);border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <span style="color:white;font-weight:900;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">4</span>
+        </div>
+
+        <!-- 100% azul = 2 eleitores -->
+        <div style="width:40px;height:40px;border-radius:50%;background:#2563eb;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <span style="color:white;font-weight:900;font-size:13px;">2</span>
+        </div>
+
+        <!-- 60% azul + 40% roxo = 5 total -->
+        <div style="width:42px;height:42px;border-radius:50%;background:conic-gradient(#2563eb 0deg 216deg, #7c3aed 216deg 360deg);border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <span style="color:white;font-weight:900;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">5</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         OPÇÃO 4: Atual (baseline) — múltiplos clusters sobrepostos
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded">Atual</span>
+        <h2 class="text-lg font-semibold text-slate-800">Baseline — 3 clusters sobrepostos</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Como está hoje. Cada tipo tem seu próprio cluster, ficando um em cima do outro.</p>
+
+      <div class="relative inline-block" style="width:60px;height:50px;">
+        <div class="absolute" style="left:0;top:0;width:36px;height:36px;border-radius:50%;background:#16a34a;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <span style="color:white;font-weight:900;font-size:11px;">1</span>
+        </div>
+        <div class="absolute" style="left:8px;top:2px;width:36px;height:36px;border-radius:50%;background:#2563eb;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <span style="color:white;font-weight:900;font-size:11px;">2</span>
+        </div>
+        <div class="absolute" style="left:16px;top:4px;width:36px;height:36px;border-radius:50%;background:#7c3aed;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <span style="color:white;font-weight:900;font-size:11px;">2</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
 
 </body>
 </html>

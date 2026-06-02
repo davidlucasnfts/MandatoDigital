@@ -1,11 +1,12 @@
 import { type LucideIcon } from 'lucide-react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { type ReactNode, isValidElement } from 'react';
 
 interface StatCardProps {
   label: string;
   value: string | number;
-  icon: LucideIcon;
+  icon: LucideIcon | ReactNode;
   color: 'blue' | 'green' | 'amber' | 'red' | 'purple' | 'cyan' | 'pink';
   trend?: {
     value: number;
@@ -56,23 +57,25 @@ export function StatCard({
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
       >
         <div className="p-3 lg:p-4">
-          {/* Header: ícone com fundo + seta */}
-          <div className="flex items-center justify-between mb-2 lg:mb-3">
-            <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg ${colors.bg} flex items-center justify-center`}>
-              <Icon className={`w-3.5 h-3.5 lg:w-4 lg:h-4 ${colors.icon}`} />
+          {/* Header: ícone + valor + seta na mesma linha */}
+          <div className="flex items-center gap-2 mb-1">
+            <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg ${colors.bg} flex items-center justify-center flex-shrink-0`}>
+              {isValidElement(Icon) ? (
+                <span className="w-3.5 h-3.5 lg:w-4 lg:h-4 flex items-center justify-center">{Icon}</span>
+              ) : (
+                <Icon className={`w-3.5 h-3.5 lg:w-4 lg:h-4 ${colors.icon}`} />
+              )}
             </div>
-            <svg className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-slate-300 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">
+              {typeof value === 'number' ? value.toLocaleString() : value}
+            </div>
+            <svg className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-slate-300 hidden sm:block ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </div>
 
-          {/* Valor */}
-          <div className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">
-            {typeof value === 'number' ? value.toLocaleString() : value}
-          </div>
-
           {/* Footer: label + trend */}
-          <div className="flex items-center justify-between mt-1.5 lg:mt-2">
+          <div className="flex items-center justify-between">
             <span className="text-[10px] lg:text-xs text-slate-500 font-medium leading-tight">
               {label}
             </span>

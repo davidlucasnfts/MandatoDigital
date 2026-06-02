@@ -156,15 +156,21 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
 
             {/* Título */}
             <div className="space-y-1.5">
-              <Label htmlFor="titulo" className="text-xs font-medium text-slate-700">
-                Título <span className="text-red-500">*</span>
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="titulo" className="text-xs font-medium text-slate-700">
+                  Título <span className="text-red-500">*</span>
+                </Label>
+                <span className="text-[10px] text-slate-400">
+                  {(form.titulo || '').length}/60
+                </span>
+              </div>
               <Input
                 id="titulo"
                 value={form.titulo || ''}
                 onChange={e => setField('titulo', e.target.value)}
                 placeholder="Ex: Pavimentação Rua das Flores"
                 required
+                maxLength={60}
                 className="h-10"
               />
             </div>
@@ -276,13 +282,19 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
 
             {/* Descrição */}
             <div className="space-y-1.5">
-              <Label htmlFor="descricao" className="text-xs font-medium text-slate-700">Descrição</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="descricao" className="text-xs font-medium text-slate-700">Descrição</Label>
+                <span className="text-[10px] text-slate-400">
+                  {(form.descricao || '').length}/250
+                </span>
+              </div>
               <Textarea
                 id="descricao"
                 value={form.descricao || ''}
                 onChange={e => setField('descricao', e.target.value)}
                 placeholder="Descreva a demanda com detalhes..."
                 rows={3}
+                maxLength={250}
                 className="resize-none"
               />
             </div>

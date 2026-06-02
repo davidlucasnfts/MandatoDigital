@@ -25,7 +25,7 @@ function stickerBase(color: string, inner: string, size: number = 40): string {
 // Eleitor: original outline branco | Comunidade: C13 (prédio 3D colorido)
 
 // 👤 ELEITOR — E14: 3D com sombra
-const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
   <ellipse cx="13" cy="20" rx="5" ry="2" fill="rgba(0,0,0,0.25)"/>
   <circle cx="12" cy="7" r="4" fill="white" opacity="0.95"/>
   <path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="white" opacity="0.95"/>
@@ -37,13 +37,13 @@ const personIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="2
 const personPendingIcon = personIcon;
 
 // 👑 LÍDER — L11: Coroa real minimalista dourada
-const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+const crownIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
   <path d="M5 16L3 8l5 3 4-7 4 7 5-3-2 8H5z" fill="#fbbf24" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
   <rect x="5" y="18" width="14" height="3" rx="1" fill="#f59e0b"/>
 </svg>`;
 
 // 🏢 COMUNIDADE — C13: Prédio 3D colorido (aumentado para 24x24)
-const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
   <rect x="3" y="2" width="18" height="20" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/>
   <rect x="6" y="5" width="4.5" height="4.5" rx="1" fill="#86efac"/>
   <rect x="13.5" y="5" width="4.5" height="4.5" rx="1" fill="#86efac"/>
@@ -58,17 +58,17 @@ const buildingIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height=
 export function createEleitorIcon(status: string = 'ativo'): L.DivIcon {
   const color = status === 'pendente' ? '#f59e0b' : status === 'inativo' ? '#94a3b8' : '#2563eb';
   const inner = status === 'pendente' ? personPendingIcon : personIcon;
-  return divIcon(stickerBase(color, inner, 40), 40, [20, 20]);
+  return divIcon(stickerBase(color, inner, 32), 32, [16, 30]);
 }
 
 // Líder — formato sticker com ícone original
 export function createLiderIcon(_status: string = 'ativo'): L.DivIcon {
-  return divIcon(stickerBase('#7c3aed', crownIcon, 40), 40, [20, 20]);
+  return divIcon(stickerBase('#7c3aed', crownIcon, 32), 32, [16, 30]);
 }
 
 // Comunidade — formato sticker com prédio 3D
 export function createComunidadeIcon(_color: string): L.DivIcon {
-  return divIcon(stickerBase('#16a34a', buildingIcon, 40), 40, [20, 20]);
+  return divIcon(stickerBase('#16a34a', buildingIcon, 32), 32, [16, 30]);
 }
 
 // Cluster

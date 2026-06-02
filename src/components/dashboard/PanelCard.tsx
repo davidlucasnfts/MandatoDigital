@@ -1,10 +1,10 @@
 import { type LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { ReactNode } from 'react';
+import { type ReactNode, isValidElement } from 'react';
 
 interface PanelCardProps {
   title: string;
-  icon: LucideIcon;
+  icon: LucideIcon | ReactNode;
   iconColor?: string;
   iconBg?: string;
   action?: {
@@ -42,7 +42,11 @@ export function PanelCard({
         <div className="flex items-center justify-between px-3 lg:px-6 pt-3 lg:pt-4 pb-0">
           <div className="flex items-center gap-2">
             <div className={`w-6 h-6 lg:w-7 lg:h-7 rounded-lg ${iconBg} flex items-center justify-center`}>
-              <Icon className={`w-3.5 h-3.5 lg:w-4 lg:h-4 ${iconColor}`} />
+              {isValidElement(Icon) ? (
+                <span className="w-3.5 h-3.5 lg:w-4 lg:h-4 flex items-center justify-center">{Icon}</span>
+              ) : (
+                <Icon className={`w-3.5 h-3.5 lg:w-4 lg:h-4 ${iconColor}`} />
+              )}
             </div>
             <h3 className="text-sm lg:text-base font-semibold text-slate-800">
               {title}

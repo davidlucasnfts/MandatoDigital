@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste — Melhorias do Mapa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Inter',sans-serif;}</style>
+</head>
+<body class="bg-slate-50 min-h-screen p-6 lg:p-10">
+
+  <div class="max-w-5xl mx-auto space-y-12">
+
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800">Melhorias Propostas — Mapa Territorial</h1>
+      <p class="text-slate-500 mt-1">Cada seção mostra uma sugestão. Aprove o que gostar.</p>
+    </div>
+
+    <!-- ============================================================
+         OPÇÃO 1: StatCards horizontais compactos
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Opção 1</span>
+        <h2 class="text-lg font-semibold text-slate-800">StatCards horizontais — mais densidade</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Em vez de 4 cards grandes, uma linha horizontal compacta com ícone + valor + label. Libera espaço vertical.</p>
+
+      <!-- Versão horizontal compacta -->
+      <div class="flex items-center gap-3 overflow-x-auto pb-2">
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 border border-blue-100 min-w-fit">
+          <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><ellipse cx="13" cy="20" rx="5" ry="2" fill="rgba(255,255,255,0.3)"/><circle cx="12" cy="7" r="4" fill="white"/><path d="M6 21v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" fill="white"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-bold text-slate-800 leading-none">12</div>
+            <div class="text-[10px] text-slate-500">Total no mapa</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100 min-w-fit">
+          <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-bold text-slate-800 leading-none">8</div>
+            <div class="text-[10px] text-slate-500">Com coordenadas</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 border border-purple-100 min-w-fit">
+          <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 16L3 8l5 3 4-7 4 7 5-3-2 8H5z" fill="#fbbf24" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="5" y="18" width="14" height="3" rx="1" fill="#f59e0b"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-bold text-slate-800 leading-none">5</div>
+            <div class="text-[10px] text-slate-500">Líderes</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-100 min-w-fit">
+          <div class="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="2" width="18" height="20" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/><rect x="6" y="5" width="4.5" height="4.5" rx="1" fill="#86efac"/><rect x="13.5" y="5" width="4.5" height="4.5" rx="1" fill="#86efac"/><rect x="6" y="11.5" width="4.5" height="4.5" rx="1" fill="#86efac"/><rect x="13.5" y="11.5" width="4.5" height="4.5" rx="1" fill="#86efac"/><rect x="8" y="17.5" width="8" height="4" rx="1" fill="#14532d"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-bold text-slate-800 leading-none">3</div>
+            <div class="text-[10px] text-slate-500">Comunidades</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile: scroll horizontal ou 2x2 -->
+      <p class="text-xs text-slate-400 mt-2">Mobile: scroll horizontal automático ou grid 2×2</p>
+    </section>
+
+    <!-- ============================================================
+         OPÇÃO 2: Selects estilizados (shadcn-like)
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Opção 2</span>
+        <h2 class="text-lg font-semibold text-slate-800">Filtros com selects estilizados</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Substituir selects nativos por botões dropdown estilo shadcn. Visual consistente com o resto do sistema.</p>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Busca -->
+        <div class="relative flex-1 min-w-[200px] max-w-[280px]">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar eleitor..." class="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        </div>
+        <!-- Dropdown estilizado -->
+        <button class="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all">
+          <span>Todas comunidades</span>
+          <svg class="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <button class="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all">
+          <span>Todos níveis</span>
+          <svg class="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <button class="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all">
+          <span>Todos status</span>
+          <svg class="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         OPÇÃO 4: Legenda minimizável
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Opção 4</span>
+        <h2 class="text-lg font-semibold text-slate-800">Legenda minimizável / botão de info</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Em vez de legenda sempre visível, um botão "?" que abre a legenda. Libera espaço no mapa.</p>
+
+      <div class="relative bg-slate-100 rounded-lg h-40 flex items-center justify-center">
+        <!-- Simulação do mapa -->
+        <div class="absolute bottom-3 left-3">
+          <!-- Estado minimizado -->
+          <button class="w-7 h-7 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-300 transition-all" title="Ver legenda">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4M12 8h.01"/></svg>
+          </button>
+        </div>
+        <div class="absolute bottom-3 right-3">
+          <!-- Estado expandido (para referência) -->
+          <div class="bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200 px-3 py-2.5 space-y-1.5">
+            <div class="flex items-center justify-between mb-1">
+              <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Legenda</div>
+              <button class="text-slate-400 hover:text-slate-600"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </div>
+            <div class="flex items-center gap-1.5 text-[11px] text-slate-600">
+              <span class="w-4 h-4 rounded-full bg-purple-600 border border-white shadow-sm inline-flex items-center justify-center flex-shrink-0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 16L3 8l5 3 4-7 4 7 5-3-2 8H5z" fill="#fbbf24" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              </span> Líder
+            </div>
+            <div class="flex items-center gap-1.5 text-[11px] text-slate-600">
+              <span class="w-4 h-4 rounded-full bg-blue-600 border border-white shadow-sm inline-flex items-center justify-center flex-shrink-0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="3" fill="white"/><path d="M7 18v-2a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2" fill="white"/></svg>
+              </span> Eleitor
+            </div>
+            <div class="flex items-center gap-1.5 text-[11px] text-slate-600">
+              <span class="w-4 h-4 rounded-full bg-green-700 border border-white shadow-sm inline-flex items-center justify-center flex-shrink-0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><rect x="3" y="2" width="18" height="20" rx="2" fill="#22c55e" stroke="white" stroke-width="1.5"/></svg>
+              </span> Comunidade
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         OPÇÃO 5: Botão Centralizar só ícone
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded">Opção 5</span>
+        <h2 class="text-lg font-semibold text-slate-800">Botão Centralizar — só ícone com tooltip</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Remove o texto "Centralizar", deixa só o ícone de mira. Mais limpo e ocupa menos espaço no mapa.</p>
+
+      <div class="flex items-center gap-3">
+        <!-- Atual (com texto) -->
+        <button class="flex items-center gap-1.5 px-3 py-2 bg-white rounded-lg shadow-md border border-slate-200 text-xs font-medium text-slate-600">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+          Centralizar
+        </button>
+        <!-- Proposta (só ícone) -->
+        <button class="w-8 h-8 bg-white rounded-lg shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all" title="Centralizar no conteúdo">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         OPÇÃO 7: Verificação do grid de stats abaixo do mapa
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded">Opção 7</span>
+        <h2 class="text-lg font-semibold text-slate-800">Grid de stats abaixo do mapa — verificação</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Verificando o comportamento atual: quando "Cobertura" some, o grid fica desbalanceado.</p>
+
+      <!-- Cenário A: Ambos os painéis -->
+      <div class="text-xs font-semibold text-slate-400 uppercase mb-2">Cenário A — Ambos visíveis (grid 2 colunas)</div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-4">
+        <div class="rounded-xl border border-slate-200 p-4 bg-white">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-orange-50 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+            <h3 class="text-sm font-semibold text-slate-800">Concentração por Bairro</h3>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs"><span class="text-slate-600">Centro</span><span class="font-semibold">5</span></div>
+            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-orange-500 rounded-full" style="width:60%"></div></div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-slate-200 p-4 bg-white">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-green-50 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg></div>
+            <h3 class="text-sm font-semibold text-slate-800">Cobertura Geográfica</h3>
+          </div>
+          <div class="text-xs text-slate-500">67% mapeado</div>
+        </div>
+      </div>
+
+      <!-- Cenário B: Só bairros (Cobertura some) -->
+      <div class="text-xs font-semibold text-slate-400 uppercase mb-2">Cenário B — Cobertura some (grid desbalanceado)</div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div class="rounded-xl border border-slate-200 p-4 bg-white">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-orange-50 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+            <h3 class="text-sm font-semibold text-slate-800">Concentração por Bairro</h3>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs"><span class="text-slate-600">Centro</span><span class="font-semibold">5</span></div>
+            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-orange-500 rounded-full" style="width:60%"></div></div>
+          </div>
+        </div>
+        <!-- VAZIO — mostra o problema -->
+        <div class="hidden lg:block rounded-xl border border-dashed border-slate-200 p-4 bg-slate-50 flex items-center justify-center text-slate-400 text-xs">
+          Espaço vazio quando cobertura = 100%
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-500 mt-3">Sugestão: manter o painel de Cobertura sempre visível, mesmo em 100%, mostrando "100% mapeado ✓"</p>
+    </section>
+
+    <!-- ============================================================
+         OPÇÃO 8: Painel Cobertura sempre visível
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">Opção 8</span>
+        <h2 class="text-lg font-semibold text-slate-800">Cobertura sempre visível + estado completo</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Painel de cobertura nunca some. Quando 100%, mostra check verde. Mantém grid sempre balanceado.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <!-- Bairros -->
+        <div class="rounded-xl border border-slate-200 p-4 bg-white">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-orange-50 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+            <h3 class="text-sm font-semibold text-slate-800">Concentração por Bairro</h3>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs"><span class="text-slate-600">Centro</span><span class="font-semibold">5</span></div>
+            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-orange-500 rounded-full" style="width:60%"></div></div>
+          </div>
+        </div>
+        <!-- Cobertura 100% -->
+        <div class="rounded-xl border border-green-200 p-4 bg-green-50">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-green-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg></div>
+            <h3 class="text-sm font-semibold text-slate-800">Cobertura Geográfica</h3>
+            <span class="ml-auto text-[10px] bg-green-200 text-green-800 px-1.5 py-0.5 rounded-full font-semibold">100%</span>
+          </div>
+          <div class="flex items-center gap-2 text-green-700">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span class="text-xs font-medium">Todos os eleitores mapeados</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         OPÇÃO 10: SVGs customizados para o stat card "Com Coordenadas"
+         ============================================================ -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold bg-violet-100 text-violet-700 px-2 py-0.5 rounded">Opção 10</span>
+        <h2 class="text-lg font-semibold text-slate-800">Ícone SVG para "Com Coordenadas"</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Hoje usa MapPin do Lucide. Opções de SVG customizado alinhado aos ícones E14/L11/C13.</p>
+
+      <div class="flex items-center gap-4">
+        <!-- Opção A: Pin com eleitor dentro -->
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100">
+          <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z" fill="white" stroke="white" stroke-width="1.5"/>
+              <ellipse cx="13" cy="20" rx="3" ry="1" fill="rgba(0,0,0,0.2)" transform="translate(-1,-11)"/>
+              <circle cx="12" cy="10" r="2" fill="#16a34a"/>
+              <path d="M10 14v-1a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1" fill="#16a34a"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-500">Opção A</div>
+            <div class="text-xs font-medium text-slate-700">Pin + eleitor</div>
+          </div>
+        </div>
+
+        <!-- Opção B: Pin com check -->
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100">
+          <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z" fill="white" stroke="white" stroke-width="1.5"/>
+              <path d="M8 10l3 3 5-5" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-500">Opção B</div>
+            <div class="text-xs font-medium text-slate-700">Pin + check</div>
+          </div>
+        </div>
+
+        <!-- Opção C: Pin com ondas de sinal -->
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100">
+          <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="10" r="2" fill="white"/>
+              <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z" stroke="white" stroke-width="1.5" fill="none"/>
+              <circle cx="12" cy="10" r="5" stroke="white" stroke-width="1" fill="none" opacity="0.5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-500">Opção C</div>
+            <div class="text-xs font-medium text-slate-700">Pin + sinal</div>
+          </div>
+        </div>
+
+        <!-- Atual (Lucide) -->
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
+          <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-500">Atual</div>
+            <div class="text-xs font-medium text-slate-700">Lucide MapPin</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
