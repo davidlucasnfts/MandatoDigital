@@ -247,9 +247,9 @@ function SecaoColapsavel({ titulo, badge, children, defaultOpen = false }: {
 export default function SolicitacoesLista({ solicitacoes, loading, onEdit, onRemove, onUpdate }: Props) {
   const [selecionada, setSelecionada] = useState<string | null>(null);
 
-  const ativas = solicitacoes.filter(s => s.status !== 'concluido' && s.status !== 'cancelado' && s.status !== 'excluido');
+  const ativas = solicitacoes.filter(s => s.status !== 'concluido' && s.status !== 'cancelado');
   const concluidas = solicitacoes.filter(s => s.status === 'concluido');
-  const canceladasExcluidas = solicitacoes.filter(s => s.status === 'cancelado' || s.status === 'excluido');
+  const canceladas = solicitacoes.filter(s => s.status === 'cancelado');
 
   if (loading) {
     return (
@@ -372,13 +372,13 @@ export default function SolicitacoesLista({ solicitacoes, loading, onEdit, onRem
         </SecaoColapsavel>
       )}
 
-      {/* Seção Canceladas & Excluídas - Desktop */}
-      {canceladasExcluidas.length > 0 && (
-        <SecaoColapsavel titulo="Canceladas & Excluídas" badge={canceladasExcluidas.length}>
+      {/* Seção Canceladas - Desktop */}
+      {canceladas.length > 0 && (
+        <SecaoColapsavel titulo="Canceladas" badge={canceladas.length}>
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm" style={{ tableLayout: 'fixed', minWidth: '900px' }}>
               <tbody>
-                {canceladasExcluidas.map(s => (
+                {canceladas.map(s => (
                   <SolicitacaoRowDesktop
                     key={s.id}
                     s={s}
@@ -395,7 +395,7 @@ export default function SolicitacoesLista({ solicitacoes, loading, onEdit, onRem
           <div className="sm:hidden overflow-x-auto">
             <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
               <tbody>
-                {canceladasExcluidas.map(s => (
+                {canceladas.map(s => (
                   <SolicitacaoRowMobile
                     key={s.id}
                     s={s}

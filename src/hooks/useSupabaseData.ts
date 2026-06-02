@@ -123,8 +123,8 @@ export function useSolicitacoes() {
   };
 
   const remove = async (id: string) => {
-    // Ao invés de deletar, marca como excluido
-    const { data: updated } = await supabase.from('solicitacoes').update({ status: 'excluido' }).eq('id', id).select().single();
+    // Ao invés de deletar, marca como cancelado
+    const { data: updated } = await supabase.from('solicitacoes').update({ status: 'cancelado' }).eq('id', id).select().single();
     if (updated) setData(prev => prev.map(s => s.id === id ? updated : s));
   };
 
