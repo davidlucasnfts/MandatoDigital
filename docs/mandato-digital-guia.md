@@ -126,6 +126,31 @@
 - ✅ Design consistente com Radix UI
 - ⚠️ HTML mais verboso (mitigado com componentes)
 
+### ADR-006: Estratégia WhatsApp API para Múltiplos Clientes
+
+**Status:** Proposto | **Data:** 04/06/2026
+
+**Decisão:** Manter WAHA API (CORE/grátis) para 1 cliente atual. Avaliar migração para serviço cloud (WasenderAPI/Wappfly) ou Evolution API quando houver múltiplos clientes.
+
+**Contexto:**
+- WAHA CORE suporta apenas 1 sessão (`default`)
+- Cada vereador (cliente) precisa de seu próprio WhatsApp isolado
+- VPS atual (2 CPUs, 3.8GB RAM, Ubuntu 20.04) é insuficiente para Evolution API
+
+**Alternativas consideradas:**
+- 1 VPS por cliente com WAHA: rejeitado para escala — custo linear, manutenção distribuída
+- Evolution API na VPS atual: rejeitado — requer Ubuntu 22.04+, PostgreSQL, Redis, RAM insuficiente
+- Serviço cloud (WasenderAPI/Wappfly): aceito para futuro — $6-7/mês por número, zero infra
+
+**Consequências:**
+- ✅ Fase 1 (agora): WAHA na VPS atual — custo zero
+- ✅ Fase 2 (2-10 clientes): Serviço cloud — setup em minutos
+- ✅ Fase 3 (10+ clientes): Reavaliar Evolution API vs cloud
+- ⚠️ Dados passam por terceiro se usar cloud
+- ⚠️ Custo mensal por cliente adicional
+
+**Referência completa:** `docs/adr-006-whatsapp-api-multi-cliente.md`
+
 ---
 
 ## 3. Padrões de Código

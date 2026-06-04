@@ -1,85 +1,80 @@
 import { useState, useCallback } from 'react';
-
-const WAHA_URL = 'http://82.197.73.101:8080';
-const WAHA_API_KEY = 'af5dc838ef174b5ca9c540110d6ab6d5';
-
-interface WahaSession {
-  name: string;
-  status: string;
-  me?: { id: string; pushName: string };
-}
-
-interface WahaMessage {
-  id: string;
-  timestamp: number;
-  from: string;
-  fromMe: boolean;
-  body: string;
-  chatId: string;
-}
+import { trpc } from '@/providers/trpc';
 
 export function useWhatsApp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const headers = {
-    'X-Api-Key': WAHA_API_KEY,
-    'Content-Type': 'application/json',
-  };
+  const statusQuery = trpc.whatsapp.status.useQuery(undefined, {
+    enabled: false,
+  });
+  
+  const qrQuery = trpc.whatsapp.getQRCode.useQuery(undefined, {
+    enabled: false,
+  });
 
-  const getSession = useCallback(async (): Promise<WahaSession | null> => {
+  const startMutation = trpc.whatsapp.startSession.useMutation();
+  const stopMutation = trpc.whatsapp.stopSession.useMutation();
+  const sendMutation = trpc.whatsapp.sendMessage.useMutation();
+
+  const getSession = useCallback(async () => {
     try {
-      const res = await fetch(`${WAHA_URL}/api/sessions/default`, { headers });
-      if (!res.ok) return null;
-      return await res.json();
+      const result = await statusQuery.refetch();
+      return result.data;
     } catch {
-      return null;
+      return { status: 'FAILED', error: 'Servidor indisponível' };
     }
-  }, []);
+  }, [statusQuery]);
 
-  const startSession = useCallback(async (): Promise<boolean> => {
+  const startSession = useCallback(async (): Promise<{ ok: boolean; status?: string; error?: string }> => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${WAHA_URL}/api/sessions/default/start`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({}),
-      });
+      const result = await startMutation.mutateAsync();
       setLoading(false);
-      return res.ok;
-    } catch (e) {
+      return result;
+    } catch (e: any) {
       setError('Falha ao iniciar sessão');
+      setLoading(false);
+      return { ok: false, error: 'Falha ao iniciar sessão' };
+    }
+  }, [startMutation]);
+
+  const stopSession = useCallback(async (): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await stopMutation.mutateAsync();
+      setLoading(false);
+      return result.ok;
+    } catch (e: any) {
+      setError('Falha ao desconectar');
       setLoading(false);
       return false;
     }
-  }, []);
+  }, [stopMutation]);
 
   const getQRCode = useCallback(async (): Promise<string | null> => {
     try {
-      const res = await fetch(`${WAHA_URL}/api/screenshot?session=default`, { headers });
-      if (!res.ok) return null;
-      const blob = await res.blob();
-      return URL.createObjectURL(blob);
-    } catch {
+      console.log('getQRCode: calling tRPC query...');
+      const result = await qrQuery.refetch();
+      console.log('getQRCode: refetch result:', result.data ? 'has data' : 'no data');
+      console.log('getQRCode: qrCode exists?', result.data?.qrCode ? 'yes' : 'no');
+      return result.data?.qrCode || null;
+    } catch (e: any) {
+      console.error('getQRCode error:', e.message, e);
       return null;
     }
-  }, []);
+  }, [qrQuery]);
 
   const sendText = useCallback(async (phone: string, text: string): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
-      const chatId = `55${phone.replace(/\D/g, '')}@c.us`;
-      const res = await fetch(`${WAHA_URL}/api/sendText`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ session: 'default', chatId, text }),
-      });
+      const result = await sendMutation.mutateAsync({ phone, text });
       setLoading(false);
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        setError(err.message || 'Falha ao enviar mensagem');
+      if (!result.ok) {
+        setError(result.error || 'Falha ao enviar');
         return false;
       }
       return true;
@@ -88,7 +83,7 @@ export function useWhatsApp() {
       setLoading(false);
       return false;
     }
-  }, []);
+  }, [sendMutation]);
 
   const sendBulk = useCallback(async (
     phones: string[],
@@ -105,31 +100,21 @@ export function useWhatsApp() {
       if (ok) success++;
       else failed++;
       onProgress?.(i + 1, phones.length);
-      await new Promise(r => setTimeout(r, 1000)); // Delay 1s entre envios
+      await new Promise(r => setTimeout(r, 1000));
     }
 
     setLoading(false);
     return { success, failed };
   }, [sendText]);
 
-  const getChats = useCallback(async (): Promise<WahaMessage[]> => {
-    try {
-      const res = await fetch(`${WAHA_URL}/api/messages?session=default&limit=50`, { headers });
-      if (!res.ok) return [];
-      return await res.json();
-    } catch {
-      return [];
-    }
-  }, []);
-
   return {
     loading,
     error,
     getSession,
     startSession,
+    stopSession,
     getQRCode,
     sendText,
     sendBulk,
-    getChats,
   };
 }

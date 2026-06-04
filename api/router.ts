@@ -6,6 +6,7 @@ import { geocodingRouter } from "./geocoding-router.js";
 import { cnefeRouter } from "./cnefe-router.js";
 import { cepCacheRouter } from "./cep-cache-router.js";
 import { lideresRouter } from "./lideres-router.js";
+import { whatsappRouter } from "./whatsapp-router.js";
 import { createRouter, publicQuery } from "./middleware.js";
 
 export const appRouter = createRouter({
@@ -18,6 +19,7 @@ export const appRouter = createRouter({
   cnefe: cnefeRouter,
   cepCache: cepCacheRouter,
   lideres: lideresRouter,
+  whatsapp: whatsappRouter,
 });
 
 export type AppRouter = typeof appRouter;

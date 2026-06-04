@@ -45,6 +45,7 @@ function useNavGroups() {
       label: 'Gestão',
       items: [
         { to: '/dashboard/agenda', icon: Calendar, label: 'Agenda' },
+        { to: '/dashboard/agenda/teste-v2', icon: Calendar, label: 'Agenda V2', end: true },
         { to: '/dashboard/tarefas', icon: FileText, label: 'Tarefas' },
         { to: '/dashboard/proposicoes', icon: Gavel, label: 'Proposições' },
         { to: '/dashboard/produtividade', icon: TrendingUp, label: 'Produtividade' },
@@ -59,6 +60,7 @@ function useNavGroups() {
       items: [
         { to: '/dashboard/equipe', icon: Shield, label: 'Equipe' },
         { to: '/dashboard/configuracoes', icon: Settings, label: 'Configurações' },
+        { to: '/dashboard/configuracoes/teste-v2', icon: Settings, label: 'Config V2', end: true },
       ],
     }] : []),
   ];

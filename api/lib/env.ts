@@ -1,4 +1,9 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import { resolve } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+config({ path: resolve(__dirname, "../../.env") });
 
 function required(name: string): string {
   const value = process.env[name];
@@ -34,4 +39,6 @@ export const env = {
   cnefeApiUrl: process.env.CNEFE_API_URL,
   supabaseUrl: required("VITE_SUPABASE_URL"),
   supabaseServiceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
+  wahaApiUrl: process.env.WAHA_API_URL,
+  wahaApiKey: process.env.WAHA_API_KEY,
 };
