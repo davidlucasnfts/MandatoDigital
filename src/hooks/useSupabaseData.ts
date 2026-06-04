@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Eleitor, Comunidade, Solicitacao, Tarefa, Evento, Interacao, EnvioAniversario, ConviteEleitor } from '@/lib/supabase';
 import { demoEleitores, demoComunidades, demoSolicitacoes, demoTarefas, demoEventos, isDemoUser } from '@/lib/demoData';
+export { useDashboardData } from './useDashboardData';
 
 // ===================== ELEITORES =====================
 export function useEleitores() {

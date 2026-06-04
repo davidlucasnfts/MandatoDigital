@@ -29,6 +29,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Mapa V2 Refatorado — Ícones E14/L11/C13 padronizados, legenda com SVGs reais, popups e dialogs com ícones, camadas com toggles, filtros estilizados, legenda minimizável, cobertura sempre visível, responsivo mobile** | **01/06** |
 | **Modo Demo — Dados mockados para demo@mandato.digital em 8 abas** | **01/06** |
 | **Solicitações V3 — Página principal: lista com seções colapsáveis + Kanban com modal central, Design System, responsivo** | **01/06** |
+| **Dashboard Restaurado — Dados reais do Supabase, mock removido, painéis buscam do banco** | **04/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -453,6 +454,53 @@ Usuário rejeitou Phosphor Icons (pesos fill/duotone/bold) e Govicons. Precisava
 
 ### Decisão pendente
 Usuário vai acessar as 3 páginas localmente e decidir qual biblioteca adotar.
+
+---
+
+## 📝 Resumo da Sessão 04/06 — Dashboard Restaurado com Dados Reais
+
+### Contexto
+O Dashboard estava usando dados mockados (`useMockData`, `useMockDashboardData`) em vez de buscar do Supabase. O usuário solicitou restaurar a versão com dados reais, já que existe conta demo (`demo@mandato.digital`) para apresentações.
+
+### Funcionalidades Restauradas
+| # | Painel/Funcionalidade | Fonte de dados |
+|---|---|---|
+| 1 | **Stats cards** (eleitores, pendentes, tarefas) | `useStats()` — contagens reais do Supabase |
+| 2 | **Tendências** (↑↓ % vs mês anterior) | `useStats()` — comparação mês atual vs anterior |
+| 3 | **Gráfico Crescimento da Base** | `useDashboardData()` — eleitores por mês (últimos 12) |
+| 4 | **Gráfico Solicitações por Categoria** | `useDashboardData()` — agrupamento real por categoria |
+| 5 | **Alertas** (tarefas urgentes, solicitações pendentes, eventos hoje) | `useDashboardData()` — dados reais do banco |
+| 6 | **Território** (top bairros, cobertura geográfica) | Supabase direto — eleitores com lat/lng |
+| 7 | **Produtividade dos Líderes** | Supabase direto — eleitores vinculados por líder |
+| 8 | **Proposições** (resumo + recentes) | Supabase direto — tabela proposições |
+| 9 | **Enquetes** (ativas + respostas) | Supabase direto — tabela enquetes |
+| 10 | **Comunicação** (e-mail, WhatsApp, envios) | Supabase direto — eleitores com contato |
+| 11 | **Convites Pendentes** | Supabase direto — tabela convites_eleitores |
+| 12 | **Atividade Recente** | Supabase direto — eleitores, solicitações, interações |
+| 13 | **Meta Eleitoral** | Supabase direto — configurações |
+| 14 | **Aniversariantes** | `useEleitores()` — dados reais (já estava) |
+
+### Arquivos Restaurados (do commit a82b127)
+- `src/hooks/useDashboardData.ts` — hook com queries reais do Supabase
+- `src/components/TerritorioPanel.tsx` — busca bairros e geolocalização real
+- `src/components/LideresPanel.tsx` — busca líderes com eleitores vinculados
+- `src/components/AtividadeRecentePanel.tsx` — busca atividades recentes
+- `src/components/ProposicoesPanel.tsx` — busca proposições do banco
+- `src/components/EnquetesPanel.tsx` — busca enquetes do banco
+- `src/components/ComunicacaoPanel.tsx` — busca contatos reais
+- `src/components/ConvitesPendentesPanel.tsx` — busca convites pendentes
+
+### Arquivos Modificados
+- `src/pages/DashboardHome.tsx` — usa `useStats` + `useDashboardData` (dados reais)
+- `src/hooks/useSupabaseData.ts` — exporta `useDashboardData`
+
+### Arquivos de Teste
+- `src/pages/DashboardHomeV2.tsx` — mantido para histórico
+
+### Dados mockados ainda existem (para conta demo)
+- `src/lib/demoData.ts` — usado por `useSupabaseData.ts` quando `isDemoUser()`
+- `src/lib/mockData.ts` — não mais usado pelo DashboardHome
+- `src/hooks/useMockData.ts` — não mais usado pelo DashboardHome
 
 ---
 

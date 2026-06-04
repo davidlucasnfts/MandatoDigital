@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 01/06/2026
-> **Sessão atual:** Solicitações V3 — Promovida à página principal
+> **Atualizado em:** 04/06/2026
+> **Sessão atual:** Dashboard — Dados reais restaurados, mock removido
 
 ---
 
@@ -11,51 +11,38 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Solicitações V3 — Página Principal — 01/06**
+**Dashboard com Dados Reais — 04/06**
 
 ### ✅ O que foi entregue:
-- **Lista de Solicitações:**
-  - Seções colapsáveis (Concluídas/Canceladas) com badge count
-  - Preview inline expandido ao clicar na linha
-  - Botões com texto+ícone (Editar azul, Excluir vermelho)
-  - Responsividade: tabela mobile 2 colunas / desktop 7 colunas
-  - Limites de caracteres: título 60, descrição 250
+- **DashboardHome.tsx restaurado para dados reais do Supabase**
+  - `useStats()` — contagem real de eleitores, solicitações, tarefas, eventos, pendentes
+  - `useDashboardData()` — crescimento mensal, solicitações por categoria, tarefas urgentes, eventos de hoje
+  - Painéis restaurados: Território, Líderes, Atividade, Proposições, Enquetes, Comunicação, Convites
+  - Meta Eleitoral com dados reais
+  - Gráficos de crescimento e categorias com dados do banco
+  - Layout responsivo mantido (StatCard, PanelCard, CommandMenu)
 
-- **Kanban:**
-  - Drag-and-drop entre colunas (muda status ao soltar)
-  - Modal central de preview (overlay escuro, max-w-lg)
-  - Colunas minimizáveis com preview compacto (5 títulos)
-  - Título truncado no card com tooltip
-  - Responsividade: 1 col mobile / 2 tablet / 4 desktop
+- **Dados mockados removidos do Dashboard:**
+  - `useMockData` → `useStats` + `useDashboardData`
+  - `useMockDashboardData` removido dos painéis
+  - Painéis buscam diretamente do Supabase
 
-- **Design System:**
-  - Stats cards clicáveis filtram por status
-  - Filtros expansíveis (status, prioridade)
-  - Badges coloridos por status/prioridade
-  - Cores fixas: Pendente(âmbar), Andamento(azul), Concluído(verde), Cancelado(vermelho)
-
-- **Excluir → Cancelar:**
-  - Não deleta do banco, muda status para "cancelado"
-  - Constraint do banco só permite 4 status
-
-### ⚠️ Erros cometidos e corrigidos:
-- **Tabela mobile antiga sem seções colapsáveis** — Tabela embutida na V3 renderizava em paralelo com componente. Removida, usa SolicitacoesLista unificado.
-- **Título quebrando 1 palavra/linha no Kanban** — `break-words` + container estreito. Corrigido com modal central (largura adequada).
-- **Overlay do modal não cobria tela toda** — Padding no container flex. Corrigido separando overlay (inset-0) do container do modal.
+### ⚠️ Arquivos mockados mantidos (para conta demo):
+- `src/lib/demoData.ts` — dados demo para `demo@mandato.digital`
+- `src/lib/mockData.ts` — mock do dashboard (não mais usado pelo DashboardHome)
+- `src/hooks/useMockData.ts` — hook mock (não mais usado pelo DashboardHome)
+- Hooks em `useSupabaseData.ts` ainda verificam `isDemoUser()` para outras páginas
 
 ### ✅ Checklist desta sessão (CONCLUÍDO):
-- [x] Corrigir tabela mobile (remover antiga, usar componente unificado)
-- [x] Criar SolicitacoesKanban com DnD e modal central
-- [x] Colunas minimizáveis no Kanban
-- [x] Preview compacto quando coluna minimizada
-- [x] Título truncado no card do Kanban
-- [x] Corrigir quebra de título no preview (break-all)
-- [x] Corrigir overlay do modal (cobrir tela inteira)
-- [x] Copiar V3 → SolicitacoesPage.tsx (produção)
-- [x] Remover rota /solicitacoes/teste-v3 do App.tsx
-- [x] Remover link "Solicitações V3" do sidebar
-- [x] Atualizar MEMORY.md
-- [x] Commit
+- [x] Restaurar `useDashboardData.ts` do commit a82b127 (dados reais)
+- [x] Restaurar painéis para buscar do Supabase (Território, Líderes, Atividade, Proposições, Enquetes, Comunicação, Convites)
+- [x] Criar `DashboardHomeV2.tsx` com dados reais
+- [x] Testar localmente (`npm run dev`)
+- [x] Copiar V2 → `DashboardHome.tsx` (produção)
+- [x] Remover rota `/dashboard/teste-v2` do App.tsx
+- [x] Remover link "Dashboard V2 (Real)" do sidebar
+- [x] Type check passando
+- [x] Atualizar SESSION-CONTEXT.md
 
 ---
 
@@ -67,6 +54,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 | Página | Arquivo | Última atualização | Status |
 |---|---|---|---|
 | Dashboard V2 | `DashboardV2.tsx` | 25/05 | Arquivado — funcionalidades migradas para v2.3 |
+| DashboardHomeV2 | `DashboardHomeV2.tsx` | 04/06 | **Promovido à produção** — arquivo mantido para histórico |
 | Solicitações V3 | `SolicitacoesPageV3.tsx` | 01/06 | **Promovida à produção** — arquivo mantido para histórico |
 | Mapa V1 | `MapaPageV1.tsx` | 28/05 | Arquivado — teste de clusters com ícones |
 | Mapa V2 | `MapaPageV2.tsx` | 01/06 | **Em produção** — cópia de trabalho mantida |
@@ -83,11 +71,11 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Decisões Pendentes
-- Nenhuma. Solicitações V3 em produção.
+- Nenhuma. Dashboard com dados reais em produção.
 
 ---
 
 ## Próxima Sessão — Sugestões
-1. Testar Solicitações em produção após deploy
+1. Testar Dashboard em produção após deploy
 2. Revisar outras páginas que precisam de refatoração (Equipe, Enquetes, etc.)
 3. App mobile / PWA para campo

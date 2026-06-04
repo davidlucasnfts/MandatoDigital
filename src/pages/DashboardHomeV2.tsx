@@ -18,7 +18,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const COLORS = ['#2563EB', '#0891B2', '#059669', '#D97706', '#DC2626', '#7C3AED'];
 
-export default function DashboardHome() {
+export default function DashboardHomeV2() {
   const navigate = useNavigate();
   const { stats, tendencias } = useStats();
   const {
