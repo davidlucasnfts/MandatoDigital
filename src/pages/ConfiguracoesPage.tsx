@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, User, Bell, Shield, Mail, Gift, Save, Check, MessageSquare, RotateClockwise, Scan, Link2 } from '@/lib/icons';
+import { Settings, User, Bell, Shield, Mail, Gift, Save, Check, MessageSquare, RefreshCw, QrCode, Unlink, Link2 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -273,9 +273,9 @@ export default function ConfiguracoesPage() {
                     {wahaStatus === 'WORKING' ? (
                       <Link2 className="w-4 h-4 text-green-600" />
                     ) : wahaStatus === 'SCAN_QR_CODE' ? (
-                      <Scan className="w-4 h-4 text-amber-600" />
+                      <QrCode className="w-4 h-4 text-amber-600" />
                     ) : (
-                      <Link2 className="w-4 h-4 text-slate-400" />
+                      <Unlink className="w-4 h-4 text-slate-400" />
                     )}
                     <span className="text-sm font-medium text-slate-700">
                       Status: {wahaStatus || 'Desconhecido'}
@@ -293,7 +293,7 @@ export default function ConfiguracoesPage() {
                     }}
                     disabled={wahaLoading}
                   >
-                    <RotateClockwise className={`w-3 h-3 mr-1 ${wahaLoading ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`w-3 h-3 mr-1 ${wahaLoading ? 'animate-spin' : ''}`} />
                     Verificar
                   </Button>
                 </div>
@@ -312,7 +312,7 @@ export default function ConfiguracoesPage() {
                         if (qr) setWahaQR(qr);
                       }}
                     >
-                      <Scan className="w-4 h-4 mr-1" /> Gerar QR Code
+                      <QrCode className="w-4 h-4 mr-1" /> Gerar QR Code
                     </Button>
                     {wahaQR && (
                       <div className="mt-2">
