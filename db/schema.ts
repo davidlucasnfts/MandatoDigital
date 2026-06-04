@@ -209,3 +209,58 @@ export type CnefeEndereco = typeof cnefeEnderecos.$inferSelect;
 export type InsertCnefeEndereco = typeof cnefeEnderecos.$inferInsert;
 export type CepCache = typeof cepCache.$inferSelect;
 export type InsertCepCache = typeof cepCache.$inferInsert;
+
+// Templates de mensagem
+export const templatesMensagem = pgTable("templates_mensagem", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  nome: varchar("nome", { length: 200 }).notNull(),
+  tipo: varchar("tipo", { length: 20 }).default("whatsapp").notNull(),
+  assunto: varchar("assunto", { length: 200 }),
+  conteudo: text("conteudo").notNull(),
+  variaveis: text("variaveis").array().default([]),
+  userId: uuid("user_id").notNull(),
+  ownerId: uuid("owner_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Campanhas de comunicação
+export const campanhas = pgTable("campanhas", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  nome: varchar("nome", { length: 200 }).notNull(),
+  tipo: varchar("tipo", { length: 20 }).default("whatsapp").notNull(),
+  templateId: uuid("template_id"),
+  assunto: varchar("assunto", { length: 200 }),
+  conteudo: text("conteudo").notNull(),
+  status: varchar("status", { length: 20 }).default("rascunho").notNull(),
+  totalDestinatarios: integer("total_destinatarios").default(0),
+  totalEnviados: integer("total_enviados").default(0),
+  totalErros: integer("total_erros").default(0),
+  filtros: jsonb("filtros").default({}),
+  userId: uuid("user_id").notNull(),
+  ownerId: uuid("owner_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Envios individuais de campanha
+export const enviosCampanha = pgTable("envios_campanha", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  campanhaId: uuid("campanha_id").notNull(),
+  eleitorId: uuid("eleitor_id").notNull(),
+  tipo: varchar("tipo", { length: 20 }).default("whatsapp").notNull(),
+  status: varchar("status", { length: 20 }).default("pendente").notNull(),
+  erro: text("erro"),
+  dataEnvio: timestamp("data_envio", { withTimezone: true }),
+  dataLeitura: timestamp("data_leitura", { withTimezone: true }),
+  userId: uuid("user_id").notNull(),
+  ownerId: uuid("owner_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type TemplateMensagem = typeof templatesMensagem.$inferSelect;
+export type InsertTemplateMensagem = typeof templatesMensagem.$inferInsert;
+export type Campanha = typeof campanhas.$inferSelect;
+export type InsertCampanha = typeof campanhas.$inferInsert;
+export type EnvioCampanha = typeof enviosCampanha.$inferSelect;
+export type InsertEnvioCampanha = typeof enviosCampanha.$inferInsert;

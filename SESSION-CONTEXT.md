@@ -11,36 +11,40 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Dashboard com Dados Reais — 04/06**
+**Comunicação — Campanhas e Templates — 04/06**
 
 ### ✅ O que foi entregue:
-- **DashboardHome.tsx restaurado para dados reais do Supabase**
-  - `useStats()` — contagem real de eleitores, solicitações, tarefas, eventos, pendentes
-  - `useDashboardData()` — crescimento mensal, solicitações por categoria, tarefas urgentes, eventos de hoje
-  - Painéis restaurados: Território, Líderes, Atividade, Proposições, Enquetes, Comunicação, Convites
-  - Meta Eleitoral com dados reais
-  - Gráficos de crescimento e categorias com dados do banco
-  - Layout responsivo mantido (StatCard, PanelCard, CommandMenu)
+- **Schema do banco:**
+  - Migration `032-comunicacao-campanhas-templates.sql`
+  - Tabelas: `templates_mensagem`, `campanhas`, `envios_campanha`
+  - RLS com `user_has_access(owner_id)`
 
-- **Dados mockados removidos do Dashboard:**
-  - `useMockData` → `useStats` + `useDashboardData`
-  - `useMockDashboardData` removido dos painéis
-  - Painéis buscam diretamente do Supabase
+- **Hooks:**
+  - `useCampanhas.ts` — CRUD campanhas + envios
+  - `useTemplates.ts` — CRUD templates
 
-### ⚠️ Arquivos mockados mantidos (para conta demo):
-- `src/lib/demoData.ts` — dados demo para `demo@mandato.digital`
-- `src/lib/mockData.ts` — mock do dashboard (não mais usado pelo DashboardHome)
-- `src/hooks/useMockData.ts` — hook mock (não mais usado pelo DashboardHome)
-- Hooks em `useSupabaseData.ts` ainda verificam `isDemoUser()` para outras páginas
+- **Components:**
+  - `NovaCampanhaDialog.tsx` — 3 etapas: mensagem → destinatários → revisar/enviar
+  - `NovoTemplateDialog.tsx` — criação com preview e variáveis
+
+- **ComunicacaoPage.tsx refatorada:**
+  - Stats cards (total campanhas, enviadas, em andamento, total envios)
+  - Aba Campanhas: lista com status, progresso, barra de envio
+  - Aba Templates: cards com tipo, variáveis, excluir
+  - Filtros por comunidade, bairro, tag
+  - Seleção múltipla de eleitores
+  - Envio via WhatsApp Web (wa.me links)
+  - Registro de envios no banco
 
 ### ✅ Checklist desta sessão (CONCLUÍDO):
-- [x] Restaurar `useDashboardData.ts` do commit a82b127 (dados reais)
-- [x] Restaurar painéis para buscar do Supabase (Território, Líderes, Atividade, Proposições, Enquetes, Comunicação, Convites)
-- [x] Criar `DashboardHomeV2.tsx` com dados reais
-- [x] Testar localmente (`npm run dev`)
-- [x] Copiar V2 → `DashboardHome.tsx` (produção)
-- [x] Remover rota `/dashboard/teste-v2` do App.tsx
-- [x] Remover link "Dashboard V2 (Real)" do sidebar
+- [x] Criar migration SQL (templates, campanhas, envios)
+- [x] Atualizar db/schema.ts
+- [x] Atualizar src/lib/supabase.ts (tipos)
+- [x] Criar hook useCampanhas
+- [x] Criar hook useTemplates
+- [x] Criar NovaCampanhaDialog (3 etapas)
+- [x] Criar NovoTemplateDialog
+- [x] Refatorar ComunicacaoPage
 - [x] Type check passando
 - [x] Atualizar SESSION-CONTEXT.md
 

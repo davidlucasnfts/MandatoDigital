@@ -151,3 +151,48 @@ export type EnvioAniversario = {
   data_envio: string;
   user_id: string;
 };
+
+export type TemplateMensagem = {
+  id: string;
+  nome: string;
+  tipo: 'whatsapp' | 'email';
+  assunto: string | null;
+  conteudo: string;
+  variaveis: string[];
+  user_id: string;
+  owner_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Campanha = {
+  id: string;
+  nome: string;
+  tipo: 'whatsapp' | 'email';
+  template_id: string | null;
+  assunto: string | null;
+  conteudo: string;
+  status: 'rascunho' | 'enviando' | 'enviada' | 'cancelada';
+  total_destinatarios: number;
+  total_enviados: number;
+  total_erros: number;
+  filtros: Record<string, any>;
+  user_id: string;
+  owner_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type EnvioCampanha = {
+  id: string;
+  campanha_id: string;
+  eleitor_id: string;
+  tipo: 'whatsapp' | 'email';
+  status: 'pendente' | 'enviado' | 'erro' | 'lido';
+  erro: string | null;
+  data_envio: string | null;
+  data_leitura: string | null;
+  user_id: string;
+  owner_id: string | null;
+  created_at: string;
+};
