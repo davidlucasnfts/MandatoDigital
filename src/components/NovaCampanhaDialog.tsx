@@ -8,6 +8,7 @@ import {
 import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
 import { useCampanhas, useEnviosCampanha } from '@/hooks/useCampanhas';
 import { useTemplates } from '@/hooks/useTemplates';
+import { useWhatsApp } from '@/hooks/useWhatsApp';
 import type { Eleitor, TemplateMensagem } from '@/lib/supabase';
 
 interface Props {
@@ -31,6 +32,7 @@ export default function NovaCampanhaDialog({ open, onClose }: Props) {
   const { data: templates } = useTemplates();
   const { insert: insertCampanha, update: updateCampanha } = useCampanhas();
   const { criarEnvios } = useEnviosCampanha();
+  const { sendBulk } = useWhatsApp();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [nome, setNome] = useState('');
@@ -139,24 +141,20 @@ export default function NovaCampanhaDialog({ open, onClose }: Props) {
     const destinatarios = eleitores.filter(e => selecionados.has(e.id));
     await criarEnvios(campanha.id, destinatarios, conteudo);
 
-    // 3. Enviar via WhatsApp (abre abas)
+    // 3. Enviar via WhatsApp (WAHA API)
     setProgresso({ atual: 0, total: destinatarios.length });
     let enviados = 0;
     let erros = 0;
 
-    for (let i = 0; i < destinatarios.length; i++) {
-      const eleitor = destinatarios[i];
-      const mensagem = aplicarTemplate(conteudo, eleitor);
-
-      if (tipo === 'whatsapp' && eleitor.telefone) {
-        const tel = eleitor.telefone.replace(/\D/g, '');
-        const url = `https://wa.me/55${tel}?text=${encodeURIComponent(mensagem)}`;
-        window.open(url, '_blank');
-        enviados++;
-      }
-
-      setProgresso({ atual: i + 1, total: destinatarios.length });
-      await new Promise(r => setTimeout(r, 800)); // Delay entre envios
+    if (tipo === 'whatsapp') {
+      const phones = destinatarios.map(e => e.telefone).filter(Boolean) as string[];
+      const result = await sendBulk(
+        phones,
+        conteudo,
+        (current, total) => setProgresso({ atual: current, total })
+      );
+      enviados = result.success;
+      erros = result.failed;
     }
 
     // 4. Atualizar campanha como enviada

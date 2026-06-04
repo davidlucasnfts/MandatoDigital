@@ -11,42 +11,48 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Comunicação — Campanhas e Templates — 04/06**
+**WhatsApp — WAHA API integrada na VPS — 04/06**
 
 ### ✅ O que foi entregue:
-- **Schema do banco:**
-  - Migration `032-comunicacao-campanhas-templates.sql`
-  - Tabelas: `templates_mensagem`, `campanhas`, `envios_campanha`
-  - RLS com `user_has_access(owner_id)`
+- **WAHA API instalada na VPS:**
+  - Docker instalado na VPS HostUp (82.197.73.101)
+  - Container WAHA rodando na porta 8080
+  - API Key configurada
+  - Sessão "default" criada (aguardando QR Code)
 
-- **Hooks:**
-  - `useCampanhas.ts` — CRUD campanhas + envios
-  - `useTemplates.ts` — CRUD templates
+- **Hook useWhatsApp.ts:**
+  - `getSession()` — verifica status da conexão
+  - `sendText()` — envia mensagem para 1 número
+  - `sendBulk()` — envia em massa com progresso
+  - `getQRCode()` — gera QR Code para conexão
 
-- **Components:**
-  - `NovaCampanhaDialog.tsx` — 3 etapas: mensagem → destinatários → revisar/enviar
-  - `NovoTemplateDialog.tsx` — criação com preview e variáveis
-
-- **ComunicacaoPage.tsx refatorada:**
-  - Stats cards (total campanhas, enviadas, em andamento, total envios)
-  - Aba Campanhas: lista com status, progresso, barra de envio
-  - Aba Templates: cards com tipo, variáveis, excluir
-  - Filtros por comunidade, bairro, tag
-  - Seleção múltipla de eleitores
-  - Envio via WhatsApp Web (wa.me links)
-  - Registro de envios no banco
+- **NovaCampanhaDialog atualizado:**
+  - Usa WAHA API em vez de `wa.me` links
+  - Envio 100% automático (sem abrir abas)
+  - Delay de 1s entre envios
+  - Progresso em tempo real
 
 ### ✅ Checklist desta sessão (CONCLUÍDO):
-- [x] Criar migration SQL (templates, campanhas, envios)
-- [x] Atualizar db/schema.ts
-- [x] Atualizar src/lib/supabase.ts (tipos)
-- [x] Criar hook useCampanhas
-- [x] Criar hook useTemplates
-- [x] Criar NovaCampanhaDialog (3 etapas)
-- [x] Criar NovoTemplateDialog
-- [x] Refatorar ComunicacaoPage
+- [x] Instalar Docker na VPS
+- [x] Instalar WAHA (container Docker)
+- [x] Configurar WAHA (API key, sessão)
+- [x] Criar hook useWhatsApp
+- [x] Atualizar NovaCampanhaDialog para usar WAHA
 - [x] Type check passando
-- [x] Atualizar SESSION-CONTEXT.md
+- [x] Commit + push
+- [x] Deploy Vercel (em andamento)
+
+### ⚠️ Ação manual pendente:
+- **Escanear QR Code** para conectar WhatsApp
+  - Acesse: http://82.197.73.101:8080
+  - Ou use a API: `GET /api/screenshot?session=default`
+  - Abra WhatsApp no celular → Aparelhos conectados → Conectar
+  - Aponte para o QR Code
+
+### 📝 Próximos passos:
+- [ ] Webhook para receber respostas dos eleitores
+- [ ] Status de entrega (enviado, entregue, lido)
+- [ ] Rodar migration 032 no Supabase
 
 ---
 

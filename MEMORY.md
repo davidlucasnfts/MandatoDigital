@@ -31,6 +31,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Solicitações V3 — Página principal: lista com seções colapsáveis + Kanban com modal central, Design System, responsivo** | **01/06** |
 | **Dashboard Restaurado — Dados reais do Supabase, mock removido, painéis buscam do banco** | **04/06** |
 | **Comunicação — Campanhas WhatsApp/E-mail com templates, filtros, seleção múltipla, registro de envios** | **04/06** |
+| **WhatsApp — WAHA API integrada na VPS para envio automático de mensagens** | **04/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
