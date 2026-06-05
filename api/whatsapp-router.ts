@@ -8,26 +8,6 @@ interface WahaSession {
   me?: { id: string; pushName: string };
 }
 
-/** Normaliza telefone para formato WAHA: remove máscara, remove 55 duplicado, adiciona 55 */
-function normalizePhone(phone: string): string {
-  const digits = phone.replace(/\D/g, "");
-  if (digits.startsWith("55") && digits.length > 11) {
-    return digits; // já está com 55
-  }
-  return "55" + digits;
-}
-
-/** Valida se o telefone tem formato brasileiro válido (11 dígitos + 55 = 13) */
-function isValidPhone(phone: string): boolean {
-  const digits = phone.replace(/\D/g, "");
-  // Com ou sem 55, deve ter 11 dígitos do número brasileiro
-  const numDigits = digits.startsWith("55") ? digits.length - 2 : digits.length;
-  if (numDigits !== 11) return false;
-  const ddd = parseInt(digits.startsWith("55") ? digits.slice(2, 4) : digits.slice(0, 2), 10);
-  const nono = digits.startsWith("55") ? digits[4] : digits[2];
-  return ddd >= 11 && ddd <= 99 && nono === "9";
-}
-
 async function wahaFetch(path: string, options?: RequestInit): Promise<Response> {
   const url = `${env.wahaApiUrl}${path}`;
   const headers: Record<string, string> = {
@@ -142,20 +122,8 @@ export const whatsappRouter = createRouter({
       if (!env.wahaApiUrl || !env.wahaApiKey) {
         return { ok: false, error: "WAHA não configurado" };
       }
-      // Validação do telefone
-      if (!isValidPhone(input.phone)) {
-        return { ok: false, error: "Telefone inválido. Use formato: (DD) 9XXXX-XXXX" };
-      }
       try {
-        const chatId = normalizePhone(input.phone) + "@c.us";
-        // Verifica se o número existe no WhatsApp antes de enviar
-        const checkRes = await wahaFetch(`/api/contacts/check-exists?phone=${normalizePhone(input.phone)}&session=default`);
-        if (checkRes.ok) {
-          const checkData = await checkRes.json().catch(() => ({}));
-          if (checkData.numberExists === false) {
-            return { ok: false, error: "Número não possui WhatsApp" };
-          }
-        }
+        const chatId = `55${input.phone.replace(/\D/g, "")}@c.us`;
         const res = await wahaFetch("/api/sendText", {
           method: "POST",
           body: JSON.stringify({ session: "default", chatId, text: input.text }),

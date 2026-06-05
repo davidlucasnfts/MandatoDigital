@@ -160,20 +160,9 @@ export function validateRow(
         if (value && !validarEmail(value)) errors.push('E-mail inválido');
         data.email = value || undefined;
         break;
-      case 'telefone': {
-        const clean = value ? limparTelefone(value) : '';
-        // Normaliza: remove 55 do início se existir, garante 11 dígitos
-        let digits = clean;
-        if (digits.startsWith('55') && digits.length > 11) {
-          digits = digits.slice(2);
-        }
-        // Validação: deve ter 11 dígitos (DDD + 9 + 8 números)
-        if (digits && digits.length !== 11) {
-          errors.push(`Telefone inválido: "${value}". Use formato (DD) 98765-4321`);
-        }
-        data.telefone = digits || undefined;
+      case 'telefone':
+        data.telefone = value ? limparTelefone(value) : undefined;
         break;
-      }
       case 'cpf':
         if (value && !validarCPF(value)) errors.push('CPF inválido');
         data.cpf = value ? ajustarCPF(value) : undefined;

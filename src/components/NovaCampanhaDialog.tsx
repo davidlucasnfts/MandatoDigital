@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Send, MessageSquare, Mail, X, Users, Check, Filter, AlertTriangle } from 'lucide-react';
-import { isValidPhone, normalizePhoneForWhatsApp } from '@/lib/masks';
+import { Send, MessageSquare, Mail, X, Users, Check, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -146,30 +145,16 @@ export default function NovaCampanhaDialog({ open, onClose }: Props) {
     setProgresso({ atual: 0, total: destinatarios.length });
     let enviados = 0;
     let erros = 0;
-    const errosLista: { nome: string; telefone: string; motivo: string }[] = [];
 
     if (tipo === 'whatsapp') {
-      // Filtra apenas telefones válidos
-      const destinatariosValidos = destinatarios.filter(e => {
-        if (!e.telefone) {
-          errosLista.push({ nome: e.nome, telefone: '(vazio)', motivo: 'Sem telefone' });
-          return false;
-        }
-        if (!isValidPhone(e.telefone)) {
-          errosLista.push({ nome: e.nome, telefone: e.telefone, motivo: 'Formato inválido' });
-          return false;
-        }
-        return true;
-      });
-
-      const phones = destinatariosValidos.map(e => normalizePhoneForWhatsApp(e.telefone!));
+      const phones = destinatarios.map(e => e.telefone).filter(Boolean) as string[];
       const result = await sendBulk(
         phones,
         conteudo,
         (current, total) => setProgresso({ atual: current, total })
       );
       enviados = result.success;
-      erros = result.failed + errosLista.length;
+      erros = result.failed;
     }
 
     // 4. Atualizar campanha como enviada
@@ -430,18 +415,6 @@ export default function NovaCampanhaDialog({ open, onClose }: Props) {
                     className="h-full bg-blue-600 rounded-full transition-all"
                     style={{ width: `${progresso.total > 0 ? (progresso.atual / progresso.total) * 100 : 0}%` }}
                   />
-                </div>
-              </div>
-            )}
-
-            {/* Alerta de telefones inválidos */}
-            {tipo === 'whatsapp' && eleitoresFiltrados.some(e => selecionados.has(e.id) && e.telefone && !isValidPhone(e.telefone)) && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                  <p className="text-xs text-amber-700 font-medium">
-                    {eleitoresFiltrados.filter(e => selecionados.has(e.id) && e.telefone && !isValidPhone(e.telefone)).length} eleitor(es) com telefone inválido serão ignorados
-                  </p>
                 </div>
               </div>
             )}
