@@ -38,6 +38,7 @@ function useNavGroups() {
 
         { to: '/dashboard/solicitacoes', icon: ClipboardList, label: 'Solicitações' },
         { to: '/dashboard/comunicacao', icon: MessageSquare, label: 'Comunicação' },
+        { to: '/dashboard/comunicacao/teste-v2', icon: MessageSquare, label: 'Comunicação V2', end: true },
       ],
     },
     {
