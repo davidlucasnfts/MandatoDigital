@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, User, Crown, MapPin } from '@/lib/icons';
-import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
+import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput, isValidPhone } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -194,6 +194,12 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       return;
     }
 
+    // Validacao: telefone obrigatorio e valido
+    if (!form.telefone || !isValidPhone(form.telefone)) {
+      alert('Telefone inválido. Informe no formato (DD) 98765-4321 com DDD e 9 dígitos.');
+      return;
+    }
+
     // Validacao: numero obrigatorio (ou S/N)
     if (!form.numero || form.numero.trim() === '') {
       alert('Número é obrigatório. Marque "Sem número (S/N)" se não houver.');
@@ -317,9 +323,19 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               <Label htmlFor="email" className="text-xs">E-mail</Label>
               <Input id="email" type="email" value={form.email || ''} onChange={e => setField('email', e.target.value)} placeholder="nome@email.com" className="h-9" />
             </div>
-            <div className="space-y-1 w-[140px]">
-              <Label htmlFor="telefone" className="text-xs">Telefone</Label>
-              <Input id="telefone" value={form.telefone || ''} onChange={e => setField('telefone', maskPhone(e.target.value))} placeholder="(11) 98765-4321" maxLength={15} className="h-9" />
+            <div className="space-y-1 w-[160px]">
+              <Label htmlFor="telefone" className="text-xs">Telefone <span className="text-red-400">*</span></Label>
+              <Input
+                id="telefone"
+                value={form.telefone || ''}
+                onChange={e => setField('telefone', maskPhone(e.target.value))}
+                placeholder="(11) 98765-4321"
+                maxLength={16}
+                className={`h-9 ${form.telefone && !isValidPhone(form.telefone) ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+              />
+              {form.telefone && !isValidPhone(form.telefone) && (
+                <p className="text-[10px] text-red-500">Informe DDD + 9 dígitos</p>
+              )}
             </div>
           </div>
 

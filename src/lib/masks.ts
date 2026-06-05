@@ -32,14 +32,20 @@ export function isValidCPF(cpf: string): boolean {
   return true;
 }
 
+/**
+ * Formata telefone brasileiro para exibição: (DD) 9XXXX-XXXX
+ * Sempre exige 11 dígitos (DDD + 9 + número) para WhatsApp.
+ * Aceita entrada com ou sem o 55 inicial — remove o 55 se presente.
+ */
 export function maskPhone(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 11);
-  if (digits.length <= 10) {
-    return digits
-      .replace(/(\d{2})(\d)/, '($1) $2')
-      .replace(/(\d{4})(\d)/, '$1-$2')
-      .replace(/(\d{4})-(\d)(\d{4})/, '$1$2-$3');
+  let digits = value.replace(/\D/g, '');
+  // Remove 55 do início se o usuário colar número com prefixo do país
+  if (digits.startsWith('55') && digits.length > 11) {
+    digits = digits.slice(2);
   }
+  digits = digits.slice(0, 11);
+  // Só formata se tiver pelo menos o DDD (2 dígitos)
+  if (digits.length <= 2) return digits;
   return digits
     .replace(/(\d{2})(\d)/, '($1) $2')
     .replace(/(\d{5})(\d)/, '$1-$2');
@@ -49,9 +55,43 @@ export function unmaskPhone(value: string): string {
   return value.replace(/\D/g, '');
 }
 
+/**
+ * Valida se o telefone está no formato correto para WhatsApp:
+ * - 11 dígitos (DDD + 9 + 8 dígitos)
+ * - DDD entre 11 e 99
+ * - Começa com 9 (nono dígito)
+ */
 export function isValidPhone(phone: string): boolean {
   const digits = unmaskPhone(phone);
-  return digits.length === 10 || digits.length === 11;
+  if (digits.length !== 11) return false;
+  const ddd = parseInt(digits.slice(0, 2), 10);
+  const nonoDigito = digits[2];
+  return ddd >= 11 && ddd <= 99 && nonoDigito === '9';
+}
+
+/**
+ * Normaliza telefone para o formato WAHA API:
+ * - Remove máscara
+ * - Remove 55 se já existir
+ * - Adiciona 55 no início
+ * - Retorna: 55<DDD><9><número> (13 dígitos)
+ */
+export function normalizePhoneForWhatsApp(phone: string): string {
+  let digits = unmaskPhone(phone);
+  // Remove 55 do início se existir
+  if (digits.startsWith('55')) {
+    digits = digits.slice(2);
+  }
+  // Adiciona 55
+  return '55' + digits;
+}
+
+/**
+ * Converte telefone para chatId do WhatsApp (formato WAHA)
+ * Ex: (11) 98765-4321 → 5511987654321@c.us
+ */
+export function toWhatsAppChatId(phone: string): string {
+  return normalizePhoneForWhatsApp(phone) + '@c.us';
 }
 
 export function maskCEP(value: string): string {

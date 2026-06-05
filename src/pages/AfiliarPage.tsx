@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { UserPlus, CheckCircle, AlertTriangle } from '@/lib/icons';
-import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
+import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput, isValidPhone } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -200,8 +200,18 @@ export default function AfiliarPage() {
               )}
               {mostrarCampo('telefone') && (
                 <div className="space-y-1.5">
-                  <Label htmlFor="telefone">Telefone</Label>
-                  <Input id="telefone" value={form.telefone} onChange={e => setForm({ ...form, telefone: maskPhone(e.target.value) })} placeholder="(11) 98765-4321" maxLength={15} />
+                  <Label htmlFor="telefone">Telefone <span className="text-red-400">*</span></Label>
+                  <Input
+                    id="telefone"
+                    value={form.telefone}
+                    onChange={e => setForm({ ...form, telefone: maskPhone(e.target.value) })}
+                    placeholder="(11) 98765-4321"
+                    maxLength={16}
+                    className={form.telefone && !isValidPhone(form.telefone) ? 'border-red-300' : ''}
+                  />
+                  {form.telefone && !isValidPhone(form.telefone) && (
+                    <p className="text-[10px] text-red-500">Informe DDD + 9 dígitos</p>
+                  )}
                 </div>
               )}
               {mostrarCampo('cpf') && (
