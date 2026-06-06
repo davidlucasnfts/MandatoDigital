@@ -11,7 +11,6 @@ import ComunidadesPage from '@/pages/ComunidadesPage';
 import SolicitacoesPage from '@/pages/SolicitacoesPage';
 
 import ComunicacaoPage from '@/pages/ComunicacaoPage';
-import ComunicacaoPageV2 from '@/pages/ComunicacaoPageV2';
 import MapaPage from '@/pages/MapaPage';
 
 import AgendaPage from '@/pages/AgendaPage';
@@ -55,7 +54,6 @@ function App() {
         <Route path="comunidades" element={<ComunidadesPage />} />
         <Route path="solicitacoes" element={<SolicitacoesPage />} />
         <Route path="comunicacao" element={<ComunicacaoPage />} />
-        <Route path="comunicacao/teste-v2" element={<ComunicacaoPageV2 />} />
         <Route path="mapa" element={<MapaPage />} />
 
         <Route path="agenda" element={<AgendaPage />} />

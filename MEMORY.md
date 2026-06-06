@@ -36,6 +36,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Comunicação V2 — Botões de ação com texto+ícone, editar/enviar/reenviar campanha, status individual dos envios no preview** | **06/06** |
 | **Comunicação V2 — Bugfixes: lista atualiza após criar, status envios atualiza, edição carrega dados** | **06/06** |
 | **Comunicação V2 — Filtros de destinatários: Cidade, Líder, Liderados (dados reais do banco) + Salvar como rascunho** | **06/06** |
+| **Comunicação V2 — Promovida à produção (copiada para ComunicacaoPage.tsx)** | **06/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -590,7 +591,7 @@ Liderados por [Todos ▼]
 ```
 
 ### Próximos Passos
-- [ ] Promover V2 para produção (copiar para ComunicacaoPage.tsx)
+- [x] Promover V2 para produção (copiar para ComunicacaoPage.tsx)
 - [ ] Implementar envio de e-mail (SendGrid/Resend)
 - [ ] Webhook WAHA para status real de entrega
 

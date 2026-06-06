@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 04/06/2026
-> **Sessão atual:** Dashboard — Dados reais restaurados, mock removido
+> **Atualizado em:** 06/06/2026
+> **Sessão atual:** Comunicação V2 promovida à produção
 
 ---
 
@@ -11,64 +11,35 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Comunicação V2 — Melhorias na página de campanhas — 06/06**
+**Comunicação V2 — Promovida à produção — 06/06**
 
 ### ✅ O que foi entregue:
-- **Botões de ação com texto + ícone (Design System):**
-  - Editar (azul), Enviar (verde), Reenviar (âmbar), Excluir (vermelho)
-  - Todos sólidos, empilhados verticalmente, com texto + ícone
-  - Removidos ícones solitários sem texto
-
-- **Ações pendentes implementadas:**
-  - **Editar campanha (rascunho):** Abre NovaCampanhaDialog com dados preenchidos
-  - **Enviar campanha (rascunho):** Processa envio com progresso, atualiza status
-  - **Reenviar campanha (enviada):** Reprocessa envio para mesmos destinatários
-  - **Excluir campanha:** Remoção com confirmação via CampanhaPreview
-
-- **Status individual dos envios no preview:**
-  - Nova seção "Status dos envios" no CampanhaPreview
-  - Mostra cada destinatário com ícone de status (pendente/enviado/erro/lido)
-  - Seção colapsável para não poluir a visualização
-
-- **Removida opção de e-mail:**
-  - NovaCampanhaDialog só oferece WhatsApp (e-mail não estava implementado)
-  - Evita confusão do usuário
-
-- **NovaCampanhaDialog suporta edição:**
-  - Prop `campanhaEditando` preenche formulário com dados existentes
-  - Atualiza campanha em vez de criar nova
-  - Título muda para "Editar Campanha"
+- **ComunicacaoPage.tsx** substituída pela versão V2 (campanhas WhatsApp com templates, filtros, envios)
+- **Rota de teste removida**: `/dashboard/comunicacao/teste-v2` não existe mais
+- **Link de teste removido** do sidebar
+- **Arquivo V2 mantido** como histórico (`ComunicacaoPageV2.tsx`)
+- Type check passando
 
 ### ✅ Checklist desta sessão (CONCLUÍDO):
-- [x] Botões de ação com texto + ícone (Design System)
-- [x] Implementar editar campanha (rascunho)
-- [x] Implementar enviar campanha (rascunho)
-- [x] Implementar reenviar campanha (enviada)
-- [x] Mostrar status individual dos envios no preview
-- [x] Remover opção de e-mail não implementada
-- [x] NovaCampanhaDialog suportar edição
-- [x] **BUGFIX: Lista atualiza após criar/editar campanha (onSuccess + reload)**
-- [x] **BUGFIX: Status dos envios atualiza para 'enviado'/'erro' após envio WAHA**
-- [x] **BUGFIX: Edição de campanha carrega dados corretamente (useEffect no open)**
-- [x] **Salvar campanha como rascunho**
-- [x] **Remover filtro TAG (dados não padronizados)**
-- [x] **Filtro por Cidade (select com dados reais do banco)**
-- [x] **Filtro por Líder (eleitores com nivel='lider')**
-- [x] **Filtro por Liderados (eleitores vinculados a um líder)**
+- [x] Copiar ComunicacaoPageV2.tsx para ComunicacaoPage.tsx
+- [x] Remover rota `/comunicacao/teste-v2` do App.tsx
+- [x] Remover link "Comunicação V2" do DashboardLayout.tsx
+- [x] Manter arquivo V2 para histórico
+- [x] Atualizar MEMORY.md
+- [x] Atualizar SESSION-CONTEXT.md
 - [x] Type check passando
 
 ### ⚠️ Ação manual pendente:
-- **Escanear QR Code** para conectar WhatsApp (pendente da sessão anterior)
+- **Escanear QR Code** para conectar WhatsApp (pendente das sessões anteriores)
   - Acesse: http://82.197.73.101:8080
   - Ou use a API: `GET /api/screenshot?session=default`
   - Abra WhatsApp no celular → Aparelhos conectados → Conectar
   - Aponte para o QR Code
 
 ### 📝 Próximos passos:
-- [ ] Promover ComunicacaoPageV2 para produção (copiar para ComunicacaoPage.tsx)
+- [ ] Implementar envio de e-mail (SendGrid/Resend)
 - [ ] Webhook para receber respostas dos eleitores
 - [ ] Status de entrega real (enviado, entregue, lido) via WAHA webhooks
-- [ ] Implementar envio de e-mail (SendGrid/Resend)
 
 ---
 
@@ -84,7 +55,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 | Solicitações V3 | `SolicitacoesPageV3.tsx` | 01/06 | **Promovida à produção** — arquivo mantido para histórico |
 | Mapa V1 | `MapaPageV1.tsx` | 28/05 | Arquivado — teste de clusters com ícones |
 | Mapa V2 | `MapaPageV2.tsx` | 01/06 | **Em produção** — cópia de trabalho mantida |
-| Comunicação V2 | `ComunicacaoPageV2.tsx` | 06/06 | **Em teste** — melhorias aplicadas, aguardando aprovação |
+| Comunicação V2 | `ComunicacaoPageV2.tsx` | 06/06 | **Promovida à produção** — arquivo mantido para histórico |
 
 ---
 
@@ -98,11 +69,11 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Decisões Pendentes
-- Nenhuma. Dashboard com dados reais em produção.
+- Nenhuma. Comunicação V2 em produção.
 
 ---
 
 ## Próxima Sessão — Sugestões
-1. Testar Dashboard em produção após deploy
-2. Revisar outras páginas que precisam de refatoração (Equipe, Enquetes, etc.)
-3. App mobile / PWA para campo
+1. Testar Comunicação em produção após deploy
+2. Implementar webhooks WAHA para status real
+3. Revisar outras páginas que precisam de refatoração (Equipe, Enquetes, etc.)
