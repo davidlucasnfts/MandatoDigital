@@ -252,14 +252,14 @@ export default function MapaPageV2() {
       {/* Filtros */}
       <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible">
         <PanelCard title="Filtros" icon={Search} iconColor="text-blue-600" iconBg="bg-blue-50" delay={4}>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[180px] max-w-[260px]">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
+            <div className="relative flex-1 min-w-0 sm:min-w-[180px] max-w-none sm:max-w-[260px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor..." className="pl-9 h-9 text-sm" />
               {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
             </div>
             <div className="relative">
-              <button onClick={() => { setDropdownAberto(dropdownAberto === 'comunidade' ? null : 'comunidade'); }} className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all min-w-[140px]">
+              <button onClick={() => { setDropdownAberto(dropdownAberto === 'comunidade' ? null : 'comunidade'); }} className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all w-full sm:min-w-[140px]">
                 <span className="truncate">{comunidades.find(c => c.id === filtroComunidade)?.nome || 'Todas comunidades'}</span>
                 <svg className="w-3 h-3 text-slate-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
@@ -273,7 +273,7 @@ export default function MapaPageV2() {
               )}
             </div>
             <div className="relative">
-              <button onClick={() => { setDropdownAberto(dropdownAberto === 'nivel' ? null : 'nivel'); }} className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all min-w-[120px]">
+              <button onClick={() => { setDropdownAberto(dropdownAberto === 'nivel' ? null : 'nivel'); }} className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all w-full sm:min-w-[120px]">
                 <span className="truncate">{filtroNivel ? (filtroNivel === 'lider' ? 'Líder' : 'Eleitor') : 'Todos níveis'}</span>
                 <svg className="w-3 h-3 text-slate-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
@@ -286,7 +286,7 @@ export default function MapaPageV2() {
               )}
             </div>
             <div className="relative">
-              <button onClick={() => { setDropdownAberto(dropdownAberto === 'status' ? null : 'status'); }} className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all min-w-[120px]">
+              <button onClick={() => { setDropdownAberto(dropdownAberto === 'status' ? null : 'status'); }} className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all w-full sm:min-w-[120px]">
                 <span className="truncate">{filtroStatus ? (filtroStatus === 'ativo' ? 'Ativo' : filtroStatus === 'inativo' ? 'Inativo' : 'Pendente') : 'Todos status'}</span>
                 <svg className="w-3 h-3 text-slate-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
@@ -408,9 +408,9 @@ export default function MapaPageV2() {
                             <span className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="16" rx="1.5" fill="#22c55e" stroke="white" stroke-width="1"/><rect x="7" y="5" width="3.5" height="3.5" rx="0.8" fill="#86efac"/><rect x="13.5" y="5" width="3.5" height="3.5" rx="0.8" fill="#86efac"/><rect x="7" y="10" width="3.5" height="3.5" rx="0.8" fill="#86efac"/><rect x="13.5" y="10" width="3.5" height="3.5" rx="0.8" fill="#86efac"/></svg>
                             </span>
-                            {c.nome}
+                            <span className="break-all">{c.nome}</span>
                           </div>
-                          <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
+                          <div className="text-slate-500 break-all">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
                           <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
                             <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
                           </div>
@@ -432,21 +432,21 @@ export default function MapaPageV2() {
                               <span className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 16L3 8l5 3 4-7 4 7 5-3-2 8H5z" fill="#fbbf24" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
                               </span>
-                              {e.nome}
+                              <span className="break-all">{e.nome}</span>
                             </div>
                             <div className="flex items-center gap-2 mt-1.5">
                               <Badge variant="outline" className="text-[10px] capitalize border-purple-200 text-purple-700 bg-purple-50">{e.nivel}</Badge>
                               <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
                             </div>
                             <div className="mt-2 space-y-0.5 text-slate-500">
-                              {e.endereco && <div>{e.endereco}</div>}
-                              {e.bairro && <div>{e.bairro}</div>}
-                              <div>{e.cidade}, {e.estado}</div>
+                              {e.endereco && <div className="break-all">{e.endereco}</div>}
+                              {e.bairro && <div className="break-all">{e.bairro}</div>}
+                              <div className="break-all">{e.cidade}, {e.estado}</div>
                               {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
                             </div>
                             {e.tags && e.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-2">
-                                {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
+                                {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded truncate max-w-[120px] inline-block">{t}</span>)}
                               </div>
                             )}
                           </div>
@@ -467,21 +467,21 @@ export default function MapaPageV2() {
                               <span className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><ellipse cx="13" cy="20" rx="4" ry="1.5" fill="rgba(0,0,0,0.3)"/><circle cx="12" cy="7" r="3" fill="white"/><path d="M7 18v-2a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2" fill="white"/></svg>
                               </span>
-                              {e.nome}
+                              <span className="break-all">{e.nome}</span>
                             </div>
                             <div className="flex items-center gap-2 mt-1.5">
                               <Badge variant="outline" className="text-[10px] capitalize border-blue-200 text-blue-700 bg-blue-50">{e.nivel}</Badge>
                               <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
                             </div>
                             <div className="mt-2 space-y-0.5 text-slate-500">
-                              {e.endereco && <div>{e.endereco}</div>}
-                              {e.bairro && <div>{e.bairro}</div>}
-                              <div>{e.cidade}, {e.estado}</div>
+                              {e.endereco && <div className="break-all">{e.endereco}</div>}
+                              {e.bairro && <div className="break-all">{e.bairro}</div>}
+                              <div className="break-all">{e.cidade}, {e.estado}</div>
                               {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
                             </div>
                             {e.tags && e.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-2">
-                                {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
+                                {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded truncate max-w-[120px] inline-block">{t}</span>)}
                               </div>
                             )}
                           </div>
@@ -607,7 +607,7 @@ export default function MapaPageV2() {
               <span className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><ellipse cx="13" cy="20" rx="4" ry="1.5" fill="rgba(0,0,0,0.3)"/><circle cx="12" cy="7" r="3" fill="white"/><path d="M7 18v-2a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2" fill="white"/></svg>
               </span>
-              {eleitorSelecionado?.nome}
+              <span className="break-all">{eleitorSelecionado?.nome}</span>
             </DialogTitle>
           </DialogHeader>
           {eleitorSelecionado && (
@@ -617,9 +617,9 @@ export default function MapaPageV2() {
                 <Badge className={`text-[10px] capitalize ${eleitorSelecionado.status === 'ativo' ? 'bg-green-100 text-green-700 hover:bg-green-100' : eleitorSelecionado.status === 'pendente' ? 'bg-amber-100 text-amber-700 hover:bg-amber-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-100'}`}>{eleitorSelecionado.status}</Badge>
               </div>
               <div className="space-y-1 text-slate-600">
-                {eleitorSelecionado.endereco && <p>{eleitorSelecionado.endereco}</p>}
-                {eleitorSelecionado.bairro && <p>{eleitorSelecionado.bairro}</p>}
-                <p>{eleitorSelecionado.cidade}, {eleitorSelecionado.estado}</p>
+                {eleitorSelecionado.endereco && <p className="break-all">{eleitorSelecionado.endereco}</p>}
+                {eleitorSelecionado.bairro && <p className="break-all">{eleitorSelecionado.bairro}</p>}
+                <p className="break-all">{eleitorSelecionado.cidade}, {eleitorSelecionado.estado}</p>
                 {eleitorSelecionado.cep && <p className="text-slate-400">CEP: {eleitorSelecionado.cep}</p>}
               </div>
               {eleitorSelecionado.latitude && eleitorSelecionado.longitude && (
@@ -634,7 +634,7 @@ export default function MapaPageV2() {
               )}
               <div className="pt-2 border-t border-slate-100 space-y-1 text-slate-600">
                 {eleitorSelecionado.telefone && <p>Tel: {eleitorSelecionado.telefone}</p>}
-                {eleitorSelecionado.email && <p>{eleitorSelecionado.email}</p>}
+                {eleitorSelecionado.email && <p className="break-all">{eleitorSelecionado.email}</p>}
               </div>
               <div className="pt-3 border-t border-slate-100">
                 <button
@@ -657,15 +657,15 @@ export default function MapaPageV2() {
               <span className="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="16" rx="1.5" fill="#22c55e" stroke="white" stroke-width="1"/><rect x="7" y="5" width="3.5" height="3.5" rx="0.8" fill="#86efac"/><rect x="13.5" y="5" width="3.5" height="3.5" rx="0.8" fill="#86efac"/><rect x="7" y="10" width="3.5" height="3.5" rx="0.8" fill="#86efac"/><rect x="13.5" y="10" width="3.5" height="3.5" rx="0.8" fill="#86efac"/></svg>
               </span>
-              {comunidadeSelecionada?.nome}
+              <span className="break-all">{comunidadeSelecionada?.nome}</span>
             </DialogTitle>
           </DialogHeader>
           {comunidadeSelecionada && (
             <div className="space-y-3 text-sm">
-              <div className="text-slate-500">
+              <div className="text-slate-500 break-all">
                 {comunidadeSelecionada.bairro ? `${comunidadeSelecionada.bairro}, ${comunidadeSelecionada.cidade}` : comunidadeSelecionada.cidade}
               </div>
-              {comunidadeSelecionada.descricao && <p className="text-slate-600">{comunidadeSelecionada.descricao}</p>}
+              {comunidadeSelecionada.descricao && <p className="text-slate-600 break-all">{comunidadeSelecionada.descricao}</p>}
               <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
                 <div className="text-center">
                   <div className="text-lg font-bold text-slate-800">{comunidadeSelecionada.total_eleitores || 0}</div>

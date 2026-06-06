@@ -122,7 +122,7 @@ export default function LideresProdutividadePage() {
       {top3.length > 0 && (
         <motion.div custom={5} variants={fadeIn} initial="hidden" animate="visible">
           <PanelCard title="Top 3 Líderes" icon={Medal} iconColor="text-amber-600" iconBg="bg-amber-50" delay={5}>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {top3.map((lider, i) => {
                 const posicoes = [
                   { bg: 'bg-yellow-50', border: 'border-yellow-400', iconColor: 'text-yellow-500', label: '1º', rankColor: 'text-yellow-600', bar: 'bg-yellow-500' },
@@ -267,7 +267,7 @@ export default function LideresProdutividadePage() {
                     }`}>#{liderSelecionado.ranking}</span>
                   </div>
                   <div>
-                    <h3 className="text-lg lg:text-xl font-bold text-slate-800">{liderSelecionado.nome}</h3>
+                    <h3 className="text-lg lg:text-xl font-bold text-slate-800 break-all">{liderSelecionado.nome}</h3>
                     <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                       {(() => {
                         const status = statusMetaColors[liderSelecionado.status_meta] || statusMetaColors.abaixo;
@@ -295,7 +295,7 @@ export default function LideresProdutividadePage() {
             </div>
 
             {/* Métricas em Grid + Localização */}
-            <div className="p-4 lg:p-6 grid grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Estimativa */}
               <div className="space-y-1">
                 <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">

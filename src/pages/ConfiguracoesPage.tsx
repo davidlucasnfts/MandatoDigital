@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useConfiguracoes } from '@/hooks/useSupabaseData';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
-import { maskPhone, capitalizeWords } from '@/lib/masks';
+import { maskPhone, capitalizeWords, isValidPhone } from '@/lib/masks';
 
 
 const fadeIn = {
@@ -103,7 +103,16 @@ export default function ConfiguracoesPage() {
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-500 mb-1 block">Telefone</label>
-                    <Input value={profile.telefone} onChange={(e) => setProfile({ ...profile, telefone: maskPhone(e.target.value) })} className="h-10" maxLength={15} />
+                    <Input 
+                      value={profile.telefone} 
+                      onChange={(e) => setProfile({ ...profile, telefone: maskPhone(e.target.value) })} 
+                      className={`h-10 ${profile.telefone && !isValidPhone(profile.telefone) ? 'border-red-300' : ''}`} 
+                      maxLength={16} 
+                      placeholder="(11) 98765-4321"
+                    />
+                    {profile.telefone && !isValidPhone(profile.telefone) && (
+                      <p className="text-[10px] text-red-500 mt-1">Informe DDD + 9 dígitos</p>
+                    )}
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-500 mb-1 block">Cargo</label>
@@ -341,7 +350,7 @@ export default function ConfiguracoesPage() {
                 {wahaStatus === 'WORKING' && (
                   <div className="border rounded-lg p-4 space-y-3">
                     <p className="text-sm font-medium text-slate-700">Testar envio</p>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <Input
                         placeholder="Telefone (ex: 11999999999)"
                         value={testPhone}
@@ -361,8 +370,8 @@ export default function ConfiguracoesPage() {
                       onClick={async () => {
                         if (!testPhone || !testMessage) return;
                         setTestResult('Enviando...');
-                        const ok = await sendText(testPhone, testMessage);
-                        setTestResult(ok ? 'Enviado com sucesso!' : 'Falha ao enviar');
+                        const result = await sendText(testPhone, testMessage);
+                        setTestResult(result.ok ? 'Enviado com sucesso!' : `Falha: ${result.error || 'Erro desconhecido'}`);
                       }}
                       disabled={!testPhone || !testMessage}
                     >

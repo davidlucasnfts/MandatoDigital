@@ -11,48 +11,64 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**WhatsApp — WAHA API integrada na VPS — 04/06**
+**Comunicação V2 — Melhorias na página de campanhas — 06/06**
 
 ### ✅ O que foi entregue:
-- **WAHA API instalada na VPS:**
-  - Docker instalado na VPS HostUp (82.197.73.101)
-  - Container WAHA rodando na porta 8080
-  - API Key configurada
-  - Sessão "default" criada (aguardando QR Code)
+- **Botões de ação com texto + ícone (Design System):**
+  - Editar (azul), Enviar (verde), Reenviar (âmbar), Excluir (vermelho)
+  - Todos sólidos, empilhados verticalmente, com texto + ícone
+  - Removidos ícones solitários sem texto
 
-- **Hook useWhatsApp.ts:**
-  - `getSession()` — verifica status da conexão
-  - `sendText()` — envia mensagem para 1 número
-  - `sendBulk()` — envia em massa com progresso
-  - `getQRCode()` — gera QR Code para conexão
+- **Ações pendentes implementadas:**
+  - **Editar campanha (rascunho):** Abre NovaCampanhaDialog com dados preenchidos
+  - **Enviar campanha (rascunho):** Processa envio com progresso, atualiza status
+  - **Reenviar campanha (enviada):** Reprocessa envio para mesmos destinatários
+  - **Excluir campanha:** Remoção com confirmação via CampanhaPreview
 
-- **NovaCampanhaDialog atualizado:**
-  - Usa WAHA API em vez de `wa.me` links
-  - Envio 100% automático (sem abrir abas)
-  - Delay de 1s entre envios
-  - Progresso em tempo real
+- **Status individual dos envios no preview:**
+  - Nova seção "Status dos envios" no CampanhaPreview
+  - Mostra cada destinatário com ícone de status (pendente/enviado/erro/lido)
+  - Seção colapsável para não poluir a visualização
+
+- **Removida opção de e-mail:**
+  - NovaCampanhaDialog só oferece WhatsApp (e-mail não estava implementado)
+  - Evita confusão do usuário
+
+- **NovaCampanhaDialog suporta edição:**
+  - Prop `campanhaEditando` preenche formulário com dados existentes
+  - Atualiza campanha em vez de criar nova
+  - Título muda para "Editar Campanha"
 
 ### ✅ Checklist desta sessão (CONCLUÍDO):
-- [x] Instalar Docker na VPS
-- [x] Instalar WAHA (container Docker)
-- [x] Configurar WAHA (API key, sessão)
-- [x] Criar hook useWhatsApp
-- [x] Atualizar NovaCampanhaDialog para usar WAHA
+- [x] Botões de ação com texto + ícone (Design System)
+- [x] Implementar editar campanha (rascunho)
+- [x] Implementar enviar campanha (rascunho)
+- [x] Implementar reenviar campanha (enviada)
+- [x] Mostrar status individual dos envios no preview
+- [x] Remover opção de e-mail não implementada
+- [x] NovaCampanhaDialog suportar edição
+- [x] **BUGFIX: Lista atualiza após criar/editar campanha (onSuccess + reload)**
+- [x] **BUGFIX: Status dos envios atualiza para 'enviado'/'erro' após envio WAHA**
+- [x] **BUGFIX: Edição de campanha carrega dados corretamente (useEffect no open)**
+- [x] **Salvar campanha como rascunho**
+- [x] **Remover filtro TAG (dados não padronizados)**
+- [x] **Filtro por Cidade (select com dados reais do banco)**
+- [x] **Filtro por Líder (eleitores com nivel='lider')**
+- [x] **Filtro por Liderados (eleitores vinculados a um líder)**
 - [x] Type check passando
-- [x] Commit + push
-- [x] Deploy Vercel (em andamento)
 
 ### ⚠️ Ação manual pendente:
-- **Escanear QR Code** para conectar WhatsApp
+- **Escanear QR Code** para conectar WhatsApp (pendente da sessão anterior)
   - Acesse: http://82.197.73.101:8080
   - Ou use a API: `GET /api/screenshot?session=default`
   - Abra WhatsApp no celular → Aparelhos conectados → Conectar
   - Aponte para o QR Code
 
 ### 📝 Próximos passos:
+- [ ] Promover ComunicacaoPageV2 para produção (copiar para ComunicacaoPage.tsx)
 - [ ] Webhook para receber respostas dos eleitores
-- [ ] Status de entrega (enviado, entregue, lido)
-- [ ] Rodar migration 032 no Supabase
+- [ ] Status de entrega real (enviado, entregue, lido) via WAHA webhooks
+- [ ] Implementar envio de e-mail (SendGrid/Resend)
 
 ---
 
@@ -68,6 +84,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 | Solicitações V3 | `SolicitacoesPageV3.tsx` | 01/06 | **Promovida à produção** — arquivo mantido para histórico |
 | Mapa V1 | `MapaPageV1.tsx` | 28/05 | Arquivado — teste de clusters com ícones |
 | Mapa V2 | `MapaPageV2.tsx` | 01/06 | **Em produção** — cópia de trabalho mantida |
+| Comunicação V2 | `ComunicacaoPageV2.tsx` | 06/06 | **Em teste** — melhorias aplicadas, aguardando aprovação |
 
 ---
 

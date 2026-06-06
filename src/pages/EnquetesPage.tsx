@@ -190,7 +190,7 @@ export default function EnquetesPage() {
               <BarChart3 className="w-5 h-5 text-blue-600" />
               Resultados
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="break-all">
               {estatisticas?.enquete.titulo}
             </DialogDescription>
           </DialogHeader>
@@ -205,7 +205,7 @@ export default function EnquetesPage() {
               return (
                 <div key={opcao.id} className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-700">{opcao.texto}</span>
+                    <span className="text-slate-700 break-all">{opcao.texto}</span>
                     <span className="font-medium text-slate-800">{opcao.votos} ({pct}%)</span>
                   </div>
                   <div className="h-2 bg-slate-100 rounded-full overflow-hidden">

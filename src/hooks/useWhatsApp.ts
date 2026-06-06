@@ -67,7 +67,7 @@ export function useWhatsApp() {
     }
   }, [qrQuery]);
 
-  const sendText = useCallback(async (phone: string, text: string): Promise<boolean> => {
+  const sendText = useCallback(async (phone: string, text: string): Promise<{ ok: boolean; error?: string }> => {
     setLoading(true);
     setError(null);
     try {
@@ -75,13 +75,14 @@ export function useWhatsApp() {
       setLoading(false);
       if (!result.ok) {
         setError(result.error || 'Falha ao enviar');
-        return false;
+        return { ok: false, error: result.error };
       }
-      return true;
-    } catch (e) {
-      setError('Falha ao enviar mensagem');
+      return { ok: true };
+    } catch (e: any) {
+      const msg = e?.message || 'Falha ao enviar mensagem';
+      setError(msg);
       setLoading(false);
-      return false;
+      return { ok: false, error: msg };
     }
   }, [sendMutation]);
 
@@ -96,8 +97,8 @@ export function useWhatsApp() {
     let failed = 0;
 
     for (let i = 0; i < phones.length; i++) {
-      const ok = await sendText(phones[i], text);
-      if (ok) success++;
+      const result = await sendText(phones[i], text);
+      if (result.ok) success++;
       else failed++;
       onProgress?.(i + 1, phones.length);
       await new Promise(r => setTimeout(r, 1000));

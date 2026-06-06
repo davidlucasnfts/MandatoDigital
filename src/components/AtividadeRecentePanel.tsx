@@ -138,7 +138,7 @@ export default function AtividadeRecentePanel() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-slate-800 truncate">{a.titulo}</p>
-                    <p className="text-[10px] text-slate-500">{a.descricao}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{a.descricao}</p>
                   </div>
                   <span className="text-[10px] text-slate-400 flex-shrink-0">{formatarTempo(a.data)}</span>
                 </div>

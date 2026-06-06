@@ -39,10 +39,10 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-bold text-slate-800">{eleitor.nome}</h3>
+              <h3 className="text-lg font-bold text-slate-800 break-all">{eleitor.nome}</h3>
             {eleitor.nome_mae && (
               <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                <Heart className="w-3 h-3" /> Mãe: {eleitor.nome_mae}
+                <Heart className="w-3 h-3" /> Mãe: <span className="break-all">{eleitor.nome_mae}</span>
               </p>
             )}
             <div className="flex flex-wrap gap-2 mt-2">
@@ -99,7 +99,7 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
           {(eleitor.endereco || eleitor.bairro || eleitor.cidade) && (
             <div className="flex items-center gap-2 text-sm sm:col-span-2">
               <MapPin className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-600">
+              <span className="text-slate-600 break-all">
                 {[eleitor.endereco, eleitor.bairro, eleitor.cidade, eleitor.estado].filter(Boolean).join(', ')}
                 {eleitor.cep && ` - CEP: ${eleitor.cep}`}
               </span>
@@ -108,25 +108,25 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
           {comunidadeNome && (
             <div className="flex items-center gap-2 text-sm">
               <Users className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-600">{comunidadeNome}</span>
+              <span className="text-slate-600 break-all">{comunidadeNome}</span>
             </div>
           )}
           {indicadorNome && (
             <div className="flex items-center gap-2 text-sm">
               <User className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-600">Indicado por: {indicadorNome}</span>
+              <span className="text-slate-600 break-all">Indicado por: {indicadorNome}</span>
             </div>
           )}
           {liderVinculadoNome && (
             <div className="flex items-center gap-2 text-sm">
               <Crown className="w-4 h-4 text-purple-400" />
-              <span className="text-slate-600">Líder superior: {liderVinculadoNome}</span>
+              <span className="text-slate-600 break-all">Líder superior: {liderVinculadoNome}</span>
             </div>
           )}
           {(eleitor.titulo_eleitor || eleitor.zona || eleitor.secao) && (
             <div className="flex items-center gap-2 text-sm sm:col-span-2">
               <Shield className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-600">
+              <span className="text-slate-600 break-all">
                 {eleitor.titulo_eleitor && `Título: ${eleitor.titulo_eleitor}`}
                 {eleitor.zona && ` · Zona: ${eleitor.zona}`}
                 {eleitor.secao && ` · Seção: ${eleitor.secao}`}
@@ -148,7 +148,7 @@ export default function EleitorPreviewCard({ eleitor, comunidadeNome, indicadorN
         {eleitor.observacoes && (
           <div className="mt-3 pt-3 border-t border-slate-100">
             <p className="text-xs text-slate-500">Observações</p>
-            <p className="text-sm text-slate-700 mt-0.5">{eleitor.observacoes}</p>
+            <p className="text-sm text-slate-700 mt-0.5 break-all">{eleitor.observacoes}</p>
           </div>
         )}
 

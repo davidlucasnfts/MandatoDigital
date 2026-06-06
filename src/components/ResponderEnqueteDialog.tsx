@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Vote, Check } from '@/lib/icons';
-import { maskPhone } from '@/lib/masks';
+import { maskPhone, isValidPhone } from '@/lib/masks';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,7 +74,7 @@ export default function ResponderEnqueteDialog({ open, onClose, onSuccess, enque
             <Vote className="w-5 h-5 text-green-600" />
             Registrar resposta
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="break-all">
             {enquete.titulo}
           </DialogDescription>
         </DialogHeader>
@@ -100,7 +100,7 @@ export default function ResponderEnqueteDialog({ open, onClose, onSuccess, enque
                     }`}>
                       {selected && <Check className="w-3 h-3 text-white" />}
                     </div>
-                    <span className="text-sm">{opcao.texto}</span>
+                    <span className="text-sm break-all">{opcao.texto}</span>
                   </button>
                 );
               })}
@@ -114,15 +114,25 @@ export default function ResponderEnqueteDialog({ open, onClose, onSuccess, enque
             </div>
             <div>
               <Label htmlFor="telefone">Telefone</Label>
-              <Input id="telefone" value={telefoneRespondente} onChange={e => setTelefoneRespondente(maskPhone(e.target.value))} placeholder="Opcional" maxLength={15} />
+              <Input 
+                id="telefone" 
+                value={telefoneRespondente} 
+                onChange={e => setTelefoneRespondente(maskPhone(e.target.value))} 
+                placeholder="Opcional" 
+                maxLength={16} 
+                className={telefoneRespondente && !isValidPhone(telefoneRespondente) ? 'border-red-300' : ''}
+              />
+              {telefoneRespondente && !isValidPhone(telefoneRespondente) && (
+                <p className="text-[10px] text-red-500">Informe DDD + 9 dígitos</p>
+              )}
             </div>
           </div>
           <div>
             <Label htmlFor="obs">Observação</Label>
-            <Textarea id="obs" value={observacao} onChange={e => setObservacao(e.target.value)} rows={2} placeholder="Opcional" />
+            <Textarea id="obs" value={observacao} onChange={e => setObservacao(e.target.value)} rows={2} placeholder="Opcional" className="break-all" />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancelar</Button>
             <Button type="submit" disabled={loading || selectedOpcoes.length === 0} className="bg-green-600 hover:bg-green-700">
               {loading ? 'Registrando...' : 'Registrar voto'}

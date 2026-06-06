@@ -175,7 +175,7 @@ export default function DashboardHome() {
                   {solicitacoesPorCategoria.map((item,i)=>
                     <div key={i} className="flex items-center gap-1 text-[10px] lg:text-xs">
                       <div className="w-2 h-2 rounded-full" style={{backgroundColor:COLORS[i%COLORS.length]}} />
-                      <span className="text-slate-500">{item.categoria}</span>
+                      <span className="text-slate-500 truncate">{item.categoria}</span>
                     </div>
                   )}
                 </div>
@@ -227,12 +227,12 @@ export default function DashboardHome() {
                     tabIndex={0}
                     role="button"
                   >
-                    <p className="text-xs lg:text-sm font-semibold text-slate-800">{e.titulo}</p>
+                    <p className="text-xs lg:text-sm font-semibold text-slate-800 truncate">{e.titulo}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
                         {e.hora_inicio}
                       </span>
-                      <span className="text-[10px] text-slate-500">{e.local}</span>
+                      <span className="text-[10px] text-slate-500 truncate">{e.local}</span>
                     </div>
                   </div>
                 ))}

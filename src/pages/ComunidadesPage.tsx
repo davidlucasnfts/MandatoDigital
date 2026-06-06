@@ -41,14 +41,14 @@ export default function ComunidadesPage() {
                     <button onClick={() => { if (confirm('Excluir esta comunidade?')) { remove(c.id); fetch(); } }} className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded transition-colors" title="Excluir"><Trash2 className="w-3.5 h-3.5"/></button>
                   </div>
                 </div>
-                <h3 className="font-semibold text-slate-800 mb-1">{c.nome}</h3>
+                <h3 className="font-semibold text-slate-800 mb-1 break-all">{c.nome}</h3>
                 <p className="text-xs text-slate-500 mb-3 line-clamp-2">{c.descricao}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                   <div className="flex items-center gap-1.5 text-xs text-slate-500"><Users className="w-3.5 h-3.5"/>{c.total_eleitores || 0} eleitores</div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500"><MapPin className="w-3.5 h-3.5"/>{c.logradouro ? `${c.logradouro}${c.numero ? ', ' + c.numero : ''} — ${c.bairro || ''}, ${c.cidade || ''}` : (c.cidade || 'Sem local')}</div>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 break-all"><MapPin className="w-3.5 h-3.5 flex-shrink-0"/>{c.logradouro ? `${c.logradouro}${c.numero ? ', ' + c.numero : ''} — ${c.bairro || ''}, ${c.cidade || ''}` : (c.cidade || 'Sem local')}</div>
                 </div>
                 {c.lider_id && (
-                  <div className="mt-2 text-[10px] text-slate-400">
+                  <div className="mt-2 text-[10px] text-slate-400 truncate">
                     Líder: {eleitores.find(e => e.id === c.lider_id)?.nome || '—'}
                   </div>
                 )}

@@ -112,10 +112,10 @@ function SolicitacaoRowDesktop({ s, isSelected, onClick, onEdit, onRemove, onUpd
                   </div>
                 </div>
                 {s.descricao && <p className="text-sm text-slate-500 mb-4 break-all">{s.descricao}</p>}
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><User className="w-3 h-3" />Eleitor</h4><div className="text-sm font-medium text-slate-800">{s.eleitor_nome || '—'}</div></div>
-                  <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><User className="w-3 h-3" />Responsável</h4><div className="text-sm font-medium text-slate-800">{s.responsavel || '—'}</div></div>
-                  <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><MapPin className="w-3 h-3" />Local</h4><div className="text-sm font-medium text-slate-800">{s.local || '—'}</div></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><User className="w-3 h-3" />Eleitor</h4><div className="text-sm font-medium text-slate-800 break-all">{s.eleitor_nome || '—'}</div></div>
+                  <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><User className="w-3 h-3" />Responsável</h4><div className="text-sm font-medium text-slate-800 break-all">{s.responsavel || '—'}</div></div>
+                  <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><MapPin className="w-3 h-3" />Local</h4><div className="text-sm font-medium text-slate-800 break-all">{s.local || '—'}</div></div>
                   <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><Calendar className="w-3 h-3" />Solicitação</h4><div className="text-sm font-medium text-slate-800">{s.data_solicitacao ? new Date(s.data_solicitacao).toLocaleDateString('pt-BR') : '—'}</div></div>
                   <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><Clock className="w-3 h-3" />Prazo</h4><div className="text-sm font-medium text-slate-800">{s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : '—'}</div></div>
                   <div className="space-y-1"><h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><CalendarDays className="w-3 h-3" />Evento</h4><div className={`text-sm font-medium ${s.data_evento ? 'text-blue-600' : 'text-slate-800'}`}>{s.data_evento ? new Date(s.data_evento).toLocaleDateString('pt-BR') : '—'}</div></div>
@@ -197,10 +197,10 @@ function SolicitacaoRowMobile({ s, isSelected, onClick, onEdit, onRemove, onUpda
                   </div>
                 </div>
                 {s.descricao && <p className="text-sm text-slate-500 mb-4 break-all">{s.descricao}</p>}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Eleitor</h4><div className="text-sm font-medium text-slate-800">{s.eleitor_nome || '—'}</div></div>
-                  <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Responsável</h4><div className="text-sm font-medium text-slate-800">{s.responsavel || '—'}</div></div>
-                  <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Local</h4><div className="text-sm font-medium text-slate-800">{s.local || '—'}</div></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Eleitor</h4><div className="text-sm font-medium text-slate-800 break-all">{s.eleitor_nome || '—'}</div></div>
+                  <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Responsável</h4><div className="text-sm font-medium text-slate-800 break-all">{s.responsavel || '—'}</div></div>
+                  <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Local</h4><div className="text-sm font-medium text-slate-800 break-all">{s.local || '—'}</div></div>
                   <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Solicitação</h4><div className="text-sm font-medium text-slate-800">{s.data_solicitacao ? new Date(s.data_solicitacao).toLocaleDateString('pt-BR') : '—'}</div></div>
                   <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Prazo</h4><div className="text-sm font-medium text-slate-800">{s.data_prazo ? new Date(s.data_prazo).toLocaleDateString('pt-BR') : '—'}</div></div>
                   <div className="space-y-0.5"><h4 className="text-[10px] font-semibold text-slate-400 uppercase">Evento</h4><div className={`text-sm font-medium ${s.data_evento ? 'text-blue-600' : 'text-slate-800'}`}>{s.data_evento ? new Date(s.data_evento).toLocaleDateString('pt-BR') : '—'}</div></div>

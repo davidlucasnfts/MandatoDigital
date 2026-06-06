@@ -102,7 +102,7 @@ export default function ConviteLinkDialog({ open, onClose, lider }: Props) {
             <Link2 className="w-5 h-5 text-blue-600" />
             Link de convite
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="break-all">
             Link para {lider.nome} convidar eleitores para sua rede.
           </DialogDescription>
         </DialogHeader>
@@ -113,7 +113,7 @@ export default function ConviteLinkDialog({ open, onClose, lider }: Props) {
             Campos do formulário de cadastro:
           </p>
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 max-h-72 overflow-y-auto border rounded-lg p-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 max-h-72 overflow-y-auto border rounded-lg p-3">
             {CAMPOS_PADRAO.map(campo => (
               <div key={campo.key} className="flex items-center gap-2">
                 <Checkbox
@@ -158,9 +158,9 @@ export default function ConviteLinkDialog({ open, onClose, lider }: Props) {
             Link de convite:
           </p>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input value={link} readOnly className="flex-1 text-sm" />
-            <Button variant="outline" size="sm" onClick={copiarLink} className="h-10 px-3">
+            <Button variant="outline" size="sm" onClick={copiarLink} className="h-10 px-3 w-full sm:w-auto">
               {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
             </Button>
           </div>

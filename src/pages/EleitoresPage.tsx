@@ -197,7 +197,7 @@ export default function EleitoresPageV3() {
                     <span className="text-blue-600 font-bold text-lg lg:text-xl">{getIniciais(previewEleitor.nome || '')}</span>
                   </div>
                   <div>
-                    <h3 className="text-lg lg:text-xl font-bold text-slate-800">{previewEleitor.nome}</h3>
+                    <h3 className="text-lg lg:text-xl font-bold text-slate-800 break-all">{previewEleitor.nome}</h3>
                     <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                       <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${nivelColors[previewEleitor.nivel || 'eleitor']}`}>
                         {previewEleitor.nivel || 'eleitor'}
@@ -240,7 +240,7 @@ export default function EleitoresPageV3() {
                 <div className="space-y-2">
                   {previewEleitor.email && (
                     <div className="flex items-center gap-2 text-sm text-slate-700">
-                      <Mail className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{previewEleitor.email}
+                      <Mail className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/><span className="break-all">{previewEleitor.email}</span>
                     </div>
                   )}
                   {previewEleitor.telefone && (
@@ -263,7 +263,7 @@ export default function EleitoresPageV3() {
                 </h4>
                 <div className="space-y-2">
                   {(previewEleitor.endereco || previewEleitor.cidade) && (
-                    <div className="text-sm text-slate-700">
+                    <div className="text-sm text-slate-700 break-all">
                       {previewEleitor.endereco && `${previewEleitor.endereco}, `}{previewEleitor.bairro && `${previewEleitor.bairro}, `}{previewEleitor.cidade || '—'}/{previewEleitor.estado || '—'}
                     </div>
                   )}
@@ -272,7 +272,7 @@ export default function EleitoresPageV3() {
                   )}
                   {previewEleitor.comunidade_id && (
                     <div className="flex items-center gap-2 text-sm text-slate-700">
-                      <Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{getComunidadeNome(previewEleitor.comunidade_id) || '—'}
+                      <Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/><span className="break-all">{getComunidadeNome(previewEleitor.comunidade_id) || '—'}</span>
                     </div>
                   )}
                 </div>
@@ -311,12 +311,12 @@ export default function EleitoresPageV3() {
                   <div className="space-y-2">
                     {previewEleitor.lider_id && (
                       <div className="flex items-center gap-2 text-sm text-slate-700">
-                        <Crown className="w-3.5 h-3.5 text-purple-400 flex-shrink-0"/>Líder: {getLiderNome(previewEleitor.lider_id)}
+                        <Crown className="w-3.5 h-3.5 text-purple-400 flex-shrink-0"/>Líder: <span className="break-all">{getLiderNome(previewEleitor.lider_id)}</span>
                       </div>
                     )}
                     {previewEleitor.lider_vinculado_id && (
                       <div className="flex items-center gap-2 text-sm text-slate-700">
-                        <Link2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>Vinculado a: {getLiderNome(previewEleitor.lider_vinculado_id)}
+                        <Link2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>Vinculado a: <span className="break-all">{getLiderNome(previewEleitor.lider_vinculado_id)}</span>
                       </div>
                     )}
                   </div>
@@ -331,7 +331,7 @@ export default function EleitoresPageV3() {
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {previewEleitor.tags.map((t, i) => (
-                      <span key={i} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{t}</span>
+                      <span key={i} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full truncate max-w-[150px] inline-block">{t}</span>
                     ))}
                   </div>
                 </div>
@@ -398,10 +398,10 @@ export default function EleitoresPageV3() {
                               <span className="text-blue-600 font-semibold text-xs">{getIniciais(e.nome || '')}</span>
                             </div>
                             <div>
-                              <div className="font-medium text-slate-800">{e.nome}</div>
+                              <div className="font-medium text-slate-800 truncate">{e.nome}</div>
                               {e.lider_id && (
                                 <div className="text-[10px] text-purple-500 flex items-center gap-1">
-                                  <Crown className="w-3 h-3"/>{getLiderNome(e.lider_id)}
+                                  <Crown className="w-3 h-3"/><span className="truncate">{getLiderNome(e.lider_id)}</span>
                                 </div>
                               )}
                             </div>
@@ -409,7 +409,7 @@ export default function EleitoresPageV3() {
                         </td>
                         <td className="py-3 px-4 text-slate-500 hidden sm:table-cell">
                           <div className="text-xs">{e.telefone || '—'}</div>
-                          <div className="text-[10px] text-slate-400">{e.email || '—'}</div>
+                          <div className="text-[10px] text-slate-400 truncate">{e.email || '—'}</div>
                         </td>
                         <td className="py-3 px-4 text-slate-500 text-xs hidden lg:table-cell">
                           {e.cidade || '—'}/{e.estado || '—'}
@@ -452,7 +452,7 @@ export default function EleitoresPageV3() {
                                       <span className="text-blue-600 font-bold text-lg lg:text-xl">{getIniciais(previewEleitor.nome || '')}</span>
                                     </div>
                                     <div>
-                                      <h3 className="text-lg lg:text-xl font-bold text-slate-800">{previewEleitor.nome}</h3>
+                                      <h3 className="text-lg lg:text-xl font-bold text-slate-800 break-all">{previewEleitor.nome}</h3>
                                       <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                                         <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${nivelColors[previewEleitor.nivel || 'eleitor']}`}>{previewEleitor.nivel || 'eleitor'}</span>
                                         <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${statusColors[previewEleitor.status || 'ativo']}`}>{previewEleitor.status || 'ativo'}</span>
@@ -476,7 +476,7 @@ export default function EleitoresPageV3() {
                                 <div className="space-y-3">
                                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Mail className="w-3.5 h-3.5"/>Contato</h4>
                                   <div className="space-y-2">
-                                    {previewEleitor.email && <div className="flex items-center gap-2 text-sm text-slate-700"><Mail className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{previewEleitor.email}</div>}
+                                    {previewEleitor.email && <div className="flex items-center gap-2 text-sm text-slate-700"><Mail className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/><span className="break-all">{previewEleitor.email}</span></div>}
                                     {previewEleitor.telefone && <div className="flex items-center gap-2 text-sm text-slate-700"><Phone className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{previewEleitor.telefone}</div>}
                                     {previewEleitor.cpf && <div className="flex items-center gap-2 text-sm text-slate-700"><Hash className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>CPF: {previewEleitor.cpf}</div>}
                                   </div>
@@ -484,9 +484,9 @@ export default function EleitoresPageV3() {
                                 <div className="space-y-3">
                                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5"/>Endereço</h4>
                                   <div className="space-y-2">
-                                    {(previewEleitor.endereco || previewEleitor.cidade) && <div className="text-sm text-slate-700">{previewEleitor.endereco && `${previewEleitor.endereco}, `}{previewEleitor.bairro && `${previewEleitor.bairro}, `}{previewEleitor.cidade || '—'}/{previewEleitor.estado || '—'}</div>}
+                                    {(previewEleitor.endereco || previewEleitor.cidade) && <div className="text-sm text-slate-700 break-all">{previewEleitor.endereco && `${previewEleitor.endereco}, `}{previewEleitor.bairro && `${previewEleitor.bairro}, `}{previewEleitor.cidade || '—'}/{previewEleitor.estado || '—'}</div>}
                                     {previewEleitor.cep && <div className="text-xs text-slate-500">CEP: {previewEleitor.cep}</div>}
-                                    {previewEleitor.comunidade_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>{getComunidadeNome(previewEleitor.comunidade_id) || '—'}</div>}
+                                    {previewEleitor.comunidade_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/><span className="break-all">{getComunidadeNome(previewEleitor.comunidade_id) || '—'}</span></div>}
                                   </div>
                                 </div>
                                 <div className="space-y-3">
@@ -501,8 +501,8 @@ export default function EleitoresPageV3() {
                                   <div className="space-y-3">
                                     <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Crown className="w-3.5 h-3.5"/>Liderança</h4>
                                     <div className="space-y-2">
-                                      {previewEleitor.lider_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Crown className="w-3.5 h-3.5 text-purple-400 flex-shrink-0"/>Líder: {getLiderNome(previewEleitor.lider_id)}</div>}
-                                      {previewEleitor.lider_vinculado_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Link2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>Vinculado a: {getLiderNome(previewEleitor.lider_vinculado_id)}</div>}
+                                      {previewEleitor.lider_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Crown className="w-3.5 h-3.5 text-purple-400 flex-shrink-0"/>Líder: <span className="break-all">{getLiderNome(previewEleitor.lider_id)}</span></div>}
+                                      {previewEleitor.lider_vinculado_id && <div className="flex items-center gap-2 text-sm text-slate-700"><Link2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"/>Vinculado a: <span className="break-all">{getLiderNome(previewEleitor.lider_vinculado_id)}</span></div>}
                                     </div>
                                   </div>
                                 )}
@@ -510,7 +510,7 @@ export default function EleitoresPageV3() {
                                   <div className="space-y-3">
                                     <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Tag className="w-3.5 h-3.5"/>Tags</h4>
                                     <div className="flex flex-wrap gap-1.5">
-                                      {previewEleitor.tags.map((t: string, i: number) => <span key={i} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{t}</span>)}
+                                      {previewEleitor.tags.map((t: string, i: number) => <span key={i} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full truncate max-w-[150px] inline-block">{t}</span>)}
                                     </div>
                                   </div>
                                 )}

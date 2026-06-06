@@ -142,7 +142,7 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
                           let val: any = (row as any)[col.key];
                           if (col.key === 'comunidade_id') val = comunidades.find(c => c.id === val)?.nome || '';
                           if (Array.isArray(val)) val = val.join('; ');
-                          return <td key={col.key} className="py-1.5 px-2 text-slate-600 whitespace-nowrap">{val || '—'}</td>;
+                          return <td key={col.key} className="py-1.5 px-2 text-slate-600 truncate">{val || '—'}</td>;
                         })}
                       </tr>
                     ))}
@@ -203,7 +203,7 @@ export default function ExportarEleitoresDialog({ open, onClose, data }: Props) 
               <label className="text-xs font-medium text-slate-700">Colunas</label>
               <span className="text-[10px] text-slate-400">{checkedColumns.length} selecionadas</span>
             </div>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1">
               {columns.map(col => (
                 <label key={col.key} className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-50 rounded px-1 py-1">
                   <Checkbox checked={col.checked} onCheckedChange={() => toggleColumn(col.key)} className="w-3.5 h-3.5" />

@@ -121,14 +121,14 @@ export default function EquipePage() {
                               <span className="text-blue-600 font-semibold text-xs">{m.nome.split(' ').map(n => n[0]).join('').slice(0, 2)}</span>
                             </div>
                             <div>
-                              <div className="font-medium text-slate-800">{m.nome}</div>
-                              <div className="text-xs text-slate-400 flex items-center gap-1">
+                              <div className="font-medium text-slate-800 truncate">{m.nome}</div>
+                              <div className="text-xs text-slate-400 flex items-center gap-1 truncate">
                                 <Mail className="w-3 h-3" /> {m.email}
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-slate-600 text-xs">{m.cargo || '-'}</td>
+                        <td className="py-3 px-4 text-slate-600 text-xs truncate">{m.cargo || '-'}</td>
                         <td className="py-3 px-4">
                           {can.manageTeam ? (
                             <DropdownMenu>

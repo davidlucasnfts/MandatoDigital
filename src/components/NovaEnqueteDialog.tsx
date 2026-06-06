@@ -149,13 +149,14 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="titulo">Título *</Label>
-            <Input id="titulo" value={form.titulo} onChange={e => updateField('titulo', e.target.value)} required />
+            <Input id="titulo" value={form.titulo} onChange={e => updateField('titulo', e.target.value)} required maxLength={100} />
+            <p className="text-[10px] text-slate-400 mt-1">{form.titulo.length}/100 caracteres</p>
           </div>
           <div>
             <Label htmlFor="descricao">Descrição</Label>
-            <Textarea id="descricao" value={form.descricao} onChange={e => updateField('descricao', e.target.value)} rows={2} />
+            <Textarea id="descricao" value={form.descricao} onChange={e => updateField('descricao', e.target.value)} rows={2} className="break-all" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label htmlFor="status">Status</Label>
               <select id="status" value={form.status} onChange={e => updateField('status', e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
@@ -173,7 +174,7 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label htmlFor="dataPublicacao">Data de publicação</Label>
               <Input id="dataPublicacao" type="date" min="1900-01-01" max={new Date().toISOString().split('T')[0]} value={formatDateForInput(form.dataPublicacao)} onChange={e => updateField('dataPublicacao', e.target.value)} />
@@ -208,7 +209,7 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
             )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancelar</Button>
             <Button type="submit" disabled={loading}>
               {loading ? 'Salvando...' : 'Salvar'}

@@ -74,7 +74,7 @@ export default function ComunicacaoPanel() {
         ) : (
           <div className="space-y-4">
             {/* Canais disponíveis */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="bg-blue-50 rounded-lg p-2 text-center">
                 <Mail className="w-4 h-4 text-blue-600 mx-auto mb-1" />
                 <p className="text-lg font-bold text-blue-600">{stats.comEmail}</p>

@@ -95,7 +95,7 @@ export default function AlertasPanel({ tarefasUrgentes, solicitacoesPendentes, e
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold text-slate-800 truncate">{a.titulo}</p>
-                      <p className="text-[10px] text-slate-500 mt-0.5">{a.descricao}</p>
+                      <p className="text-[10px] text-slate-500 mt-0.5 truncate">{a.descricao}</p>
                     </div>
                   </div>
                 </CardContent>

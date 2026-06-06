@@ -134,18 +134,18 @@ function SolicitacaoPreview({ s, onEdit, onRemove, onUpdate }: {
         {s.descricao && <p className="text-sm text-slate-500 mb-4 break-all">{s.descricao}</p>}
 
         {/* Grid de detalhes */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-1">
             <h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><User className="w-3 h-3" />Eleitor</h4>
-            <div className="text-sm font-medium text-slate-800">{s.eleitor_nome || '—'}</div>
+            <div className="text-sm font-medium text-slate-800 break-all">{s.eleitor_nome || '—'}</div>
           </div>
           <div className="space-y-1">
             <h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><User className="w-3 h-3" />Responsável</h4>
-            <div className="text-sm font-medium text-slate-800">{s.responsavel || '—'}</div>
+            <div className="text-sm font-medium text-slate-800 break-all">{s.responsavel || '—'}</div>
           </div>
           <div className="space-y-1">
             <h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><MapPin className="w-3 h-3" />Local</h4>
-            <div className="text-sm font-medium text-slate-800">{s.local || '—'}</div>
+            <div className="text-sm font-medium text-slate-800 break-all">{s.local || '—'}</div>
           </div>
           <div className="space-y-1">
             <h4 className="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1"><Calendar className="w-3 h-3" />Solicitação</h4>

@@ -66,7 +66,7 @@ export default function InteracoesPanel({ eleitorId, eleitorNome, onClose }: Pro
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-slate-800">Interações</h3>
-          <p className="text-sm text-slate-500">{eleitorNome}</p>
+          <p className="text-sm text-slate-500 truncate">{eleitorNome}</p>
         </div>
         <div className="flex gap-2">
           <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => setShowForm(true)}>
@@ -82,7 +82,7 @@ export default function InteracoesPanel({ eleitorId, eleitorNome, onClose }: Pro
         <Card>
           <CardContent className="p-4 space-y-3">
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-slate-700">Tipo</label>
                   <select
@@ -156,7 +156,7 @@ export default function InteracoesPanel({ eleitorId, eleitorNome, onClose }: Pro
                       <span className="text-xs font-semibold text-slate-700">{tipoLabels[i.tipo]}</span>
                       <span className="text-[10px] text-slate-400">{i.data}</span>
                     </div>
-                    <p className="text-xs text-slate-600 mt-1">{i.descricao}</p>
+                    <p className="text-xs text-slate-600 mt-1 break-all">{i.descricao}</p>
                   </div>
                   <button
                     onClick={() => { if (confirm('Excluir esta interação?')) remove(i.id); }}

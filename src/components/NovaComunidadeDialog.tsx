@@ -225,13 +225,14 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
           {/* Nome */}
           <div className="space-y-1.5">
             <Label htmlFor="nome">Nome *</Label>
-            <Input id="nome" value={form.nome} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome da comunidade" required />
+            <Input id="nome" value={form.nome} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome da comunidade" required maxLength={100} />
+            <p className="text-[10px] text-slate-400 mt-1">{form.nome.length}/100 caracteres</p>
           </div>
 
           {/* Descrição */}
           <div className="space-y-1.5">
             <Label htmlFor="descricao">Descrição</Label>
-            <Textarea id="descricao" value={form.descricao} onChange={e => setField('descricao', e.target.value)} placeholder="Descrição da comunidade" rows={2} />
+            <Textarea id="descricao" value={form.descricao} onChange={e => setField('descricao', e.target.value)} placeholder="Descrição da comunidade" rows={2} className="break-all" />
           </div>
 
           {/* Líder */}
@@ -315,7 +316,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
           </div>
 
           {/* Endereço — Bairro + Cidade + Estado */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="bairro">Bairro</Label>
               <AutocompleteBairro
@@ -343,7 +344,7 @@ export default function NovaComunidadeDialog({ open, onClose, onSuccess, comunid
           </div>
 
           {/* Ações */}
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading || geocodingLoading}>Cancelar</Button>
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading || geocodingLoading}>
               {geocodingLoading ? (

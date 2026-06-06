@@ -196,7 +196,7 @@ export default function AniversariantesPanel() {
                         <span className="text-pink-600 font-semibold text-xs">🎂</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-slate-800">{e.nome}</p>
+                        <p className="text-sm font-medium text-slate-800 truncate">{e.nome}</p>
                         <p className="text-xs text-slate-500">{e.telefone} · {e.cidade} {dn && <span className="text-pink-500 font-medium">· {String(dn.dia).padStart(2,'0')}/{String(dn.mes).padStart(2,'0')}</span>}</p>
                       </div>
                     </div>
@@ -268,7 +268,7 @@ export default function AniversariantesPanel() {
             <div className="bg-slate-50 rounded-lg p-3 max-h-48 overflow-y-auto">
               {pendentes.map(e => (
                 <div key={e.id} className="flex items-center justify-between py-1.5 border-b border-slate-100 last:border-0">
-                  <span className="text-sm text-slate-700">{e.nome}</span>
+                  <span className="text-sm text-slate-700 truncate">{e.nome}</span>
                   <span className="text-xs text-slate-400">{e.telefone}</span>
                 </div>
               ))}

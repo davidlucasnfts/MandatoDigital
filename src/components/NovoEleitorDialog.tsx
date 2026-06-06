@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, User, Crown, MapPin } from '@/lib/icons';
-import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput } from '@/lib/masks';
+import { maskCPF, maskPhone, maskCEP, capitalizeWords, formatDateForInput, isValidPhone } from '@/lib/masks';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -194,6 +194,12 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
       return;
     }
 
+    // Validacao: telefone obrigatorio e valido
+    if (!form.telefone || !isValidPhone(form.telefone)) {
+      alert('Telefone inválido. Informe no formato (DD) 98765-4321 com DDD e 9 dígitos.');
+      return;
+    }
+
     // Validacao: numero obrigatorio (ou S/N)
     if (!form.numero || form.numero.trim() === '') {
       alert('Número é obrigatório. Marque "Sem número (S/N)" se não houver.');
@@ -304,7 +310,8 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           {/* Campos principais */}
           <div className="space-y-1">
             <Label htmlFor="nome" className="text-xs">Nome completo *</Label>
-            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome completo" required className="h-9" />
+            <Input id="nome" value={form.nome || ''} onChange={e => setField('nome', capitalizeWords(e.target.value))} placeholder="Nome completo" required maxLength={100} className="h-9" />
+            <p className="text-[10px] text-slate-400 mt-1">{(form.nome || '').length}/100 caracteres</p>
           </div>
 
           <div className="space-y-1">
@@ -317,18 +324,28 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
               <Label htmlFor="email" className="text-xs">E-mail</Label>
               <Input id="email" type="email" value={form.email || ''} onChange={e => setField('email', e.target.value)} placeholder="nome@email.com" className="h-9" />
             </div>
-            <div className="space-y-1 w-[140px]">
-              <Label htmlFor="telefone" className="text-xs">Telefone</Label>
-              <Input id="telefone" value={form.telefone || ''} onChange={e => setField('telefone', maskPhone(e.target.value))} placeholder="(11) 98765-4321" maxLength={15} className="h-9" />
+            <div className="space-y-1 w-full sm:w-[160px]">
+              <Label htmlFor="telefone" className="text-xs">Telefone <span className="text-red-400">*</span></Label>
+              <Input
+                id="telefone"
+                value={form.telefone || ''}
+                onChange={e => setField('telefone', maskPhone(e.target.value))}
+                placeholder="(11) 98765-4321"
+                maxLength={16}
+                className={`h-9 ${form.telefone && !isValidPhone(form.telefone) ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+              />
+              {form.telefone && !isValidPhone(form.telefone) && (
+                <p className="text-[10px] text-red-500">Informe DDD + 9 dígitos</p>
+              )}
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2 items-end">
-            <div className="space-y-1 w-[150px]">
+            <div className="space-y-1 w-full sm:w-[150px]">
               <Label htmlFor="cpf" className="text-xs">CPF</Label>
               <Input id="cpf" value={form.cpf || ''} onChange={e => setField('cpf', maskCPF(e.target.value))} placeholder="123.456.789-00" maxLength={14} className="h-9" />
             </div>
-            <div className="space-y-1 w-[140px]">
+            <div className="space-y-1 w-full sm:w-[140px]">
               <Label htmlFor="data_nascimento" className="text-xs">Data nasc.</Label>
               <input
                 id="data_nascimento"
@@ -347,7 +364,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                 className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
               />
             </div>
-            <div className="space-y-1 w-[100px]">
+            <div className="space-y-1 w-full sm:w-[100px]">
               <Label htmlFor="status" className="text-xs">Status</Label>
               <select id="status" value={form.status || 'ativo'} onChange={e => setField('status', e.target.value as Eleitor['status'])} className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm">
                 <option value="ativo">Ativo</option>
@@ -415,15 +432,15 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
           <div className="space-y-3 pt-2">
             <p className="text-sm font-medium text-slate-700">Dados Eleitorais</p>
             <div className="flex flex-wrap gap-2">
-              <div className="space-y-1 w-[120px]">
+              <div className="space-y-1 w-full sm:w-[120px]">
                 <Label htmlFor="titulo_eleitor" className="text-xs">Título de Eleitor</Label>
                 <Input id="titulo_eleitor" value={form.titulo_eleitor || ''} onChange={e => setField('titulo_eleitor', e.target.value.replace(/\D/g, ''))} placeholder="000000000000" maxLength={12} className="h-9" />
               </div>
-              <div className="space-y-1 w-[70px]">
+              <div className="space-y-1 w-full sm:w-[70px]">
                 <Label htmlFor="zona" className="text-xs">Zona</Label>
                 <Input id="zona" value={form.zona || ''} onChange={e => setField('zona', e.target.value.replace(/\D/g, ''))} placeholder="000" maxLength={3} className="h-9" />
               </div>
-              <div className="space-y-1 w-[70px]">
+              <div className="space-y-1 w-full sm:w-[70px]">
                 <Label htmlFor="secao" className="text-xs">Seção</Label>
                 <Input id="secao" value={form.secao || ''} onChange={e => setField('secao', e.target.value.replace(/\D/g, ''))} placeholder="0000" maxLength={4} className="h-9" />
               </div>
@@ -439,7 +456,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
 
             {/* CEP + Buscar + Endereco + Numero */}
             <div className="flex flex-wrap gap-2 items-end">
-              <div className="space-y-1 w-[110px]">
+              <div className="space-y-1 w-full sm:w-[110px]">
                 <Label htmlFor="cep" className="text-xs">CEP *</Label>
                 <Input id="cep" value={form.cep || ''} onChange={e => setField('cep', maskCEP(e.target.value))} onBlur={e => buscarCep(e.target.value)} placeholder="01001-000" maxLength={9} className="h-9" />
               </div>
@@ -529,7 +546,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
                   placeholder="Cidade"
                 />
               </div>
-              <div className="space-y-1 w-[55px]">
+              <div className="space-y-1 w-full sm:w-[55px]">
                 <Label htmlFor="estado" className="text-xs">UF</Label>
                 <Input id="estado" value={form.estado || ''} onChange={e => setField('estado', e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))} placeholder="SP" maxLength={2} className="h-9 px-2" />
               </div>
@@ -537,7 +554,7 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
 
             {/* Comunidade + Tags */}
             <div className="flex flex-wrap gap-2 items-end">
-              <div className="space-y-1 w-[140px]">
+              <div className="space-y-1 w-full sm:w-[140px]">
                 <Label htmlFor="comunidade_id" className="text-xs">Comunidade</Label>
                 <select id="comunidade_id" value={form.comunidade_id || ''} onChange={e => setField('comunidade_id', e.target.value || null)} className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm">
                   <option value="">Selecione</option>
@@ -556,11 +573,11 @@ export default function NovoEleitorDialog({ open, onClose, onSuccess, eleitor }:
             <p className="text-sm font-medium text-slate-700">Observações</p>
 
             <div className="space-y-1">
-              <Textarea id="observacoes" value={form.observacoes || ''} onChange={e => setField('observacoes', e.target.value)} placeholder="Observações adicionais" rows={3} />
+              <Textarea id="observacoes" value={form.observacoes || ''} onChange={e => setField('observacoes', e.target.value)} placeholder="Observações adicionais" rows={3} className="break-all" />
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
             <Button type="button" onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700" disabled={loading}>
               {loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : `Cadastrar ${config.label}`}

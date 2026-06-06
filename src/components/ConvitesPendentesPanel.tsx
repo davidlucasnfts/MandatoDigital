@@ -94,7 +94,7 @@ export default function ConvitesPendentesPanel() {
                   <p className="text-xs font-medium text-slate-800 truncate">
                     {c.nome || 'Sem nome'}
                   </p>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-slate-500 truncate">
                     {c.telefone || c.email || 'Sem contato'}
                     {c.indicador?.nome && ` · indicado por ${c.indicador.nome}`}
                   </p>

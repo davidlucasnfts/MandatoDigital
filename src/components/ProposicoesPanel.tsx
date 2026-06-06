@@ -123,7 +123,7 @@ export default function ProposicoesPanel() {
                       <div className={`w-2 h-2 rounded-full flex-shrink-0 ${cfg.bg.replace('bg-', 'bg-').replace('50', '500')}`} />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-slate-800 truncate">{p.titulo}</p>
-                        <p className="text-[10px] text-slate-500">
+                        <p className="text-[10px] text-slate-500 truncate">
                           {p.tipo}{p.numero ? ` ${p.numero}` : ''}{p.ano ? `/${p.ano}` : ''}
                         </p>
                       </div>

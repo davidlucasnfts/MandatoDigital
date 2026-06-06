@@ -33,6 +33,9 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Comunicação — Campanhas WhatsApp/E-mail com templates, filtros, seleção múltipla, registro de envios** | **04/06** |
 | **WhatsApp — WAHA API integrada na VPS para envio automático de mensagens** | **04/06** |
 | **Documentação ADR-006 — Estratégia WhatsApp API para múltiplos clientes (WAHA/Evolution/Cloud)** | **04/06** |
+| **Comunicação V2 — Botões de ação com texto+ícone, editar/enviar/reenviar campanha, status individual dos envios no preview** | **06/06** |
+| **Comunicação V2 — Bugfixes: lista atualiza após criar, status envios atualiza, edição carrega dados** | **06/06** |
+| **Comunicação V2 — Filtros de destinatários: Cidade, Líder, Liderados (dados reais do banco) + Salvar como rascunho** | **06/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -504,6 +507,92 @@ O Dashboard estava usando dados mockados (`useMockData`, `useMockDashboardData`)
 - `src/lib/demoData.ts` — usado por `useSupabaseData.ts` quando `isDemoUser()`
 - `src/lib/mockData.ts` — não mais usado pelo DashboardHome
 - `src/hooks/useMockData.ts` — não mais usado pelo DashboardHome
+
+---
+
+## 📝 Resumo da Sessão 06/06 — Comunicação V2 (Melhorias)
+
+### Contexto
+A página de Comunicação V2 (`ComunicacaoPageV2.tsx`) estava funcional mas com ações pendentes (TODOs) e botões de ícone sem texto, violando o Design System. Esta sessão implementou todas as ações e aplicou o padrão visual correto.
+
+### Melhorias Entregues
+
+#### 1. Botões de Ação — Design System Aplicado
+| Antes | Depois |
+|-------|--------|
+| Ícone solitário (Pencil, Play, Trash2) | Texto + ícone empilhados verticalmente |
+| Cores pastel (bg-blue-50) | Cores sólidas (bg-blue-600 text-white) |
+| Sem padrão definido | Todos botões do mesmo grupo com mesmo estilo |
+
+| Ação | Cor | Estilo |
+|------|-----|--------|
+| Editar | `bg-blue-600` | Sólido, texto+ícone |
+| Enviar | `bg-green-600` | Sólido, texto+ícone |
+| Reenviar | `bg-amber-600` | Sólido, texto+ícone |
+| Excluir | `bg-red-600` | Sólido, texto+ícone |
+
+#### 2. Ações Pendentes Implementadas
+| Ação | Status Antes | Status Depois |
+|------|-------------|---------------|
+| Editar campanha (rascunho) | `/* TODO */` | ✅ Abre dialog com dados preenchidos |
+| Enviar campanha (rascunho) | `/* TODO */` | ✅ Processa envio, atualiza status |
+| Reenviar campanha (enviada) | `/* TODO */` | ✅ Reprocessa para mesmos destinatários |
+| Excluir campanha | ✅ Funcionava | ✅ Mantido, com texto+ícone |
+
+#### 3. Status Individual dos Envios no Preview
+- Nova seção "Status dos envios" no `CampanhaPreview.tsx`
+- Lista cada destinatário com ícone de status:
+  - ⏱️ Pendente (âmbar)
+  - ✅ Enviado (verde)
+  - ❌ Erro (vermelho)
+  - 👁️ Lido (azul)
+- Seção colapsável (ChevronDown/Up)
+- Busca dados reais da tabela `envios_campanha`
+
+#### 4. NovaCampanhaDialog Suporta Edição
+- Nova prop `campanhaEditando?: Campanha | null`
+- `useEffect` preenche formulário com dados da campanha
+- Atualiza campanha existente em vez de criar nova
+- Título muda para "Editar Campanha"
+
+#### 5. Removida Opção de E-mail
+- NovaCampanhaDialog só oferece WhatsApp
+- E-mail não estava implementado (causaria confusão)
+- Botão de tipo removido do dialog
+
+### Arquivos Modificados
+- `src/pages/ComunicacaoPageV2.tsx` — Ações implementadas, botões com texto+ícone
+- `src/components/NovaCampanhaDialog.tsx` — Suporte a edição, removido e-mail
+- `src/components/CampanhaPreview.tsx` — Status individual dos envios
+
+### Correções de Bugs (06/06)
+| # | Problema | Causa | Solução |
+|---|----------|-------|---------|
+| 1 | Lista não atualiza após criar campanha | Hooks separados não compartilham estado | `onSuccess` callback + `window.location.reload()` |
+| 2 | Envios ficam "pendente" no preview | Nunca chamava `marcarEnviado()` | Mapeia envio_id → eleitor_id e atualiza status individual |
+| 3 | Edição não carrega dados | `useEffect` com dependências incorretas | Reescreveu lógica: limpa ao abrir (criação) ou preenche (edição) |
+
+### Melhorias nos Filtros de Destinatários (06/06)
+| # | Melhoria | Descrição |
+|---|----------|-----------|
+| 1 | **Salvar como rascunho** | Botão nas Etapas 1 e 2 para salvar campanha sem enviar |
+| 2 | **Remover filtro TAG** | Tags são digitadas manualmente — baixa assertividade |
+| 3 | **Filtro por Cidade** | Select com cidades dos eleitores cadastrados (ViaCEP) |
+| 4 | **Filtro por Líder** | Select com eleitores que têm `nivel='lider'` |
+| 5 | **Filtro por Liderados** | Select que mostra eleitores vinculados a um líder |
+| 6 | **Dados reais do banco** | Todos os filtros vêm dos eleitores cadastrados — zero dados "do além" |
+
+### Layout dos Filtros
+```
+Comunidade [Todas ▼]          Líder [Todos ▼]
+Cidade [Todas ▼]              Bairro [Todos ▼]
+Liderados por [Todos ▼]
+```
+
+### Próximos Passos
+- [ ] Promover V2 para produção (copiar para ComunicacaoPage.tsx)
+- [ ] Implementar envio de e-mail (SendGrid/Resend)
+- [ ] Webhook WAHA para status real de entrega
 
 ---
 

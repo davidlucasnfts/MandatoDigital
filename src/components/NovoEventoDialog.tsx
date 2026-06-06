@@ -72,10 +72,10 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
 
           <div className="space-y-1.5">
             <Label htmlFor="descricao">Descrição</Label>
-            <Textarea id="descricao" value={form.descricao || ''} onChange={e => setField('descricao', e.target.value)} placeholder="Descrição opcional" rows={3} />
+            <Textarea id="descricao" value={form.descricao || ''} onChange={e => setField('descricao', e.target.value)} placeholder="Descrição opcional" rows={3} className="break-all" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="data">Data *</Label>
               <Input id="data" type="date" min="1900-01-01" max={new Date().toISOString().split('T')[0]} value={formatDateForInput(form.data)} onChange={e => setField('data', e.target.value)} required />
@@ -91,7 +91,7 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="hora_inicio">Hora de início</Label>
               <Input id="hora_inicio" type="time" value={form.hora_inicio || ''} onChange={e => setField('hora_inicio', e.target.value)} />
@@ -107,7 +107,7 @@ export default function NovoEventoDialog({ open, onClose, onSuccess, evento }: P
             <Input id="local" value={form.local || ''} onChange={e => setField('local', e.target.value)} placeholder="Endereço ou local do evento" />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>{loading ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar evento'}</Button>
           </div>

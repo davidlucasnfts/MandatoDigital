@@ -188,7 +188,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">{eleitorSelecionado?.nome || form.eleitor_nome}</p>
                     {eleitorSelecionado?.telefone && (
-                      <p className="text-[10px] text-slate-500">{eleitorSelecionado.telefone}</p>
+                      <p className="text-[10px] text-slate-500 break-all">{eleitorSelecionado.telefone}</p>
                     )}
                   </div>
                   <button
@@ -223,7 +223,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-slate-800 truncate">{e.nome}</p>
-                            <p className="text-[10px] text-slate-500">{e.bairro || 'Sem bairro'} {e.telefone ? `· ${e.telefone}` : ''}</p>
+                            <p className="text-[10px] text-slate-500 break-all">{e.bairro || 'Sem bairro'} {e.telefone ? `· ${e.telefone}` : ''}</p>
                           </div>
                           <Check className="w-3.5 h-3.5 text-blue-600 opacity-0" />
                         </button>
@@ -240,7 +240,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
             </div>
 
             {/* Categoria + Prioridade */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="categoria" className="text-xs font-medium text-slate-700 flex items-center gap-1">
                   <Tag className="w-3 h-3" />Categoria
@@ -257,7 +257,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
                 <Label className="text-xs font-medium text-slate-700 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" />Prioridade
                 </Label>
-                <div className="grid grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   {(Object.keys(prioridadeConfig) as Array<keyof typeof prioridadeConfig>).map(p => {
                     const cfg = prioridadeConfig[p];
                     const ativo = form.prioridade === p;
@@ -294,8 +294,8 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
                 onChange={e => setField('descricao', e.target.value)}
                 placeholder="Descreva a demanda com detalhes..."
                 rows={3}
+                className="resize-none break-all"
                 maxLength={250}
-                className="resize-none"
               />
             </div>
 
@@ -321,7 +321,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
             </h4>
             <p className="text-[10px] text-slate-500 -mt-1">Data limite para dar retorno ou resolver a demanda</p>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="data_solicitacao" className="text-xs font-medium text-slate-700">Data da solicitação</Label>
                 <Input
@@ -399,7 +399,7 @@ export default function NovaSolicitacaoDialog({ open, onClose, onSuccess, solici
         </form>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 px-5 py-4 border-t border-slate-100 bg-slate-50/50">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 px-5 py-4 border-t border-slate-100 bg-slate-50/50">
           <Button type="button" variant="outline" onClick={onClose} disabled={loading} className="h-10">
             Cancelar
           </Button>

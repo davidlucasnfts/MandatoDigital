@@ -73,7 +73,9 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
               onChange={e => setField('titulo', e.target.value)}
               placeholder="Digite o título da tarefa"
               required
+              maxLength={100}
             />
+            <p className="text-[10px] text-slate-400 mt-1">{(form.titulo || '').length}/100 caracteres</p>
           </div>
 
           <div className="space-y-1.5">
@@ -84,10 +86,11 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
               onChange={e => setField('descricao', e.target.value)}
               placeholder="Descrição opcional"
               rows={3}
+              className="break-all"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="prioridade">Prioridade</Label>
               <select
@@ -142,7 +145,7 @@ export default function NovaTarefaDialog({ open, onClose, onSuccess, tarefa }: P
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
               Cancelar
             </Button>

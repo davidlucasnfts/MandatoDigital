@@ -8,6 +8,29 @@ interface WahaSession {
   me?: { id: string; pushName: string };
 }
 
+/** Normaliza telefone para formato WAHA: remove máscara, remove 55 duplicado, remove 9, adiciona 55 */
+function normalizePhone(phone: string): string {
+  let digits = phone.replace(/\D/g, "");
+  // Remove 55 do início se existir
+  if (digits.startsWith("55")) {
+    digits = digits.slice(2);
+  }
+  // Remove o 9 (nono dígito) se o número tiver 11 dígitos
+  if (digits.length === 11 && digits[2] === "9") {
+    digits = digits.slice(0, 2) + digits.slice(3);
+  }
+  return "55" + digits;
+}
+
+/** Valida se o telefone tem formato brasileiro válido (10 ou 11 dígitos) */
+function isValidPhone(phone: string): boolean {
+  const digits = phone.replace(/\D/g, "");
+  const numDigits = digits.startsWith("55") ? digits.slice(2) : digits;
+  if (numDigits.length !== 10 && numDigits.length !== 11) return false;
+  const ddd = parseInt(numDigits.slice(0, 2), 10);
+  return ddd >= 11 && ddd <= 99;
+}
+
 async function wahaFetch(path: string, options?: RequestInit): Promise<Response> {
   const url = `${env.wahaApiUrl}${path}`;
   const headers: Record<string, string> = {
@@ -15,7 +38,14 @@ async function wahaFetch(path: string, options?: RequestInit): Promise<Response>
     "Content-Type": "application/json",
     ...(options?.headers as Record<string, string> || {}),
   };
-  return fetch(url, { ...options, headers });
+  // Timeout de 20 segundos para evitar falhas silenciosas
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  try {
+    return await fetch(url, { ...options, headers, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export const whatsappRouter = createRouter({
@@ -122,8 +152,20 @@ export const whatsappRouter = createRouter({
       if (!env.wahaApiUrl || !env.wahaApiKey) {
         return { ok: false, error: "WAHA não configurado" };
       }
+      // Validação do telefone
+      if (!isValidPhone(input.phone)) {
+        return { ok: false, error: "Telefone inválido. Use formato: (DD) 9XXXX-XXXX" };
+      }
       try {
-        const chatId = `55${input.phone.replace(/\D/g, "")}@c.us`;
+        const chatId = normalizePhone(input.phone) + "@c.us";
+        // Verifica se o número existe no WhatsApp antes de enviar
+        const checkRes = await wahaFetch(`/api/contacts/check-exists?phone=${normalizePhone(input.phone)}&session=default`);
+        if (checkRes.ok) {
+          const checkData = await checkRes.json().catch(() => ({}));
+          if (checkData.numberExists === false) {
+            return { ok: false, error: "Número não possui WhatsApp" };
+          }
+        }
         const res = await wahaFetch("/api/sendText", {
           method: "POST",
           body: JSON.stringify({ session: "default", chatId, text: input.text }),

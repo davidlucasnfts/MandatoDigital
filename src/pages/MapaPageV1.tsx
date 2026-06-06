@@ -284,9 +284,9 @@ export default function MapaPageV1() {
       {/* Toolbar de controles */}
       <motion.div custom={2} variants={fadeIn} initial="hidden" animate="visible">
         <PanelCard title="Controles" icon={Layers} iconColor="text-blue-600" iconBg="bg-blue-50" delay={4}>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
             {/* Busca */}
-            <div className="relative flex-1 min-w-[180px] max-w-[260px]">
+            <div className="relative flex-1 min-w-0 sm:min-w-[180px] max-w-none sm:max-w-[260px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input value={buscaNome} onChange={e => setBuscaNome(e.target.value)} placeholder="Buscar eleitor..." className="pl-9 h-9 text-sm" />
               {buscaNome && <button onClick={() => setBuscaNome('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-3.5 h-3.5 text-slate-400" /></button>}
@@ -385,9 +385,9 @@ export default function MapaPageV1() {
                       <div className="text-xs min-w-[180px]">
                         <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-1">
                           <Building2 className="w-3.5 h-3.5" style={{ color: c.cor }} />
-                          {c.nome}
+                          <span className="break-all">{c.nome}</span>
                         </div>
-                        <div className="text-slate-500">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
+                        <div className="text-slate-500 break-all">{c.bairro ? `${c.bairro}, ${c.cidade}` : c.cidade}</div>
                         {c.latitude && <div className="text-[10px] text-green-600 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Posição exata</div>}
                         <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100">
                           <span className="text-[10px] text-slate-500">{c.total_eleitores || 0} eleitores</span>
@@ -409,21 +409,21 @@ export default function MapaPageV1() {
                         <div className="text-xs min-w-[200px]">
                           <div className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
                             {e.nivel === 'lider' && <span className="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center"><Crown className="w-2.5 h-2.5 text-white" /></span>}
-                            {e.nome}
+                            <span className="break-all">{e.nome}</span>
                           </div>
                           <div className="flex items-center gap-2 mt-1.5">
                             <Badge variant="outline" className={`text-[10px] capitalize ${e.nivel === 'lider' ? 'border-purple-200 text-purple-700 bg-purple-50' : 'border-blue-200 text-blue-700 bg-blue-50'}`}>{e.nivel}</Badge>
                             <Badge variant="outline" className={`text-[10px] capitalize ${e.status === 'ativo' ? 'border-green-200 text-green-700 bg-green-50' : e.status === 'pendente' ? 'border-amber-200 text-amber-700 bg-amber-50' : 'border-slate-200 text-slate-600 bg-slate-50'}`}>{e.status}</Badge>
                           </div>
                           <div className="mt-2 space-y-0.5 text-slate-500">
-                            {e.endereco && <div>{e.endereco}</div>}
-                            {e.bairro && <div>{e.bairro}</div>}
-                            <div>{e.cidade}, {e.estado}</div>
+                            {e.endereco && <div className="break-all">{e.endereco}</div>}
+                            {e.bairro && <div className="break-all">{e.bairro}</div>}
+                            <div className="break-all">{e.cidade}, {e.estado}</div>
                             {e.telefone && <div className="text-slate-400">{e.telefone}</div>}
                           </div>
                           {e.tags && e.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
-                              {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{t}</span>)}
+                              {e.tags.map(t => <span key={t} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded truncate max-w-[120px] inline-block">{t}</span>)}
                             </div>
                           )}
                           {/* Botões de ação */}
@@ -570,7 +570,7 @@ export default function MapaPageV1() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Navigation className="w-5 h-5 text-blue-600" />
-              {eleitorSelecionado?.nome}
+              <span className="break-all">{eleitorSelecionado?.nome}</span>
             </DialogTitle>
           </DialogHeader>
           {eleitorSelecionado && (
@@ -580,9 +580,9 @@ export default function MapaPageV1() {
                 <Badge className={`text-[10px] capitalize ${eleitorSelecionado.status === 'ativo' ? 'bg-green-100 text-green-700 hover:bg-green-100' : eleitorSelecionado.status === 'pendente' ? 'bg-amber-100 text-amber-700 hover:bg-amber-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-100'}`}>{eleitorSelecionado.status}</Badge>
               </div>
               <div className="space-y-1 text-slate-600">
-                {eleitorSelecionado.endereco && <p>{eleitorSelecionado.endereco}</p>}
-                {eleitorSelecionado.bairro && <p>{eleitorSelecionado.bairro}</p>}
-                <p>{eleitorSelecionado.cidade}, {eleitorSelecionado.estado}</p>
+                {eleitorSelecionado.endereco && <p className="break-all">{eleitorSelecionado.endereco}</p>}
+                {eleitorSelecionado.bairro && <p className="break-all">{eleitorSelecionado.bairro}</p>}
+                <p className="break-all">{eleitorSelecionado.cidade}, {eleitorSelecionado.estado}</p>
                 {eleitorSelecionado.cep && <p className="text-slate-400">CEP: {eleitorSelecionado.cep}</p>}
               </div>
               {eleitorSelecionado.latitude && eleitorSelecionado.longitude && (
@@ -595,7 +595,7 @@ export default function MapaPageV1() {
               )}
               <div className="pt-2 border-t border-slate-100 space-y-1 text-slate-600">
                 {eleitorSelecionado.telefone && <p>Tel: {eleitorSelecionado.telefone}</p>}
-                {eleitorSelecionado.email && <p>{eleitorSelecionado.email}</p>}
+                {eleitorSelecionado.email && <p className="break-all">{eleitorSelecionado.email}</p>}
               </div>
               <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
                 <button onClick={() => {}} className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all">
