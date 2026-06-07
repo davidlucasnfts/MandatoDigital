@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 06/06/2026
-> **Sessão atual:** Comunicação V2 promovida à produção
+> **Sessão atual:** Comunicação V2 promovida + card WhatsApp (parcial)
 
 ---
 
@@ -11,14 +11,22 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Comunicação V2 — Promovida à produção — 06/06**
+**Comunicação V2 — Promovida à produção + Card WhatsApp na mesma página — 06/06**
 
 ### ✅ O que foi entregue:
-- **ComunicacaoPage.tsx** substituída pela versão V2 (campanhas WhatsApp com templates, filtros, envios)
+- **ComunicacaoPage.tsx** substituída pela versão V2 (campanhas WhatsApp, templates, filtros, envios)
 - **Rota de teste removida**: `/dashboard/comunicacao/teste-v2` não existe mais
 - **Link de teste removido** do sidebar
 - **Arquivo V2 mantido** como histórico (`ComunicacaoPageV2.tsx`)
+- **WhatsAppStatusBar** adicionado na página Comunicação (barra compacta acima dos stats)
+- **WhatsAppConnectModal** criado com fluxo de conexão/QR Code/desconexão
+- **Backend ajustado**: `startSession` agora cria sessão `default` se não existir
 - Type check passando
+
+### ⚠️ Pendente para próxima sessão:
+- **Validar fluxo completo de geração de QR Code** — ao clicar em "Conectar", o QR Code não está aparecendo consistentemente
+- Possível causa: sessão WAHA na VPS pode estar em estado inconsistente (deletada em testes anteriores)
+- Próximo passo: testar endpoint `/api/sessions` da WAHA e garantir que `startSession` retorne `SCAN_QR_CODE`
 
 ### ✅ Checklist desta sessão (CONCLUÍDO):
 - [x] Copiar ComunicacaoPageV2.tsx para ComunicacaoPage.tsx
@@ -28,18 +36,15 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 - [x] Atualizar MEMORY.md
 - [x] Atualizar SESSION-CONTEXT.md
 - [x] Type check passando
-
-### ⚠️ Ação manual pendente:
-- **Escanear QR Code** para conectar WhatsApp (pendente das sessões anteriores)
-  - Acesse: http://82.197.73.101:8080
-  - Ou use a API: `GET /api/screenshot?session=default`
-  - Abra WhatsApp no celular → Aparelhos conectados → Conectar
-  - Aponte para o QR Code
+- [x] Adicionar WhatsAppStatusBar na Comunicação
+- [x] Criar WhatsAppConnectModal
+- [x] Ajustar backend para criar sessão default se não existir
 
 ### 📝 Próximos passos:
+- [ ] Corrigir geração de QR Code no modal WhatsApp
+- [ ] Testar fluxo completo: Conectar → QR Code → Escanear → Conectado → Enviar campanha
 - [ ] Implementar envio de e-mail (SendGrid/Resend)
 - [ ] Webhook para receber respostas dos eleitores
-- [ ] Status de entrega real (enviado, entregue, lido) via WAHA webhooks
 
 ---
 
@@ -69,11 +74,11 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Decisões Pendentes
-- Nenhuma. Comunicação V2 em produção.
+- Correção do fluxo de QR Code do WhatsApp na próxima sessão.
 
 ---
 
 ## Próxima Sessão — Sugestões
-1. Testar Comunicação em produção após deploy
-2. Implementar webhooks WAHA para status real
-3. Revisar outras páginas que precisam de refatoração (Equipe, Enquetes, etc.)
+1. Corrigir geração de QR Code no WhatsAppConnectModal
+2. Testar fluxo completo de conexão do WhatsApp
+3. Revisar outras páginas que precisam de refatoração
