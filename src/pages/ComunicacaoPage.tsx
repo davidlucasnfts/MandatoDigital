@@ -14,6 +14,7 @@ import { useEleitores } from '@/hooks/useSupabaseData';
 import NovoComunicadoDialog from '@/components/NovoComunicadoDialog';
 import NovoTemplateDialog from '@/components/NovoTemplateDialog';
 import CampanhaPreview from '@/components/CampanhaPreview';
+import WhatsAppStatusBar from '@/components/WhatsAppStatusBar';
 import type { Campanha, TemplateMensagem, Eleitor } from '@/lib/supabase';
 
 const fadeIn = {
@@ -157,6 +158,9 @@ export default function ComunicacaoPage() {
           </Button>
         </div>
       </motion.div>
+
+      {/* WhatsApp Status */}
+      <WhatsAppStatusBar />
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">

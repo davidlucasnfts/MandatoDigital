@@ -73,10 +73,24 @@ export const whatsappRouter = createRouter({
       return { ok: false, error: "WAHA não configurado. Verifique as variáveis de ambiente." };
     }
     try {
-      // Para sessão existente
+      // 1. Garante que a sessão "default" existe
+      const existsRes = await wahaFetch("/api/sessions/default");
+      if (!existsRes.ok) {
+        // Sessão não existe: cria
+        const createRes = await wahaFetch("/api/sessions", {
+          method: "POST",
+          body: JSON.stringify({ name: "default" }),
+        });
+        if (!createRes.ok) {
+          const err = await createRes.json().catch(() => ({}));
+          return { ok: false, error: err.message || `Falha ao criar sessão (HTTP ${createRes.status})` };
+        }
+      }
+
+      // 2. Para sessão existente
       await wahaFetch("/api/sessions/default/stop", { method: "POST", body: "{}" }).catch(() => {});
 
-      // Inicia nova sessão
+      // 3. Inicia sessão
       const res = await wahaFetch("/api/sessions/default/start", { method: "POST", body: "{}" });
       
       if (!res.ok) {
@@ -84,7 +98,7 @@ export const whatsappRouter = createRouter({
         return { ok: false, error: err.message || `Falha ao iniciar (HTTP ${res.status})` };
       }
 
-      // Aguarda até 30s para status mudar
+      // 4. Aguarda até 30s para status mudar
       for (let i = 0; i < 30; i++) {
         await new Promise(r => setTimeout(r, 1000));
         const statusRes = await wahaFetch("/api/sessions/default");
