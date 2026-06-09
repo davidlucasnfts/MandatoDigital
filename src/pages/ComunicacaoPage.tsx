@@ -14,7 +14,7 @@ import { useEleitores } from '@/hooks/useSupabaseData';
 import NovoComunicadoDialog from '@/components/NovoComunicadoDialog';
 import NovoTemplateDialog from '@/components/NovoTemplateDialog';
 import CampanhaPreview from '@/components/CampanhaPreview';
-import WhatsAppStatusBar from '@/components/WhatsAppStatusBar';
+import WhatsAppStatusCard from '@/components/WhatsAppStatusCard';
 import type { Campanha, TemplateMensagem, Eleitor } from '@/lib/supabase';
 
 const fadeIn = {
@@ -159,11 +159,12 @@ export default function ComunicacaoPage() {
         </div>
       </motion.div>
 
-      {/* WhatsApp Status */}
-      <WhatsAppStatusBar />
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
+      {/* WhatsApp + Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-2.5 lg:gap-4">
+        <div className="lg:col-span-1">
+          <WhatsAppStatusCard />
+        </div>
+        <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
         {[
           { label: 'Comunicados', value: stats.total, icon: BarChart3, color: 'blue' },
           { label: 'Enviadas', value: stats.enviadas, icon: CheckCircle2, color: 'green' },
@@ -188,6 +189,7 @@ export default function ComunicacaoPage() {
             </Card>
           </motion.div>
         ))}
+        </div>
       </div>
 
       {/* Tabs */}
