@@ -8,6 +8,11 @@ interface WahaSession {
   me?: { id: string; pushName: string };
 }
 
+interface WahaQRResponse {
+  mimetype?: string;
+  data?: string;
+}
+
 /** Normaliza telefone para formato WAHA: remove máscara, remove 55 duplicado, remove 9, adiciona 55 */
 function normalizePhone(phone: string): string {
   let digits = phone.replace(/\D/g, "");
@@ -73,33 +78,41 @@ export const whatsappRouter = createRouter({
       return { ok: false, error: "WAHA não configurado. Verifique as variáveis de ambiente." };
     }
     try {
-      // 1. Garante que a sessão "default" existe
+      // 1. Verifica se a sessão existe
       const existsRes = await wahaFetch("/api/sessions/default");
+
       if (!existsRes.ok) {
-        // Sessão não existe: cria
+        // Sessão não existe: cria e inicia automaticamente
         const createRes = await wahaFetch("/api/sessions", {
           method: "POST",
-          body: JSON.stringify({ name: "default" }),
+          body: JSON.stringify({
+            name: "default",
+            config: {
+              client: {
+                deviceName: "Mandato Digital",
+                browserName: "Chrome",
+              },
+            },
+          }),
         });
         if (!createRes.ok) {
           const err = await createRes.json().catch(() => ({}));
           return { ok: false, error: err.message || `Falha ao criar sessão (HTTP ${createRes.status})` };
         }
+      } else {
+        // Sessão existe: reinicia para garantir QR Code fresco
+        const restartRes = await wahaFetch("/api/sessions/default/restart", {
+          method: "POST",
+          body: JSON.stringify({}),
+        });
+        if (!restartRes.ok) {
+          const err = await restartRes.json().catch(() => ({}));
+          return { ok: false, error: err.message || `Falha ao reiniciar sessão (HTTP ${restartRes.status})` };
+        }
       }
 
-      // 2. Para sessão existente
-      await wahaFetch("/api/sessions/default/stop", { method: "POST", body: "{}" }).catch(() => {});
-
-      // 3. Inicia sessão
-      const res = await wahaFetch("/api/sessions/default/start", { method: "POST", body: "{}" });
-      
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        return { ok: false, error: err.message || `Falha ao iniciar (HTTP ${res.status})` };
-      }
-
-      // 4. Aguarda até 30s para status mudar
-      for (let i = 0; i < 30; i++) {
+      // 2. Aguarda até 45s para status mudar para SCAN_QR_CODE ou WORKING
+      for (let i = 0; i < 45; i++) {
         await new Promise(r => setTimeout(r, 1000));
         const statusRes = await wahaFetch("/api/sessions/default");
         if (statusRes.ok) {
@@ -107,9 +120,12 @@ export const whatsappRouter = createRouter({
           if (data.status === "SCAN_QR_CODE" || data.status === "WORKING") {
             return { ok: true, status: data.status };
           }
+          if (data.status === "FAILED") {
+            return { ok: false, error: "Sessão falhou ao iniciar. Tente reconectar." };
+          }
         }
       }
-      
+
       return { ok: true, status: "STARTING" };
     } catch (e: any) {
       return { ok: false, error: e.message || "Falha ao iniciar sessão" };
@@ -121,15 +137,17 @@ export const whatsappRouter = createRouter({
       return { qrCode: null, error: "WAHA não configurado" };
     }
     try {
-      // Usa endpoint específico de QR Code da WAHA
+      // WAHA Core: endpoint de QR Code é GET /api/default/auth/qr
+      // Retorna: {"mimetype":"image/png","data":"base64..."}
       const res = await wahaFetch("/api/default/auth/qr", {
+        method: "GET",
         headers: { "Accept": "application/json" },
       });
       console.log("[WAHA] QR Code status:", res.status);
       if (!res.ok) {
         return { qrCode: null, error: `Não foi possível gerar QR Code (HTTP ${res.status})` };
       }
-      const data = await res.json();
+      const data = (await res.json()) as WahaQRResponse;
       console.log("[WAHA] QR Code data:", data ? "recebido" : "vazio");
       if (data && data.data) {
         return { qrCode: `data:${data.mimetype || "image/png"};base64,${data.data}` };

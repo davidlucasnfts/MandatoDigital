@@ -12,6 +12,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 ## ✅ Entregues
 | Funcionalidade | Data |
 |---|---|
+| **Análise técnica completa + Plano de Refatoração em 4 sprints** — estrutura, banco, segurança, infra, frontend | **08/06** |
+| **Correção QR Code WhatsApp + Hardening de segurança da WAHA** — endpoint POST correto, validação contra IP público, script de setup seguro, ADR-006 atualizado | **08/06** |
 | Eleitores (CRUD, tags, níveis, comunidades, CPF) | — |
 | Import/Export CSV | — |
 | Kanban drag-and-drop | — |
@@ -37,6 +39,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Comunicação V2 — Bugfixes: lista atualiza após criar, status envios atualiza, edição carrega dados** | **06/06** |
 | **Comunicação V2 — Filtros de destinatários: Cidade, Líder, Liderados (dados reais do banco) + Salvar como rascunho** | **06/06** |
 | **Comunicação V2 — Promovida à produção (copiada para ComunicacaoPage.tsx)** | **06/06** |
+| **Correção QR Code WhatsApp** — endpoint GET /api/default/auth/qr, polling a cada 8s, sem loop infinito | **08/06** |
+| **Agenda V2 — Design System aplicado** — stats cards, tabs por tipo, calendário interativo, preview modal, data dinâmica | **08/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |

@@ -155,6 +155,60 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 □ 7. Execute npm run check após mudanças?
 ```
 
+### Processo Obrigatório para Ícones (novo código ou refatoração)
+
+> **Regra de Ouro:** NUNCA usar um ícone sem verificar se ele existe em `src/lib/icons.ts`.
+> Erro #013 já ocorreu 3+ vezes. Chega.
+
+**Passo a passo (sempre executar):**
+
+```
+□ 1. ABRIR src/lib/icons.ts — ver TODOS os exports disponíveis
+□ 2. SÓ usar ícones que estão no arquivo — nunca inventar nome
+□ 3. Se precisar de ícone novo: adicionar em icons.ts PRIMEIRO, depois usar
+□ 4. VERIFICAR: grep -n "IconNome" src/lib/icons.ts (deve retornar linha)
+```
+
+**Ícones disponíveis no projeto (referência rápida):**
+```
+Users, User, UserPlus, UserCheck, MapPin, Mail, MessageSquare, MessageCircle,
+TrendingUp, BarChart3, BarChart2, Search, Pencil, Eye, EyeOff, Download, Upload,
+Save, Filter, Navigation, Menu, Settings, AlertTriangle, AlertCircle, Shield,
+Flag, Star, Calendar, CalendarDays, CalendarRange, CalendarWeek, CalendarTime,
+FileText, File, FolderOpen, Image, Image2, Phone, Video, Camera, Gift, Heart,
+HeartHandshake, Lock, Link2, Link3, Share2, Send, Clock, Copy, Tag, Target,
+Check, CheckCircle, CheckCircle2, XCircle2, X, XCircle, Trash2, Plus,
+ChevronDown, ChevronLeft, ChevronRight, ChevronUp, LayoutDashboard, Home,
+Building2, Building3, MapPinned, ExternalLink, MoreVertical, MoreHorizontal,
+Zap, PartyPopper, PartyPopper2, Sparkles, Activity, Vote, Layers, FileSpreadsheet,
+Route, Headphones, ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Minus, LogOut,
+Bell, ClipboardList, Crown, Medal, Award, Trophy, Thermometer, ArrowUpRight,
+ArrowUpLeft, Loader2, Smartphone, Mobile, BuildingCommunity, ChartPie, ChartLine,
+Report, ReportAnalytics, Notes, Notebook, Book, World, Compass, ZoomIn, ZoomOut,
+Maximize, Minimize, Printer, DeviceDesktop, Cloud, Database, Wifi, Code,
+Terminal2, Bug, Api, Rosette, MoodSmile, MoodCheck, LockAccess, LockOpen,
+Fingerprint, Id, AccessPoint, Archive, History, RotateClockwise, ArchiveOff,
+MailOpened, MailForward, MessageDots, PhoneCall, BellRinging, BellOff,
+BrandWhatsapp, BrandTelegram, TrendingDown, FileAnalytics, CalendarStats,
+MapSearch, Location, WorldLatitude, WorldLongitude, Gps, RouteAltLeft, Scale,
+Signature, FileInvoice, FileCertificate, CurrencyDollar, CreditCard, Cash,
+CashBanknote, ReceiptTax, ChartDonut, ChartArea, Server, CloudUpload
+```
+
+**NUNCA assumir que estes existem (nomes comuns que NÃO estão no projeto):**
+- `Car`, `Plane`, `Train`, `Bus`, `Bike`, `Ship`, `Truck`
+- `Coffee`, `Utensils`, `Shopping`, `Music`
+- `Home` (existe, mas verificar), `Building` (não — é `Building2`/`Building3`)
+- `Briefcase`, `GraduationCap`, `Stethoscope`, `Hospital`
+- `CalendarCheck`, `CalendarClock`, `CalendarX`, `CalendarPlus`, `CalendarMinus`
+- `CheckCircle2` (existe!), mas `CheckCircle` também existe — verificar qual usar
+
+**Se precisar de ícone novo:**
+1. Abrir `src/lib/icons.ts`
+2. Adicionar: `IconNomeOriginal as MeuAlias,`
+3. Verificar em https://tabler-icons.io se o ícone existe
+4. Só depois usar no componente
+
 ### Regras de Ouro (nunca quebrar)
 
 1. **NUNCA** criar arquivo de documentação sem verificar se função já existe
@@ -530,7 +584,7 @@ Vercel → HTTPS → API Proxy (VPS:443) → localhost → PostgreSQL (VPS:5432)
 - **Fontes legíveis** — mínimo 16px para inputs, 14px para texto corrido
 
 | 012 | Testar na produção em vez de local primeiro | 22/05/2026 | SEMPRE testar localmente (`npm run dev`) antes de qualquer deploy. Produção é só para código validado |
-| 013 | Ícones inexistentes causando crash no build | 25/05/2026 | SEMPRE verificar se o ícone existe em `src/lib/icons.ts` antes de usar. Nunca assumir que o nome do Tabler = nome do export |
+| 013 | Ícones inexistentes causando crash no build | 25/05/2026 | **PROCESSO OBRIGATÓRIO:** 1) Abrir `src/lib/icons.ts`, 2) Verificar se o ícone existe no export, 3) SÓ ENTÃO usar no código. Nunca assumir que nome do Tabler = nome do export. Usar `grep` para confirmar: `grep -n "IconNome" src/lib/icons.ts` |
 | 014 | Cards com alturas diferentes no mesmo grid | 25/05/2026 | SEMPRE usar `h-full` em cards do mesmo grid. Manter consistência visual — se um card tem header+content, todos devem ter |
 | 015 | Espaço vazio sem função em cards | 25/05/2026 | SEMPRE questionar: "esse espaço tem propósito?". Zero espaços vazios sem função. Conteúdo deve preencher o card naturalmente |
 | 016 | Layout assimétrico sem necessidade | 25/05/2026 | SEMPRE preferir grids simétricos (2, 3, 4 colunas). Evitar 1+2, 2+1, etc. A menos que o conteúdo justifique |

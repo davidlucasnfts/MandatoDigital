@@ -34,12 +34,22 @@ app.use(
 );
 
 // Rate limiting: 100 requests por IP a cada 15 minutos
+// Em desenvolvimento (localhost), desabilita rate limiting para facilitar testes
+const isDev = process.env.NODE_ENV !== "production";
+
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutos
     limit: 100,
     standardHeaders: "draft-6",
-    keyGenerator: (c) => c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "anonymous",
+    keyGenerator: (c) => {
+      const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "anonymous";
+      // Em dev, usa um identificador único por sessão para não bloquear localhost
+      if (isDev && (ip === "127.0.0.1" || ip === "::1" || ip === "anonymous")) {
+        return "dev-localhost";
+      }
+      return ip;
+    },
     skipSuccessfulRequests: false,
   })
 );

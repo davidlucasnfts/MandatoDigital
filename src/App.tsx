@@ -14,6 +14,7 @@ import ComunicacaoPage from '@/pages/ComunicacaoPage';
 import MapaPage from '@/pages/MapaPage';
 
 import AgendaPage from '@/pages/AgendaPage';
+import AgendaPageV2 from '@/pages/AgendaPageV2';
 
 import TarefasPage from '@/pages/TarefasPage';
 import DocumentosPage from '@/pages/DocumentosPage';
@@ -57,6 +58,7 @@ function App() {
         <Route path="mapa" element={<MapaPage />} />
 
         <Route path="agenda" element={<AgendaPage />} />
+        <Route path="agenda/teste-v2" element={<AgendaPageV2 />} />
 
         <Route path="tarefas" element={<TarefasPage />} />
         <Route path="documentos" element={<DocumentosPage />} />

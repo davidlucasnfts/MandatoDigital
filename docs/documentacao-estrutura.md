@@ -24,6 +24,8 @@
 | `docs/diagramas-estado.md` | Pasta `docs/` | **Diagramas de estado** — ciclos de vida das entidades | Time técnico | Novos status/entidades |
 | `docs/padroes-frontend.md` | Pasta `docs/` | **Padrões de frontend** — componentes, hooks, forms | Devs frontend | Mudanças na stack UI |
 | `docs/plano-de-testes.md` | Pasta `docs/` | **Plano de testes** — estratégia, cenários, cobertura | QA + Devs | Novas funcionalidades |
+| `docs/plano-refatoracao-sprints.md` | Pasta `docs/` | **Plano de refatoração** — sprints de higiene, segurança, banco, frontend e testes | Time técnico + David | Novas dívidas técnicas identificadas |
+| `docs/guia-setup-waha-vps.md` | Pasta `docs/` | **Guia passo a passo** — setup seguro da WAHA na VPS com placeholders | David (infra) | Mudanças na infra WAHA |
 | `docs/runbook.md` | Pasta `docs/` | **Runbook operacional** — deploy, troubleshooting, links | DevOps + Devs | Mudanças na infra |
 | `docs/gestao-skills.md` | Pasta `docs/` | **Como usar as 50 skills** — detecção automática, fluxo de trabalho | David + Kimi | Mudanças nas skills |
 | `docs/documentacao-estrutura.md` | Pasta `docs/` | **Este arquivo** — mapa de onde vai cada coisa | Kimi | Mudanças na estrutura |
