@@ -28,6 +28,9 @@
 | `docs/guia-setup-waha-vps.md` | Pasta `docs/` | **Guia passo a passo** — setup seguro da WAHA na VPS com placeholders | David (infra) | Mudanças na infra WAHA |
 | `docs/runbook.md` | Pasta `docs/` | **Runbook operacional** — deploy, troubleshooting, links | DevOps + Devs | Mudanças na infra |
 | `docs/gestao-skills.md` | Pasta `docs/` | **Como usar as 50 skills** — detecção automática, fluxo de trabalho | David + Kimi | Mudanças nas skills |
+| `docs/analise-concorrente-oassessor.md` | Pasta `docs/` | **Análise competitiva** — modelo de negócio, custos e precificação do O Assessor | David + Kimi | Novas informações do concorrente |
+| `docs/estrategia-infra-escala.md` | Pasta `docs/` | **Estratégia de infraestrutura** — custos, gatilhos de upgrade, opções de banco, WhatsApp, VPS e storage | David + Kimi | Mudanças na infraestrutura ou custos |
+| `docs/proposta-planos-precificacao.md` | Pasta `docs/` | **Precificação** — planos, margens, comparativo com concorrentes e regras de upgrade | David + Kimi | Mudanças nos planos ou preços |
 | `docs/documentacao-estrutura.md` | Pasta `docs/` | **Este arquivo** — mapa de onde vai cada coisa | Kimi | Mudanças na estrutura |
 | `README.md` | Raiz do projeto | **Visão geral** — setup, scripts, descrição | Contribuidores | Mudanças no setup |
 | `MestreProjects.md` | `C:\Users\David Lucas\Documents\PROJETOS IA\` | **Padrão global** — regras para todos os projetos | Kimi (novos projetos) | Novos padrões descobertos |

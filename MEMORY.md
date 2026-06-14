@@ -12,6 +12,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 ## ✅ Entregues
 | Funcionalidade | Data |
 |---|---|
+| **Consolidação estratégica** — análise de infraestrutura, custos de escala (WhatsApp/banco/VPS), concorrente O Assessor e proposta de 2 planos de precificação | **13/06** |
 | **Análise técnica completa + Plano de Refatoração em 4 sprints** — estrutura, banco, segurança, infra, frontend | **08/06** |
 | **Correção QR Code WhatsApp + Hardening de segurança da WAHA** — endpoint POST correto, validação contra IP público, script de setup seguro, ADR-006 atualizado | **08/06** |
 | Eleitores (CRUD, tags, níveis, comunidades, CPF) | — |
@@ -105,6 +106,21 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Comunidades: cadastro com geocodificação CNEFE + Here API + cache** | **27/05** |
 | **Mapa: clusters com ícones coloridos (Eleitor azul, Comunidade verde, Líder roxo)** | **28/05** |
 | **Análise de bibliotecas de ícones (Tabler, Phosphor, Lucide, Open Peeps)** | **28/05** |
+
+---
+
+## 📝 Resumo da Sessão 13/06
+
+### Consolidação Estratégica — Infra + Custos + Planos
+- Consolidados 6 documentos em 3:
+  - `docs/analise-concorrente-oassessor.md` — análise do concorrente
+  - `docs/estrategia-infra-escala.md` — custos e infraestrutura por escala
+  - `docs/proposta-planos-precificacao.md` — 2 planos recomendados (R$ 249 / R$ 499)
+- Documentos deletados por duplicidade: `analise-upgrade-10-clientes.md`, `analise-custos-whatsapp-banco.md`, `reanalise-infra-20-clientes.md`, `proposta-planos-infra-3k.md`, `proposta-2-planos.md`.
+- Comparativo direto O Assessor vs Mandato Digital (preço, funcionalidades, escalabilidade).
+- Identificadas armadilhas do modelo ilimitado: prejuízo em clientes grandes, custo de suporte, limitação de WhatsApp.
+- Proposta de planos para o Mandato Digital: Iniciante (R$ 149), Profissional (R$ 299), Campanha (R$ 499) e Enterprise (sob consulta).
+- Atualizado `docs/documentacao-estrutura.md` com o novo documento no mapa.
 
 ---
 

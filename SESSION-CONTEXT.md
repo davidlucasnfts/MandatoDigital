@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 08/06/2026  
-> **Sessão atual:** Correção WhatsApp QR Code + Agenda V2 com Design System
+> **Atualizado em:** 13/06/2026  
+> **Sessão atual:** Consolidação estratégica — infraestrutura, custos e precificação
 
 ---
 
@@ -11,30 +11,26 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Correção WhatsApp QR Code + Agenda V2 — 08/06**
+**Consolidação estratégica — 13/06**
 
 ### ✅ O que foi entregue:
-1. **Correção QR Code WhatsApp**
-   - Endpoint corrigido: POST → GET `/api/default/auth/qr` (WAHA Core)
-   - Polling a cada 8s apenas quando status = SCAN_QR_CODE
-   - Removido loop infinito que gerava 36.500 requisições
-   - Hook `useWhatsApp` retorna `Promise<string | null>` corretamente
-   - Modal mostra QR code automaticamente ao entrar em SCAN_QR_CODE
+1. **Consolidação de documentos em 3 arquivos únicos**
+   - `docs/analise-concorrente-oassessor.md` — análise do concorrente O Assessor
+   - `docs/estrategia-infra-escala.md` — custos, gatilhos de upgrade e opções de infraestrutura
+   - `docs/proposta-planos-precificacao.md` — proposta de 2 planos (R$ 249 / R$ 499)
+   - Deletados 5 documentos redundantes por duplicidade
 
-2. **Agenda V2 — Design System aplicado**
-   - Stats cards com borda superior colorida (Total, Este Mês, Próximos 7 dias, Hoje)
-   - Tabs por tipo de evento: Todos / Reuniões / Eventos
-   - Calendário interativo — clique no dia seleciona e filtra eventos
-   - Data dinâmica (não mais hardcoded para abril/2025)
-   - "Hoje" detecta dia real + botão para voltar ao mês atual
-   - Preview modal padrão Design System (avatar + título + grid 2 colunas + ações)
-   - Eventos passados com opacidade reduzida
-   - Indicadores coloridos no calendário por tipo de evento
+2. **Decisões de precificação**
+   - 2 planos: Profissional (R$ 249/mês, até 5k eleitores) e Premium (R$ 499/mês, até 15k eleitores)
+   - Ponto de partida mínimo: 3.000 eleitores
+   - Margem estimada: 70-80%
 
-3. **Processo de ícones documentado no AGENTS.md**
-   - Regra #013 atualizada com processo obrigatório passo a passo
-   - Lista completa de ícones disponíveis no projeto
-   - Lista de nomes comuns que NÃO existem (para evitar erros)
+3. **Decisões de infraestrutura**
+   - Supabase Pro até ~15 clientes
+   - Self-hosted PostgreSQL em VPS 32GB para 15-30 clientes
+   - WhatsApp: WasenderAPI (R$ 33/sessão)
+   - Storage: Cloudflare R2
+   - Backup: GitHub Action → R2
 
 ### 🔴 Problemas críticos identificados (sessão anterior — ainda pendentes):
 1. **Fallback admin perigoso**: `api/context.ts` retorna `role="admin"` se o banco falhar
@@ -52,7 +48,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 
 ## 🧪 Páginas de Teste Disponíveis
 
-> **Regra:** Arquivos ficam salvos no projeto. Rotas são removidas antes do commit.
+> **Regra:** Arquivos ficam salvos no projeto. Rotas são removidas antes de commit.
 > Na próxima sessão, pedir ao Kimi para reativar se quiser testar.
 
 | Página | Arquivo | Última atualização | Status |
@@ -81,6 +77,8 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
+- **Validar preços dos planos sugeridos** — conversar com 3–5 vereadores potenciais sobre R$ 249 / R$ 499
+- **Decidir sobre infraestrutura para 15+ clientes** — Supabase Team vs self-hosted PostgreSQL
 - **Aprovar Agenda V2** — testar em `/dashboard/agenda/teste-v2` e decidir se promove à produção
 - **Aprovar Configurações V2** — testar em `/dashboard/configuracoes/teste-v2` e decidir se promove à produção
 - **Aprovar o plano de refatoração** — decidir se segue os 4 sprints propostos ou se quer ajustar prioridades
@@ -108,4 +106,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
    - Regenerar `supabase/schema_safe.sql`
    - Revisar RLS da tabela `equipe`
 
-3. **Revisar e ajustar o plano de refatoração** se necessário
+3. **Implementar infraestrutura de backup e storage**:
+   - Criar conta Cloudflare + bucket R2
+   - Configurar backup automático (GitHub Action)
+   - Migrar storage de fotos/docs para R2
