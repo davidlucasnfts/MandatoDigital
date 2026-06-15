@@ -1,7 +1,12 @@
 import { useState, useMemo } from 'react';
-import { BarChart3, FileText, CheckCircle2, TrendingUp, Target, Plus } from '@/lib/icons';
-import { PageHeader, StatCard, SkeletonList, SearchFilterBar, DataList, ModalPreview, ModalPreviewHeader, ModalPreviewGrid, ModalPreviewField, ModalPreviewFooter } from '@/components/dashboard';
+import { BarChart3, FileText, CheckCircle2, TrendingUp, Target, Plus, Eye, Vote, Pencil, Trash2 } from '@/lib/icons';
+import { PageHeader, StatCard, SkeletonList, SearchFilterBar, DataList, ModalPreview, ModalPreviewHeader, ModalPreviewGrid, ModalPreviewField, ModalPreviewFooter, EmptyState } from '@/components/dashboard';
 import { trpc } from '@/providers/trpc';
+import { Button } from '@/components/ui/button';
+import NovaEnqueteDialog from '@/components/NovaEnqueteDialog';
+import ResponderEnqueteDialog from '@/components/ResponderEnqueteDialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { AlertTriangle } from '@/lib/icons';
 
 const tabs = [
   { value: 'todas', label: 'Todas' },
@@ -14,7 +19,18 @@ export default function EnquetesPageV2() {
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('todas');
   const [preview, setPreview] = useState<any>(null);
+  const [showDelete, setShowDelete] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [showResponder, setShowResponder] = useState<string | null>(null);
   const { data: enquetes, isLoading } = trpc.enquetes.list.useQuery({});
+  const utils = trpc.useUtils();
+  const removeMutation = trpc.enquetes.delete.useMutation({
+    onSuccess: () => {
+      setShowDelete(null);
+      setPreview(null);
+      utils.enquetes.list.invalidate();
+    },
+  });
 
   const stats = useMemo(() => {
     const list = enquetes ?? [];
@@ -43,7 +59,7 @@ export default function EnquetesPageV2() {
         title="Enquetes"
         subtitle="Crie pesquisas de opinião e acompanhe os resultados."
         icon={BarChart3}
-        action={{ label: 'Nova Enquete', onClick: () => {}, icon: Plus }}
+        action={{ label: 'Nova Enquete', onClick: () => setShowForm(true), icon: Plus }}
         delay={0}
       />
 
@@ -80,6 +96,14 @@ export default function EnquetesPageV2() {
           renderIcon={() => ({ icon: BarChart3, bg: 'bg-blue-50', color: 'text-blue-600' })}
           renderTitle={(e: any) => <h4 className="text-sm font-semibold text-slate-800">{e.titulo}</h4>}
           renderBadges={(e: any) => <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{e.status}</span>}
+          actions={(e: any) => [
+            { label: 'Resultados', icon: Eye, variant: 'blue', onClick: (ev: any) => { ev.stopPropagation(); } },
+            ...(e.status === 'publicada'
+              ? [{ label: 'Votar', icon: Vote, variant: 'green', onClick: (ev: any) => { ev.stopPropagation(); setShowResponder(e.id); } } as any]
+              : []),
+            { label: 'Editar', icon: Pencil, variant: 'slate', onClick: (ev: any) => { ev.stopPropagation(); } },
+            { label: 'Excluir', icon: Trash2, variant: 'red', onClick: (ev: any) => { ev.stopPropagation(); setShowDelete(e.id); } },
+          ]}
         />
       )}
 
@@ -102,7 +126,38 @@ export default function EnquetesPageV2() {
         )}
       </ModalPreview>
 
-      <div className="p-4 bg-green-50 text-green-700 rounded-lg">Teste intermediário</div>
+      <NovaEnqueteDialog
+        open={showForm}
+        onClose={() => setShowForm(false)}
+        onSuccess={() => utils.enquetes.list.invalidate()}
+      />
+
+      <ResponderEnqueteDialog
+        open={!!showResponder}
+        onClose={() => setShowResponder(null)}
+        enqueteId={showResponder}
+        onSuccess={() => utils.enquetes.list.invalidate()}
+      />
+
+      <Dialog open={!!showDelete} onOpenChange={() => setShowDelete(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+              Excluir enquete
+            </DialogTitle>
+            <DialogDescription>Tem certeza? Esta ação não pode ser desfeita.</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 pt-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowDelete(null)}>Cancelar</Button>
+            <Button className="flex-1 bg-red-600 hover:bg-red-700" onClick={() => showDelete && removeMutation.mutate({ id: showDelete })} disabled={removeMutation.isPending}>
+              {removeMutation.isPending ? 'Excluindo...' : 'Excluir'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className="p-4 bg-green-50 text-green-700 rounded-lg">Teste com exclusão</div>
     </div>
   );
 }
