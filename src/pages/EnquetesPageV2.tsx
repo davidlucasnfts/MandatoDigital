@@ -123,7 +123,11 @@ export default function EnquetesPageV2() {
       );
     }
     if (tab !== 'todas') list = list.filter((e) => e.status === tab);
-    return list.sort((a, b) => (b.createdAt?.localeCompare(a.createdAt || '') || 0));
+    return list.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
   }, [enquetes, search, tab]);
 
   const stats = useMemo(() => {
