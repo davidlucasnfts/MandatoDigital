@@ -58,6 +58,8 @@ export {
   IconLink as Link3,
   IconShare as Share2,
   IconSend as Send,
+  IconPlayerPlay as Play,
+  IconReload as RotateCcw,
   IconClock as Clock,
   IconCopy as Copy,
   IconTag as Tag,

@@ -4,7 +4,7 @@ import {
   X, Send, Mail, MessageSquare, CheckCircle2, Clock,
   AlertCircle, Copy, Trash2, BarChart3, Users, Calendar,
   ChevronDown, ChevronUp, Check, XCircle
-} from 'lucide-react';
+} from '@/lib/icons';
 import { supabase } from '@/lib/supabase';
 import type { Campanha, EnvioCampanha } from '@/lib/supabase';
 

@@ -42,6 +42,16 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Comunicação V2 — Promovida à produção (copiada para ComunicacaoPage.tsx)** | **06/06** |
 | **Correção QR Code WhatsApp** — endpoint GET /api/default/auth/qr, polling a cada 8s, sem loop infinito | **08/06** |
 | **Agenda V2 — Design System aplicado** — stats cards, tabs por tipo, calendário interativo, preview modal, data dinâmica | **08/06** |
+| **Componentes base do Design System** — PageHeader, DataList, ModalPreview, SkeletonList, SearchFilterBar; StatCard/PanelCard/EmptyState adaptados para ícones Tabler | **15/06** |
+| **Comunidades V2** — stats cards, busca, tabs, lista padronizada, preview modal, ações texto+ícone | **15/06** |
+| **Produtividade V2** — KPIs padronizados, gráficos em PanelCards, cores do Design System | **15/06** |
+| **Equipe V2** — stats cards, tabs, lista padronizada, remover dropdown proibido, botões de alterar cargo visíveis | **15/06** |
+| **Tarefas V2** — stats cards, toggle Kanban/Lista, lista padronizada, ações visíveis | **15/06** |
+| **Proposições V2** — stats cards, tabs, busca, lista padronizada, preview modal | **15/06** |
+| **Enquetes V2** — stats cards, tabs, lista padronizada, preview modal integrado com resultados/voto | **15/06** |
+| **Relatórios V2** — KPIs padronizados, abas por categoria, gráficos em PanelCards, exportação PDF/CSV mantida | **15/06** |
+| **Documentos V2** — upload/download/exclusão real via Supabase Storage, stats cards, grid padronizado, preview de imagens | **15/06** |
+| **Comunicação V2 reativada** — corrigidos imports de ícones de lucide-react para @/lib/icons, rota e link de teste ativos | **15/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |

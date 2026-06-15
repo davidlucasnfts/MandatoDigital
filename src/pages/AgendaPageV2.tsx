@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Calendar, ChevronLeft, ChevronRight, Plus, Clock, MapPin, Pencil, Trash2,
-  Eye, X, CalendarDays, CheckCircle2,
-  AlertCircle, Users, Flag, Star, PartyPopper
+  Calendar, ChevronLeft, ChevronRight, Plus, MapPin, Pencil, Trash2,
+  X, CalendarDays, CheckCircle2, CalendarRange, CalendarTime,
+  Users, Flag, PartyPopper
 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -153,16 +153,16 @@ export default function AgendaPageV2() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
         {[
-          { label: 'Total', value: stats.total, icon: CalendarDays, color: 'blue' },
-          { label: 'Este mês', value: stats.esteMes, icon: IconCalendarRange, color: 'purple' },
-          { label: 'Próximos 7 dias', value: stats.proximos7, icon: IconCalendarClock, color: 'amber' },
-          { label: 'Hoje', value: stats.hoje, icon: IconCalendarCheck, color: 'green' },
+          { label: 'Total', value: stats.total, Icon: CalendarDays, color: 'blue' },
+          { label: 'Este mês', value: stats.esteMes, Icon: CalendarRange, color: 'purple' },
+          { label: 'Próximos 7 dias', value: stats.proximos7, Icon: CalendarTime, color: 'amber' },
+          { label: 'Hoje', value: stats.hoje, Icon: CheckCircle2, color: 'green' },
         ].map((s, i) => (
           <motion.div key={s.label} custom={i + 1} variants={fadeIn} initial="hidden" animate="visible">
             <Card className="border-t-[3px]" style={{ borderTopColor: s.color === 'blue' ? '#2563EB' : s.color === 'purple' ? '#7c3aed' : s.color === 'amber' ? '#d97706' : '#16a34a' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <s.icon className={`w-4 h-4 ${s.color === 'blue' ? 'text-blue-600' : s.color === 'purple' ? 'text-purple-600' : s.color === 'amber' ? 'text-amber-600' : 'text-green-600'}`} />
+                  <s.Icon className={`w-5 h-5 ${s.color === 'blue' ? 'text-blue-600' : s.color === 'purple' ? 'text-purple-600' : s.color === 'amber' ? 'text-amber-600' : 'text-green-600'}`} strokeWidth={2} />
                 </div>
                 <p className="text-xl lg:text-2xl font-bold text-slate-800">{s.value}</p>
                 <p className="text-[10px] lg:text-xs text-slate-500 mt-0.5">{s.label}</p>
@@ -290,11 +290,19 @@ export default function AgendaPageV2() {
                   ))
                 ) : eventosFiltrados.length === 0 ? (
                   <div className="text-center py-8">
-                    <CalendarDays className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="text-xs text-slate-500 font-medium">Nenhum evento</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
-                      {selectedDay ? 'Nenhum evento neste dia' : 'Crie seu primeiro evento'}
+                    <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                      <CalendarDays className="w-7 h-7 text-slate-400" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-slate-700 mb-1">Nenhum evento</h3>
+                    <p className="text-xs text-slate-500 mb-3">
+                      {selectedDay ? `Nenhum evento em ${selectedDay} de ${monthNames[month]}` : 'Crie seu primeiro evento para começar'}
                     </p>
+                    <button
+                      onClick={() => { setEditEvento(null); setNovaOpen(true); }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Criar Evento
+                    </button>
                   </div>
                 ) : (
                   eventosFiltrados.slice(0, 10).map((e, i) => {
@@ -316,20 +324,19 @@ export default function AgendaPageV2() {
                         onClick={() => setEventoPreview(e)}
                       >
                         <div className="flex items-start gap-2.5">
-                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
-                            <Icon className={`w-4 h-4 ${cfg.color}`} />
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
+                            <Icon className={`w-6 h-6 ${cfg.color}`} strokeWidth={2} />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className={`text-sm font-medium truncate ${isPast ? 'text-slate-500' : 'text-slate-800'}`}>
+                            <h4 className={`text-sm font-semibold truncate ${isPast ? 'text-slate-500' : 'text-slate-800'}`}>
                               {e.titulo}
                             </h4>
                             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                               <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${cfg.bg} ${cfg.color} font-medium`}>
                                 {cfg.label}
                               </span>
-                              <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
-                                <Clock className="w-3 h-3" />
-                                {e.hora_inicio}
+                              <span className="text-[10px] text-slate-400">
+                                {e.hora_inicio}{e.hora_fim && ` — ${e.hora_fim}`}
                               </span>
                             </div>
                             <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
@@ -337,20 +344,20 @@ export default function AgendaPageV2() {
                               <span className="truncate">{e.local || 'Sem local'}</span>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex flex-col gap-1.5 flex-shrink-0">
                             <button
                               onClick={(ev) => handleEdit(ev, e)}
-                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all"
                               title="Editar"
                             >
-                              <Pencil className="w-3 h-3" />
+                              <Pencil className="w-3.5 h-3.5" /> Editar
                             </button>
                             <button
                               onClick={(ev) => handleDelete(ev, e.id)}
-                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100 rounded"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm hover:shadow-md transition-all"
                               title="Excluir"
                             >
-                              <Trash2 className="w-3 h-3" />
+                              <Trash2 className="w-3.5 h-3.5" /> Excluir
                             </button>
                           </div>
                         </div>
@@ -372,13 +379,14 @@ export default function AgendaPageV2() {
       {/* Event Preview Modal */}
       <AnimatePresence>
         {eventoPreview && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-50"
-            onClick={() => setEventoPreview(null)}
-          >
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-50"
+              onClick={() => setEventoPreview(null)}
+            />
             <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -396,13 +404,13 @@ export default function AgendaPageV2() {
                         const cfg = getEventoConfig(eventoPreview.tipo);
                         const Icon = cfg.icon;
                         return (
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
-                            <Icon className={`w-6 h-6 ${cfg.color}`} />
+                          <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.bg}">
+                            <Icon className={`w-6 h-6 ${cfg.color}`} strokeWidth={2} />
                           </div>
                         );
                       })()}
-                      <div>
-                        <h3 className="text-lg font-bold text-slate-800 line-clamp-2">{eventoPreview.titulo}</h3>
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-bold text-slate-800 line-clamp-2 break-all">{eventoPreview.titulo}</h3>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
                           {(() => {
                             const cfg = getEventoConfig(eventoPreview.tipo);
@@ -443,39 +451,49 @@ export default function AgendaPageV2() {
                   </div>
                   <div className="col-span-2">
                     <p className="text-[10px] font-semibold text-slate-400 uppercase mb-1">Local</p>
-                    <p className="text-sm font-medium text-slate-800 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                      {eventoPreview.local || 'Não definido'}
+                    <p className="text-sm font-medium text-slate-800 flex items-center gap-1 break-all">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                      <span className="break-all">{eventoPreview.local || 'Não definido'}</span>
                     </p>
                   </div>
                   {eventoPreview.descricao && (
                     <div className="col-span-2">
                       <p className="text-[10px] font-semibold text-slate-400 uppercase mb-1">Descrição</p>
                       <div className="bg-slate-50 rounded-lg p-3">
-                        <p className="text-sm text-slate-700 whitespace-pre-wrap">{eventoPreview.descricao}</p>
+                        <p className="text-sm text-slate-700 whitespace-pre-wrap break-all">{eventoPreview.descricao}</p>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Actions */}
-                <div className="p-4 lg:p-6 pt-0 flex gap-2">
-                  <button
-                    onClick={() => { setEventoPreview(null); setEditEvento(eventoPreview); }}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg"
-                  >
-                    <Pencil className="w-3.5 h-3.5" /> Editar
-                  </button>
-                  <button
-                    onClick={() => { setEventoPreview(null); handleDelete({ stopPropagation: () => {} } as any, eventoPreview.id); }}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-red-600 text-white hover:bg-red-700 rounded-lg"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> Excluir
-                  </button>
+                {/* Footer */}
+                <div className="p-4 lg:p-6 pt-0 flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setEventoPreview(null); setEditEvento(eventoPreview); }}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Editar
+                    </button>
+                    <button
+                      onClick={() => { setEventoPreview(null); handleDelete({ stopPropagation: () => {} } as any, eventoPreview.id); }}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm hover:shadow-md transition-all"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Excluir
+                    </button>
+                  </div>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setEventoPreview(null)}
+                      className="flex items-center gap-1 px-4 py-2 text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg"
+                    >
+                      <X className="w-4 h-4" /> Fechar
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -490,7 +508,3 @@ export default function AgendaPageV2() {
   );
 }
 
-// Icon aliases for stats (nomes únicos para não conflitar com imports)
-function IconCalendarRange(props: any) { return <CalendarDays {...props} />; }
-function IconCalendarClock(props: any) { return <Clock {...props} />; }
-function IconCalendarCheck(props: any) { return <CheckCircle2 {...props} />; }

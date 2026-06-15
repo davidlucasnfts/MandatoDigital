@@ -1,12 +1,11 @@
-import { type LucideIcon } from 'lucide-react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown } from '@/lib/icons';
 import { motion } from 'framer-motion';
 import { type ReactNode, isValidElement } from 'react';
 
 interface StatCardProps {
   label: string;
   value: string | number;
-  icon: LucideIcon | ReactNode;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }> | ReactNode;
   color: 'blue' | 'green' | 'amber' | 'red' | 'purple' | 'cyan' | 'pink';
   trend?: {
     value: number;

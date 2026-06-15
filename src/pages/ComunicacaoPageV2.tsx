@@ -4,7 +4,7 @@ import {
   MessageSquare, Send, Mail, Plus, Eye, Users, CheckCircle2,
   Clock, AlertCircle, Trash2, BarChart3, Copy, Pencil, Play, RotateCcw,
   ChevronDown, FileText, X
-} from 'lucide-react';
+} from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

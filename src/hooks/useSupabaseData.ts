@@ -195,7 +195,15 @@ export function useEventos() {
   const insert = async (row: Omit<Evento, 'id' | 'created_at' | 'user_id' | 'owner_id'>) => {
     const { data: userData } = await supabase.auth.getUser();
     const ownerId = userData.user?.id;
-    const { data: inserted } = await supabase.from('eventos').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
+    if (!ownerId) {
+      console.error('Usuário não autenticado');
+      throw new Error('Usuário não autenticado');
+    }
+    const { data: inserted, error } = await supabase.from('eventos').insert({ ...row, user_id: ownerId, owner_id: ownerId }).select().single();
+    if (error) {
+      console.error('Erro ao inserir evento:', error);
+      throw error;
+    }
     if (inserted) setData(prev => [...prev, inserted].sort((a, b) => a.data.localeCompare(b.data)));
     return inserted;
   };

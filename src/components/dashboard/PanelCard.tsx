@@ -1,10 +1,9 @@
-import { type LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { type ReactNode, isValidElement } from 'react';
 
 interface PanelCardProps {
   title: string;
-  icon: LucideIcon | ReactNode;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }> | ReactNode;
   iconColor?: string;
   iconBg?: string;
   action?: {

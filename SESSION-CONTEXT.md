@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 13/06/2026  
-> **Sessão atual:** Consolidação estratégica — infraestrutura, custos e precificação
+> **Atualizado em:** 15/06/2026  
+> **Sessão atual:** Melhorias de Design System e UX nas abas restantes do dashboard
 
 ---
 
@@ -11,56 +11,56 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Consolidação estratégica — 13/06**
+**Páginas V2 das abas restantes — 15/06**
 
 ### ✅ O que foi entregue:
-1. **Consolidação de documentos em 3 arquivos únicos**
-   - `docs/analise-concorrente-oassessor.md` — análise do concorrente O Assessor
-   - `docs/estrategia-infra-escala.md` — custos, gatilhos de upgrade e opções de infraestrutura
-   - `docs/proposta-planos-precificacao.md` — proposta de 2 planos (R$ 249 / R$ 499)
-   - Deletados 5 documentos redundantes por duplicidade
+1. **Componentes base do Design System criados/adaptados**
+   - `PageHeader`, `DataList`, `ModalPreview`, `SkeletonList`, `SearchFilterBar`
+   - `StatCard`, `PanelCard`, `EmptyState` adaptados para aceitar ícones Tabler (`@/lib/icons`)
 
-2. **Decisões de precificação**
-   - 2 planos: Profissional (R$ 249/mês, até 5k eleitores) e Premium (R$ 499/mês, até 15k eleitores)
-   - Ponto de partida mínimo: 3.000 eleitores
-   - Margem estimada: 70-80%
+2. **Páginas V2 criadas e com rotas de teste ativas**
+   - Comunidades V2 (`/dashboard/comunidades/teste-v2`)
+   - Produtividade V2 (`/dashboard/produtividade/teste-v2`)
+   - Equipe V2 (`/dashboard/equipe/teste-v2`)
+   - Tarefas V2 (`/dashboard/tarefas/teste-v2`)
+   - Proposições V2 (`/dashboard/proposicoes/teste-v2`)
+   - Enquetes V2 (`/dashboard/enquetes/teste-v2`)
+   - Relatórios V2 (`/dashboard/relatorios/teste-v2`)
+   - Documentos V2 (`/dashboard/documentos/teste-v2`)
 
-3. **Decisões de infraestrutura**
-   - Supabase Pro até ~15 clientes
-   - Self-hosted PostgreSQL em VPS 32GB para 15-30 clientes
-   - WhatsApp: WasenderAPI (R$ 33/sessão)
-   - Storage: Cloudflare R2
-   - Backup: GitHub Action → R2
+3. **Comunicação V2 reativada**
+   - Corrigidos imports de `lucide-react` para `@/lib/icons`
+   - Rota e link de teste ativos em `/dashboard/comunicacao/teste-v2`
 
-### 🔴 Problemas críticos identificados (sessão anterior — ainda pendentes):
-1. **Fallback admin perigoso**: `api/context.ts` retorna `role="admin"` se o banco falhar
-2. **`schema_safe.sql` desatualizado**: não inclui migration 032 (`templates_mensagem`, `campanhas`, `envios_campanha`)
-3. **`db/schema.ts` incompleto**: Drizzle não conhece várias tabelas principais
-4. **21 arquivos >400 linhas**, sendo 13 no `src/`
-5. **7 páginas de teste órfãs** não importadas no `App.tsx`
-6. **Mistura de bibliotecas de ícones**: `lucide-react` e Tabler convivendo
-7. **Só 4 arquivos de teste** no projeto inteiro
-8. **Sem soft delete** em tabelas de cidadãos
-9. **Falta de índices** em várias FKs críticas
-10. **`EquipePage`** usa `DropdownMenu` com `MoreHorizontal` (proibido pelo Design System)
+4. **Correções aplicadas**
+   - `EquipePageV2` remove dropdown proibido; botões de alterar cargo são sempre visíveis
+   - `DocumentosPageV2` implementa upload/download/exclusão real via Supabase Storage
+   - `NovoEventoDialog` corrigido para não resetar formulário durante digitação
+   - Preview modal da Agenda corrigido para textos longos (`break-all`, `min-w-0`)
+
+5. **Checklist pré-commit parcial executado**
+   - `npx tsc --noEmit` passou sem erros
+   - Rotas/links de teste mantidos ativos para validação visual do usuário
 
 ---
 
 ## 🧪 Páginas de Teste Disponíveis
 
 > **Regra:** Arquivos ficam salvos no projeto. Rotas são removidas antes de commit.
-> Na próxima sessão, pedir ao Kimi para reativar se quiser testar.
 
-| Página | Arquivo | Última atualização | Status |
+| Página | Arquivo | Rota de Teste | Status |
 |---|---|---|---|
-| Dashboard V2 | `DashboardV2.tsx` | 25/05 | Arquivado — funcionalidades migradas para v2.3 |
-| DashboardHomeV2 | `DashboardHomeV2.tsx` | 04/06 | **Promovido à produção** — arquivo mantido para histórico |
-| Solicitações V3 | `SolicitacoesPageV3.tsx` | 01/06 | **Promovida à produção** — arquivo mantido para histórico |
-| Mapa V1 | `MapaPageV1.tsx` | 28/05 | Arquivado — teste de clusters com ícones |
-| Mapa V2 | `MapaPageV2.tsx` | 01/06 | **Em produção** — cópia de trabalho mantida |
-| Comunicação V2 | `ComunicacaoPageV2.tsx` | 06/06 | **Promovida à produção** — arquivo mantido para histórico |
-| **Agenda V2** | **`AgendaPageV2.tsx`** | **08/06** | **Em teste** — aguardando aprovação para produção |
-| Configurações V2 | `ConfiguracoesPageV2.tsx` | 04/06 | Em teste — aguardando aprovação |
+| **Agenda V2** | `AgendaPageV2.tsx` | `/dashboard/agenda/teste-v2` | Em teste — aguardando aprovação |
+| **Configurações V2** | `ConfiguracoesPageV2.tsx` | `/dashboard/configuracoes/teste-v2` | Em teste — aguardando aprovação |
+| **Comunicação V2** | `ComunicacaoPageV2.tsx` | `/dashboard/comunicacao/teste-v2` | Em teste — reativada |
+| **Comunidades V2** | `ComunidadesPageV2.tsx` | `/dashboard/comunidades/teste-v2` | Em teste — aguardando aprovação |
+| **Produtividade V2** | `ProdutividadePageV2.tsx` | `/dashboard/produtividade/teste-v2` | Em teste — aguardando aprovação |
+| **Equipe V2** | `EquipePageV2.tsx` | `/dashboard/equipe/teste-v2` | Em teste — aguardando aprovação |
+| **Tarefas V2** | `TarefasPageV2.tsx` | `/dashboard/tarefas/teste-v2` | Em teste — aguardando aprovação |
+| **Proposições V2** | `ProposicoesPageV2.tsx` | `/dashboard/proposicoes/teste-v2` | Em teste — aguardando aprovação |
+| **Enquetes V2** | `EnquetesPageV2.tsx` | `/dashboard/enquetes/teste-v2` | Em teste — aguardando aprovação |
+| **Relatórios V2** | `RelatoriosPageV2.tsx` | `/dashboard/relatorios/teste-v2` | Em teste — aguardando aprovação |
+| **Documentos V2** | `DocumentosPageV2.tsx` | `/dashboard/documentos/teste-v2` | Em teste — aguardando aprovação |
 
 ---
 
@@ -77,36 +77,28 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
-- **Validar preços dos planos sugeridos** — conversar com 3–5 vereadores potenciais sobre R$ 249 / R$ 499
-- **Decidir sobre infraestrutura para 15+ clientes** — Supabase Team vs self-hosted PostgreSQL
-- **Aprovar Agenda V2** — testar em `/dashboard/agenda/teste-v2` e decidir se promove à produção
-- **Aprovar Configurações V2** — testar em `/dashboard/configuracoes/teste-v2` e decidir se promove à produção
-- **Aprovar o plano de refatoração** — decidir se segue os 4 sprints propostos ou se quer ajustar prioridades
-- **Decidir sobre arquivos de teste órfãos** — manter como histórico ou deletar
-- **Backup do banco** antes de aplicar migrations de soft delete e índices (Sprint 2)
+- **Testar cada página V2 localmente** e decidir quais serão promovidas à produção
+- **Configurar bucket `documentos` no Supabase Storage** se ainda não estiver ativo (migration 007 já existe)
+- **Verificar políticas RLS do bucket `documentos`** — a policy atual exige `auth.uid() = owner`; testar se upload funciona com usuário autenticado
+- **Revisar configuração de CORS do Supabase Storage** se houver erro de upload
 
-### 🔐 Segurança — WAHA API
-- Porta 8080 exposta na internet (necessário para Vercel serverless acessar VPS)
-- **Quando comprar domínio:** implementar Cloudflare Tunnel ou Nginx proxy para fechar porta 8080
-- API Key forte configurada no `.env` da VPS
+### 🔴 Problemas críticos ainda pendentes (fora do escopo desta sessão)
+1. **Fallback admin perigoso**: `api/context.ts` retorna `role="admin"` se o banco falhar
+2. **`db/schema.ts` incompleto**: Drizzle não conhece várias tabelas principais
+3. **21 arquivos >400 linhas**, sendo 13 no `src/`
+4. **Páginas de teste órfãs**: `DashboardHomeV2.tsx`, `DashboardV2.tsx`, `MapaPageV1.tsx`, `MapaPageV2.tsx`, `SolicitacoesPageV3.tsx`, `SolicitacoesPageV4.tsx`
+5. **Mistura de bibliotecas de ícones**: `lucide-react` ainda usado em `DashboardHomeV2.tsx` e `CommandMenu.tsx` (não quebra build, mas viola Design System)
+6. **Sem soft delete** em tabelas de cidadãos
+7. **Falta de índices** em várias FKs críticas
 
 ---
 
 ## Próxima Sessão — Sugestões
 
-1. **Promover Agenda V2 à produção** (se aprovada):
-   - Copiar conteúdo de `AgendaPageV2.tsx` para `AgendaPage.tsx`
-   - Remover rota `/agenda/teste-v2` do `App.tsx`
-   - Remover link "Agenda V2" do sidebar
-
-2. **Iniciar Sprint 1 — Higiene e Segurança**:
-   - Corrigir fallback admin em `api/context.ts`
-   - Remover rotas/links de teste aprovados
-   - Deletar páginas de teste órfãs (após confirmação)
-   - Regenerar `supabase/schema_safe.sql`
-   - Revisar RLS da tabela `equipe`
-
-3. **Implementar infraestrutura de backup e storage**:
-   - Criar conta Cloudflare + bucket R2
-   - Configurar backup automático (GitHub Action)
-   - Migrar storage de fotos/docs para R2
+1. **Testar visualmente todas as páginas V2** e aprovar uma a uma
+2. **Promover páginas aprovadas à produção**:
+   - Copiar conteúdo de `*PageV2.tsx` para `*Page.tsx`
+   - Remover rotas `/teste-v2` do `App.tsx`
+   - Remover links "V2" do sidebar
+3. **Limpar arquivos órfãos** após confirmação
+4. **Executar checklist pré-commit** (tsc, rotas, links, documentação)
