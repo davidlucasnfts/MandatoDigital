@@ -1,10 +1,47 @@
 import { useState, useMemo } from 'react';
-import { BarChart3, FileText, CheckCircle2, TrendingUp, Target, Plus, Eye, Vote, Pencil, Trash2 } from '@/lib/icons';
-import { PageHeader, StatCard, SkeletonList, SearchFilterBar, DataList, ModalPreview, ModalPreviewHeader, ModalPreviewGrid, ModalPreviewField, ModalPreviewFooter, EmptyState } from '@/components/dashboard';
-import { trpc } from '@/providers/trpc';
+import {
+  BarChart3, Plus, Eye, Vote, Pencil, Trash2,
+  CheckCircle2, XCircle, Clock, FileText, AlertTriangle,
+} from '@/lib/icons';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  PageHeader,
+  StatCard,
+  DataList,
+  SkeletonList,
+  EmptyState,
+  ModalPreview,
+  ModalPreviewHeader,
+  ModalPreviewFooter,
+  ModalPreviewGrid,
+  ModalPreviewField,
+  SearchFilterBar,
+} from '@/components/dashboard';
+import { trpc } from '@/providers/trpc';
 import NovaEnqueteDialog from '@/components/NovaEnqueteDialog';
 import ResponderEnqueteDialog from '@/components/ResponderEnqueteDialog';
+
+const statusLabels: Record<string, string> = {
+  rascunho: 'Rascunho',
+  publicada: 'Publicada',
+  encerrada: 'Encerrada',
+  arquivada: 'Arquivada',
+};
+
+const statusColors: Record<string, string> = {
+  rascunho: 'bg-slate-100 text-slate-600',
+  publicada: 'bg-green-50 text-green-600',
+  encerrada: 'bg-amber-50 text-amber-600',
+  arquivada: 'bg-gray-100 text-gray-500',
+};
+
+const tabs = [
+  { value: 'todas', label: 'Todas' },
+  { value: 'publicada', label: 'Publicadas' },
+  { value: 'encerrada', label: 'Encerradas' },
+  { value: 'rascunho', label: 'Rascunhos' },
+];
 
 function EstatisticasContent({ id }: { id: string | null }) {
   const { data: estatisticas, isLoading } = trpc.enquetes.estatisticas.useQuery(
@@ -53,15 +90,6 @@ function EstatisticasContent({ id }: { id: string | null }) {
     </DialogContent>
   );
 }
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { AlertTriangle } from '@/lib/icons';
-
-const tabs = [
-  { value: 'todas', label: 'Todas' },
-  { value: 'publicada', label: 'Publicadas' },
-  { value: 'encerrada', label: 'Encerradas' },
-  { value: 'rascunho', label: 'Rascunhos' },
-];
 
 export default function EnquetesPageV2() {
   const [search, setSearch] = useState('');
@@ -69,10 +97,12 @@ export default function EnquetesPageV2() {
   const [preview, setPreview] = useState<any>(null);
   const [showDelete, setShowDelete] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [editEnquete, setEditEnquete] = useState<any>(null);
   const [showResponder, setShowResponder] = useState<string | null>(null);
   const [showEstatisticas, setShowEstatisticas] = useState<string | null>(null);
-  const { data: enquetes, isLoading } = trpc.enquetes.list.useQuery({});
+
   const utils = trpc.useUtils();
+  const { data: enquetes, isLoading } = trpc.enquetes.list.useQuery({});
   const removeMutation = trpc.enquetes.delete.useMutation({
     onSuccess: () => {
       setShowDelete(null);
@@ -80,6 +110,21 @@ export default function EnquetesPageV2() {
       utils.enquetes.list.invalidate();
     },
   });
+
+  const filtered = useMemo(() => {
+    if (!enquetes) return [];
+    let list = [...enquetes];
+    if (search.trim()) {
+      const term = search.toLowerCase();
+      list = list.filter(
+        (e) =>
+          e.titulo.toLowerCase().includes(term) ||
+          (e.descricao?.toLowerCase().includes(term))
+      );
+    }
+    if (tab !== 'todas') list = list.filter((e) => e.status === tab);
+    return list.sort((a, b) => (b.createdAt?.localeCompare(a.createdAt || '') || 0));
+  }, [enquetes, search, tab]);
 
   const stats = useMemo(() => {
     const list = enquetes ?? [];
@@ -91,16 +136,15 @@ export default function EnquetesPageV2() {
     };
   }, [enquetes]);
 
-  const filtered = useMemo(() => {
-    if (!enquetes) return [];
-    let list = [...enquetes];
-    if (search.trim()) {
-      const term = search.toLowerCase();
-      list = list.filter((e) => e.titulo.toLowerCase().includes(term));
-    }
-    if (tab !== 'todas') list = list.filter((e) => e.status === tab);
-    return list;
-  }, [enquetes, search, tab]);
+  const handleEdit = (enquete: any) => {
+    setEditEnquete(enquete);
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setEditEnquete(null);
+  };
 
   return (
     <div className="space-y-4 lg:space-y-6">
@@ -118,8 +162,8 @@ export default function EnquetesPageV2() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           <StatCard label="Total" value={stats.total} icon={FileText} color="blue" delay={1} />
           <StatCard label="Publicadas" value={stats.publicadas} icon={CheckCircle2} color="green" delay={2} />
-          <StatCard label="Encerradas" value={stats.encerradas} icon={TrendingUp} color="amber" delay={3} />
-          <StatCard label="Rascunhos" value={stats.rascunhos} icon={Target} color="blue" delay={4} />
+          <StatCard label="Encerradas" value={stats.encerradas} icon={Clock} color="amber" delay={3} />
+          <StatCard label="Rascunhos" value={stats.rascunhos} icon={XCircle} color="slate" delay={4} />
         </div>
       )}
 
@@ -136,26 +180,92 @@ export default function EnquetesPageV2() {
       {isLoading ? (
         <SkeletonList count={4} delay={3} />
       ) : filtered.length === 0 ? (
-        <div className="p-4 bg-amber-50 text-amber-700 rounded-lg">Lista vazia</div>
+        <EmptyState
+          icon={BarChart3}
+          title="Nenhuma enquete encontrada"
+          description={search ? 'Tente ajustar os filtros de busca.' : 'Crie sua primeira enquete para começar.'}
+          action={!search ? { label: 'Nova Enquete', onClick: () => setShowForm(true) } : undefined}
+        />
       ) : (
         <DataList
           items={filtered}
           delay={3}
           onClick={setPreview}
-          renderIcon={() => ({ icon: BarChart3, bg: 'bg-blue-50', color: 'text-blue-600' })}
-          renderTitle={(e: any) => <h4 className="text-sm font-semibold text-slate-800">{e.titulo}</h4>}
-          renderBadges={(e: any) => <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{e.status}</span>}
+          renderIcon={() => ({
+            icon: BarChart3,
+            bg: 'bg-blue-50',
+            color: 'text-blue-600',
+          })}
+          renderTitle={(e: any) => (
+            <h4 className="text-sm font-semibold text-slate-800 break-all line-clamp-2">{e.titulo}</h4>
+          )}
+          renderBadges={(e: any) => (
+            <>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusColors[e.status] || 'bg-slate-100 text-slate-600'}`}>
+                {statusLabels[e.status] || e.status}
+              </span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-slate-100 text-slate-600">
+                {e.permiteMultiplaEscolha ? 'Múltipla escolha' : 'Única escolha'}
+              </span>
+            </>
+          )}
+          renderMeta={(e: any) => (
+            <div className="text-[10px] text-slate-400">
+              {e.dataPublicacao && (
+                <span>
+                  {new Date(e.dataPublicacao).toLocaleDateString('pt-BR')}
+                  {e.dataEncerramento && ` → ${new Date(e.dataEncerramento).toLocaleDateString('pt-BR')}`}
+                </span>
+              )}
+            </div>
+          )}
           actions={(e: any) => [
-            { label: 'Resultados', icon: Eye, variant: 'blue', onClick: (ev: any) => { ev.stopPropagation(); setShowEstatisticas(e.id); } },
+            {
+              label: 'Resultados',
+              icon: Eye,
+              variant: 'blue',
+              onClick: (ev: React.MouseEvent) => {
+                ev.stopPropagation();
+                setShowEstatisticas(e.id);
+              },
+            },
             ...(e.status === 'publicada'
-              ? [{ label: 'Votar', icon: Vote, variant: 'green', onClick: (ev: any) => { ev.stopPropagation(); setShowResponder(e.id); } } as any]
+              ? [
+                  {
+                    label: 'Votar',
+                    icon: Vote,
+                    variant: 'green',
+                    onClick: (ev: React.MouseEvent) => {
+                      ev.stopPropagation();
+                      setShowResponder(e.id);
+                    },
+                  } as any,
+                ]
               : []),
-            { label: 'Editar', icon: Pencil, variant: 'slate', onClick: (ev: any) => { ev.stopPropagation(); } },
-            { label: 'Excluir', icon: Trash2, variant: 'red', onClick: (ev: any) => { ev.stopPropagation(); setShowDelete(e.id); } },
+            {
+              label: 'Editar',
+              icon: Pencil,
+              variant: 'slate',
+              onClick: (ev: React.MouseEvent) => {
+                ev.stopPropagation();
+                setPreview(null);
+                handleEdit(e);
+              },
+            },
+            {
+              label: 'Excluir',
+              icon: Trash2,
+              variant: 'red',
+              onClick: (ev: React.MouseEvent) => {
+                ev.stopPropagation();
+                setShowDelete(e.id);
+              },
+            },
           ]}
         />
       )}
 
+      {/* Preview Modal */}
       <ModalPreview isOpen={!!preview} onClose={() => setPreview(null)}>
         {preview && (
           <>
@@ -164,23 +274,76 @@ export default function EnquetesPageV2() {
               iconColor="text-blue-600"
               iconBg="bg-blue-50"
               title={preview.titulo}
-              badges={<span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{preview.status}</span>}
+              badges={
+                <>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[preview.status] || 'bg-slate-100 text-slate-600'}`}>
+                    {statusLabels[preview.status] || preview.status}
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-600">
+                    {preview.permiteMultiplaEscolha ? 'Múltipla escolha' : 'Única escolha'}
+                  </span>
+                </>
+              }
+              description={preview.descricao || undefined}
               onClose={() => setPreview(null)}
             />
             <ModalPreviewGrid>
-              <ModalPreviewField label="Tipo">{preview.permiteMultiplaEscolha ? 'Múltipla' : 'Única'}</ModalPreviewField>
+              <ModalPreviewField label="Publicação">
+                {preview.dataPublicacao ? new Date(preview.dataPublicacao).toLocaleDateString('pt-BR') : '—'}
+              </ModalPreviewField>
+              <ModalPreviewField label="Encerramento">
+                {preview.dataEncerramento ? new Date(preview.dataEncerramento).toLocaleDateString('pt-BR') : '—'}
+              </ModalPreviewField>
+              <ModalPreviewField label="Tipo" className="col-span-2">
+                {preview.permiteMultiplaEscolha ? 'Múltipla escolha' : 'Única escolha'}
+              </ModalPreviewField>
             </ModalPreviewGrid>
-            <ModalPreviewFooter onClose={() => setPreview(null)} />
+            <ModalPreviewFooter
+              onClose={() => setPreview(null)}
+              actions={
+                <>
+                  <button
+                    onClick={(ev) => { ev.stopPropagation(); setShowEstatisticas(preview.id); }}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"
+                  >
+                    <Eye className="w-3.5 h-3.5" strokeWidth={2} /> Resultados
+                  </button>
+                  {preview.status === 'publicada' && (
+                    <button
+                      onClick={(ev) => { ev.stopPropagation(); setShowResponder(preview.id); }}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-green-600 text-white hover:bg-green-700 rounded-lg shadow-sm"
+                    >
+                      <Vote className="w-3.5 h-3.5" strokeWidth={2} /> Votar
+                    </button>
+                  )}
+                  <button
+                    onClick={(ev) => { ev.stopPropagation(); setPreview(null); handleEdit(preview); }}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-600 text-white hover:bg-slate-700 rounded-lg shadow-sm"
+                  >
+                    <Pencil className="w-3.5 h-3.5" strokeWidth={2} /> Editar
+                  </button>
+                  <button
+                    onClick={(ev) => { ev.stopPropagation(); setShowDelete(preview.id); }}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" strokeWidth={2} /> Excluir
+                  </button>
+                </>
+              }
+            />
           </>
         )}
       </ModalPreview>
 
+      {/* Dialog: Nova/Editar Enquete */}
       <NovaEnqueteDialog
         open={showForm}
-        onClose={() => setShowForm(false)}
+        onClose={handleCloseForm}
         onSuccess={() => utils.enquetes.list.invalidate()}
+        enquete={editEnquete}
       />
 
+      {/* Dialog: Responder Enquete */}
       <ResponderEnqueteDialog
         open={!!showResponder}
         onClose={() => setShowResponder(null)}
@@ -188,10 +351,12 @@ export default function EnquetesPageV2() {
         onSuccess={() => utils.enquetes.list.invalidate()}
       />
 
+      {/* Dialog: Estatísticas */}
       <Dialog open={!!showEstatisticas} onOpenChange={() => setShowEstatisticas(null)}>
         <EstatisticasContent id={showEstatisticas} />
       </Dialog>
 
+      {/* Dialog: Confirmar exclusão */}
       <Dialog open={!!showDelete} onOpenChange={() => setShowDelete(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
@@ -202,15 +367,19 @@ export default function EnquetesPageV2() {
             <DialogDescription>Tem certeza? Esta ação não pode ser desfeita.</DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 pt-2">
-            <Button variant="outline" className="flex-1" onClick={() => setShowDelete(null)}>Cancelar</Button>
-            <Button className="flex-1 bg-red-600 hover:bg-red-700" onClick={() => showDelete && removeMutation.mutate({ id: showDelete })} disabled={removeMutation.isPending}>
+            <Button variant="outline" className="flex-1" onClick={() => setShowDelete(null)}>
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1 bg-red-600 hover:bg-red-700"
+              onClick={() => showDelete && removeMutation.mutate({ id: showDelete })}
+              disabled={removeMutation.isPending}
+            >
               {removeMutation.isPending ? 'Excluindo...' : 'Excluir'}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-
-      <div className="p-4 bg-green-50 text-green-700 rounded-lg">Teste com exclusão</div>
     </div>
   );
 }
