@@ -42,6 +42,11 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
    - `npx tsc --noEmit` passou sem erros
    - Rotas/links de teste mantidos ativos para validação visual do usuário
 
+6. **Correção durante testes**
+   - `EnquetesPageV2` crashava porque `StatCard` não suportava `color="slate"` — adicionado 'slate' ao `StatCard`
+   - Adicionados ícones `LayoutGrid` e `List` em `src/lib/icons.ts` para `TarefasPageV2`
+   - Criado roteiro de testes em `docs/testes-paginas-v2.md`
+
 ---
 
 ## 🧪 Páginas de Teste Disponíveis
@@ -77,7 +82,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
-- **Testar cada página V2 localmente** e decidir quais serão promovidas à produção
+- **Testar cada página V2 localmente** usando o roteiro em `docs/testes-paginas-v2.md`
 - **Configurar bucket `documentos` no Supabase Storage** se ainda não estiver ativo (migration 007 já existe)
 - **Verificar políticas RLS do bucket `documentos`** — a policy atual exige `auth.uid() = owner`; testar se upload funciona com usuário autenticado
 - **Revisar configuração de CORS do Supabase Storage** se houver erro de upload

@@ -6,7 +6,7 @@ interface StatCardProps {
   label: string;
   value: string | number;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }> | ReactNode;
-  color: 'blue' | 'green' | 'amber' | 'red' | 'purple' | 'cyan' | 'pink';
+  color: 'blue' | 'green' | 'amber' | 'red' | 'purple' | 'cyan' | 'pink' | 'slate';
   trend?: {
     value: number;
     positive: boolean;
@@ -24,6 +24,7 @@ const colorMap = {
   purple:{ border: 'border-t-purple-600',icon: 'text-purple-600',bg: 'bg-purple-50' },
   cyan:  { border: 'border-t-cyan-600',  icon: 'text-cyan-600',  bg: 'bg-cyan-50' },
   pink:  { border: 'border-t-pink-600',  icon: 'text-pink-600',  bg: 'bg-pink-50' },
+  slate: { border: 'border-t-slate-600', icon: 'text-slate-600', bg: 'bg-slate-100' },
 };
 
 export function StatCard({

@@ -32,6 +32,8 @@ export {
   IconNavigation as Navigation,
   IconMenu2 as Menu,
   IconSettings as Settings,
+  IconLayoutGrid as LayoutGrid,
+  IconList as List,
   IconAlertTriangle as AlertTriangle,
   IconAlertCircle as AlertCircle,
   IconShield as Shield,
