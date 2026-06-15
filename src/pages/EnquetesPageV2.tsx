@@ -1,8 +1,5 @@
 import { useState, useMemo } from 'react';
-import {
-  BarChart3, Plus, Eye, Vote, Pencil, Trash2,
-  CheckCircle2, XCircle, Clock, FileText, AlertTriangle,
-} from '@/lib/icons';
+import { BarChart3, Plus, Search, Trash2, AlertTriangle, Eye, Vote, Pencil, CheckCircle2, XCircle, Clock, FileText } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import {
@@ -43,54 +40,6 @@ const tabs = [
   { value: 'rascunho', label: 'Rascunhos' },
 ];
 
-function EstatisticasContent({ id, onClose }: { id: string | null; onClose: () => void }) {
-  const { data: estatisticas, isLoading } = trpc.enquetes.estatisticas.useQuery(
-    { id: id! },
-    { enabled: !!id }
-  );
-
-  return (
-    <DialogContent className="sm:max-w-lg">
-      <DialogHeader>
-        <DialogTitle className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-blue-600" strokeWidth={2} />
-          Resultados
-        </DialogTitle>
-        <DialogDescription className="break-all">
-          {isLoading ? 'Carregando...' : estatisticas?.enquete.titulo}
-        </DialogDescription>
-      </DialogHeader>
-      <div className="space-y-4 pt-2">
-        {isLoading ? (
-          <div className="text-sm text-slate-500">Carregando resultados...</div>
-        ) : (
-          <>
-            <div className="text-sm text-slate-500">
-              Total de respostas: <span className="font-semibold text-slate-800">{estatisticas?.totalRespostas ?? 0}</span>
-            </div>
-            {estatisticas?.opcoes.map((opcao: any) => {
-              const pct = estatisticas.totalRespostas > 0
-                ? Math.round((opcao.votos / estatisticas.totalRespostas) * 100)
-                : 0;
-              return (
-                <div key={opcao.id} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-700 break-all">{opcao.texto}</span>
-                    <span className="font-medium text-slate-800">{opcao.votos} ({pct}%)</span>
-                  </div>
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-              );
-            })}
-          </>
-        )}
-      </div>
-    </DialogContent>
-  );
-}
-
 export default function EnquetesPageV2() {
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('todas');
@@ -110,6 +59,10 @@ export default function EnquetesPageV2() {
       utils.enquetes.list.invalidate();
     },
   });
+  const { data: estatisticas } = trpc.enquetes.estatisticas.useQuery(
+    { id: showEstatisticas! },
+    { enabled: !!showEstatisticas }
+  );
 
   const filtered = useMemo(() => {
     if (!enquetes) return [];
@@ -144,6 +97,27 @@ export default function EnquetesPageV2() {
   const handleCloseForm = () => {
     setShowForm(false);
     setEditEnquete(null);
+  };
+
+  const handleEstatisticas = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setShowEstatisticas(id);
+  };
+
+  const handleVotar = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setShowResponder(id);
+  };
+
+  const handleEditClick = (e: React.MouseEvent, enquete: any) => {
+    e.stopPropagation();
+    setPreview(null);
+    handleEdit(enquete);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setShowDelete(id);
   };
 
   return (
@@ -191,15 +165,15 @@ export default function EnquetesPageV2() {
           items={filtered}
           delay={3}
           onClick={setPreview}
-          renderIcon={() => ({
+          renderIcon={(e) => ({
             icon: BarChart3,
             bg: 'bg-blue-50',
             color: 'text-blue-600',
           })}
-          renderTitle={(e: any) => (
+          renderTitle={(e) => (
             <h4 className="text-sm font-semibold text-slate-800 break-all line-clamp-2">{e.titulo}</h4>
           )}
-          renderBadges={(e: any) => (
+          renderBadges={(e) => (
             <>
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusColors[e.status] || 'bg-slate-100 text-slate-600'}`}>
                 {statusLabels[e.status] || e.status}
@@ -209,7 +183,7 @@ export default function EnquetesPageV2() {
               </span>
             </>
           )}
-          renderMeta={(e: any) => (
+          renderMeta={(e) => (
             <div className="text-[10px] text-slate-400">
               {e.dataPublicacao && (
                 <span>
@@ -219,26 +193,20 @@ export default function EnquetesPageV2() {
               )}
             </div>
           )}
-          actions={(e: any) => [
+          actions={[
             {
               label: 'Resultados',
               icon: Eye,
               variant: 'blue',
-              onClick: (ev: React.MouseEvent) => {
-                ev.stopPropagation();
-                setShowEstatisticas(e.id);
-              },
+              onClick: (e) => handleEstatisticas(e, preview?.id || filtered[0].id),
             },
-            ...(e.status === 'publicada'
+            ...(preview?.status === 'publicada' || filtered[0]?.status === 'publicada'
               ? [
                   {
                     label: 'Votar',
                     icon: Vote,
                     variant: 'green',
-                    onClick: (ev: React.MouseEvent) => {
-                      ev.stopPropagation();
-                      setShowResponder(e.id);
-                    },
+                    onClick: (e: React.MouseEvent) => handleVotar(e, preview?.id || filtered[0].id),
                   } as any,
                 ]
               : []),
@@ -246,20 +214,13 @@ export default function EnquetesPageV2() {
               label: 'Editar',
               icon: Pencil,
               variant: 'slate',
-              onClick: (ev: React.MouseEvent) => {
-                ev.stopPropagation();
-                setPreview(null);
-                handleEdit(e);
-              },
+              onClick: (e) => handleEditClick(e, preview || filtered[0]),
             },
             {
               label: 'Excluir',
               icon: Trash2,
               variant: 'red',
-              onClick: (ev: React.MouseEvent) => {
-                ev.stopPropagation();
-                setShowDelete(e.id);
-              },
+              onClick: (e) => handleDeleteClick(e, preview?.id || filtered[0].id),
             },
           ]}
         />
@@ -303,27 +264,27 @@ export default function EnquetesPageV2() {
               actions={
                 <>
                   <button
-                    onClick={(ev) => { ev.stopPropagation(); setShowEstatisticas(preview.id); }}
+                    onClick={(e) => handleEstatisticas(e as any, preview.id)}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"
                   >
                     <Eye className="w-3.5 h-3.5" strokeWidth={2} /> Resultados
                   </button>
                   {preview.status === 'publicada' && (
                     <button
-                      onClick={(ev) => { ev.stopPropagation(); setShowResponder(preview.id); }}
+                      onClick={(e) => handleVotar(e as any, preview.id)}
                       className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-green-600 text-white hover:bg-green-700 rounded-lg shadow-sm"
                     >
                       <Vote className="w-3.5 h-3.5" strokeWidth={2} /> Votar
                     </button>
                   )}
                   <button
-                    onClick={(ev) => { ev.stopPropagation(); setPreview(null); handleEdit(preview); }}
+                    onClick={(e) => handleEditClick(e as any, preview)}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-600 text-white hover:bg-slate-700 rounded-lg shadow-sm"
                   >
                     <Pencil className="w-3.5 h-3.5" strokeWidth={2} /> Editar
                   </button>
                   <button
-                    onClick={(ev) => { ev.stopPropagation(); setShowDelete(preview.id); }}
+                    onClick={(e) => handleDeleteClick(e as any, preview.id)}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
                   >
                     <Trash2 className="w-3.5 h-3.5" strokeWidth={2} /> Excluir
@@ -353,7 +314,38 @@ export default function EnquetesPageV2() {
 
       {/* Dialog: Estatísticas */}
       <Dialog open={!!showEstatisticas} onOpenChange={() => setShowEstatisticas(null)}>
-        <EstatisticasContent id={showEstatisticas} onClose={() => setShowEstatisticas(null)} />
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-600" strokeWidth={2} />
+              Resultados
+            </DialogTitle>
+            <DialogDescription className="break-all">
+              {estatisticas?.enquete.titulo}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="text-sm text-slate-500">
+              Total de respostas: <span className="font-semibold text-slate-800">{estatisticas?.totalRespostas ?? 0}</span>
+            </div>
+            {estatisticas?.opcoes.map((opcao: any) => {
+              const pct = estatisticas.totalRespostas > 0
+                ? Math.round((opcao.votos / estatisticas.totalRespostas) * 100)
+                : 0;
+              return (
+                <div key={opcao.id} className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-700 break-all">{opcao.texto}</span>
+                    <span className="font-medium text-slate-800">{opcao.votos} ({pct}%)</span>
+                  </div>
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </DialogContent>
       </Dialog>
 
       {/* Dialog: Confirmar exclusão */}
