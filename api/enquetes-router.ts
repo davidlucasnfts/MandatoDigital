@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
-import { createRouter, authedQuery, editorQuery } from "./middleware.js";
+import { createRouter, publicQuery, authedQuery, editorQuery } from "./middleware.js";
 import { getDb } from "./queries/connection.js";
 import * as schema from "../db/schema.js";
 import { logAudit } from "./lib/audit.js";
@@ -363,4 +363,132 @@ export const enquetesRouter = createRouter({
 
     return { success: true, respostas };
   }),
+
+  // Página pública: buscar enquete publicada
+  publicById: publicQuery
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ input }) => {
+      const db = getDb();
+
+      const enquete = await db
+        .select()
+        .from(schema.enquetes)
+        .where(
+          and(
+            eq(schema.enquetes.id, input.id),
+            eq(schema.enquetes.status, "publicada"),
+          ),
+        )
+        .limit(1);
+
+      if (!enquete[0]) throw new TRPCError({ code: "NOT_FOUND" });
+
+      if (enquete[0].dataEncerramento) {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        if (new Date(enquete[0].dataEncerramento) < hoje) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Enquete encerrada" });
+        }
+      }
+
+      const opcoes = await db
+        .select()
+        .from(schema.enqueteOpcoes)
+        .where(eq(schema.enqueteOpcoes.enqueteId, input.id))
+        .orderBy(schema.enqueteOpcoes.ordem);
+
+      return { ...enquete[0], opcoes };
+    }),
+
+  // Página pública: registrar voto
+  responderPublico: publicQuery
+    .input(
+      z.object({
+        enqueteId: z.string().uuid(),
+        opcaoIds: z.array(z.string().uuid()).min(1),
+        nomeRespondente: z.string().max(255).optional(),
+        telefoneRespondente: z.string().max(20).optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const db = getDb();
+
+      const enquete = await db
+        .select()
+        .from(schema.enquetes)
+        .where(
+          and(
+            eq(schema.enquetes.id, input.enqueteId),
+            eq(schema.enquetes.status, "publicada"),
+          ),
+        )
+        .limit(1);
+
+      if (!enquete[0]) throw new TRPCError({ code: "NOT_FOUND" });
+
+      if (enquete[0].dataEncerramento) {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        if (new Date(enquete[0].dataEncerramento) < hoje) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Enquete encerrada" });
+        }
+      }
+
+      const opcoes = await db
+        .select()
+        .from(schema.enqueteOpcoes)
+        .where(
+          and(
+            eq(schema.enqueteOpcoes.enqueteId, input.enqueteId),
+            inArray(schema.enqueteOpcoes.id, input.opcaoIds),
+          ),
+        );
+
+      if (opcoes.length !== input.opcaoIds.length) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Opção inválida" });
+      }
+
+      if (!enquete[0].permiteMultiplaEscolha && input.opcaoIds.length > 1) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Esta enquete permite apenas uma opção" });
+      }
+
+      const telefoneNormalizado = input.telefoneRespondente
+        ? input.telefoneRespondente.replace(/\D/g, "")
+        : null;
+
+      let eleitorId: string | null = null;
+      if (telefoneNormalizado) {
+        const eleitores = await db
+          .select()
+          .from(schema.eleitores)
+          .where(eq(schema.eleitores.ownerId, enquete[0].ownerId))
+          .limit(100);
+        const eleitor = eleitores.find((e) => {
+          const digits = (e.telefone || '').replace(/\D/g, '');
+          return digits === telefoneNormalizado ||
+            (digits.length === 10 && '9' + digits === telefoneNormalizado) ||
+            (telefoneNormalizado.length === 10 && '9' + telefoneNormalizado === digits);
+        });
+        if (eleitor) eleitorId = eleitor.id;
+      }
+
+      const respostas = [];
+      for (const opcaoId of input.opcaoIds) {
+        const rows = await db
+          .insert(schema.enqueteRespostas)
+          .values({
+            enqueteId: input.enqueteId,
+            opcaoId,
+            ownerId: enquete[0].ownerId,
+            eleitorId,
+            nomeRespondente: input.nomeRespondente ?? null,
+            telefoneRespondente: telefoneNormalizado,
+            observacao: null,
+          })
+          .returning();
+        respostas.push(rows[0]);
+      }
+
+      return { success: true, respostas };
+    }),
 });

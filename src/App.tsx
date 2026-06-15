@@ -40,6 +40,7 @@ import ProdutividadePageV2 from '@/pages/ProdutividadePageV2';
 import LideresProdutividadePage from '@/pages/LideresProdutividadePage';
 import EnquetesPage from '@/pages/EnquetesPage';
 import EnquetesPageV2 from '@/pages/EnquetesPageV2';
+import EnquetePublicaPage from '@/pages/EnquetePublicaPage';
 
 import { RoleGuard } from '@/components/RoleGuard';
 
@@ -54,6 +55,7 @@ function App() {
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/teste-here" element={<HereApiTest />} />
 
+      <Route path="/enquete/:enqueteId" element={<EnquetePublicaPage />} />
       <Route path="/login" element={<Navigate to="/" replace />} />
       <Route
         path="/dashboard"
