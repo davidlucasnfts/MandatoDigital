@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import {
-  BarChart3, Plus, Eye, Vote, Pencil, Trash2, Send,
+  BarChart3, Plus, Eye, Vote, Pencil, Trash2,
   CheckCircle2, XCircle, Clock, FileText, AlertTriangle,
 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,6 @@ import {
 import { trpc } from '@/providers/trpc';
 import NovaEnqueteDialog from '@/components/NovaEnqueteDialog';
 import ResponderEnqueteDialog from '@/components/ResponderEnqueteDialog';
-import EnviarEnqueteDialog from '@/components/EnviarEnqueteDialog';
 
 const statusLabels: Record<string, string> = {
   rascunho: 'Rascunho',
@@ -158,15 +157,6 @@ export default function EnquetesPageV2() {
         subtitle="Crie pesquisas de opinião e acompanhe os resultados."
         icon={BarChart3}
         action={{ label: 'Nova Enquete', onClick: () => setShowForm(true), icon: Plus }}
-        extraActions={
-          <Button
-            variant="outline"
-            className="border-green-600 text-green-600 hover:bg-green-50"
-            onClick={() => setShowEnviar(true)}
-          >
-            <Send className="w-4 h-4 mr-1.5" /> Enviar
-          </Button>
-        }
         delay={0}
       />
 
@@ -363,12 +353,6 @@ export default function EnquetesPageV2() {
         onClose={() => setShowResponder(null)}
         enqueteId={showResponder}
         onSuccess={() => utils.enquetes.list.invalidate()}
-      />
-
-      <EnviarEnqueteDialog
-        open={showEnviar}
-        onClose={() => setShowEnviar(false)}
-        enquete={preview || filtered[0] || null}
       />
 
       {/* Dialog: Estatísticas */}
