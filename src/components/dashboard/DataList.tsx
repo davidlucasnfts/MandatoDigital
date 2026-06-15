@@ -19,7 +19,7 @@ interface DataListItemProps<T> {
   renderTitle: (item: T) => ReactNode;
   renderBadges?: (item: T) => ReactNode;
   renderMeta?: (item: T) => ReactNode;
-  actions?: DataListAction[];
+  actions?: DataListAction[] | ((item: T) => DataListAction[]);
   onClick?: (item: T) => void;
   isInactive?: (item: T) => boolean;
   delay?: number;
@@ -39,6 +39,7 @@ function DataListItem<T>({
 }: DataListItemProps<T>) {
   const { icon: Icon, bg, color } = renderIcon(item);
   const inactive = isInactive?.(item);
+  const itemActions = typeof actions === 'function' ? actions(item) : actions;
 
   const variantClasses = {
     blue: 'bg-blue-600 text-white hover:bg-blue-700',
@@ -73,9 +74,9 @@ function DataListItem<T>({
           )}
           {renderMeta && <div className="mt-1.5">{renderMeta(item)}</div>}
         </div>
-        {actions && actions.length > 0 && (
+        {itemActions && itemActions.length > 0 && (
           <div className="flex flex-col gap-1.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-            {actions.map((action, i) => {
+            {itemActions.map((action, i) => {
               const ActionIcon = action.icon;
               return (
                 <button
