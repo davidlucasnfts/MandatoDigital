@@ -5,6 +5,54 @@ import { trpc } from '@/providers/trpc';
 import { Button } from '@/components/ui/button';
 import NovaEnqueteDialog from '@/components/NovaEnqueteDialog';
 import ResponderEnqueteDialog from '@/components/ResponderEnqueteDialog';
+
+function EstatisticasContent({ id }: { id: string | null }) {
+  const { data: estatisticas, isLoading } = trpc.enquetes.estatisticas.useQuery(
+    { id: id! },
+    { enabled: !!id }
+  );
+
+  return (
+    <DialogContent className="sm:max-w-lg">
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-blue-600" strokeWidth={2} />
+          Resultados
+        </DialogTitle>
+        <DialogDescription className="break-all">
+          {isLoading ? 'Carregando...' : estatisticas?.enquete.titulo}
+        </DialogDescription>
+      </DialogHeader>
+      <div className="space-y-4 pt-2">
+        {isLoading ? (
+          <div className="text-sm text-slate-500">Carregando resultados...</div>
+        ) : (
+          <>
+            <div className="text-sm text-slate-500">
+              Total de respostas: <span className="font-semibold text-slate-800">{estatisticas?.totalRespostas ?? 0}</span>
+            </div>
+            {estatisticas?.opcoes.map((opcao: any) => {
+              const pct = estatisticas.totalRespostas > 0
+                ? Math.round((opcao.votos / estatisticas.totalRespostas) * 100)
+                : 0;
+              return (
+                <div key={opcao.id} className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-700 break-all">{opcao.texto}</span>
+                    <span className="font-medium text-slate-800">{opcao.votos} ({pct}%)</span>
+                  </div>
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+      </div>
+    </DialogContent>
+  );
+}
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AlertTriangle } from '@/lib/icons';
 
@@ -22,6 +70,7 @@ export default function EnquetesPageV2() {
   const [showDelete, setShowDelete] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [showResponder, setShowResponder] = useState<string | null>(null);
+  const [showEstatisticas, setShowEstatisticas] = useState<string | null>(null);
   const { data: enquetes, isLoading } = trpc.enquetes.list.useQuery({});
   const utils = trpc.useUtils();
   const removeMutation = trpc.enquetes.delete.useMutation({
@@ -97,7 +146,7 @@ export default function EnquetesPageV2() {
           renderTitle={(e: any) => <h4 className="text-sm font-semibold text-slate-800">{e.titulo}</h4>}
           renderBadges={(e: any) => <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{e.status}</span>}
           actions={(e: any) => [
-            { label: 'Resultados', icon: Eye, variant: 'blue', onClick: (ev: any) => { ev.stopPropagation(); } },
+            { label: 'Resultados', icon: Eye, variant: 'blue', onClick: (ev: any) => { ev.stopPropagation(); setShowEstatisticas(e.id); } },
             ...(e.status === 'publicada'
               ? [{ label: 'Votar', icon: Vote, variant: 'green', onClick: (ev: any) => { ev.stopPropagation(); setShowResponder(e.id); } } as any]
               : []),
@@ -138,6 +187,10 @@ export default function EnquetesPageV2() {
         enqueteId={showResponder}
         onSuccess={() => utils.enquetes.list.invalidate()}
       />
+
+      <Dialog open={!!showEstatisticas} onOpenChange={() => setShowEstatisticas(null)}>
+        <EstatisticasContent id={showEstatisticas} />
+      </Dialog>
 
       <Dialog open={!!showDelete} onOpenChange={() => setShowDelete(null)}>
         <DialogContent className="sm:max-w-sm">
