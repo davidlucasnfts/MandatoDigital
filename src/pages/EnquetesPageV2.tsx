@@ -102,6 +102,7 @@ export default function EnquetesPageV2() {
   const [showResponder, setShowResponder] = useState<string | null>(null);
   const [showEstatisticas, setShowEstatisticas] = useState<string | null>(null);
   const [showEnviar, setShowEnviar] = useState(false);
+  const [enqueteParaEnviar, setEnqueteParaEnviar] = useState<any>(null);
 
   const utils = trpc.useUtils();
   const { data: enquetes, isLoading } = trpc.enquetes.list.useQuery({});
