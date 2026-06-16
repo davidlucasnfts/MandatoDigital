@@ -28,10 +28,10 @@ function getPublicUrl(enqueteId: string) {
   return `${base}/enquete/${enqueteId}`;
 }
 
-function buildMessage(enquete: { titulo: string; descricao?: string | null }, nome: string, link: string) {
+function buildMessage(enquete: { titulo: string; descricao?: string | null }, link: string) {
   const titulo = enquete.titulo.trim();
   const descricao = enquete.descricao?.trim();
-  let msg = `Olá ${nome}, tudo bem?\n\n`;
+  let msg = `Olá! Tudo bem?\n\n`;
   msg += `Queremos ouvir a sua opinião! 📊\n\n`;
   msg += `*${titulo}*\n`;
   if (descricao) msg += `${descricao}\n`;
@@ -122,8 +122,7 @@ export default function EnviarEnqueteDialog({ open, onClose, enquete }: Props) {
 
     for (let i = 0; i < destinatarios.length; i++) {
       const e = destinatarios[i];
-      const nome = e.nome.split(' ')[0] || e.nome;
-      const message = buildMessage(enquete, nome, link);
+      const message = buildMessage(enquete, link);
       const phone = normalizePhoneForWhatsApp(e.telefone);
       const res = await sendText(phone, message);
       if (res.ok) success++;
@@ -171,7 +170,7 @@ export default function EnviarEnqueteDialog({ open, onClose, enquete }: Props) {
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-2">
               <MessageSquare className="w-3.5 h-3.5" /> Pré-visualização da mensagem
             </div>
-            {buildMessage(enquete, 'João', getPublicUrl(enquete.id))}
+            {buildMessage(enquete, getPublicUrl(enquete.id))}
           </div>
 
           {/* Filtros */}
