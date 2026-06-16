@@ -159,15 +159,6 @@ export default function EnquetesPageV2() {
         subtitle="Crie pesquisas de opinião e acompanhe os resultados."
         icon={BarChart3}
         action={{ label: 'Nova Enquete', onClick: () => setShowForm(true), icon: Plus }}
-        extraActions={
-          <Button
-            variant="outline"
-            className="border-green-600 text-green-600 hover:bg-green-50"
-            onClick={() => setShowEnviar(true)}
-          >
-            <Send className="w-4 h-4 mr-1.5" /> Enviar
-          </Button>
-        }
         delay={0}
       />
 
@@ -258,6 +249,16 @@ export default function EnquetesPageV2() {
                 ]
               : []),
             {
+              label: 'Enviar',
+              icon: Send,
+              variant: 'purple',
+              onClick: (ev: React.MouseEvent) => {
+                ev.stopPropagation();
+                setEnqueteParaEnviar(e);
+                setShowEnviar(true);
+              },
+            },
+            {
               label: 'Editar',
               icon: Pencil,
               variant: 'slate',
@@ -325,6 +326,14 @@ export default function EnquetesPageV2() {
                   </button>
                   {preview.status === 'publicada' && (
                     <button
+                      onClick={(ev) => { ev.stopPropagation(); setEnqueteParaEnviar(preview); setShowEnviar(true); }}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700 rounded-lg shadow-sm"
+                    >
+                      <Send className="w-3.5 h-3.5" strokeWidth={2} /> Enviar
+                    </button>
+                  )}
+                  {preview.status === 'publicada' && (
+                    <button
                       onClick={(ev) => { ev.stopPropagation(); setShowResponder(preview.id); }}
                       className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-green-600 text-white hover:bg-green-700 rounded-lg shadow-sm"
                     >
@@ -366,11 +375,11 @@ export default function EnquetesPageV2() {
         onSuccess={() => utils.enquetes.list.invalidate()}
       />
 
-      {showEnviar && (
+      {showEnviar && enqueteParaEnviar && (
         <EnviarEnqueteDialog
           open={true}
-          onClose={() => setShowEnviar(false)}
-          enquete={preview || filtered[0] || null}
+          onClose={() => { setShowEnviar(false); setEnqueteParaEnviar(null); }}
+          enquete={enqueteParaEnviar}
         />
       )}
 
