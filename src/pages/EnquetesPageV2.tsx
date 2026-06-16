@@ -251,7 +251,6 @@ export default function EnquetesPageV2() {
                 ]
               : []),
             {
-            {
               label: 'Editar',
               icon: Pencil,
               variant: 'slate',
