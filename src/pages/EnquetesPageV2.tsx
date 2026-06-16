@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import {
-  BarChart3, Plus, Eye, Vote, Pencil, Trash2, Send,
+  BarChart3, Plus, Eye, Pencil, Trash2, Send,
   CheckCircle2, XCircle, Clock, FileText, AlertTriangle,
 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ import {
 } from '@/components/dashboard';
 import { trpc } from '@/providers/trpc';
 import NovaEnqueteDialog from '@/components/NovaEnqueteDialog';
-import ResponderEnqueteDialog from '@/components/ResponderEnqueteDialog';
+
 import EnviarEnqueteDialog from '@/components/EnviarEnqueteDialog';
 
 const statusLabels: Record<string, string> = {
@@ -99,7 +99,7 @@ export default function EnquetesPageV2() {
   const [showDelete, setShowDelete] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editEnquete, setEditEnquete] = useState<any>(null);
-  const [showResponder, setShowResponder] = useState<string | null>(null);
+
   const [showEstatisticas, setShowEstatisticas] = useState<string | null>(null);
   const [showEnviar, setShowEnviar] = useState(false);
   const [enqueteParaEnviar, setEnqueteParaEnviar] = useState<any>(null);
@@ -239,26 +239,18 @@ export default function EnquetesPageV2() {
             ...(e.status === 'publicada'
               ? [
                   {
-                    label: 'Votar',
-                    icon: Vote,
-                    variant: 'green',
+                    label: 'Enviar',
+                    icon: Send,
+                    variant: 'purple',
                     onClick: (ev: React.MouseEvent) => {
                       ev.stopPropagation();
-                      setShowResponder(e.id);
+                      setEnqueteParaEnviar(e);
+                      setShowEnviar(true);
                     },
                   } as any,
                 ]
               : []),
             {
-              label: 'Enviar',
-              icon: Send,
-              variant: 'purple',
-              onClick: (ev: React.MouseEvent) => {
-                ev.stopPropagation();
-                setEnqueteParaEnviar(e);
-                setShowEnviar(true);
-              },
-            },
             {
               label: 'Editar',
               icon: Pencil,
@@ -333,14 +325,6 @@ export default function EnquetesPageV2() {
                       <Send className="w-3.5 h-3.5" strokeWidth={2} /> Enviar
                     </button>
                   )}
-                  {preview.status === 'publicada' && (
-                    <button
-                      onClick={(ev) => { ev.stopPropagation(); setShowResponder(preview.id); }}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-green-600 text-white hover:bg-green-700 rounded-lg shadow-sm"
-                    >
-                      <Vote className="w-3.5 h-3.5" strokeWidth={2} /> Votar
-                    </button>
-                  )}
                   <button
                     onClick={(ev) => { ev.stopPropagation(); setPreview(null); handleEdit(preview); }}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-600 text-white hover:bg-slate-700 rounded-lg shadow-sm"
@@ -366,14 +350,6 @@ export default function EnquetesPageV2() {
         onClose={handleCloseForm}
         onSuccess={() => utils.enquetes.list.invalidate()}
         enquete={editEnquete}
-      />
-
-      {/* Dialog: Responder Enquete */}
-      <ResponderEnqueteDialog
-        open={!!showResponder}
-        onClose={() => setShowResponder(null)}
-        enqueteId={showResponder}
-        onSuccess={() => utils.enquetes.list.invalidate()}
       />
 
       {showEnviar && enqueteParaEnviar && (

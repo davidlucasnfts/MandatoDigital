@@ -166,7 +166,7 @@ export default function EnviarEnqueteDialog({ open, onClose, enquete }: Props) {
 
         <div className="flex flex-col gap-4 overflow-hidden">
           {/* Mensagem preview */}
-          <div className="bg-slate-50 rounded-lg p-3 text-sm whitespace-pre-wrap border border-slate-200">
+          <div className="bg-slate-50 rounded-lg p-3 text-sm whitespace-pre-wrap border border-slate-200 break-all overflow-auto max-h-[200px]">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-2">
               <MessageSquare className="w-3.5 h-3.5" /> Pré-visualização da mensagem
             </div>
@@ -210,7 +210,7 @@ export default function EnviarEnqueteDialog({ open, onClose, enquete }: Props) {
           </div>
 
           {/* Busca e selecionar todos */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <Input
@@ -220,7 +220,7 @@ export default function EnviarEnqueteDialog({ open, onClose, enquete }: Props) {
                 className="pl-9"
               />
             </div>
-            <Button variant="outline" size="sm" onClick={toggleAll} disabled={validEleitores.length === 0}>
+            <Button variant="outline" size="sm" onClick={toggleAll} disabled={validEleitores.length === 0} className="justify-center">
               {allSelected ? <X className="w-3.5 h-3.5 mr-1" /> : <Check className="w-3.5 h-3.5 mr-1" />}
               {allSelected ? 'Desmarcar' : 'Selecionar todos'}
             </Button>
