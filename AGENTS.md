@@ -582,6 +582,16 @@ Vercel → HTTPS → API Proxy (VPS:443) → localhost → PostgreSQL (VPS:5432)
 - **Stack vertical** — em mobile, tudo empilha
 - **Menu hambúrguer** — navegação escondida em telas pequenas
 - **Fontes legíveis** — mínimo 16px para inputs, 14px para texto corrido
+- **Responsividade automática** — ao criar/modificar qualquer página, dialog, tabela, grid ou lista, SEMPRE aplicar classes responsivas do Tailwind (`sm:`, `md:`, `lg:`) para garantir funcionamento em mobile (375px), tablet (768px) e desktop (1440px). Nunca esperar o usuário pedir — é obrigatório.
+- **Padrões responsivos mínimos:**
+  - Grids: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3/4` (nunca deixar colunas fixas em mobile)
+  - Flex rows: `flex-col sm:flex-row` (empilhar no mobile)
+  - Botões lado a lado: `w-full sm:w-auto` ou `flex-col sm:flex-row`
+  - Dialogs: `max-w-[95vw] sm:max-w-lg/xl` (quase tela cheia no mobile)
+  - Inputs + botões: `items-stretch sm:items-center`
+  - Tabelas: usar `hidden sm:table-cell` + `sm:hidden` para alternar colunas, nunca duplicar tabelas
+  - Textos longos: `break-all` + `overflow-auto` em containers limitados
+  - Listas com scroll: `max-h-[280px] overflow-auto`
 
 | 012 | Testar na produção em vez de local primeiro | 22/05/2026 | SEMPRE testar localmente (`npm run dev`) antes de qualquer deploy. Produção é só para código validado |
 | 013 | Ícones inexistentes causando crash no build | 25/05/2026 | **PROCESSO OBRIGATÓRIO:** 1) Abrir `src/lib/icons.ts`, 2) Verificar se o ícone existe no export, 3) SÓ ENTÃO usar no código. Nunca assumir que nome do Tabler = nome do export. Usar `grep` para confirmar: `grep -n "IconNome" src/lib/icons.ts` |
