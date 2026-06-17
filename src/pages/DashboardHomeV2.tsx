@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, ClipboardList, Clock, MessageSquare, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
+import { Users, ClipboardList, Clock, MessageSquare, Calendar, TrendingUp, TrendingDown } from '@/lib/icons';
 import { StatCard, PanelCard, CommandMenu } from '@/components/dashboard';
 import { useStats, useDashboardData } from '@/hooks/useSupabaseData';
 import { useCountUp } from '@/hooks/useCountUp';

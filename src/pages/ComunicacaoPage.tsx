@@ -4,17 +4,16 @@ import {
   MessageSquare, Send, Mail, Plus, Eye, Users, CheckCircle2,
   Clock, AlertCircle, Trash2, BarChart3, Copy, Pencil, Play, RotateCcw,
   ChevronDown, FileText, X
-} from 'lucide-react';
+} from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SearchFilterBar } from '@/components/dashboard';
 import { useCampanhas } from '@/hooks/useCampanhas';
 import { useTemplates } from '@/hooks/useTemplates';
 import { useEleitores } from '@/hooks/useSupabaseData';
 import NovoComunicadoDialog from '@/components/NovoComunicadoDialog';
 import NovoTemplateDialog from '@/components/NovoTemplateDialog';
 import CampanhaPreview from '@/components/CampanhaPreview';
-import WhatsAppStatusCard from '@/components/WhatsAppStatusCard';
 import type { Campanha, TemplateMensagem, Eleitor } from '@/lib/supabase';
 
 const fadeIn = {
@@ -40,8 +39,14 @@ export default function ComunicacaoPage() {
   const [campanhaSelecionada, setCampanhaSelecionada] = useState<Campanha | null>(null);
   const [campanhaEditando, setCampanhaEditando] = useState<Campanha | null>(null);
   const [templatePreSelecionado, setTemplatePreSelecionado] = useState<TemplateMensagem | null>(null);
+  const [tab, setTab] = useState('campanhas');
   const [campanhaEnviando, setCampanhaEnviando] = useState<string | null>(null);
   const [enviandoProgresso, setEnviandoProgresso] = useState({ atual: 0, total: 0 });
+
+  const tabCounts = {
+    campanhas: campanhas?.length ?? 0,
+    templates: templates?.length ?? 0,
+  };
 
   const handleEnviarCampanha = async (campanha: Campanha) => {
     if (!eleitores || campanha.status !== 'rascunho') return;
@@ -159,12 +164,8 @@ export default function ComunicacaoPage() {
         </div>
       </motion.div>
 
-      {/* WhatsApp + Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-2.5 lg:gap-4">
-        <div className="lg:col-span-1">
-          <WhatsAppStatusCard />
-        </div>
-        <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
         {[
           { label: 'Comunicados', value: stats.total, icon: BarChart3, color: 'blue' },
           { label: 'Enviadas', value: stats.enviadas, icon: CheckCircle2, color: 'green' },
@@ -189,18 +190,23 @@ export default function ComunicacaoPage() {
             </Card>
           </motion.div>
         ))}
-        </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="campanhas" className="space-y-4">
-        <TabsList className="bg-white border">
-          <TabsTrigger value="campanhas">Comunicados</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-        </TabsList>
+      {/* SearchFilterBar */}
+      <SearchFilterBar
+        showSearch={false}
+        delay={2}
+        tabs={[
+          { value: 'campanhas', label: 'Comunicados', count: tabCounts.campanhas },
+          { value: 'templates', label: 'Templates', count: tabCounts.templates },
+        ]}
+        activeTab={tab}
+        onTabChange={setTab}
+      />
 
-        {/* Campanhas */}
-        <TabsContent value="campanhas" className="space-y-4">
+      {/* Campanhas */}
+      {tab === 'campanhas' && (
+        <div className="space-y-4">
           {loadingCampanhas ? (
             <div className="space-y-3">
               {[1, 2, 3].map(i => (
@@ -334,10 +340,12 @@ export default function ComunicacaoPage() {
               })}
             </div>
           )}
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Templates */}
-        <TabsContent value="templates" className="space-y-4">
+      {/* Templates */}
+      {tab === 'templates' && (
+        <div className="space-y-4">
           <div className="flex justify-end">
             <Button
               variant="outline"
@@ -423,8 +431,8 @@ export default function ComunicacaoPage() {
               ))}
             </div>
           )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
 
       {/* Preview */}
       <CampanhaPreview
@@ -493,13 +501,13 @@ export default function ComunicacaoPage() {
                 <div className="flex gap-2 pt-2">
                   <button
                     onClick={() => { setTemplateEditando(templatePreview); setShowNovoTemplate(true); setTemplatePreview(null); }}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg"
                   >
                     <Pencil className="w-3 h-3" /> Editar
                   </button>
                   <button
                     onClick={() => { setCampanhaEditando(null); setTemplatePreSelecionado(templatePreview); setShowNovaCampanha(true); setTemplatePreview(null); }}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium bg-green-600 text-white hover:bg-green-700 rounded-lg"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium bg-green-600 text-white hover:bg-green-700 rounded-lg"
                   >
                     <FileText className="w-3 h-3" /> Usar
                   </button>

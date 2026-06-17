@@ -148,7 +148,13 @@ export default function ProposicoesPageV2() {
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Buscar por título, ementa ou número..."
-        tabs={tabs.map((t) => ({ ...t, count: undefined }))}
+        searchWidth="w-56"
+        tabs={[
+          { value: 'todas', label: 'Todas', count: stats.total },
+          { value: 'em-tramitacao', label: 'Em tramitação', count: stats.emTramitacao },
+          { value: 'aprovadas', label: 'Aprovadas', count: stats.aprovadas },
+          { value: 'rejeitadas', label: 'Rejeitadas', count: stats.rejeitadas },
+        ]}
         activeTab={tab}
         onTabChange={setTab}
         delay={2}
@@ -253,13 +259,13 @@ export default function ProposicoesPageV2() {
                 <>
                   <button
                     onClick={() => handleVer(preview.id)}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"
                   >
                     <Eye className="w-3.5 h-3.5" strokeWidth={2} /> Ver detalhes
                   </button>
                   <button
                     onClick={() => setShowDelete(preview.id)}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
                   >
                     <Trash2 className="w-3.5 h-3.5" strokeWidth={2} /> Excluir
                   </button>

@@ -38,7 +38,6 @@ function useNavGroups() {
 
         { to: '/dashboard/solicitacoes', icon: ClipboardList, label: 'Solicitações' },
         { to: '/dashboard/comunicacao', icon: MessageSquare, label: 'Comunicação' },
-        { to: '/dashboard/comunicacao/teste-v2', icon: MessageSquare, label: 'Comunicação V2', end: true },
       ],
     },
     {
@@ -58,8 +57,6 @@ function useNavGroups() {
         { to: '/dashboard/enquetes/teste-v2', icon: ChartBar, label: 'Enquetes V2', end: true },
         { to: '/dashboard/comunidades', icon: BuildingCommunity, label: 'Comunidades' },
         { to: '/dashboard/comunidades/teste-v2', icon: BuildingCommunity, label: 'Comunidades V2', end: true },
-        { to: '/dashboard/documentos', icon: FolderOpen, label: 'Documentos' },
-        { to: '/dashboard/documentos/teste-v2', icon: FolderOpen, label: 'Documentos V2', end: true },
       ],
     },
     ...(can.manageTeam ? [{

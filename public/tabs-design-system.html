@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design System — Tabs Padrão</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+    .tab-active { background: white; color: #1e293b; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 600; }
+    .tab-inactive { color: #64748b; }
+    .tab-inactive:hover { color: #334155; background: rgba(255,255,255,0.5); }
+  </style>
+</head>
+<body class="p-8">
+
+  <div class="max-w-4xl mx-auto space-y-12">
+
+    <!-- HEADER -->
+    <div class="text-center space-y-2">
+      <h1 class="text-3xl font-bold text-slate-800">Design System — Tabs</h1>
+      <p class="text-slate-500">3 modelos padrão para todas as páginas do dashboard</p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODELO 1: FilterTabs -->
+    <!-- ============================================ -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">Modelo 1</span>
+        <h2 class="text-xl font-bold text-slate-800">FilterTabs</h2>
+      </div>
+      <p class="text-sm text-slate-500">Busca + filtros. Usado em: Enquetes, Comunidades, Equipe, Proposições</p>
+
+      <!-- Preview -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="flex items-center gap-3">
+          <!-- Search compacta -->
+          <div class="relative w-56 shrink-0">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" placeholder="Buscar..." class="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"/>
+          </div>
+          <!-- Tabs -->
+          <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-lg overflow-x-auto">
+            <button class="tab-active px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all">Todas</button>
+            <button class="tab-inactive px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all">Publicadas <span class="text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-slate-200 text-slate-600 ml-1">2</span></button>
+            <button class="tab-inactive px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all">Encerradas</button>
+            <button class="tab-inactive px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all">Arquivadas</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Código -->
+      <div class="bg-slate-900 rounded-lg p-4 overflow-x-auto">
+        <code class="text-xs text-slate-300 font-mono">
+&lt;FilterTabs<br>
+&nbsp;&nbsp;searchValue={search}<br>
+&nbsp;&nbsp;onSearchChange={setSearch}<br>
+&nbsp;&nbsp;tabs={[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'todas', label: 'Todas' },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'publicadas', label: 'Publicadas', count: 2 },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'encerradas', label: 'Encerradas' },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'arquivadas', label: 'Arquivadas' }<br>
+&nbsp;&nbsp;]}<br>
+/&gt;
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- MODELO 2: ContentTabs -->
+    <!-- ============================================ -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">Modelo 2</span>
+        <h2 class="text-xl font-bold text-slate-800">ContentTabs</h2>
+      </div>
+      <p class="text-sm text-slate-500">Só tabs, sem busca. Conteúdo muda por aba. Usado em: Comunicação, Relatórios, Documentos</p>
+
+      <!-- Preview -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">
+          <button class="tab-active px-4 py-2 rounded-md text-sm font-semibold whitespace-nowrap transition-all">Comunicados</button>
+          <button class="tab-inactive px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all">Templates</button>
+        </div>
+        <!-- Conteúdo simulado -->
+        <div class="border border-slate-100 rounded-lg p-4 bg-slate-50">
+          <p class="text-sm text-slate-500">Conteúdo da aba "Comunicados" aparece aqui</p>
+        </div>
+      </div>
+
+      <!-- Código -->
+      <div class="bg-slate-900 rounded-lg p-4 overflow-x-auto">
+        <code class="text-xs text-slate-300 font-mono">
+&lt;ContentTabs<br>
+&nbsp;&nbsp;tabs={[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'comunicados', label: 'Comunicados', content: &lt;ListaCampanhas /&gt; },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'templates', label: 'Templates', content: &lt;ListaTemplates /&gt; }<br>
+&nbsp;&nbsp;]}<br>
+/&gt;
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- MODELO 3: IconTabs -->
+    <!-- ============================================ -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded">Modelo 3</span>
+        <h2 class="text-xl font-bold text-slate-800">IconTabs</h2>
+      </div>
+      <p class="text-sm text-slate-500">Ícone + texto. Toggle visual. Usado em: Tarefas (Kanban/Lista), Eleitores (Mapa/Lista)</p>
+
+      <!-- Preview -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">
+          <button class="tab-active px-3 py-2 rounded-md text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            Kanban
+          </button>
+          <button class="tab-inactive px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            Lista
+          </button>
+        </div>
+      </div>
+
+      <!-- Código -->
+      <div class="bg-slate-900 rounded-lg p-4 overflow-x-auto">
+        <code class="text-xs text-slate-300 font-mono">
+&lt;IconTabs<br>
+&nbsp;&nbsp;tabs={[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'kanban', label: 'Kanban', icon: LayoutGrid },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ value: 'lista', label: 'Lista', icon: List }<br>
+&nbsp;&nbsp;]}<br>
+&nbsp;&nbsp;onChange={setView}<br>
+/&gt;
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- MAPEAMENTO POR PÁGINA -->
+    <!-- ============================================ -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-slate-800">Mapeamento por Página</h2>
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th class="text-left px-4 py-3 font-semibold text-slate-700">Página</th>
+              <th class="text-left px-4 py-3 font-semibold text-slate-700">Modelo</th>
+              <th class="text-left px-4 py-3 font-semibold text-slate-700">Tabs</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr><td class="px-4 py-3 text-slate-800">Enquetes</td><td class="px-4 py-3"><span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium">FilterTabs</span></td><td class="px-4 py-3 text-slate-500">Todas, Publicadas, Encerradas, Arquivadas</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Comunidades</td><td class="px-4 py-3"><span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium">FilterTabs</span></td><td class="px-4 py-3 text-slate-500">Todas, Com líder, Sem líder</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Equipe</td><td class="px-4 py-3"><span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium">FilterTabs</span></td><td class="px-4 py-3 text-slate-500">Todos, Ativos, Inativos, Pendentes</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Proposições</td><td class="px-4 py-3"><span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium">FilterTabs</span></td><td class="px-4 py-3 text-slate-500">Todas, Em tramitação, Aprovadas, Rejeitadas</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Tarefas</td><td class="px-4 py-3"><span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium">FilterTabs</span> + <span class="text-purple-600 bg-purple-50 px-2 py-0.5 rounded text-xs font-medium">IconTabs</span></td><td class="px-4 py-3 text-slate-500">Todas, Pendentes, Em Andamento, Concluídas + Kanban/Lista</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Comunicação</td><td class="px-4 py-3"><span class="text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs font-medium">ContentTabs</span></td><td class="px-4 py-3 text-slate-500">Comunicados, Templates</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Relatórios</td><td class="px-4 py-3"><span class="text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs font-medium">ContentTabs</span></td><td class="px-4 py-3 text-slate-500">Geral, Eleitores, Comunidades, Atendimentos</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Documentos</td><td class="px-4 py-3"><span class="text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs font-medium">ContentTabs</span></td><td class="px-4 py-3 text-slate-500">Todos, PDFs, Imagens, Planilhas</td></tr>
+            <tr><td class="px-4 py-3 text-slate-800">Agenda</td><td class="px-4 py-3"><span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium">FilterTabs</span></td><td class="px-4 py-3 text-slate-500">Todos, Reuniões, Eventos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>

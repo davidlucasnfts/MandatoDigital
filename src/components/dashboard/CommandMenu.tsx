@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Command, Users, MapPin, MessageSquare, Calendar, Settings, BarChart3, FileText, Vote, ClipboardList, Clock } from 'lucide-react';
+import { Search, Code, Users, MapPin, MessageSquare, Calendar, Settings, BarChart3, FileText, Vote, ClipboardList, Clock } from '@/lib/icons';
 import { useNavigate } from 'react-router-dom';
 
 interface CommandItem {
@@ -59,7 +59,7 @@ export function CommandMenu() {
         <Search className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
         <span className="hidden sm:inline">Buscar...</span>
         <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-[10px] font-mono text-slate-500">
-          <Command className="w-3 h-3" />K
+          <Code className="w-3 h-3" />K
         </kbd>
       </button>
 

@@ -47,6 +47,7 @@ function DataListItem<T>({
     green: 'bg-green-600 text-white hover:bg-green-700',
     slate: 'bg-slate-600 text-white hover:bg-slate-700',
     purple: 'bg-purple-600 text-white hover:bg-purple-700',
+    amber: 'bg-amber-600 text-white hover:bg-amber-700',
   };
 
   return (

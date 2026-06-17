@@ -150,6 +150,7 @@ export default function EquipePageV2() {
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Buscar por nome ou e-mail..."
+        searchWidth="w-48"
         tabs={[
           { value: 'todos', label: 'Todos', count: stats.total },
           { value: 'ativos', label: 'Ativos', count: stats.ativos },
@@ -260,7 +261,7 @@ export default function EquipePageV2() {
                         <button
                           key={i}
                           onClick={btn.onClick}
-                          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg shadow-sm transition-colors ${
+                          className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg shadow-sm transition-colors ${
                             btn.variant === 'purple'
                               ? 'bg-purple-600 text-white hover:bg-purple-700'
                               : btn.variant === 'blue'
@@ -274,7 +275,7 @@ export default function EquipePageV2() {
                       <button
                         key="delete"
                         onClick={() => setShowDelete(preview.id)}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
                       >
                         <Trash2 className="w-3.5 h-3.5" strokeWidth={2} /> Excluir
                       </button>,

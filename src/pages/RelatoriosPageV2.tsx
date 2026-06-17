@@ -23,10 +23,10 @@ const periodLabels: Record<PeriodFilter, string> = {
 };
 
 const tabs = [
-  { value: 'geral', label: 'Geral' },
-  { value: 'eleitores', label: 'Eleitores' },
-  { value: 'solicitacoes', label: 'Solicitações' },
-  { value: 'tarefas', label: 'Tarefas' },
+  { value: 'geral', label: 'Geral', count: undefined },
+  { value: 'eleitores', label: 'Eleitores', count: undefined },
+  { value: 'solicitacoes', label: 'Solicitações', count: undefined },
+  { value: 'tarefas', label: 'Tarefas', count: undefined },
 ];
 
 export default function RelatoriosPageV2() {
@@ -160,6 +160,7 @@ export default function RelatoriosPageV2() {
         activeTab={tab}
         onTabChange={setTab}
         showSearch={false}
+        searchWidth="w-48"
         delay={1}
       />
 

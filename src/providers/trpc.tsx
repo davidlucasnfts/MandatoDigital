@@ -32,9 +32,11 @@ const trpcClient = trpc.createClient({
       async headers() {
         const { data: { session } } = await supabase.auth.getSession();
         const token = session?.access_token ?? localStorage.getItem("sb-access-token");
+        console.log("[TRPC DEBUG] Session:", session ? "present" : "null", "Token:", token ? "present" : "null");
         return token ? { Authorization: `Bearer ${token}` } : {};
       },
       fetch(input, init) {
+        console.log("[TRPC DEBUG] Request headers:", init?.headers);
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",

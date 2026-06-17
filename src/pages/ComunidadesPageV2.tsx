@@ -108,6 +108,7 @@ export default function ComunidadesPageV2() {
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Buscar por nome, cidade ou bairro..."
+        searchWidth="w-64"
         tabs={[
           { value: 'todas', label: 'Todas', count: comunidades.length },
           { value: 'com-lider', label: 'Com líder', count: stats.comLider },
@@ -209,13 +210,13 @@ export default function ComunidadesPageV2() {
                 <>
                   <button
                     onClick={() => { setPreview(null); setEditComunidade(preview); }}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm"
                   >
                     <Pencil className="w-3.5 h-3.5" strokeWidth={2} /> Editar
                   </button>
                   <button
                     onClick={(e) => handleDelete(e as any, preview.id)}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm"
                   >
                     <Trash2 className="w-3.5 h-3.5" strokeWidth={2} /> Excluir
                   </button>

@@ -4,7 +4,7 @@ import { Settings, User, Bell, Shield, Mail, Gift, Save, Check, MessageSquare, R
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SearchFilterBar } from '@/components/dashboard';
 import { useConfiguracoes } from '@/hooks/useSupabaseData';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
 import { maskPhone, capitalizeWords, isValidPhone, normalizePhoneForWhatsApp } from '@/lib/masks';
@@ -109,7 +109,7 @@ export default function ConfiguracoesPageV2() {
     }
     setWahaLoading(false);
   };
-  const [testPhone, setTestPhone] = useState('');
+  const [tab, setTab] = useState('perfil');
   const [testMessage, setTestMessage] = useState('');
   const [testResult, setTestResult] = useState<string | null>(null);
 
@@ -130,30 +130,23 @@ export default function ConfiguracoesPageV2() {
         </h2>
       </motion.div>
 
-      <Tabs defaultValue="perfil" className="space-y-6">
-        <TabsList className="bg-white border flex-wrap h-auto">
-          <TabsTrigger value="perfil">
-            <User className="w-4 h-4 mr-1.5" /> Perfil
-          </TabsTrigger>
-          <TabsTrigger value="notificacoes">
-            <Bell className="w-4 h-4 mr-1.5" /> Notificações
-          </TabsTrigger>
-          <TabsTrigger value="aniversario">
-            <Gift className="w-4 h-4 mr-1.5" /> Aniversário
-          </TabsTrigger>
-          <TabsTrigger value="seguranca">
-            <Shield className="w-4 h-4 mr-1.5" /> Segurança
-          </TabsTrigger>
-          <TabsTrigger value="integracoes">
-            <Mail className="w-4 h-4 mr-1.5" /> Integrações
-          </TabsTrigger>
-          <TabsTrigger value="whatsapp">
-            <MessageSquare className="w-4 h-4 mr-1.5" /> WhatsApp
-          </TabsTrigger>
+      <SearchFilterBar
+        showSearch={false}
+        delay={2}
+        tabs={[
+          { value: 'perfil', label: 'Perfil' },
+          { value: 'notificacoes', label: 'Notificações' },
+          { value: 'aniversario', label: 'Aniversário' },
+          { value: 'seguranca', label: 'Segurança' },
+          { value: 'integracoes', label: 'Integrações' },
+          { value: 'whatsapp', label: 'WhatsApp' },
+        ]}
+        activeTab={tab}
+        onTabChange={setTab}
+      />
 
-        </TabsList>
-
-        <TabsContent value="perfil" className="space-y-4">
+      {tab === 'perfil' && (
+        <div className="space-y-4">
           <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
             <Card>
               <CardHeader>
@@ -202,9 +195,11 @@ export default function ConfiguracoesPageV2() {
               </CardContent>
             </Card>
           </motion.div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="notificacoes" className="space-y-4">
+      {tab === 'notificacoes' && (
+        <div className="space-y-4">
           <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
             <Card>
               <CardHeader>
@@ -235,9 +230,11 @@ export default function ConfiguracoesPageV2() {
               </CardContent>
             </Card>
           </motion.div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="aniversario" className="space-y-4">
+      {tab === 'aniversario' && (
+        <div className="space-y-4">
           <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
             <Card>
               <CardHeader>
@@ -276,9 +273,11 @@ export default function ConfiguracoesPageV2() {
               </CardContent>
             </Card>
           </motion.div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="seguranca" className="space-y-4">
+      {tab === 'seguranca' && (
+        <div className="space-y-4">
           <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
             <Card>
               <CardHeader>
@@ -301,9 +300,11 @@ export default function ConfiguracoesPageV2() {
               </CardContent>
             </Card>
           </motion.div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="integracoes" className="space-y-4">
+      {tab === 'integracoes' && (
+        <div className="space-y-4">
           <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
             <Card>
               <CardHeader>
@@ -332,9 +333,11 @@ export default function ConfiguracoesPageV2() {
               </CardContent>
             </Card>
           </motion.div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="whatsapp" className="space-y-4">
+      {tab === 'whatsapp' && (
+        <div className="space-y-4">
           <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
             <Card>
               <CardHeader>
@@ -574,9 +577,9 @@ export default function ConfiguracoesPageV2() {
               </CardContent>
             </Card>
           </motion.div>
-        </TabsContent>
+        </div>
+      )}
 
-      </Tabs>
     </div>
   );
 }

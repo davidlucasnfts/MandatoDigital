@@ -12,7 +12,6 @@ import ComunidadesPageV2 from '@/pages/ComunidadesPageV2';
 import SolicitacoesPage from '@/pages/SolicitacoesPage';
 
 import ComunicacaoPage from '@/pages/ComunicacaoPage';
-import ComunicacaoPageV2 from '@/pages/ComunicacaoPageV2';
 import MapaPage from '@/pages/MapaPage';
 
 import AgendaPage from '@/pages/AgendaPage';
@@ -20,8 +19,6 @@ import AgendaPageV2 from '@/pages/AgendaPageV2';
 
 import TarefasPage from '@/pages/TarefasPage';
 import TarefasPageV2 from '@/pages/TarefasPageV2';
-import DocumentosPage from '@/pages/DocumentosPage';
-import DocumentosPageV2 from '@/pages/DocumentosPageV2';
 import RelatoriosPage from '@/pages/RelatoriosPage';
 import RelatoriosPageV2 from '@/pages/RelatoriosPageV2';
 import EquipePage from '@/pages/EquipePage';
@@ -67,7 +64,6 @@ function App() {
         <Route path="comunidades/teste-v2" element={<ComunidadesPageV2 />} />
         <Route path="solicitacoes" element={<SolicitacoesPage />} />
         <Route path="comunicacao" element={<ComunicacaoPage />} />
-        <Route path="comunicacao/teste-v2" element={<ComunicacaoPageV2 />} />
         <Route path="mapa" element={<MapaPage />} />
 
         <Route path="agenda" element={<AgendaPage />} />
@@ -75,8 +71,6 @@ function App() {
 
         <Route path="tarefas" element={<TarefasPage />} />
         <Route path="tarefas/teste-v2" element={<TarefasPageV2 />} />
-        <Route path="documentos" element={<DocumentosPage />} />
-        <Route path="documentos/teste-v2" element={<DocumentosPageV2 />} />
         <Route path="relatorios" element={<RelatoriosPage />} />
         <Route path="relatorios/teste-v2" element={<RelatoriosPageV2 />} />
         <Route path="proposicoes" element={<ProposicoesPage />} />

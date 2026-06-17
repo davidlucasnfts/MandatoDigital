@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/providers/trpc';
-import { formatDateForInput } from '@/lib/masks';
 
 interface Props {
   open: boolean;
@@ -16,9 +15,6 @@ interface Props {
     id: string;
     titulo: string;
     descricao?: string | null;
-    status: string;
-    dataPublicacao?: string | Date | null;
-    dataEncerramento?: string | Date | null;
     permiteMultiplaEscolha?: number;
     opcoes?: { id: string; texto: string; ordem: number }[];
   };
@@ -30,23 +26,11 @@ interface OpcaoForm {
   ordem: number;
 }
 
-function buildForm(enquete?: {
-  id: string;
-  titulo: string;
-  descricao?: string | null;
-  status: string;
-  dataPublicacao?: string | Date | null;
-  dataEncerramento?: string | Date | null;
-  permiteMultiplaEscolha?: number;
-  opcoes?: { id: string; texto: string; ordem: number }[];
-}) {
+function buildForm(enquete?: Props['enquete']) {
   if (!enquete) {
     return {
       titulo: '',
       descricao: '',
-      status: 'rascunho' as const,
-      dataPublicacao: '',
-      dataEncerramento: '',
       permiteMultiplaEscolha: 0,
       opcoes: [
         { texto: '', ordem: 0 },
@@ -57,9 +41,6 @@ function buildForm(enquete?: {
   return {
     titulo: enquete.titulo || '',
     descricao: enquete.descricao || '',
-    status: enquete.status || 'rascunho',
-    dataPublicacao: enquete.dataPublicacao ? new Date(enquete.dataPublicacao).toISOString().split('T')[0] : '',
-    dataEncerramento: enquete.dataEncerramento ? new Date(enquete.dataEncerramento).toISOString().split('T')[0] : '',
     permiteMultiplaEscolha: enquete.permiteMultiplaEscolha ?? 0,
     opcoes: (enquete.opcoes && enquete.opcoes.length > 0)
       ? enquete.opcoes.map((o, i) => ({ id: o.id, texto: o.texto, ordem: o.ordem ?? i }))
@@ -112,9 +93,7 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
     const payload = {
       titulo: form.titulo,
       descricao: form.descricao || undefined,
-      status: form.status as 'rascunho' | 'publicada' | 'encerrada' | 'arquivada',
-      dataPublicacao: form.dataPublicacao ? new Date(form.dataPublicacao) : undefined,
-      dataEncerramento: form.dataEncerramento ? new Date(form.dataEncerramento) : undefined,
+      status: isEdit ? undefined : 'publicada' as const,
       permiteMultiplaEscolha: form.permiteMultiplaEscolha,
       opcoes: validOpcoes.map((o, i) => ({ id: o.id, texto: o.texto, ordem: i })),
     };
@@ -156,33 +135,12 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
             <Label htmlFor="descricao">Descrição</Label>
             <Textarea id="descricao" value={form.descricao} onChange={e => updateField('descricao', e.target.value)} rows={2} className="break-all" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <select id="status" value={form.status} onChange={e => updateField('status', e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
-                <option value="rascunho">Rascunho</option>
-                <option value="publicada">Publicada</option>
-                <option value="encerrada">Encerrada</option>
-                <option value="arquivada">Arquivada</option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="tipo">Tipo de resposta</Label>
-              <select id="tipo" value={form.permiteMultiplaEscolha} onChange={e => updateField('permiteMultiplaEscolha', parseInt(e.target.value))} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
-                <option value={0}>Única escolha</option>
-                <option value={1}>Múltipla escolha</option>
-              </select>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="dataPublicacao">Data de publicação</Label>
-              <Input id="dataPublicacao" type="date" min="1900-01-01" max={new Date().toISOString().split('T')[0]} value={formatDateForInput(form.dataPublicacao)} onChange={e => updateField('dataPublicacao', e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="dataEncerramento">Data de encerramento</Label>
-              <Input id="dataEncerramento" type="date" min="1900-01-01" max={new Date().toISOString().split('T')[0]} value={formatDateForInput(form.dataEncerramento)} onChange={e => updateField('dataEncerramento', e.target.value)} />
-            </div>
+          <div>
+            <Label htmlFor="tipo">Tipo de resposta</Label>
+            <select id="tipo" value={form.permiteMultiplaEscolha} onChange={e => updateField('permiteMultiplaEscolha', parseInt(e.target.value))} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
+              <option value={0}>Única escolha</option>
+              <option value={1}>Múltipla escolha</option>
+            </select>
           </div>
 
           <div className="space-y-2">
@@ -212,7 +170,7 @@ export default function NovaEnqueteDialog({ open, onClose, onSuccess, enquete }:
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancelar</Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Salvando...' : 'Salvar'}
+              {loading ? 'Salvando...' : isEdit ? 'Salvar' : 'Criar Enquete'}
             </Button>
           </div>
         </form>

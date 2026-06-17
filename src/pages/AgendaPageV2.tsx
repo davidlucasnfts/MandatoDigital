@@ -7,7 +7,7 @@ import {
 } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SearchFilterBar } from '@/components/dashboard';
 import { useEventos } from '@/hooks/useSupabaseData';
 import NovoEventoDialog from '@/components/NovoEventoDialog';
 import type { Evento } from '@/lib/supabase';
@@ -74,6 +74,12 @@ export default function AgendaPageV2() {
     list.sort((a, b) => a.data.localeCompare(b.data) || a.hora_inicio.localeCompare(b.hora_inicio));
     return list;
   }, [eventos, tabFiltro]);
+
+  const statsTabs = useMemo(() => ({
+    todos: eventos.length,
+    reuniao: eventos.filter(e => e.tipo === 'reuniao').length,
+    evento: eventos.filter(e => e.tipo === 'evento').length,
+  }), [eventos]);
 
   const stats = useMemo(() => ({
     total: eventos.length,
@@ -264,14 +270,18 @@ export default function AgendaPageV2() {
         <motion.div custom={6} variants={fadeIn} initial="hidden" animate="visible">
           <Card className="h-full">
             <CardContent className="p-4 lg:p-6">
-              {/* Tabs */}
-              <Tabs value={tabFiltro} onValueChange={setTabFiltro} className="mb-4">
-                <TabsList className="bg-white border w-full">
-                  <TabsTrigger value="todos" className="text-xs flex-1">Todos</TabsTrigger>
-                  <TabsTrigger value="reuniao" className="text-xs flex-1">Reuniões</TabsTrigger>
-                  <TabsTrigger value="evento" className="text-xs flex-1">Eventos</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              {/* SearchFilterBar */}
+              <SearchFilterBar
+                showSearch={false}
+                delay={2}
+                tabs={[
+                  { value: 'todos', label: 'Todos', count: statsTabs.todos },
+                  { value: 'reuniao', label: 'Reuniões', count: statsTabs.reuniao },
+                  { value: 'evento', label: 'Eventos', count: statsTabs.evento },
+                ]}
+                activeTab={tabFiltro}
+                onTabChange={setTabFiltro}
+              />
 
               {/* Selected Day Info */}
               {selectedDay && (
@@ -471,13 +481,13 @@ export default function AgendaPageV2() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => { setEventoPreview(null); setEditEvento(eventoPreview); }}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all"
                     >
                       <Pencil className="w-3.5 h-3.5" /> Editar
                     </button>
                     <button
                       onClick={() => { setEventoPreview(null); handleDelete({ stopPropagation: () => {} } as any, eventoPreview.id); }}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm hover:shadow-md transition-all"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-600 text-white hover:bg-red-700 rounded-lg shadow-sm hover:shadow-md transition-all"
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Excluir
                     </button>

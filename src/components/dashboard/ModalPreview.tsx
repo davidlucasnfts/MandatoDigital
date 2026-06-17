@@ -106,7 +106,7 @@ export function ModalPreviewFooter({
 }: ModalPreviewFooterProps) {
   return (
     <div className="p-4 lg:p-6 pt-0 space-y-3">
-      {actions && <div className="flex gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       <div className="flex justify-center">
         <button
           onClick={onClose}

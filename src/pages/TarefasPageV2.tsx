@@ -137,6 +137,7 @@ export default function TarefasPageV2() {
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Buscar tarefa..."
+        searchWidth="w-48"
         delay={2}
       />
 
