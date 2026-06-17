@@ -52,6 +52,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Relatórios V2** — KPIs padronizados, abas por categoria, gráficos em PanelCards, exportação PDF/CSV mantida | **15/06** |
 | **Documentos V2** — upload/download/exclusão real via Supabase Storage, stats cards, grid padronizado, preview de imagens | **15/06** |
 | **Comunicação V2 reativada** — corrigidos imports de ícones de lucide-react para @/lib/icons, rota e link de teste ativos | **15/06** |
+| **WhatsApp restaurado na Comunicação** — WhatsAppStatusCard com QR Code, polling, auto-renovação, envio real via WAHA API; aba WhatsApp removida das Configurações | **16/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |

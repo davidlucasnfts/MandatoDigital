@@ -11,7 +11,6 @@ import { SearchFilterBar } from '@/components/dashboard';
 import { useCampanhas } from '@/hooks/useCampanhas';
 import { useTemplates } from '@/hooks/useTemplates';
 import { useEleitores } from '@/hooks/useSupabaseData';
-import { useWhatsApp } from '@/hooks/useWhatsApp';
 import NovoComunicadoDialog from '@/components/NovoComunicadoDialog';
 import NovoTemplateDialog from '@/components/NovoTemplateDialog';
 import CampanhaPreview from '@/components/CampanhaPreview';
@@ -50,8 +49,6 @@ export default function ComunicacaoPage() {
     templates: templates?.length ?? 0,
   };
 
-  const { sendText } = useWhatsApp();
-
   const handleEnviarCampanha = async (campanha: Campanha) => {
     if (!eleitores || campanha.status !== 'rascunho') return;
     setCampanhaEnviando(campanha.id);
@@ -78,32 +75,13 @@ export default function ComunicacaoPage() {
     await updateCampanha(campanha.id, { status: 'enviando', total_destinatarios: destinatarios.length });
     setEnviandoProgresso({ atual: 0, total: destinatarios.length });
 
-    // Envia mensagens reais via WhatsApp
+    // Simula envio (1s por destinatário)
     let enviados = 0;
     let erros = 0;
-
-    if (campanha.tipo === 'whatsapp') {
-      // Envia via WAHA API
-      for (let i = 0; i < destinatarios.length; i++) {
-        const eleitor = destinatarios[i];
-        const phone = eleitor.telefone?.replace(/\D/g, '');
-        if (phone) {
-          const result = await sendText(phone, campanha.conteudo);
-          if (result.ok) enviados++;
-          else erros++;
-        } else {
-          erros++;
-        }
-        setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
-        await new Promise(r => setTimeout(r, 1000)); // Delay 1s entre envios
-      }
-    } else {
-      // Email: simula por enquanto
-      for (let i = 0; i < destinatarios.length; i++) {
-        await new Promise(r => setTimeout(r, 1000));
-        enviados++;
-        setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
-      }
+    for (let i = 0; i < destinatarios.length; i++) {
+      await new Promise(r => setTimeout(r, 1000));
+      enviados++;
+      setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
     }
 
     // Finaliza
@@ -187,36 +165,36 @@ export default function ComunicacaoPage() {
         </div>
       </motion.div>
 
-      {/* WhatsApp + Stats */}
+      {/* Stats com WhatsApp */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2.5 lg:gap-4">
         <div className="lg:col-span-1">
           <WhatsAppStatusCard />
         </div>
         <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
-        {[
-          { label: 'Comunicados', value: stats.total, icon: BarChart3, color: 'blue' },
-          { label: 'Enviadas', value: stats.enviadas, icon: CheckCircle2, color: 'green' },
-          { label: 'Em andamento', value: stats.enviando, icon: Send, color: 'amber' },
-          { label: 'Total de envios', value: stats.totalEnvios, icon: Users, color: 'purple' },
-        ].map((s, i) => (
-          <motion.div
-            key={s.label}
-            custom={i + 1}
-            variants={fadeIn}
-            initial="hidden"
-            animate="visible"
-          >
-            <Card className="border-t-[3px]" style={{ borderTopColor: s.color === 'blue' ? '#2563EB' : s.color === 'green' ? '#16a34a' : s.color === 'amber' ? '#d97706' : '#7c3aed' }}>
-              <CardContent className="p-3 lg:p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <s.icon className={`w-4 h-4 ${s.color === 'blue' ? 'text-blue-600' : s.color === 'green' ? 'text-green-600' : s.color === 'amber' ? 'text-amber-600' : 'text-purple-600'}`} />
-                </div>
-                <p className="text-xl lg:text-2xl font-bold text-slate-800">{s.value}</p>
-                <p className="text-[10px] lg:text-xs text-slate-500 mt-0.5">{s.label}</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+          {[
+            { label: 'Comunicados', value: stats.total, icon: BarChart3, color: 'blue' },
+            { label: 'Enviadas', value: stats.enviadas, icon: CheckCircle2, color: 'green' },
+            { label: 'Em andamento', value: stats.enviando, icon: Send, color: 'amber' },
+            { label: 'Total de envios', value: stats.totalEnvios, icon: Users, color: 'purple' },
+          ].map((s, i) => (
+            <motion.div
+              key={s.label}
+              custom={i + 1}
+              variants={fadeIn}
+              initial="hidden"
+              animate="visible"
+            >
+              <Card className="border-t-[3px]" style={{ borderTopColor: s.color === 'blue' ? '#2563EB' : s.color === 'green' ? '#16a34a' : s.color === 'amber' ? '#d97706' : '#7c3aed' }}>
+                <CardContent className="p-3 lg:p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <s.icon className={`w-4 h-4 ${s.color === 'blue' ? 'text-blue-600' : s.color === 'green' ? 'text-green-600' : s.color === 'amber' ? 'text-amber-600' : 'text-purple-600'}`} />
+                  </div>
+                  <p className="text-xl lg:text-2xl font-bold text-slate-800">{s.value}</p>
+                  <p className="text-[10px] lg:text-xs text-slate-500 mt-0.5">{s.label}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </div>
 

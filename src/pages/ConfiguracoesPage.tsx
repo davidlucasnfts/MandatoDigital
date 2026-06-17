@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, User, Bell, Shield, Mail, Gift, Save, Check, MessageSquare, RotateClockwise, Scan, Link2 } from '@/lib/icons';
+import { Settings, User, Bell, Shield, Mail, Gift, Save, Check } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useConfiguracoes } from '@/hooks/useSupabaseData';
-import { useWhatsApp } from '@/hooks/useWhatsApp';
 import { maskPhone, capitalizeWords, isValidPhone } from '@/lib/masks';
 
 
@@ -37,13 +36,6 @@ export default function ConfiguracoesPage() {
   const { data: configs, set: setConfig, loading: saving } = useConfiguracoes();
   const [templateLocal, setTemplateLocal] = useState('');
   const [saved, setSaved] = useState(false);
-  const { getSession, startSession, getQRCode, sendText } = useWhatsApp();
-  const [wahaStatus, setWahaStatus] = useState<string>('');
-  const [wahaQR, setWahaQR] = useState<string | null>(null);
-  const [wahaLoading, setWahaLoading] = useState(false);
-  const [testPhone, setTestPhone] = useState('');
-  const [testMessage, setTestMessage] = useState('');
-  const [testResult, setTestResult] = useState<string | null>(null);
 
   const templateAtual = configs['template_aniversario'] || 'Olá {{nome}}! 🎉\n\nDesejo um feliz aniversário! Muita saúde, paz e conquistas.\n\nConte comigo sempre!\n\nAbraço,';
 
@@ -79,10 +71,6 @@ export default function ConfiguracoesPage() {
           <TabsTrigger value="integracoes">
             <Mail className="w-4 h-4 mr-1.5" /> Integrações
           </TabsTrigger>
-          <TabsTrigger value="whatsapp">
-            <MessageSquare className="w-4 h-4 mr-1.5" /> WhatsApp
-          </TabsTrigger>
-
         </TabsList>
 
         <TabsContent value="perfil" className="space-y-4">
@@ -261,136 +249,6 @@ export default function ConfiguracoesPage() {
                     </div>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </TabsContent>
-
-        <TabsContent value="whatsapp" className="space-y-4">
-          <motion.div custom={1} variants={fadeIn} initial="hidden" animate="visible">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-green-600" />
-                  WhatsApp — WAHA API
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Status */}
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    {wahaStatus === 'WORKING' ? (
-                      <Link2 className="w-4 h-4 text-green-600" />
-                    ) : wahaStatus === 'SCAN_QR_CODE' ? (
-                      <Scan className="w-4 h-4 text-amber-600" />
-                    ) : (
-                      <Link2 className="w-4 h-4 text-slate-400" />
-                    )}
-                    <span className="text-sm font-medium text-slate-700">
-                      Status: {wahaStatus || 'Desconhecido'}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-xs"
-                    onClick={async () => {
-                      setWahaLoading(true);
-                      const session = await getSession();
-                      setWahaStatus(session?.status || 'OFFLINE');
-                      setWahaLoading(false);
-                    }}
-                    disabled={wahaLoading}
-                  >
-                    <RotateClockwise className={`w-3 h-3 mr-1 ${wahaLoading ? 'animate-spin' : ''}`} />
-                    Verificar
-                  </Button>
-                </div>
-
-                {/* QR Code */}
-                {wahaStatus === 'SCAN_QR_CODE' && (
-                  <div className="text-center space-y-2">
-                    <p className="text-xs text-slate-500">
-                      Escaneie o QR Code com o WhatsApp do celular
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={async () => {
-                        const qr = await getQRCode();
-                        if (qr) setWahaQR(qr);
-                      }}
-                    >
-                      <Scan className="w-4 h-4 mr-1" /> Gerar QR Code
-                    </Button>
-                    {wahaQR && (
-                      <div className="mt-2">
-                        <img src={wahaQR} alt="QR Code WhatsApp" className="mx-auto w-48 h-48" />
-                        <p className="text-[10px] text-slate-400 mt-1">
-                          Válido por 20 segundos. Se expirar, clique em Gerar novamente.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Conectado */}
-                {wahaStatus === 'WORKING' && (
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <p className="text-sm text-green-700 font-medium flex items-center gap-2">
-                      <Check className="w-4 h-4" /> WhatsApp conectado!
-                    </p>
-                    <p className="text-xs text-green-600 mt-1">
-                      Pronto para enviar mensagens automaticamente.
-                    </p>
-                  </div>
-                )}
-
-                {/* Teste de envio */}
-                {wahaStatus === 'WORKING' && (
-                  <div className="border rounded-lg p-4 space-y-3">
-                    <p className="text-sm font-medium text-slate-700">Testar envio</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <Input
-                        placeholder="Telefone (ex: 11999999999)"
-                        value={testPhone}
-                        onChange={e => setTestPhone(e.target.value)}
-                        className="h-9 text-xs"
-                      />
-                      <Input
-                        placeholder="Mensagem de teste"
-                        value={testMessage}
-                        onChange={e => setTestMessage(e.target.value)}
-                        className="h-9 text-xs"
-                      />
-                    </div>
-                    <Button
-                      size="sm"
-                      className="bg-green-600 hover:bg-green-700"
-                      onClick={async () => {
-                        if (!testPhone || !testMessage) return;
-                        setTestResult('Enviando...');
-                        const result = await sendText(testPhone, testMessage);
-                        setTestResult(result.ok ? 'Enviado com sucesso!' : `Falha: ${result.error || 'Erro desconhecido'}`);
-                      }}
-                      disabled={!testPhone || !testMessage}
-                    >
-                      <MessageSquare className="w-3 h-3 mr-1" /> Enviar teste
-                    </Button>
-                    {testResult && (
-                      <p className={`text-xs ${testResult.includes('sucesso') ? 'text-green-600' : 'text-red-600'}`}>
-                        {testResult}
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {/* Info */}
-                <div className="bg-blue-50 rounded-lg p-3">
-                  <p className="text-xs text-blue-700">
-                    <strong>Como funciona:</strong> A integração com WhatsApp permite enviar mensagens automaticamente através de campanhas de comunicação, sem precisar abrir o WhatsApp Web no navegador.
-                  </p>
-                </div>
               </CardContent>
             </Card>
           </motion.div>

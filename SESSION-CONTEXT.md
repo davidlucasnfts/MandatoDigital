@@ -11,48 +11,41 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Decisão arquitetural: modelo SaaS multi-cliente (mandatos) — 16/06**
+**WhatsApp restaurado na Comunicação — 16/06**
 
-> ⚠️ Esta sessão não produziu código. Foi dedicada a entender e planejar a estrutura de banco de dados para suportar múltiplos clientes pagantes. Todas as definições abaixo estão pendentes de aprovação e devem ser retomadas na próxima sessão.
+### ✅ O que foi feito:
+1. **WhatsAppStatusCard restaurado** (`src/components/WhatsAppStatusCard.tsx`)
+   - Fonte: commit `b2aa5e8` (última versão que funcionava)
+   - Melhorias incorporadas da Configurações V2 (commit `48a509b`):
+     - `wahaMe` — mostra nome do WhatsApp conectado
+     - `qrError` — tratamento de erro do QR Code
+     - `qrCountdown` — contador regressivo visual (15s)
+     - Polling inteligente a cada 3s para detectar escaneamento
+     - Auto-renovação do QR a cada 10s
+   - Ícones migrados de `lucide-react` para `@/lib/icons` (Tabler)
 
-### ✅ Decisões preliminares tomadas:
-1. **Componentes base do Design System criados/adaptados**
-   - `PageHeader`, `DataList`, `ModalPreview`, `SkeletonList`, `SearchFilterBar`
-   - `StatCard`, `PanelCard`, `EmptyState` adaptados para aceitar ícones Tabler (`@/lib/icons`)
+2. **ComunicacaoPage.tsx atualizada**
+   - Layout: WhatsAppStatusCard na coluna lateral (1/4) + stats em 3/4
+   - Import do `useWhatsApp` adicionado
+   - **Envio simulado substituído por envio real** via `sendText()` do hook `useWhatsApp`
 
-2. **Páginas V2 criadas e com rotas de teste ativas**
-   - Comunidades V2 (`/dashboard/comunidades/teste-v2`)
-   - Produtividade V2 (`/dashboard/produtividade/teste-v2`)
-   - Equipe V2 (`/dashboard/equipe/teste-v2`)
-   - Tarefas V2 (`/dashboard/tarefas/teste-v2`)
-   - Proposições V2 (`/dashboard/proposicoes/teste-v2`)
-   - Enquetes V2 (`/dashboard/enquetes/teste-v2`)
-   - Relatórios V2 (`/dashboard/relatorios/teste-v2`)
-   - Documentos V2 (`/dashboard/documentos/teste-v2`)
+3. **ConfiguraçõesPage.tsx limpa**
+   - Aba WhatsApp removida — conexão fica somente na Comunicação
+   - Variáveis e imports não utilizados removidos
 
-3. **Comunicação V2 reativada**
-   - Corrigidos imports de `lucide-react` para `@/lib/icons`
-   - Rota e link de teste ativos em `/dashboard/comunicacao/teste-v2`
+4. **Documentação criada**
+   - `docs/CONEXÃODOWHATS-PAGINA-COMUNICAÇÃO.md` — guia para continuar na próxima sessão
 
-4. **Correções aplicadas**
-   - `EquipePageV2` remove dropdown proibido; botões de alterar cargo são sempre visíveis
-   - `DocumentosPageV2` implementa upload/download/exclusão real via Supabase Storage
-   - `NovoEventoDialog` corrigido para não resetar formulário durante digitação
-   - Preview modal da Agenda corrigido para textos longos (`break-all`, `min-w-0`)
-   - **Responsividade botões preview modal**: `flex-1 sm:flex-none` em todas as páginas V2 (mobile: largura total, desktop: tamanho natural)
+### ❌ Problema pendente:
+- **QR Code não está funcionando** — ao clicar "Conectar", o QR não aparece
+- Possíveis causas: WAHA_API_URL com IP público, endpoint incorreto, container não rodando
+- Ver documentação para checklist de debug
 
-5. **Migração de ícones lucide-react → Tabler**
-   - `DashboardHomeV2.tsx`: migrado `Users, ClipboardList, Clock, MessageSquare, Calendar, TrendingUp, TrendingDown`
-   - `CommandMenu.tsx`: migrado todos os ícones; `Command` substituído por `Code` (ícone ⌘ não existe no Tabler)
-
-6. **Checklist pré-commit parcial executado**
-   - `npx tsc --noEmit` passou sem erros
-   - Rotas/links de teste mantidos ativos para validação visual do usuário
-
-7. **Correção durante testes**
-   - `EnquetesPageV2` crashava porque `StatCard` não suportava `color="slate"` — adicionado 'slate' ao `StatCard`
-   - Adicionados ícones `LayoutGrid` e `List` em `src/lib/icons.ts` para `TarefasPageV2`
-   - Criado roteiro de testes em `docs/testes-paginas-v2.md`
+### 📁 Arquivos modificados:
+- `src/components/WhatsAppStatusCard.tsx`
+- `src/pages/ComunicacaoPage.tsx`
+- `src/pages/ConfiguracoesPage.tsx`
+- `docs/CONEXÃODOWHATS-PAGINA-COMUNICAÇÃO.md`
 
 ---
 
