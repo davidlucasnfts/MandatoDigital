@@ -89,7 +89,14 @@ export default function WhatsAppStatusCard() {
         return;
       }
       // Atualiza status
-      setWahaStatus(result.status || 'SCAN_QR_CODE');
+      const nextStatus = result.status || 'SCAN_QR_CODE';
+      setWahaStatus(nextStatus);
+
+      // Se a sessão ainda está iniciando, aguarda um pouco antes de buscar QR
+      if (nextStatus === 'STARTING') {
+        await new Promise(r => setTimeout(r, 3000));
+      }
+
       // Já gera o QR Code automaticamente
       const qr = await getQRCode();
       console.log('QR Code result:', qr ? 'recebido' : 'null');
@@ -122,6 +129,8 @@ export default function WhatsAppStatusCard() {
     STARTING: { label: 'Iniciando...', color: 'text-blue-700', bg: 'bg-blue-50', dot: 'bg-blue-500' },
     OFFLINE: { label: 'Desconectado', color: 'text-slate-600', bg: 'bg-slate-100', dot: 'bg-slate-400' },
   };
+
+  const showQRArea = wahaStatus === 'SCAN_QR_CODE' || wahaStatus === 'STARTING';
 
   const current = statusLabels[wahaStatus] || statusLabels.OFFLINE;
 
@@ -184,7 +193,7 @@ export default function WhatsAppStatusCard() {
           )}
 
           {/* Não conectado — mostra botão Conectar */}
-          {wahaStatus !== 'WORKING' && wahaStatus !== 'SCAN_QR_CODE' && (
+          {wahaStatus !== 'WORKING' && !showQRArea && (
             <div className="text-center space-y-3 py-2">
               <p className="text-sm text-slate-600">
                 Conecte o WhatsApp para enviar mensagens pelas campanhas
@@ -202,10 +211,12 @@ export default function WhatsAppStatusCard() {
           )}
 
           {/* Aguardando QR Code */}
-          {wahaStatus === 'SCAN_QR_CODE' && (
+          {showQRArea && (
             <div className="text-center space-y-3">
               <div className="bg-amber-50 rounded-lg p-3 text-left">
-                <p className="text-sm text-amber-800 font-medium">Escaneie o QR Code com seu celular</p>
+                <p className="text-sm text-amber-800 font-medium">
+                  {wahaStatus === 'STARTING' ? 'Iniciando sessão... aguarde o QR Code' : 'Escaneie o QR Code com seu celular'}
+                </p>
                 <ol className="text-xs text-amber-700 mt-2 space-y-1 pl-4">
                   <li>1. Abra o WhatsApp no celular</li>
                   <li>2. Toque em Configurações → Aparelhos conectados</li>

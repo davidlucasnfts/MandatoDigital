@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 16/06/2026  
-> **Sessão atual:** Decisões de arquitetura de banco de dados para modelo SaaS multi-cliente
+> **Atualizado em:** 17/06/2026  
+> **Sessão atual:** Correção do fluxo de conexão WhatsApp (QR Code) na página de Comunicação
 
 ---
 
@@ -11,40 +11,32 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**WhatsApp restaurado na Comunicação — 16/06**
+**Correção do fluxo de conexão WhatsApp (QR Code) — 17/06**
 
 ### ✅ O que foi feito:
-1. **WhatsAppStatusCard restaurado** (`src/components/WhatsAppStatusCard.tsx`)
-   - Fonte: commit `b2aa5e8` (última versão que funcionava)
-   - Melhorias incorporadas da Configurações V2 (commit `48a509b`):
-     - `wahaMe` — mostra nome do WhatsApp conectado
-     - `qrError` — tratamento de erro do QR Code
-     - `qrCountdown` — contador regressivo visual (15s)
-     - Polling inteligente a cada 3s para detectar escaneamento
-     - Auto-renovação do QR a cada 10s
-   - Ícones migrados de `lucide-react` para `@/lib/icons` (Tabler)
+1. **`api/whatsapp-router.ts` corrigido**
+   - `startSession` agora usa `POST /api/sessions/default/start` (idempotente, correto na WAHA Core).
+   - Fallback para `POST /api/sessions` com `{ name: "default" }` se o start falhar.
+   - `getQRCode` mantém `GET /api/default/auth/qr` e adiciona fallback para `GET /api/screenshot`.
+   - Logs estruturados em todas as chamadas WAHA (sem expor API Key/URL).
+   - Conversão de imagem direta para base64 via `Buffer.from` (compatível com Node.js serverless).
 
-2. **ComunicacaoPage.tsx atualizada**
-   - Layout: WhatsAppStatusCard na coluna lateral (1/4) + stats em 3/4
-   - Import do `useWhatsApp` adicionado
-   - **Envio simulado substituído por envio real** via `sendText()` do hook `useWhatsApp`
+2. **`src/components/WhatsAppStatusCard.tsx` melhorado**
+   - Área de QR Code agora também aparece no estado `STARTING`.
+   - Aguarda 3s antes de buscar QR quando o backend retorna `STARTING`.
+   - Mensagens de erro mais claras vindas do backend.
 
-3. **ConfiguraçõesPage.tsx limpa**
-   - Aba WhatsApp removida — conexão fica somente na Comunicação
-   - Variáveis e imports não utilizados removidos
-
-4. **Documentação criada**
-   - `docs/CONEXÃODOWHATS-PAGINA-COMUNICAÇÃO.md` — guia para continuar na próxima sessão
+3. **Documentação atualizada**
+   - `docs/CONEXÃODOWHATS-PAGINA-COMUNICAÇÃO.md` refletindo o novo fluxo e checklist de validação.
 
 ### ❌ Problema pendente:
-- **QR Code não está funcionando** — ao clicar "Conectar", o QR não aparece
-- Possíveis causas: WAHA_API_URL com IP público, endpoint incorreto, container não rodando
-- Ver documentação para checklist de debug
+- **Validar na VPS/Vercel** — o código está corrigido, mas precisa testar na infraestrutura real.
+- **Decisão de arquitetura:** `WAHA_API_URL` na Vercel deve apontar para IP público:8080 (temporário) ou domínio via proxy. Nunca `localhost:8080`.
+- Ver documentação para checklist de debug.
 
 ### 📁 Arquivos modificados:
+- `api/whatsapp-router.ts`
 - `src/components/WhatsAppStatusCard.tsx`
-- `src/pages/ComunicacaoPage.tsx`
-- `src/pages/ConfiguracoesPage.tsx`
 - `docs/CONEXÃODOWHATS-PAGINA-COMUNICAÇÃO.md`
 
 ---
@@ -195,6 +187,8 @@ assinaturas
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
+- **Verificar WAHA_API_URL na Vercel** — deve apontar para endereço acessível pela Vercel (IP público:8080 temporariamente, ou domínio via Nginx/Cloudflare). NUNCA `http://localhost:8080`.
+- **Testar QR Code em produção** após deploy: acessar Comunicação → Conectar WhatsApp → ver logs do backend na Vercel.
 - **Testar cada página V2 localmente** usando o roteiro em `docs/testes-paginas-v2.md`
 - **Configurar bucket `documentos` no Supabase Storage** se ainda não estiver ativo (migration 007 já existe)
 - **Verificar políticas RLS do bucket `documentos`** — a policy atual exige `auth.uid() = owner`; testar se upload funciona com usuário autenticado

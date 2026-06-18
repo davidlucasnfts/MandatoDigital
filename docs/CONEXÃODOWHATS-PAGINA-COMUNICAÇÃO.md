@@ -1,8 +1,8 @@
 # CONEXÃO DO WHATSAPP - PÁGINA DE COMUNICAÇÃO
 
-> **Data:** 16/06/2026
-> **Status:** Em andamento - QR Code não está funcionando
-> **Próxima sessão:** Continuar debug do QR Code
+> **Data:** 16/06/2026 (atualizado em 17/06/2026)
+> **Status:** Em teste - fluxo de conexão corrigido com logs e fallback de screenshot
+> **Próxima sessão:** Validar na VPS/Vercel
 
 ---
 
@@ -10,6 +10,18 @@
 
 ### 1. Problema identificado
 A conexão WhatsApp sumiu da página de Comunicação quando a V2 foi promovida à produção. O `WhatsAppStatusCard` ficou órfão (não importado em nenhuma página).
+
+### 2. Correções da sessão 17/06
+- **`api/whatsapp-router.ts`**:
+  - `startSession` agora usa `POST /api/sessions/default/start` (idempotente, correto na WAHA Core).
+  - Fallback para `POST /api/sessions` com `{ name: "default" }` se o start falhar.
+  - `getQRCode` mantém `GET /api/default/auth/qr` e adiciona fallback para `GET /api/screenshot`.
+  - Logs estruturados em todas as chamadas WAHA (sem expor API Key/URL).
+  - Conversão de imagem direta para base64 via `Buffer.from` (compatível com Node.js serverless).
+- **`src/components/WhatsAppStatusCard.tsx`**:
+  - Área de QR Code agora também aparece no estado `STARTING`.
+  - Aguarda 3s antes de buscar QR quando o backend retorna `STARTING`.
+  - Mensagens de erro mais claras vindas do backend.
 
 ### 2. Solução implementada
 
@@ -43,66 +55,62 @@ A conexão WhatsApp sumiu da página de Comunicação quando a V2 foi promovida 
 
 | Arquivo | Mudança |
 |---------|---------|
-| `src/components/WhatsAppStatusCard.tsx` | Restaurado + melhorias da Configurações V2 |
+| `src/components/WhatsAppStatusCard.tsx` | Restaurado + melhorias da Configurações V2 + suporte a estado STARTING |
 | `src/pages/ComunicacaoPage.tsx` | Adicionado WhatsAppStatusCard + envio real WAHA |
 | `src/pages/ConfiguracoesPage.tsx` | Removida aba WhatsApp |
+| `api/whatsapp-router.ts` | Fluxo de start corrigido, fallback de screenshot, logs seguros |
 
 ---
 
-## Problema pendente: QR Code não funciona
+## Problema pendente: validar na VPS/Vercel
 
-### Sintomas
-- Ao clicar "Conectar WhatsApp", o status muda para "Iniciando..." ou "Aguardando QR Code"
-- O QR Code não aparece (imagem quebrada ou não gera)
+### Sintomas anteriores
+- Ao clicar "Conectar WhatsApp", o status mudava para "Iniciando..." ou "Aguardando QR Code"
+- O QR Code não aparecia (imagem quebrada ou não gerava)
 
-### Possíveis causas (para investigar na próxima sessão)
+### Causas corrigidas no código
+- [x] `startSession` chamava `POST /api/sessions` com body customizado, que pode falhar na Core.
+- [x] `startSession` reiniciava sessão existente em vez de iniciar, perdendo o QR.
+- [x] `getQRCode` não tinha fallback se `/api/default/auth/qr` retornasse erro.
+- [x] Frontend não lidava bem com o estado `STARTING`.
 
-#### 1. WAHA API não está acessível
-- Verificar se container WAHA está rodando na VPS: `docker ps`
-- Verificar se `WAHA_API_URL` no `.env` está correto
-- **ATENÇÃO:** O `.env` atual tem `http://82.197.73.101:8080` (IP público) — deveria ser `http://localhost:8080` conforme ADR-006
-
-#### 2. Endpoint de QR Code incorreto
-- O router usa `GET /api/default/auth/qr` (WAHA Core)
-- Verificar se a WAHA Core suporta este endpoint
-- Alternativa: `GET /api/sessions/default/auth/qr` (outras versões)
-
-#### 3. Sessão não está em estado SCAN_QR_CODE
-- O `startSession` pode retornar `STARTING` em vez de `SCAN_QR_CODE`
-- O QR Code só é gerado quando status é `SCAN_QR_CODE`
-- Verificar logs do console no navegador
-
-#### 4. Problema de CORS ou rede
-- Backend (Vercel) → WAHA (VPS) pode ter bloqueio
-- Verificar se a API Key está correta
-- Verificar se a porta 8080 está aberta no firewall
+### Causas que ainda dependem de infraestrutura
+- **WAHA_API_URL na Vercel:** se estiver `http://localhost:8080`, o backend serverless não acessa a VPS. Deve ser IP público:8080 (temporário) ou domínio via proxy.
+- **Porta 8080 aberta:** necessária enquanto não houver domínio + Cloudflare/Nginx.
+- **Container WAHA rodando:** `docker ps | grep waha`.
+- **API Key correta:** `WAHA_API_KEY` no `.env` da VPS deve ser igual ao da Vercel.
 
 ---
 
-## Checklist para próxima sessão
+## Checklist de validação
 
 ```
 □ 1. Verificar se container WAHA está rodando na VPS
    docker ps | grep waha
 
-□ 2. Verificar WAHA_API_URL no .env
-   Deve ser: http://localhost:8080
-   Nunca: IP público (82.197.73.101:8080)
+□ 2. Verificar WAHA_API_URL na Vercel
+   Deve apontar para um endereço acessível pela Vercel:
+   - IP público: http://82.197.73.101:8080 (temporário, menos seguro)
+   - Domínio via proxy: https://waha.seudominio.com (recomendado)
+   NUNCA: http://localhost:8080 (serverless da Vercel não acessa a VPS)
 
-□ 3. Testar endpoint da WAHA manualmente
+□ 3. Testar endpoint da WAHA manualmente (dentro da VPS)
    curl -H "X-Api-Key: <KEY>" http://localhost:8080/api/sessions/default
 
-□ 4. Verificar logs do console no navegador
+□ 4. Testar start session (dentro da VPS)
+   curl -X POST -H "X-Api-Key: <KEY>" http://localhost:8080/api/sessions/default/start
+
+□ 5. Testar endpoint de QR Code diretamente (dentro da VPS)
+   curl -H "X-Api-Key: <KEY>" -H "Accept: application/json" http://localhost:8080/api/default/auth/qr
+
+□ 6. Verificar logs do backend na Vercel
+   Procurar: "[WAHA] POST /api/sessions/default/start -> HTTP ..."
+
+□ 7. Verificar logs do console no navegador
    Procurar: "Start session result", "QR Code result", "Polling status"
 
-□ 5. Testar endpoint de QR Code diretamente
-   curl -H "X-Api-Key: <KEY>" http://localhost:8080/api/default/auth/qr
-
-□ 6. Verificar se a sessão está em SCAN_QR_CODE
-   O status deve ser "SCAN_QR_CODE" para o QR aparecer
-
-□ 7. Se tudo falhar: verificar versão da WAHA
-   docker logs waha | head -20
+□ 8. Se tudo falhar: verificar versão da WAHA
+   docker logs waha --tail 50
 ```
 
 ---
@@ -119,16 +127,19 @@ A conexão WhatsApp sumiu da página de Comunicação quando a V2 foi promovida 
 
 ## Notas técnicas
 
-### Fluxo de conexão WhatsApp
+### Fluxo de conexão WhatsApp (corrigido)
 ```
 1. Usuário clica "Conectar WhatsApp"
-2. Frontend chama startSession() → POST /api/sessions/default/start
-3. Backend aguarda até 45s por status SCAN_QR_CODE ou WORKING
-4. Se SCAN_QR_CODE: frontend inicia polling do QR Code
-5. Frontend chama getQRCode() → GET /api/default/auth/qr
-6. QR Code aparece na tela com contador regressivo
-7. Usuário escaneia com celular
-8. Polling detecta status WORKING → mostra "Conectado"
+2. Frontend chama startSession() → tRPC → api/whatsapp-router.ts
+3. Backend chama POST /api/sessions/default/start (idempotente na Core)
+4. Se falhar, backend tenta POST /api/sessions { name: "default" }
+5. Backend faz polling por até 45s por status SCAN_QR_CODE ou WORKING
+6. Frontend mostra área de QR Code mesmo em STARTING
+7. Frontend chama getQRCode() → GET /api/default/auth/qr
+8. Se /auth/qr falhar, backend tenta GET /api/screenshot
+9. QR Code aparece na tela com contador regressivo
+10. Usuário escaneia com celular
+11. Polling detecta status WORKING → mostra "Conectado"
 ```
 
 ### Estados do WhatsAppStatusCard

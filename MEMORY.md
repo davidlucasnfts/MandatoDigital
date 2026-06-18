@@ -53,6 +53,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Documentos V2** — upload/download/exclusão real via Supabase Storage, stats cards, grid padronizado, preview de imagens | **15/06** |
 | **Comunicação V2 reativada** — corrigidos imports de ícones de lucide-react para @/lib/icons, rota e link de teste ativos | **15/06** |
 | **WhatsApp restaurado na Comunicação** — WhatsAppStatusCard com QR Code, polling, auto-renovação, envio real via WAHA API; aba WhatsApp removida das Configurações | **16/06** |
+| **Correção do fluxo de conexão WhatsApp** — startSession usa POST /api/sessions/default/start, fallback de screenshot no QR Code, logs seguros no backend, frontend lida com estado STARTING | **17/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -117,6 +118,28 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Comunidades: cadastro com geocodificação CNEFE + Here API + cache** | **27/05** |
 | **Mapa: clusters com ícones coloridos (Eleitor azul, Comunidade verde, Líder roxo)** | **28/05** |
 | **Análise de bibliotecas de ícones (Tabler, Phosphor, Lucide, Open Peeps)** | **28/05** |
+
+---
+
+## 📝 Resumo da Sessão 17/06 — Correção do QR Code WhatsApp
+
+### Contexto
+Continuidade da integração WhatsApp na página de Comunicação. O problema pendente era: ao clicar "Conectar WhatsApp", o QR Code não aparecia.
+
+### Correções aplicadas
+| # | Arquivo | Mudança |
+|---|---------|---------|
+| 1 | `api/whatsapp-router.ts` | `startSession` usa `POST /api/sessions/default/start` (idempotente na WAHA Core) com fallback para `POST /api/sessions` |
+| 2 | `api/whatsapp-router.ts` | `getQRCode` mantém `GET /api/default/auth/qr` e adiciona fallback para `GET /api/screenshot` |
+| 3 | `api/whatsapp-router.ts` | Logs seguros em todas as chamadas WAHA (sem expor API Key/URL) |
+| 4 | `src/components/WhatsAppStatusCard.tsx` | Área de QR Code aparece também no estado `STARTING`; aguarda 3s antes de buscar QR |
+
+### Validação
+- `npx tsc --noEmit` passou sem erros.
+
+### Pendências para próxima sessão
+- Validar na VPS/Vercel: o backend serverless precisa acessar a WAHA em um endereço público (IP:8080 temporário ou domínio via proxy).
+- Verificar logs da Vercel após clicar "Conectar WhatsApp".
 
 ---
 

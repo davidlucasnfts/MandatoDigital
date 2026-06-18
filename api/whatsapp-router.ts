@@ -13,6 +13,20 @@ interface WahaQRResponse {
   data?: string;
 }
 
+/** Log seguro: nunca expõe API Key nem URL completa */
+function wahaLog(message: string) {
+  const url = env.wahaApiUrl || "não-configurado";
+  // Mostra apenas o protocolo + domínio/IP truncado
+  const safeUrl = url.replace(/:\/\/[^/]+/, "://[waha-host]");
+  console.log(`[WAHA] ${message} (host: ${safeUrl})`);
+}
+
+/** Converte ArrayBuffer para base64 (Node.js compatível) */
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  return Buffer.from(bytes).toString("base64");
+}
+
 /** Normaliza telefone para formato WAHA: remove máscara, remove 55 duplicado, remove 9, adiciona 55 */
 function normalizePhone(phone: string): string {
   let digits = phone.replace(/\D/g, "");
@@ -43,11 +57,19 @@ async function wahaFetch(path: string, options?: RequestInit): Promise<Response>
     "Content-Type": "application/json",
     ...(options?.headers as Record<string, string> || {}),
   };
+  // Não loga headers para não vazar X-Api-Key
+  wahaLog(`${options?.method || "GET"} ${path}`);
+
   // Timeout de 20 segundos para evitar falhas silenciosas
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
   try {
-    return await fetch(url, { ...options, headers, signal: controller.signal });
+    const res = await fetch(url, { ...options, headers, signal: controller.signal });
+    wahaLog(`${options?.method || "GET"} ${path} -> HTTP ${res.status}`);
+    return res;
+  } catch (e: any) {
+    wahaLog(`${options?.method || "GET"} ${path} -> ERRO: ${e.message || "network"}`);
+    throw e;
   } finally {
     clearTimeout(timeout);
   }
@@ -56,6 +78,7 @@ async function wahaFetch(path: string, options?: RequestInit): Promise<Response>
 export const whatsappRouter = createRouter({
   status: publicQuery.query(async () => {
     if (!env.wahaApiUrl || !env.wahaApiKey) {
+      wahaLog("status -> WAHA não configurado");
       return { status: "FAILED", error: "WAHA não configurado" };
     }
     try {
@@ -64,6 +87,7 @@ export const whatsappRouter = createRouter({
         return { status: "FAILED", error: `HTTP ${res.status}` };
       }
       const data = (await res.json()) as WahaSession;
+      wahaLog(`status -> ${data.status}`);
       return {
         status: data.status,
         me: data.me,
@@ -78,36 +102,23 @@ export const whatsappRouter = createRouter({
       return { ok: false, error: "WAHA não configurado. Verifique as variáveis de ambiente." };
     }
     try {
-      // 1. Verifica se a sessão existe
-      const existsRes = await wahaFetch("/api/sessions/default");
+      // 1. Tenta iniciar a sessão default pelo endpoint idempotente da WAHA Core
+      wahaLog("startSession -> POST /api/sessions/default/start");
+      const startRes = await wahaFetch("/api/sessions/default/start", {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
 
-      if (!existsRes.ok) {
-        // Sessão não existe: cria e inicia automaticamente
+      if (!startRes.ok && startRes.status !== 409) {
+        // Fallback: tenta criar sessão default (algumas versões da Core exigem)
+        wahaLog(`startSession -> POST /api/sessions/default/start falhou (HTTP ${startRes.status}), tentando POST /api/sessions`);
         const createRes = await wahaFetch("/api/sessions", {
           method: "POST",
-          body: JSON.stringify({
-            name: "default",
-            config: {
-              client: {
-                deviceName: "Mandato Digital",
-                browserName: "Chrome",
-              },
-            },
-          }),
+          body: JSON.stringify({ name: "default" }),
         });
         if (!createRes.ok) {
           const err = await createRes.json().catch(() => ({}));
           return { ok: false, error: err.message || `Falha ao criar sessão (HTTP ${createRes.status})` };
-        }
-      } else {
-        // Sessão existe: reinicia para garantir QR Code fresco
-        const restartRes = await wahaFetch("/api/sessions/default/restart", {
-          method: "POST",
-          body: JSON.stringify({}),
-        });
-        if (!restartRes.ok) {
-          const err = await restartRes.json().catch(() => ({}));
-          return { ok: false, error: err.message || `Falha ao reiniciar sessão (HTTP ${restartRes.status})` };
         }
       }
 
@@ -117,6 +128,7 @@ export const whatsappRouter = createRouter({
         const statusRes = await wahaFetch("/api/sessions/default");
         if (statusRes.ok) {
           const data = (await statusRes.json()) as WahaSession;
+          wahaLog(`startSession -> polling ${i + 1}/45 status=${data.status}`);
           if (data.status === "SCAN_QR_CODE" || data.status === "WORKING") {
             return { ok: true, status: data.status };
           }
@@ -134,27 +146,51 @@ export const whatsappRouter = createRouter({
 
   getQRCode: publicQuery.query(async () => {
     if (!env.wahaApiUrl || !env.wahaApiKey) {
+      wahaLog("getQRCode -> WAHA não configurado");
       return { qrCode: null, error: "WAHA não configurado" };
     }
     try {
       // WAHA Core: endpoint de QR Code é GET /api/default/auth/qr
       // Retorna: {"mimetype":"image/png","data":"base64..."}
+      wahaLog("getQRCode -> GET /api/default/auth/qr");
       const res = await wahaFetch("/api/default/auth/qr", {
         method: "GET",
         headers: { "Accept": "application/json" },
       });
-      console.log("[WAHA] QR Code status:", res.status);
-      if (!res.ok) {
-        return { qrCode: null, error: `Não foi possível gerar QR Code (HTTP ${res.status})` };
+
+      if (res.ok) {
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("image/")) {
+          // Algumas versões retornam a imagem diretamente
+          const buffer = await res.arrayBuffer();
+          const mime = contentType.split(";")[0].trim() || "image/png";
+          const base64 = arrayBufferToBase64(buffer);
+          wahaLog("getQRCode -> imagem direta recebida");
+          return { qrCode: `data:${mime};base64,${base64}` };
+        }
+        const data = (await res.json()) as WahaQRResponse;
+        wahaLog(`getQRCode -> JSON recebido (mimetype=${data.mimetype || "?"}, data=${data.data ? "sim" : "não"})`);
+        if (data && data.data) {
+          return { qrCode: `data:${data.mimetype || "image/png"};base64,${data.data}` };
+        }
       }
-      const data = (await res.json()) as WahaQRResponse;
-      console.log("[WAHA] QR Code data:", data ? "recebido" : "vazio");
-      if (data && data.data) {
-        return { qrCode: `data:${data.mimetype || "image/png"};base64,${data.data}` };
+
+      // Fallback: tenta obter screenshot da tela de QR Code
+      wahaLog(`getQRCode -> /api/default/auth/qr falhou (HTTP ${res.status}), tentando /api/screenshot`);
+      const screenshotRes = await wahaFetch("/api/screenshot", {
+        method: "GET",
+        headers: { "Accept": "image/png" },
+      });
+      if (screenshotRes.ok) {
+        const buffer = await screenshotRes.arrayBuffer();
+        const base64 = arrayBufferToBase64(buffer);
+        wahaLog("getQRCode -> screenshot recebido");
+        return { qrCode: `data:image/png;base64,${base64}` };
       }
-      return { qrCode: null, error: "QR Code não disponível" };
+
+      return { qrCode: null, error: `Não foi possível gerar QR Code (HTTP ${res.status})` };
     } catch (e: any) {
-      console.error("[WAHA] QR Code error:", e.message);
+      wahaLog(`getQRCode -> ERRO: ${e.message || "desconhecido"}`);
       return { qrCode: null, error: e.message || "Falha ao gerar QR Code" };
     }
   }),
