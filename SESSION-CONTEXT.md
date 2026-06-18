@@ -1,43 +1,44 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 17/06/2026  
-> **Sessão atual:** Correção do fluxo de conexão WhatsApp (QR Code) na página de Comunicação
+> **Sessão atual:** Migração WAHA → Evolution API (backend reescrito, aguardando instalação na VPS)
 
 ---
 
 ## Stack (1 linha)
-React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (WAHA Core + CNEFE API Proxy) + Vercel
+React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (Evolution API + CNEFE API Proxy) + Vercel
 
 ---
 
 ## Última funcionalidade trabalhada
-**Correção do fluxo de conexão WhatsApp (QR Code) — 17/06**
+**Correção do fluxo de conexão WhatsApp — forçar QR Code ao reconectar — 18/06**
 
 ### ✅ O que foi feito:
-1. **`api/whatsapp-router.ts` corrigido**
-   - `startSession` agora usa `POST /api/sessions/default/start` (idempotente, correto na WAHA Core).
-   - Fallback para `POST /api/sessions` com `{ name: "default" }` se o start falhar.
-   - `getQRCode` mantém `GET /api/default/auth/qr` e adiciona fallback para `GET /api/screenshot`.
-   - Logs estruturados em todas as chamadas WAHA (sem expor API Key/URL).
-   - Conversão de imagem direta para base64 via `Buffer.from` (compatível com Node.js serverless).
+1. **Backend reescrito para Evolution API (`api/whatsapp-router.ts`)**
+   - Novos endpoints: `GET /instance/connectionState/{name}`, `POST /instance/create`, `GET /instance/connect/{name}`, `DELETE /instance/logout/{name}`, `POST /message/sendText/{name}`
+   - Interface pública mantida (mesmos nomes de procedures tRPC) — frontend não quebra
+   - Cache de status removido (Evolution é mais estável, não precisa)
+   - Mapeamento de estados: `open`→`WORKING`, `connecting`→`STARTING`, `close`→`STOPPED`, `qrcode`→`SCAN_QR_CODE`
+   - QR Code retornado como `data:image/png;base64,${base64}` (formato nativo da Evolution)
 
-2. **`src/components/WhatsAppStatusCard.tsx` melhorado**
-   - Área de QR Code agora também aparece no estado `STARTING`.
-   - Aguarda 3s antes de buscar QR quando o backend retorna `STARTING`.
-   - Mensagens de erro mais claras vindas do backend.
+2. **Variáveis de ambiente atualizadas (`api/lib/env.ts` + `.env.example`)**
+   - `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME` (default: "mandato")
+   - Variáveis WAHA mantidas para compatibilidade (serão removidas após validação)
 
-3. **Documentação atualizada**
-   - `docs/CONEXÃODOWHATS-PAGINA-COMUNICAÇÃO.md` refletindo o novo fluxo e checklist de validação.
+3. **Documentação criada**
+   - `docs/ROTEIRO-MIGRACAO-EVOLUTION.md` — roteiro completo de instalação, mapeamento de endpoints, checklist
+   - `docs/HISTORICO-WAHA-INTEGRACAO.md` — histórico preservado para referência
 
 ### ❌ Problema pendente:
-- **Validar na VPS/Vercel** — o código está corrigido, mas precisa testar na infraestrutura real.
-- **Decisão de arquitetura:** `WAHA_API_URL` na Vercel deve apontar para IP público:8080 (temporário) ou domínio via proxy. Nunca `localhost:8080`.
-- Ver documentação para checklist de debug.
+- **Instalar Evolution API na VPS** — container ainda não subiu (SSH bloqueado, usar API de reinício se necessário)
+- **Adicionar `EVOLUTION_API_URL` e `EVOLUTION_API_KEY` na Vercel** como environment variables
+- **Testar fluxo completo** localmente após instalação na VPS
 
 ### 📁 Arquivos modificados:
-- `api/whatsapp-router.ts`
-- `src/components/WhatsAppStatusCard.tsx`
-- `docs/CONEXÃODOWHATS-PAGINA-COMUNICAÇÃO.md`
+- `api/whatsapp-router.ts` (reescrito para Evolution)
+- `api/lib/env.ts` (novas variáveis Evolution)
+- `.env.example` (documentação das novas variáveis)
+- `docs/ROTEIRO-MIGRACAO-EVOLUTION.md` (novo)
 
 ---
 
@@ -176,19 +177,21 @@ assinaturas
 
 ## URLs Importantes
 
-| Serviço | URL |
-|---|---|
-| **Produção (Vercel)** | https://mandato-digital-xi.vercel.app |
-| **API Proxy CNEFE** | http://82.197.73.101 |
-| **WAHA Core (VPS)** | http://82.197.73.101:8080 |
+| Serviço | URL | Status |
+|---|---|---|
+| **Produção (Vercel)** | https://mandato-digital-xi.vercel.app | Ativo |
+| **API Proxy CNEFE** | http://82.197.73.101 | Ativo |
+| **WAHA Core (VPS)** | http://82.197.73.101:8080 | **LEGADO — será desativado** |
+| **Evolution API (VPS)** | http://82.197.73.101:8080 | **PENDENTE — aguardando instalação** |
 
 ---
 
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
-- **Verificar WAHA_API_URL na Vercel** — deve apontar para endereço acessível pela Vercel (IP público:8080 temporariamente, ou domínio via Nginx/Cloudflare). NUNCA `http://localhost:8080`.
-- **Testar QR Code em produção** após deploy: acessar Comunicação → Conectar WhatsApp → ver logs do backend na Vercel.
+- **Instalar Evolution API na VPS** — seguir roteiro em `docs/ROTEIRO-MIGRACAO-EVOLUTION.md`
+- **Adicionar environment variables na Vercel:** `EVOLUTION_API_URL=http://82.197.73.101:8080`, `EVOLUTION_API_KEY=mandato2026evolution`, `EVOLUTION_INSTANCE_NAME=mandato`
+- **Testar fluxo completo** localmente após instalação na VPS
 - **Testar cada página V2 localmente** usando o roteiro em `docs/testes-paginas-v2.md`
 - **Configurar bucket `documentos` no Supabase Storage** se ainda não estiver ativo (migration 007 já existe)
 - **Verificar políticas RLS do bucket `documentos`** — a policy atual exige `auth.uid() = owner`; testar se upload funciona com usuário autenticado

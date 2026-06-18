@@ -14,6 +14,7 @@ export function useWhatsApp() {
   });
 
   const startMutation = trpc.whatsapp.startSession.useMutation();
+  const logoutMutation = trpc.whatsapp.logout.useMutation();
   const stopMutation = trpc.whatsapp.stopSession.useMutation();
   const sendMutation = trpc.whatsapp.sendMessage.useMutation();
 
@@ -40,6 +41,20 @@ export function useWhatsApp() {
     }
   }, [startMutation]);
 
+  const logoutSession = useCallback(async (): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await logoutMutation.mutateAsync();
+      setLoading(false);
+      return result.ok;
+    } catch (e: any) {
+      setError('Falha ao desconectar do WhatsApp');
+      setLoading(false);
+      return false;
+    }
+  }, [logoutMutation]);
+
   const stopSession = useCallback(async (): Promise<boolean> => {
     setLoading(true);
     setError(null);
@@ -48,7 +63,7 @@ export function useWhatsApp() {
       setLoading(false);
       return result.ok;
     } catch (e: any) {
-      setError('Falha ao desconectar');
+      setError('Falha ao parar sessão');
       setLoading(false);
       return false;
     }
@@ -56,13 +71,9 @@ export function useWhatsApp() {
 
   const getQRCode = useCallback(async (): Promise<string | null> => {
     try {
-      console.log('getQRCode: calling tRPC query...');
       const result = await qrQuery.refetch();
-      console.log('getQRCode: refetch result:', result.data ? 'has data' : 'no data');
-      console.log('getQRCode: qrCode exists?', result.data?.qrCode ? 'yes' : 'no');
       return result.data?.qrCode || null;
     } catch (e: any) {
-      console.error('getQRCode error:', e.message, e);
       return null;
     }
   }, [qrQuery]);
@@ -113,6 +124,7 @@ export function useWhatsApp() {
     error,
     getSession,
     startSession,
+    logoutSession,
     stopSession,
     getQRCode,
     sendText,

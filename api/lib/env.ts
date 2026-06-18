@@ -80,6 +80,28 @@ function validateWahaUrl(url: string | undefined): string | undefined {
     }
   }
 
+/**
+ * Valida a URL da Evolution API (mesma lógica da WAHA — IP público com warning).
+ */
+function validateEvolutionUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.includes("localhost") || url.includes("127.0.0.1")) return url;
+  const publicIpRegex = /https?:\/\/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
+  const match = url.match(publicIpRegex);
+  if (match) {
+    const ip = match[1];
+    const isPrivate =
+      ip.startsWith("10.") ||
+      ip.startsWith("192.168.") ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(ip);
+    if (!isPrivate) {
+      console.warn(
+        `[SECURITY] EVOLUTION_API_URL usa IP público (${ip}). ` +
+        `Mitigação: API Key forte + rate limiting. ` +
+        `Recomendado: Cloudflare Tunnel ou Nginx+HTTPS quando tiver domínio.`
+      );
+    }
+  }
   return url;
 }
 
@@ -93,4 +115,7 @@ export const env = {
   supabaseServiceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
   wahaApiUrl: validateWahaUrl(process.env.WAHA_API_URL),
   wahaApiKey: process.env.WAHA_API_KEY,
+  evolutionApiUrl: validateEvolutionUrl(process.env.EVOLUTION_API_URL),
+  evolutionApiKey: process.env.EVOLUTION_API_KEY,
+  evolutionInstanceName: process.env.EVOLUTION_INSTANCE_NAME || "mandato",
 };

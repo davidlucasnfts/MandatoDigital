@@ -1,8 +1,8 @@
 # CONEXÃO DO WHATSAPP - PÁGINA DE COMUNICAÇÃO
 
-> **Data:** 16/06/2026 (atualizado em 17/06/2026)
-> **Status:** Em teste - fluxo de conexão corrigido com logs e fallback de screenshot
-> **Próxima sessão:** Validar na VPS/Vercel
+> **Data:** 16/06/2026 (atualizado em 18/06/2026)
+> **Status:** Em teste - fluxo de conexão corrigido: força novo QR Code ao reconectar
+> **Próxima sessão:** Testar localmente e validar na VPS/Vercel
 
 ---
 
@@ -22,6 +22,16 @@ A conexão WhatsApp sumiu da página de Comunicação quando a V2 foi promovida 
   - Área de QR Code agora também aparece no estado `STARTING`.
   - Aguarda 3s antes de buscar QR quando o backend retorna `STARTING`.
   - Mensagens de erro mais claras vindas do backend.
+
+### 3. Correções da sessão 18/06
+- **`api/whatsapp-router.ts`**:
+  - `startSession` desloga (`POST /api/sessions/default/logout`) a sessão atual se estiver `WORKING` ou `SCAN_QR_CODE`, forçando um novo QR Code.
+  - Nova mutation `logout` para desconectar do WhatsApp (diferente de `stopSession`, que apenas para a engine).
+  - Fallback corrigido: se `POST /api/sessions/default/start` falhar porque a sessão já existe, usa `PUT /api/sessions/default` em vez de `POST /api/sessions`.
+- **`src/hooks/useWhatsApp.ts`**:
+  - Expõe `logoutSession` para o frontend.
+- **`src/components/WhatsAppStatusCard.tsx`**:
+  - Botão "Desconectar" agora chama `logoutSession`, garantindo que o próximo "Conectar WhatsApp" exija novo QR Code.
 
 ### 2. Solução implementada
 
@@ -55,10 +65,11 @@ A conexão WhatsApp sumiu da página de Comunicação quando a V2 foi promovida 
 
 | Arquivo | Mudança |
 |---------|---------|
-| `src/components/WhatsAppStatusCard.tsx` | Restaurado + melhorias da Configurações V2 + suporte a estado STARTING |
+| `src/components/WhatsAppStatusCard.tsx` | Restaurado + melhorias da Configurações V2 + suporte a estado STARTING + logout real no botão Desconectar |
 | `src/pages/ComunicacaoPage.tsx` | Adicionado WhatsAppStatusCard + envio real WAHA |
 | `src/pages/ConfiguracoesPage.tsx` | Removida aba WhatsApp |
-| `api/whatsapp-router.ts` | Fluxo de start corrigido, fallback de screenshot, logs seguros |
+| `api/whatsapp-router.ts` | Fluxo de start corrigido, fallback de screenshot, logs seguros, logout antes de reconectar |
+| `src/hooks/useWhatsApp.ts` | Expõe `logoutSession` |
 
 ---
 
@@ -85,6 +96,10 @@ A conexão WhatsApp sumiu da página de Comunicação quando a V2 foi promovida 
 ## Checklist de validação
 
 ```
+□ 0. Testar reconexão localmente
+   - Conectar WhatsApp → desconectar → clicar "Conectar WhatsApp" novamente
+   - Deve aparecer QR Code (não conectar no mesmo número automaticamente)
+
 □ 1. Verificar se container WAHA está rodando na VPS
    docker ps | grep waha
 
@@ -131,15 +146,19 @@ A conexão WhatsApp sumiu da página de Comunicação quando a V2 foi promovida 
 ```
 1. Usuário clica "Conectar WhatsApp"
 2. Frontend chama startSession() → tRPC → api/whatsapp-router.ts
-3. Backend chama POST /api/sessions/default/start (idempotente na Core)
-4. Se falhar, backend tenta POST /api/sessions { name: "default" }
-5. Backend faz polling por até 45s por status SCAN_QR_CODE ou WORKING
-6. Frontend mostra área de QR Code mesmo em STARTING
-7. Frontend chama getQRCode() → GET /api/default/auth/qr
-8. Se /auth/qr falhar, backend tenta GET /api/screenshot
-9. QR Code aparece na tela com contador regressivo
-10. Usuário escaneia com celular
-11. Polling detecta status WORKING → mostra "Conectado"
+3. Backend verifica status atual da sessão default
+3.1. Se estiver WORKING ou SCAN_QR_CODE, chama POST /api/sessions/default/logout
+     para desconectar do WhatsApp e forçar novo QR Code
+4. Backend chama POST /api/sessions/default/start (idempotente na Core)
+5. Se falhar porque sessão já existe, backend tenta PUT /api/sessions/default
+6. Se falhar por outro motivo, backend tenta POST /api/sessions { name: "default" }
+7. Backend faz polling por até 45s por status SCAN_QR_CODE ou WORKING
+7. Frontend mostra área de QR Code mesmo em STARTING
+8. Frontend chama getQRCode() → GET /api/default/auth/qr
+9. Se /auth/qr falhar, backend tenta GET /api/screenshot
+10. QR Code aparece na tela com contador regressivo
+11. Usuário escaneia com celular
+12. Polling detecta status WORKING → mostra "Conectado"
 ```
 
 ### Estados do WhatsAppStatusCard

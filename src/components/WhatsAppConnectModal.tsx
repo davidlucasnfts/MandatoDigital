@@ -43,20 +43,13 @@ import {
     }, [open]);
 
     // Polling: atualiza QR Code automaticamente enquanto estiver em SCAN_QR_CODE
-    useEffect(() => {
-      if (!open || wahaStatus !== 'SCAN_QR_CODE') return;
-
-      // Busca QR Code imediatamente
-      void handleShowQR();
-
-      // Atualiza a cada 8 segundos (QR Code da WAHA expira a cada ~15s)
-      const interval = setInterval(() => {
-        void handleShowQR();
-      }, 8000);
-
-      return () => clearInterval(interval);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, wahaStatus]);
+    // DESATIVADO para evitar 429 — usuário clica em "Mostrar QR Code" manualmente
+    // useEffect(() => {
+    //   if (!open || wahaStatus !== 'SCAN_QR_CODE') return;
+    //   void handleShowQR();
+    //   const interval = setInterval(() => { void handleShowQR(); }, 8000);
+    //   return () => clearInterval(interval);
+    // }, [open, wahaStatus]);
 
     const checkStatus = async () => {
       setWahaLoading(true);

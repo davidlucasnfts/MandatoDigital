@@ -6,69 +6,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
 
 export default function WhatsAppStatusCard() {
-  const { getSession, startSession, stopSession, getQRCode } = useWhatsApp();
+  const { getSession, startSession, logoutSession, getQRCode } = useWhatsApp();
   const [wahaStatus, setWahaStatus] = useState<string>('');
   const [wahaQR, setWahaQR] = useState<string | null>(null);
   const [wahaLoading, setWahaLoading] = useState(false);
   const [wahaMe, setWahaMe] = useState<{ id: string; pushName: string } | null>(null);
   const [wahaError, setWahaError] = useState<string | null>(null);
   const [qrError, setQrError] = useState<string | null>(null);
-  const [qrCountdown, setQrCountdown] = useState<number>(15);
 
   // Verificar status ao montar o componente
   useEffect(() => {
     checkStatus();
   }, []);
 
-  // Polling: verifica se o usuário já escaneou (a cada 3s)
-  useEffect(() => {
-    if (wahaStatus !== 'SCAN_QR_CODE') return;
-
-    const interval = setInterval(async () => {
-      const session = await getSession();
-      console.log('Polling status:', session?.status);
-      if (session?.status === 'WORKING') {
-        setWahaStatus('WORKING');
-        setWahaMe(session?.me || null);
-        setWahaQR(null);
-        clearInterval(interval);
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [wahaStatus, getSession]);
-
-  // Auto-renovação do QR Code
-  useEffect(() => {
-    if (wahaStatus !== 'SCAN_QR_CODE') return;
-
-    const renewQR = async () => {
-      const qr = await getQRCode();
-      if (qr) {
-        setWahaQR(qr);
-        setQrCountdown(15);
-      }
-    };
-
-    renewQR(); // Primeira carga imediata
-    const renewInterval = setInterval(renewQR, 10000); // Renova a cada 10s
-    const countdown = setInterval(() => {
-      setQrCountdown((prev) => (prev > 0 ? prev - 1 : 10));
-    }, 1000);
-
-    return () => {
-      clearInterval(renewInterval);
-      clearInterval(countdown);
-    };
-  }, [wahaStatus, getQRCode]);
-
   const checkStatus = async () => {
     setWahaLoading(true);
     setWahaError(null);
     try {
       const session = await getSession();
-      console.log('WAHA status:', session);
-      setWahaStatus(session?.status || 'OFFLINE');
+      setWahaStatus(session?.status || 'STOPPED');
       setWahaMe(session?.me || null);
     } catch {
       setWahaError('Falha ao verificar status do WhatsApp');
@@ -82,29 +38,14 @@ export default function WhatsAppStatusCard() {
     setQrError(null);
     try {
       const result = await startSession();
-      console.log('Start session result:', result);
       if (!result.ok) {
         setWahaError(result.error || 'Falha ao iniciar sessão. Tente novamente.');
         setWahaLoading(false);
         return;
       }
-      // Atualiza status
-      const nextStatus = result.status || 'SCAN_QR_CODE';
+
+      const nextStatus = result.status || 'STARTING';
       setWahaStatus(nextStatus);
-
-      // Se a sessão ainda está iniciando, aguarda um pouco antes de buscar QR
-      if (nextStatus === 'STARTING') {
-        await new Promise(r => setTimeout(r, 3000));
-      }
-
-      // Já gera o QR Code automaticamente
-      const qr = await getQRCode();
-      console.log('QR Code result:', qr ? 'recebido' : 'null');
-      if (qr) {
-        setWahaQR(qr);
-      } else {
-        setQrError('Não foi possível gerar o QR Code. Clique em Atualizar.');
-      }
       setWahaLoading(false);
     } catch (e) {
       setWahaError('Erro ao conectar. Verifique o console.');
@@ -114,9 +55,9 @@ export default function WhatsAppStatusCard() {
 
   const handleDisconnect = async () => {
     setWahaLoading(true);
-    const ok = await stopSession();
+    const ok = await logoutSession();
     if (ok) {
-      setWahaStatus('OFFLINE');
+      setWahaStatus('STOPPED');
       setWahaMe(null);
       setWahaQR(null);
     }
@@ -127,12 +68,12 @@ export default function WhatsAppStatusCard() {
     WORKING: { label: 'Conectado', color: 'text-green-700', bg: 'bg-green-50', dot: 'bg-green-500' },
     SCAN_QR_CODE: { label: 'Aguardando QR Code', color: 'text-amber-700', bg: 'bg-amber-50', dot: 'bg-amber-500' },
     STARTING: { label: 'Iniciando...', color: 'text-blue-700', bg: 'bg-blue-50', dot: 'bg-blue-500' },
-    OFFLINE: { label: 'Desconectado', color: 'text-slate-600', bg: 'bg-slate-100', dot: 'bg-slate-400' },
+    STOPPED: { label: 'Desconectado', color: 'text-slate-600', bg: 'bg-slate-100', dot: 'bg-slate-400' },
+    FAILED: { label: 'Falhou', color: 'text-red-700', bg: 'bg-red-50', dot: 'bg-red-500' },
   };
 
   const showQRArea = wahaStatus === 'SCAN_QR_CODE' || wahaStatus === 'STARTING';
-
-  const current = statusLabels[wahaStatus] || statusLabels.OFFLINE;
+  const current = statusLabels[wahaStatus] || statusLabels.STOPPED;
 
   return (
     <motion.div
@@ -193,7 +134,7 @@ export default function WhatsAppStatusCard() {
           )}
 
           {/* Não conectado — mostra botão Conectar */}
-          {wahaStatus !== 'WORKING' && !showQRArea && (
+          {(wahaStatus === 'STOPPED' || wahaStatus === 'FAILED' || !wahaStatus) && !showQRArea && (
             <div className="text-center space-y-3 py-2">
               <p className="text-sm text-slate-600">
                 Conecte o WhatsApp para enviar mensagens pelas campanhas
@@ -225,17 +166,17 @@ export default function WhatsAppStatusCard() {
                 </ol>
               </div>
 
+              {/* Botão Mostrar QR Code */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={async () => {
                   setQrError(null);
                   const qr = await getQRCode();
-                  console.log('QR Code gerado:', qr ? qr.substring(0, 50) + '...' : 'null');
                   if (qr) {
                     setWahaQR(qr);
                   } else {
-                    setQrError('Não foi possível gerar o QR Code.');
+                    setQrError('Não foi possível gerar o QR Code. Tente novamente.');
                   }
                 }}
               >
@@ -251,13 +192,12 @@ export default function WhatsAppStatusCard() {
                     alt="Tela de login WhatsApp Web - escaneie o QR Code"
                     className="w-full h-auto border rounded-lg bg-white"
                     onError={() => {
-                      console.error('Erro ao carregar imagem do QR Code');
                       setQrError('Erro ao exibir QR Code. Tente novamente.');
                     }}
                   />
                   <p className="text-[10px] text-slate-400 mt-1">
                     <span className="text-amber-600 font-medium">
-                      ⏱️ Novo QR em {qrCountdown}s — aponte a câmera rapidamente
+                      Aponte a câmera do celular
                     </span>
                   </p>
                 </div>

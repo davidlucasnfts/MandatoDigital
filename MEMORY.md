@@ -54,6 +54,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Comunicação V2 reativada** — corrigidos imports de ícones de lucide-react para @/lib/icons, rota e link de teste ativos | **15/06** |
 | **WhatsApp restaurado na Comunicação** — WhatsAppStatusCard com QR Code, polling, auto-renovação, envio real via WAHA API; aba WhatsApp removida das Configurações | **16/06** |
 | **Correção do fluxo de conexão WhatsApp** — startSession usa POST /api/sessions/default/start, fallback de screenshot no QR Code, logs seguros no backend, frontend lida com estado STARTING | **17/06** |
+| **Migração WAHA → Evolution API** — Backend reescrito (`api/whatsapp-router.ts`), novas variáveis de ambiente (`api/lib/env.ts`, `.env.example`), roteiro de instalação criado (`docs/ROTEIRO-MIGRACAO-EVOLUTION.md`), interface pública mantida (frontend não quebra) | **18/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -140,6 +141,29 @@ Continuidade da integração WhatsApp na página de Comunicação. O problema pe
 ### Pendências para próxima sessão
 - Validar na VPS/Vercel: o backend serverless precisa acessar a WAHA em um endereço público (IP:8080 temporário ou domínio via proxy).
 - Verificar logs da Vercel após clicar "Conectar WhatsApp".
+
+---
+
+## 📝 Resumo da Sessão 18/06 — Forçar QR Code ao Reconectar WhatsApp
+
+### Contexto
+Ao clicar em "Conectar WhatsApp" no localhost, o sistema conectava direto no último WhatsApp autenticado, sem mostrar QR Code. Isso ocorria porque a sessão `default` no WAHA mantinha a autenticação anterior e `startSession` apenas reiniciava a engine.
+
+### Correções aplicadas
+| # | Arquivo | Mudança |
+|---|---------|---------|
+| 1 | `api/whatsapp-router.ts` | `startSession` verifica status atual; se `WORKING`/`SCAN_QR_CODE`, chama `POST /api/sessions/default/logout` antes de iniciar nova sessão |
+| 2 | `api/whatsapp-router.ts` | Nova mutation `logout` para desconectar do WhatsApp (diferente de `stopSession`) |
+| 3 | `api/whatsapp-router.ts` | Fallback corrigido: usa `PUT /api/sessions/default` quando sessão já existe, evitando erro "Session 'default' already exists" |
+| 4 | `src/hooks/useWhatsApp.ts` | Expõe `logoutSession` para o frontend |
+| 5 | `src/components/WhatsAppStatusCard.tsx` | Botão "Desconectar" agora usa `logoutSession`, garantindo novo QR Code na próxima conexão |
+
+### Validação
+- `npx tsc --noEmit` passou sem erros.
+
+### Pendências
+- Testar localmente: conectar WhatsApp → desconectar → clicar "Conectar WhatsApp" novamente → deve aparecer QR Code.
+- Validar na VPS/Vercel após teste local.
 
 ---
 
