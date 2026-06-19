@@ -1,44 +1,53 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 19/06/2026  
-> **Sessão atual:** Migração WAHA → Evolution API — VPS instalada, commit feito, aguardando env vars na Vercel
+> **Sessão atual:** Migração WAHA → Evolution API — env vars configuradas na Vercel, QR Code não funciona via REST, decisão pendente sobre caminho
 
 ---
 
 ## Stack (1 linha)
-React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (Evolution API + CNEFE API Proxy) + Vercel
+React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (Evolution API v2.3.7 + Redis + CNEFE API Proxy) + Vercel
 
 ---
 
 ## Última funcionalidade trabalhada
-**Instalação Evolution API na VPS — concluída, aguardando env vars na Vercel — 19/06**
+**Teste e correção do fluxo WhatsApp com Evolution API — 19/06**
 
 ### ✅ O que foi feito:
-1. **Evolution API v2.2.3 instalada e rodando na VPS**
-   - PostgreSQL reconfigurado: só escuta em `127.0.0.1`, senha forte, `md5` obrigatório
-   - Container com `network_mode: host` conecta em `localhost:5432`
-   - Migrations aplicadas, Prisma Client gerado
+1. **Env vars da Evolution configuradas na Vercel**
+   - `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME` adicionadas
+   - Redeploy realizado
 
-2. **Instância `mandato` criada e funcional**
-   - `integration: "EVOLUTION"`, status `open`
-   - Envio de mensagem testado e funcionando (retorna messageId, remoteJid)
-   - Sessão WhatsApp já conectada (persistida no banco PostgreSQL)
+2. **Correções no backend (`api/whatsapp-router.ts`)**
+   - Verificação de instância existente corrigida (campo `name` além de `instanceName`)
+   - Adicionado `integration: "EVOLUTION"` ao criar instância
+   - Melhorados logs de erro para debug
 
-3. **Variáveis de ambiente atualizadas (`.env` local)**
-   - `EVOLUTION_API_URL=http://82.197.73.101:8080`
-   - `EVOLUTION_API_KEY=mandato2026evolution`
-   - `EVOLUTION_INSTANCE_NAME=mandato`
+3. **Acesso SSH à VPS estabelecido e infra ajustada**
+   - Backup do banco PostgreSQL da Evolution realizado
+   - Redis adicionado ao `docker-compose.yml`
+   - Imagem atualizada para `evoapicloud/evolution-api:latest` (v2.3.7)
+   - Containers Evolution + Redis rodando
 
-### ❌ Ações pendentes:
-- **Configurar env vars na Vercel** — `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`
-- **Testar fluxo completo** no frontend (Comunicação → Conectar WhatsApp → Enviar mensagem)
-- **Remover variáveis WAHA** da Vercel após validação
+4. **Diagnóstico do problema do QR Code**
+   - Testadas imagens v2.2.3 e v2.3.7
+   - Testados endpoints `/instance/create`, `/instance/connect`, websocket
+   - Documentação oficial indica que QR deveria vir via REST, mas na prática não vem
+   - Identificado bug/conhecimento conhecido da Evolution API em Docker
 
-### 📁 Arquivos modificados:
-- `api/whatsapp-router.ts` (reescrito para Evolution)
-- `api/lib/env.ts` (novas variáveis Evolution)
-- `.env.example` (documentação das novas variáveis)
-- `docs/ROTEIRO-MIGRACAO-EVOLUTION.md` (novo)
+### ❌ Decisões pendentes para próxima sessão:
+- **Escolher caminho para conexão WhatsApp:**
+  1. Conectar manualmente pela Evolution Manager (`http://82.197.73.101:8080/manager`) e usar API só para envio
+  2. Voltar para WAHA (QR Code funcionava) — subir container WAHA novamente
+  3. Investigar outra versão/imagem da Evolution ou implementar websocket
+  4. Migrar para WhatsApp Business API oficial (pago)
+- **Remover variáveis WAHA** da Vercel após decisão
+- **Remover chave SSH temporária** da VPS ao finalizar
+
+### 📁 Arquivos modificados nesta sessão:
+- `api/whatsapp-router.ts` (correções de instância, integration e logs)
+- `docs/ROTEIRO-MIGRACAO-EVOLUTION.md` (deve ser atualizado com decisão final)
+- `/root/evolution-api/docker-compose.yml` na VPS (Redis adicionado, imagem v2.3.7)
 
 ---
 
@@ -182,34 +191,21 @@ assinaturas
 | **Produção (Vercel)** | https://mandato-digital-xi.vercel.app | Ativo |
 | **API Proxy CNEFE** | http://82.197.73.101 | Ativo |
 | **WAHA Core (VPS)** | http://82.197.73.101:8080 | **DESATIVADO — substituído pela Evolution** |
-| **Evolution API (VPS)** | http://82.197.73.101:8080 | **ATIVO — v2.2.3, instância `mandato` open** |
+| **Evolution API (VPS)** | http://82.197.73.101:8080 | **ATIVO — v2.3.7 + Redis, instância `mandato` criada** |
+| **Evolution Manager** | http://82.197.73.101:8080/manager | **ATIVO — login com API key** |
 
 ---
 
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
-- **Configurar environment variables na Vercel:**
-  1. Abrir https://vercel.com/dashboard → projeto mandato-digital
-  2. Settings → Environment Variables
-  3. Adicionar 3 variáveis:
-     - `EVOLUTION_API_URL` = `http://82.197.73.101:8080`
-     - `EVOLUTION_API_KEY` = `mandato2026evolution`
-     - `EVOLUTION_INSTANCE_NAME` = `mandato`
-  4. Salvar e fazer redeploy (Deployments → último deploy → Redeploy)
-  
-  **Nota:** se o botão "Add/New" não aparecer na interface, usar a Vercel CLI:
-  ```bash
-  npx vercel env add EVOLUTION_API_URL
-  # valor: http://82.197.73.101:8080
-  npx vercel env add EVOLUTION_API_KEY
-  # valor: mandato2026evolution
-  npx vercel env add EVOLUTION_INSTANCE_NAME
-  # valor: mandato
-  ```
-- **Remover variáveis WAHA da Vercel** após validar que Evolution funciona em produção:
-  - `WAHA_API_URL`, `WAHA_API_KEY` (manter no `.env` local por enquanto)
-- **Testar fluxo completo no frontend:** Comunicação → Conectar WhatsApp → Enviar mensagem de teste
+- **Decisão pendente — caminho do WhatsApp:**
+  - Opção 1: Conectar manualmente pela Evolution Manager (`http://82.197.73.101:8080/manager`, login com API key `mandato2026evolution`)
+  - Opção 2: Voltar para WAHA (subir container WAHA novamente na VPS)
+  - Opção 3: Investigar outra versão/imagem da Evolution ou implementar websocket
+  - Opção 4: Migrar para WhatsApp Business API oficial (pago)
+- **Remover variáveis WAHA da Vercel** após decisão final (`WAHA_API_URL`, `WAHA_API_KEY`)
+- **Remover chave SSH temporária** `/root/.ssh/authorized_keys` linha `kimi-temp` ao encerrar sessão
 - **Testar cada página V2 localmente** usando o roteiro em `docs/testes-paginas-v2.md`
 - **Configurar bucket `documentos` no Supabase Storage** se ainda não estiver ativo (migration 007 já existe)
 - **Verificar políticas RLS do bucket `documentos`** — a policy atual exige `auth.uid() = owner`; testar se upload funciona com usuário autenticado
@@ -228,10 +224,15 @@ assinaturas
 
 ## Próxima Sessão — Sugestões
 
-### Prioridade A — Finalizar migração WhatsApp
-1. **Configurar env vars da Evolution na Vercel** (`EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`)
-2. **Fazer redeploy** e testar fluxo completo: Comunicação → Conectar WhatsApp → Enviar mensagem
-3. **Remover env vars WAHA da Vercel** (`WAHA_API_URL`, `WAHA_API_KEY`) após validação
+### Prioridade A — Decidir caminho do WhatsApp
+1. **Decidir entre:**
+   - Conectar manualmente pela Evolution Manager (rápido, mas não escalável)
+   - Voltar para WAHA (QR Code funcionava, mas manter 2 serviços)
+   - Investigar outra versão/imagem da Evolution ou websocket
+   - WhatsApp Business API oficial (pago, mas profissional)
+2. **Aplicar a decisão técnica escolhida**
+3. **Testar fluxo completo:** Comunicação → Conectar WhatsApp → Enviar mensagem
+4. **Remover env vars WAHA da Vercel** após validação
 
 ### Prioridade B — Retomar decisão arquitetural multi-cliente
 1. **Confirmar as 4 decisões pendentes** da seção "Decisões de Arquitetura Multi-Cliente"

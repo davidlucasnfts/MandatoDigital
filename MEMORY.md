@@ -184,6 +184,51 @@ Continuidade da migração WAHA → Evolution API. O problema pendente era: inst
 
 ---
 
+## 📝 Resumo da Sessão 19/06 — Teste do Fluxo WhatsApp com Evolution API
+
+### Contexto
+Env vars da Evolution configuradas na Vercel. Teste do fluxo Comunicação → Conectar WhatsApp apresentou erro 403 ao criar instância. Investigação levou à descoberta de que a Evolution API não retorna QR Code via REST nas versões testadas.
+
+### Ações executadas
+| # | Ação | Resultado |
+|---|------|-----------|
+| 1 | Env vars `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME` configuradas na Vercel | ✅ |
+| 2 | Redeploy realizado na Vercel | ✅ |
+| 3 | Teste local na porta 3001 | ✅ Funcionou (frontend carregou) |
+| 4 | Correção no `api/whatsapp-router.ts` | Verificação de instância existente usa `name` além de `instanceName` |
+| 5 | Correção no `api/whatsapp-router.ts` | Adicionado `integration: "EVOLUTION"` ao criar instância |
+| 6 | Melhoria no `api/whatsapp-router.ts` | Logs detalhados dos erros da Evolution para debug |
+| 7 | Acesso SSH à VPS via chave temporária | ✅ Conectado como root |
+| 8 | Backup do banco PostgreSQL da Evolution | `evolution-backup-20260619-173702.dump` (77K) |
+| 9 | Adicionado Redis ao `docker-compose.yml` da VPS | ✅ Container `evolution-redis` rodando |
+| 10 | Testada imagem `atendai/evolution-api:v2.2.3` | QR Code não retorna via REST |
+| 11 | Testada imagem `evoapicloud/evolution-api:latest` (v2.3.7) | QR Code não retorna via REST |
+| 12 | Testado endpoint `/instance/connect/{instance}` | Retorna `{}` vazio ou só estado |
+| 13 | Testado websocket em `/socket/mandato` | Erro de protocolo |
+| 14 | Consultada documentação oficial | Indica que QR deveria vir na criação, mas na prática não vem |
+
+### Erros / Aprendizados
+| # | Erro/Causa | Correção/Prevenção |
+|---|------------|-------------------|
+| 043 | Evolution API v2.2.3/v2.3.7 não retorna QR Code via REST em Docker | Documentar como limitação conhecida; decidir caminho alternativo na próxima sessão |
+| 044 | Campo `instanceName` não existe em `/instance/fetchInstances` | Usar `name` também na verificação |
+| 045 | Criar instância sem `integration` retorna "Invalid integration" | Sempre enviar `integration: "EVOLUTION"` na v2.x |
+
+### Validação
+- `npx tsc --noEmit` passou sem erros em todos os commits.
+- Commits realizados: `8aa3ce4`, `f37fb7f`, `5cc40b1`.
+
+### Decisões pendentes para próxima sessão
+1. **Caminho do WhatsApp:**
+   - Opção 1: Conectar manualmente pela Evolution Manager (`http://82.197.73.101:8080/manager`)
+   - Opção 2: Voltar para WAHA (QR Code funcionava)
+   - Opção 3: Investigar outra versão/imagem da Evolution ou implementar websocket
+   - Opção 4: Migrar para WhatsApp Business API oficial
+2. Remover env vars WAHA da Vercel após decisão.
+3. Remover chave SSH temporária `kimi-temp` da VPS.
+
+---
+
 ## 📝 Resumo da Sessão 18/06 — Forçar QR Code ao Reconectar WhatsApp
 
 ### Contexto
