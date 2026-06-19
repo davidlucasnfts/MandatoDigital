@@ -131,6 +131,7 @@ export const whatsappRouter = createRouter({
             instanceName: INSTANCE_NAME,
             token: "",
             qrcode: true,
+            integration: "EVOLUTION",
             webhook: "",
             webhook_by_events: false,
             events: [],
