@@ -1,10 +1,3 @@
-import { config } from "dotenv";
-import { resolve } from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
-config({ path: resolve(__dirname, "../../.env") });
-
 function required(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -80,6 +73,9 @@ function validateWahaUrl(url: string | undefined): string | undefined {
     }
   }
 
+  return url;
+}
+
 /**
  * Valida a URL da Evolution API (mesma lógica da WAHA — IP público com warning).
  */
@@ -103,6 +99,16 @@ function validateEvolutionUrl(url: string | undefined): string | undefined {
     }
   }
   return url;
+}
+
+// Carrega .env automaticamente em desenvolvimento (Node.js 21+)
+// Em produção as variáveis já devem estar no ambiente
+try {
+  if (typeof process.loadEnvFile === "function") {
+    process.loadEnvFile();
+  }
+} catch {
+  // Ignora se não conseguir carregar (ex: arquivo não existe em produção)
 }
 
 const rawDatabaseUrl = required("DATABASE_URL");

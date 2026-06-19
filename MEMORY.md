@@ -55,6 +55,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **WhatsApp restaurado na Comunicação** — WhatsAppStatusCard com QR Code, polling, auto-renovação, envio real via WAHA API; aba WhatsApp removida das Configurações | **16/06** |
 | **Correção do fluxo de conexão WhatsApp** — startSession usa POST /api/sessions/default/start, fallback de screenshot no QR Code, logs seguros no backend, frontend lida com estado STARTING | **17/06** |
 | **Migração WAHA → Evolution API** — Backend reescrito (`api/whatsapp-router.ts`), novas variáveis de ambiente (`api/lib/env.ts`, `.env.example`), roteiro de instalação criado (`docs/ROTEIRO-MIGRACAO-EVOLUTION.md`), interface pública mantida (frontend não quebra) | **18/06** |
+| **Evolution API v2.2.3 instalada na VPS** — PostgreSQL reconfigurado (localhost only, senha forte), container rodando com `network_mode: host`, instância `mandato` criada e funcional, envio de mensagem testado | **19/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -141,6 +142,44 @@ Continuidade da integração WhatsApp na página de Comunicação. O problema pe
 ### Pendências para próxima sessão
 - Validar na VPS/Vercel: o backend serverless precisa acessar a WAHA em um endereço público (IP:8080 temporário ou domínio via proxy).
 - Verificar logs da Vercel após clicar "Conectar WhatsApp".
+
+---
+
+## 📝 Resumo da Sessão 19/06 — Instalação Evolution API na VPS
+
+### Contexto
+Continuidade da migração WAHA → Evolution API. O problema pendente era: instalar Evolution API na VPS e fazer o container conectar ao PostgreSQL local.
+
+### Ações executadas
+| # | Ação | Resultado |
+|---|------|-----------|
+| 1 | Conectado na VPS via SSH porta 2222 | ✅ Acesso funcional |
+| 2 | Redefinida senha do PostgreSQL | `Mandato2026SeguroXYZ` (20+ chars, sem caracteres especiais) |
+| 3 | Corrigido `postgresql.conf` | `listen_addresses = '127.0.0.1'` (só localhost) |
+| 4 | Corrigido `pg_hba.conf` | Só `127.0.0.1/32 md5`, removido `trust` do IP público |
+| 5 | Atualizado `docker-compose.yml` | `network_mode: host` + `DATABASE_CONNECTION_URI` com senha correta em `127.0.0.1` |
+| 6 | Container Evolution API v2.2.3 subido | Migrations aplicadas, Prisma Client gerado, servidor iniciado |
+| 7 | Criada instância `mandato` | `integration: "EVOLUTION"` (erro #040 aprendido) |
+| 8 | Testado envio de mensagem | ✅ Funcionando — retorna messageId, remoteJid, timestamp |
+| 9 | Atualizado `.env` local | Variáveis `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME` adicionadas |
+| 10 | Documentação atualizada | `docs/ROTEIRO-RETOMADA-EVOLUTION-VPS.md`, `SESSION-CONTEXT.md`, `AGENTS.md` |
+
+### Erros cometidos e correções
+| # | Erro | Causa | Correção |
+|---|------|-------|----------|
+| 040 | `integration: "WHATSAPP_BAILEYS"` → "Invalid integration" | Assumiu parâmetro da v1 | Usar `"EVOLUTION"` na v2.2.3 |
+| 041 | Adicionado `trust` no IP público no `pg_hba.conf` | Pressa para fazer container conectar | Revertido para `md5` + `listen_addresses = '127.0.0.1'` |
+| 042 | Não documentou alteração de senha imediatamente | Esqueceu de atualizar SESSION-CONTEXT.md | Atualizado no momento da correção |
+
+### Validação
+- `npx tsc --noEmit` passou sem erros.
+- Endpoint `GET /` retorna status 200 com `{"version":"2.2.3"}`.
+- Envio de mensagem via `POST /message/sendText/mandato` funciona.
+
+### Pendências
+- Configurar env vars na Vercel (`EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`).
+- Testar frontend completo (Comunicação → WhatsApp → Conectar → Enviar).
+- Remover variáveis WAHA da Vercel após validação.
 
 ---
 

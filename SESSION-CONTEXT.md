@@ -11,28 +11,28 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Correção do fluxo de conexão WhatsApp — forçar QR Code ao reconectar — 18/06**
+**Instalação Evolution API na VPS — concluída, aguardando env vars na Vercel — 19/06**
 
 ### ✅ O que foi feito:
-1. **Backend reescrito para Evolution API (`api/whatsapp-router.ts`)**
-   - Novos endpoints: `GET /instance/connectionState/{name}`, `POST /instance/create`, `GET /instance/connect/{name}`, `DELETE /instance/logout/{name}`, `POST /message/sendText/{name}`
-   - Interface pública mantida (mesmos nomes de procedures tRPC) — frontend não quebra
-   - Cache de status removido (Evolution é mais estável, não precisa)
-   - Mapeamento de estados: `open`→`WORKING`, `connecting`→`STARTING`, `close`→`STOPPED`, `qrcode`→`SCAN_QR_CODE`
-   - QR Code retornado como `data:image/png;base64,${base64}` (formato nativo da Evolution)
+1. **Evolution API v2.2.3 instalada e rodando na VPS**
+   - PostgreSQL reconfigurado: só escuta em `127.0.0.1`, senha forte, `md5` obrigatório
+   - Container com `network_mode: host` conecta em `localhost:5432`
+   - Migrations aplicadas, Prisma Client gerado
 
-2. **Variáveis de ambiente atualizadas (`api/lib/env.ts` + `.env.example`)**
-   - `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME` (default: "mandato")
-   - Variáveis WAHA mantidas para compatibilidade (serão removidas após validação)
+2. **Instância `mandato` criada e funcional**
+   - `integration: "EVOLUTION"`, status `open`
+   - Envio de mensagem testado e funcionando (retorna messageId, remoteJid)
+   - Sessão WhatsApp já conectada (persistida no banco PostgreSQL)
 
-3. **Documentação criada**
-   - `docs/ROTEIRO-MIGRACAO-EVOLUTION.md` — roteiro completo de instalação, mapeamento de endpoints, checklist
-   - `docs/HISTORICO-WAHA-INTEGRACAO.md` — histórico preservado para referência
+3. **Variáveis de ambiente atualizadas (`.env` local)**
+   - `EVOLUTION_API_URL=http://82.197.73.101:8080`
+   - `EVOLUTION_API_KEY=mandato2026evolution`
+   - `EVOLUTION_INSTANCE_NAME=mandato`
 
-### ❌ Problema pendente:
-- **Instalar Evolution API na VPS** — container ainda não subiu (SSH bloqueado, usar API de reinício se necessário)
-- **Adicionar `EVOLUTION_API_URL` e `EVOLUTION_API_KEY` na Vercel** como environment variables
-- **Testar fluxo completo** localmente após instalação na VPS
+### ❌ Ações pendentes:
+- **Configurar env vars na Vercel** — `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`
+- **Testar fluxo completo** no frontend (Comunicação → Conectar WhatsApp → Enviar mensagem)
+- **Remover variáveis WAHA** da Vercel após validação
 
 ### 📁 Arquivos modificados:
 - `api/whatsapp-router.ts` (reescrito para Evolution)
@@ -189,9 +189,17 @@ assinaturas
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
-- **Instalar Evolution API na VPS** — seguir roteiro em `docs/ROTEIRO-MIGRACAO-EVOLUTION.md`
-- **Adicionar environment variables na Vercel:** `EVOLUTION_API_URL=http://82.197.73.101:8080`, `EVOLUTION_API_KEY=mandato2026evolution`, `EVOLUTION_INSTANCE_NAME=mandato`
-- **Testar fluxo completo** localmente após instalação na VPS
+- **Configurar environment variables na Vercel:**
+  1. Abrir https://vercel.com/dashboard → projeto mandato-digital
+  2. Settings → Environment Variables
+  3. Adicionar 3 variáveis:
+     - `EVOLUTION_API_URL` = `http://82.197.73.101:8080`
+     - `EVOLUTION_API_KEY` = `mandato2026evolution`
+     - `EVOLUTION_INSTANCE_NAME` = `mandato`
+  4. Salvar e fazer redeploy (Deployments → último deploy → Redeploy)
+- **Remover variáveis WAHA da Vercel** após validar que Evolution funciona em produção:
+  - `WAHA_API_URL`, `WAHA_API_KEY` (manter no `.env` local por enquanto)
+- **Testar fluxo completo no frontend:** Comunicação → Conectar WhatsApp → Enviar mensagem de teste
 - **Testar cada página V2 localmente** usando o roteiro em `docs/testes-paginas-v2.md`
 - **Configurar bucket `documentos` no Supabase Storage** se ainda não estiver ativo (migration 007 já existe)
 - **Verificar políticas RLS do bucket `documentos`** — a policy atual exige `auth.uid() = owner`; testar se upload funciona com usuário autenticado

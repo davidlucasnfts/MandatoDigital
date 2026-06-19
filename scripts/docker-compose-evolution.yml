@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  evolution-api:
+    image: atendai/evolution-api:latest
+    container_name: evolution-api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # Servidor
+      - SERVER_URL=http://82.197.73.101:8080
+      - AUTHENTICATION_API_KEY=mandato2026evolution
+      
+      # Banco de dados (PostgreSQL local na VPS)
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://postgres:Mandato2026SeguroXYZ@localhost:5432/evolution?schema=public
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+      - DATABASE_SAVE_MESSAGE_UPDATE=true
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      - DATABASE_SAVE_DATA_LABELS=true
+      - DATABASE_SAVE_DATA_HISTORIC=true
+      
+      # Redis (desativado por enquanto — pode ativar depois)
+      - REDIS_ENABLED=false
+      
+      # WebSocket
+      - WEBSOCKET_ENABLED=true
+      - WEBSOCKET_GLOBAL_EVENTS=false
+      
+      # Conexão determinística (mais estável)
+      - DETERMINISTIC_CONNECTION=true
+      
+      # Logs
+      - LOG_LEVEL=info
+      - LOG_COLOR=true
+      
+    volumes:
+      - evolution_instances:/evolution/instances
+      - evolution_data:/evolution/data
+    networks:
+      - evolution-network
+
+volumes:
+  evolution_instances:
+  evolution_data:
+
+networks:
+  evolution-network:
+    driver: bridge

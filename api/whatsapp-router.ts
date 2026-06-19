@@ -2,10 +2,13 @@ import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware.js";
 import { env } from "./lib/env.js";
 
-interface EvolutionInstance {
-  state: string;
-  status: string;
-  qrcode?: { base64?: string };
+interface EvolutionInstanceResponse {
+  instance: {
+    instanceName: string;
+    state?: string;
+    status?: string;
+    connectionStatus?: string;
+  };
 }
 
 interface EvolutionQRResponse {
@@ -82,10 +85,12 @@ export const whatsappRouter = createRouter({
     try {
       const res = await evoFetch(`/instance/connectionState/${INSTANCE_NAME}`);
       if (!res.ok) {
-        return { status: "STOPPED", error: `HTTP ${res.status}` };
+        const body = await res.text().catch(() => "");
+        return { status: "STOPPED", error: `HTTP ${res.status} - ${body}` };
       }
-      const data = (await res.json()) as EvolutionInstance;
-      evoLog(`status -> ${data.state || data.status}`);
+      const data = (await res.json()) as EvolutionInstanceResponse;
+      const rawState = data.instance?.state || data.instance?.status || data.instance?.connectionStatus || "";
+      evoLog(`status -> ${rawState}`);
       
       // Mapeia estados da Evolution para nossos estados
       const statusMap: Record<string, string> = {
@@ -95,7 +100,7 @@ export const whatsappRouter = createRouter({
         "qrcode": "SCAN_QR_CODE",
       };
       
-      return { status: statusMap[data.state || data.status] || data.state || "STOPPED" };
+      return { status: statusMap[rawState] || rawState || "STOPPED" };
     } catch (e: any) {
       return { status: "FAILED", error: e.message || "Servidor Evolution indisponível" };
     }
@@ -131,7 +136,7 @@ export const whatsappRouter = createRouter({
           }),
         });
         if (!createRes.ok) {
-          const err = await createRes.json().catch(() => ({}));
+          const err = await createRes.json().catch(() => ({})) as { message?: string };
           return { ok: false, error: err.message || `Falha ao criar instância (HTTP ${createRes.status})` };
         }
         evoLog("startSession -> instância criada");
@@ -143,14 +148,15 @@ export const whatsappRouter = createRouter({
       // 4. Verifica status final
       const finalRes = await evoFetch(`/instance/connectionState/${INSTANCE_NAME}`);
       if (finalRes.ok) {
-        const data = (await finalRes.json()) as EvolutionInstance;
+        const data = (await finalRes.json()) as EvolutionInstanceResponse;
+        const rawState = data.instance?.state || data.instance?.status || data.instance?.connectionStatus || "";
         const statusMap: Record<string, string> = {
           "open": "WORKING",
           "connecting": "STARTING",
           "close": "STOPPED",
           "qrcode": "SCAN_QR_CODE",
         };
-        const mappedStatus = statusMap[data.state || data.status] || "STARTING";
+        const mappedStatus = statusMap[rawState] || "STARTING";
         evoLog(`startSession -> status final: ${mappedStatus}`);
         return { ok: true, status: mappedStatus };
       }
@@ -202,7 +208,7 @@ export const whatsappRouter = createRouter({
         method: "DELETE",
       });
       if (!res.ok && res.status !== 404) {
-        const err = await res.json().catch(() => ({}));
+        const err = await res.json().catch(() => ({})) as { message?: string };
         return { ok: false, error: err.message || "Falha ao desconectar" };
       }
       return { ok: true };
@@ -222,7 +228,7 @@ export const whatsappRouter = createRouter({
         method: "DELETE",
       });
       if (!res.ok && res.status !== 404) {
-        const err = await res.json().catch(() => ({}));
+        const err = await res.json().catch(() => ({})) as { message?: string };
         return { ok: false, error: err.message || "Falha ao parar instância" };
       }
       return { ok: true };
@@ -255,7 +261,7 @@ export const whatsappRouter = createRouter({
           }),
         });
         if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
+          const err = await res.json().catch(() => ({})) as { message?: string };
           return { ok: false, error: err.message || "Falha ao enviar" };
         }
         return { ok: true };
