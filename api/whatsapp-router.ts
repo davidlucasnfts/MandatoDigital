@@ -86,6 +86,7 @@ export const whatsappRouter = createRouter({
       const res = await evoFetch(`/instance/connectionState/${INSTANCE_NAME}`);
       if (!res.ok) {
         const body = await res.text().catch(() => "");
+        evoLog(`status -> ERRO: HTTP ${res.status} - ${body.slice(0, 200)}`);
         return { status: "STOPPED", error: `HTTP ${res.status} - ${body}` };
       }
       const data = (await res.json()) as EvolutionInstanceResponse;
@@ -136,8 +137,11 @@ export const whatsappRouter = createRouter({
           }),
         });
         if (!createRes.ok) {
-          const err = await createRes.json().catch(() => ({})) as { message?: string };
-          return { ok: false, error: err.message || `Falha ao criar instância (HTTP ${createRes.status})` };
+          const errText = await createRes.text().catch(() => "");
+          let err: { message?: string } = {};
+          try { err = JSON.parse(errText); } catch {}
+          evoLog(`startSession -> ERRO criar instância: HTTP ${createRes.status} - ${errText}`);
+          return { ok: false, error: err.message || `Falha ao criar instância (HTTP ${createRes.status}: ${errText.slice(0, 200)})` };
         }
         evoLog("startSession -> instância criada");
       }
@@ -191,7 +195,9 @@ export const whatsappRouter = createRouter({
         }
       }
 
-      return { qrCode: null, error: `Não foi possível gerar QR Code (HTTP ${res.status})` };
+      const errText = await res.text().catch(() => "");
+      evoLog(`getQRCode -> ERRO: HTTP ${res.status} - ${errText.slice(0, 200)}`);
+      return { qrCode: null, error: `Não foi possível gerar QR Code (HTTP ${res.status}: ${errText.slice(0, 200)})` };
     } catch (e: any) {
       evoLog(`getQRCode -> ERRO: ${e.message || "desconhecido"}`);
       return { qrCode: null, error: e.message || "Falha ao gerar QR Code" };
@@ -202,6 +208,7 @@ export const whatsappRouter = createRouter({
     if (!env.evolutionApiUrl || !env.evolutionApiKey) {
       return { ok: false, error: "Evolution não configurado" };
     }
+    evoLog(`logout -> Evolution configurada: ${env.evolutionApiKey ? "sim (key presente)" : "não"}`);
     try {
       evoLog("logout -> DELETE /instance/logout/" + INSTANCE_NAME);
       const res = await evoFetch(`/instance/logout/${INSTANCE_NAME}`, {
