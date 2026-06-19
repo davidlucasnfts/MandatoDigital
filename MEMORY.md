@@ -163,6 +163,7 @@ Continuidade da migração WAHA → Evolution API. O problema pendente era: inst
 | 8 | Testado envio de mensagem | ✅ Funcionando — retorna messageId, remoteJid, timestamp |
 | 9 | Atualizado `.env` local | Variáveis `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME` adicionadas |
 | 10 | Documentação atualizada | `docs/ROTEIRO-RETOMADA-EVOLUTION-VPS.md`, `SESSION-CONTEXT.md`, `AGENTS.md` |
+| 11 | Commit finalizado | `7a0f777` — 9 arquivos, migração WAHA → Evolution concluída |
 
 ### Erros cometidos e correções
 | # | Erro | Causa | Correção |
@@ -177,7 +178,7 @@ Continuidade da migração WAHA → Evolution API. O problema pendente era: inst
 - Envio de mensagem via `POST /message/sendText/mandato` funciona.
 
 ### Pendências
-- Configurar env vars na Vercel (`EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`).
+- Configurar env vars na Vercel (`EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`). Se o botão "Add" não aparecer na UI, usar `npx vercel env add <NOME>`.
 - Testar frontend completo (Comunicação → WhatsApp → Conectar → Enviar).
 - Remover variáveis WAHA da Vercel após validação.
 

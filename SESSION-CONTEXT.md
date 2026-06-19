@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 17/06/2026  
-> **Sessão atual:** Migração WAHA → Evolution API (backend reescrito, aguardando instalação na VPS)
+> **Atualizado em:** 19/06/2026  
+> **Sessão atual:** Migração WAHA → Evolution API — VPS instalada, commit feito, aguardando env vars na Vercel
 
 ---
 
@@ -181,8 +181,8 @@ assinaturas
 |---|---|---|
 | **Produção (Vercel)** | https://mandato-digital-xi.vercel.app | Ativo |
 | **API Proxy CNEFE** | http://82.197.73.101 | Ativo |
-| **WAHA Core (VPS)** | http://82.197.73.101:8080 | **LEGADO — será desativado** |
-| **Evolution API (VPS)** | http://82.197.73.101:8080 | **PENDENTE — aguardando instalação** |
+| **WAHA Core (VPS)** | http://82.197.73.101:8080 | **DESATIVADO — substituído pela Evolution** |
+| **Evolution API (VPS)** | http://82.197.73.101:8080 | **ATIVO — v2.2.3, instância `mandato` open** |
 
 ---
 
@@ -197,6 +197,16 @@ assinaturas
      - `EVOLUTION_API_KEY` = `mandato2026evolution`
      - `EVOLUTION_INSTANCE_NAME` = `mandato`
   4. Salvar e fazer redeploy (Deployments → último deploy → Redeploy)
+  
+  **Nota:** se o botão "Add/New" não aparecer na interface, usar a Vercel CLI:
+  ```bash
+  npx vercel env add EVOLUTION_API_URL
+  # valor: http://82.197.73.101:8080
+  npx vercel env add EVOLUTION_API_KEY
+  # valor: mandato2026evolution
+  npx vercel env add EVOLUTION_INSTANCE_NAME
+  # valor: mandato
+  ```
 - **Remover variáveis WAHA da Vercel** após validar que Evolution funciona em produção:
   - `WAHA_API_URL`, `WAHA_API_KEY` (manter no `.env` local por enquanto)
 - **Testar fluxo completo no frontend:** Comunicação → Conectar WhatsApp → Enviar mensagem de teste
@@ -218,7 +228,12 @@ assinaturas
 
 ## Próxima Sessão — Sugestões
 
-### Prioridade A — Retomar decisão arquitetural multi-cliente
+### Prioridade A — Finalizar migração WhatsApp
+1. **Configurar env vars da Evolution na Vercel** (`EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`)
+2. **Fazer redeploy** e testar fluxo completo: Comunicação → Conectar WhatsApp → Enviar mensagem
+3. **Remover env vars WAHA da Vercel** (`WAHA_API_URL`, `WAHA_API_KEY`) após validação
+
+### Prioridade B — Retomar decisão arquitetural multi-cliente
 1. **Confirmar as 4 decisões pendentes** da seção "Decisões de Arquitetura Multi-Cliente"
 2. **Aprovar o modelo `mandatos` + reaproveitamento da tabela `equipe`**
 3. **Definir gateway de pagamento** (Hotmart/Stripe/Asaas) para estruturar `assinaturas`
