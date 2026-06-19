@@ -118,7 +118,7 @@ export const whatsappRouter = createRouter({
       
       if (existsRes.ok) {
         const instances = (await existsRes.json()) as any[];
-        instanceExists = instances.some(i => i.instanceName === INSTANCE_NAME);
+        instanceExists = instances.some(i => i.instanceName === INSTANCE_NAME || i.name === INSTANCE_NAME);
         evoLog(`startSession -> instância ${instanceExists ? "existe" : "não existe"}`);
       }
 
