@@ -70,8 +70,6 @@ const SESSION_NAME = env.wahaSessionName || "default";
 
 export const whatsappRouter = createRouter({
   status: publicQuery.query(async () => {
-    // DEBUG: log das variáveis de ambiente
-    console.log("[WAHA DEBUG] wahaApiUrl=", env.wahaApiUrl ? "presente" : "AUSENTE", "wahaApiKey=", env.wahaApiKey ? "presente" : "AUSENTE");
     if (!env.wahaApiUrl || !env.wahaApiKey) {
       wahaLog("status -> WAHA não configurado");
       return { status: "FAILED", error: "WAHA não configurado" };
