@@ -6,48 +6,37 @@
 ---
 
 ## Stack (1 linha)
-React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (Evolution API v2.3.7 + Redis + CNEFE API Proxy) + Vercel
+React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (PostgreSQL) + VPS HostUp (WAHA API + CNEFE API Proxy) + Vercel
 
 ---
 
 ## Última funcionalidade trabalhada
-**Teste e correção do fluxo WhatsApp com Evolution API — 19/06**
+**Retorno à WAHA API — 19/06**
 
 ### ✅ O que foi feito:
-1. **Env vars da Evolution configuradas na Vercel**
-   - `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME` adicionadas
-   - Redeploy realizado
+1. **Decisão: Evolution API descartada**
+   - Testadas v2.1.1, v2.2.3, v2.3.7 — nenhuma gera QR code via REST em Docker
+   - Bugs confirmados nas issues #2437, #2380, #2284 do GitHub
+   - Retornamos à WAHA API que funciona
 
-2. **Correções no backend (`api/whatsapp-router.ts`)**
-   - Verificação de instância existente corrigida (campo `name` além de `instanceName`)
-   - Adicionado `integration: "EVOLUTION"` ao criar instância
-   - Melhorados logs de erro para debug
+2. **WAHA API reinstalada na VPS**
+   - Container `waha` rodando na porta 3000 (WEBJS engine)
+   - QR Code funcional: `GET /api/default/auth/qr` retorna PNG válido
+   - Endpoints testados: sessions, auth/qr, sendText
 
-3. **Acesso SSH à VPS estabelecido e infra ajustada**
-   - Backup do banco PostgreSQL da Evolution realizado
-   - Redis adicionado ao `docker-compose.yml`
-   - Imagem atualizada para `evoapicloud/evolution-api:latest` (v2.3.7)
-   - Containers Evolution + Redis rodando
+3. **Backend reescrito para WAHA**
+   - `api/whatsapp-router.ts` — endpoints WAHA mapeados (sessions, auth/qr, sendText)
+   - `api/lib/env.ts` — variáveis `WAHA_API_URL`, `WAHA_API_KEY`, `WAHA_SESSION_NAME`
+   - Type check passa sem erros
 
-4. **Diagnóstico do problema do QR Code**
-   - Testadas imagens v2.2.3 e v2.3.7
-   - Testados endpoints `/instance/create`, `/instance/connect`, websocket
-   - Documentação oficial indica que QR deveria vir via REST, mas na prática não vem
-   - Identificado bug/conhecimento conhecido da Evolution API em Docker
+4. **Frontend mantido**
+   - `useWhatsApp.ts` e `WhatsAppStatusCard.tsx` compatíveis (mesma interface tRPC)
+   - Nenhuma mudança necessária no frontend
 
-### ❌ Decisões pendentes para próxima sessão:
-- **Escolher caminho para conexão WhatsApp:**
-  1. Conectar manualmente pela Evolution Manager (`http://82.197.73.101:8080/manager`) e usar API só para envio
-  2. Voltar para WAHA (QR Code funcionava) — subir container WAHA novamente
-  3. Investigar outra versão/imagem da Evolution ou implementar websocket
-  4. Migrar para WhatsApp Business API oficial (pago)
-- **Remover variáveis WAHA** da Vercel após decisão
-- **Remover chave SSH temporária** da VPS ao finalizar
-
-### 📁 Arquivos modificados nesta sessão:
-- `api/whatsapp-router.ts` (correções de instância, integration e logs)
-- `docs/ROTEIRO-MIGRACAO-EVOLUTION.md` (deve ser atualizado com decisão final)
-- `/root/evolution-api/docker-compose.yml` na VPS (Redis adicionado, imagem v2.3.7)
+### ❌ Decisões pendentes:
+- **Configurar variáveis WAHA na Vercel** (remover Evolution, adicionar WAHA)
+- **Testar fluxo completo** localmente após configurar env vars
+- **Documentar roteiro WAHA** (evolution docs podem ser arquivados)
 
 ---
 

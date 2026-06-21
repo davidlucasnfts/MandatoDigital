@@ -2,44 +2,23 @@ import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware.js";
 import { env } from "./lib/env.js";
 
-interface EvolutionInstanceResponse {
-  instance: {
-    instanceName: string;
-    state?: string;
-    status?: string;
-    connectionStatus?: string;
+interface WahaSessionResponse {
+  name: string;
+  status: string;
+  me?: {
+    id: string;
+    pushName: string;
+  };
+  engine?: {
+    engine: string;
   };
 }
 
-interface EvolutionQRResponse {
-  base64?: string;
-  code?: string;
-  pairingCode?: string;
-}
-
 /** Log seguro: nunca expõe API Key nem URL completa */
-function evoLog(message: string) {
-  const url = env.evolutionApiUrl || "não-configurado";
-  const safeUrl = url.replace(/:\/\/[^/]+/, "://[evo-host]");
-  console.log(`[EVOLUTION] ${message} (host: ${safeUrl})`);
-}
-
-/** Converte ArrayBuffer para base64 (Node.js compatível) */
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  return Buffer.from(bytes).toString("base64");
-}
-
-/** Normaliza telefone para formato Evolution */
-function normalizePhone(phone: string): string {
-  let digits = phone.replace(/\D/g, "");
-  if (digits.startsWith("55")) {
-    digits = digits.slice(2);
-  }
-  if (digits.length === 11 && digits[2] === "9") {
-    digits = digits.slice(0, 2) + digits.slice(3);
-  }
-  return "55" + digits;
+function wahaLog(message: string) {
+  const url = env.wahaApiUrl || "não-configurado";
+  const safeUrl = url.replace(/:\/\/[^/]+/, "://[waha-host]");
+  console.log(`[WAHA] ${message} (host: ${safeUrl})`);
 }
 
 /** Valida se o telefone tem formato brasileiro válido */
@@ -51,169 +30,177 @@ function isValidPhone(phone: string): boolean {
   return ddd >= 11 && ddd <= 99;
 }
 
-async function evoFetch(path: string, options?: RequestInit): Promise<Response> {
-  const url = `${env.evolutionApiUrl}${path}`;
+/** Normaliza telefone para formato WAHA (com @c.us) */
+function normalizePhone(phone: string): string {
+  let digits = phone.replace(/\D/g, "");
+  if (!digits.startsWith("55")) {
+    digits = "55" + digits;
+  }
+  // Remove o 9º dígito se for celular (padrão WhatsApp)
+  if (digits.length === 13 && digits[4] === "9") {
+    digits = digits.slice(0, 4) + digits.slice(5);
+  }
+  return digits;
+}
+
+async function wahaFetch(path: string, options?: RequestInit): Promise<Response> {
+  const url = `${env.wahaApiUrl}${path}`;
   const headers: Record<string, string> = {
-    "apikey": env.evolutionApiKey || "",
+    "X-Api-Key": env.wahaApiKey || "",
     "Content-Type": "application/json",
     ...(options?.headers as Record<string, string> || {}),
   };
-  evoLog(`${options?.method || "GET"} ${path}`);
+  wahaLog(`${options?.method || "GET"} ${path}`);
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
   try {
     const res = await fetch(url, { ...options, headers, signal: controller.signal });
-    evoLog(`${options?.method || "GET"} ${path} -> HTTP ${res.status}`);
+    wahaLog(`${options?.method || "GET"} ${path} -> HTTP ${res.status}`);
     return res;
   } catch (e: any) {
-    evoLog(`${options?.method || "GET"} ${path} -> ERRO: ${e.message || "network"}`);
+    wahaLog(`${options?.method || "GET"} ${path} -> ERRO: ${e.message || "network"}`);
     throw e;
   } finally {
     clearTimeout(timeout);
   }
 }
 
-const INSTANCE_NAME = env.evolutionInstanceName || "mandato";
+const SESSION_NAME = env.wahaSessionName || "default";
 
 export const whatsappRouter = createRouter({
   status: publicQuery.query(async () => {
-    if (!env.evolutionApiUrl || !env.evolutionApiKey) {
-      evoLog("status -> Evolution não configurado");
-      return { status: "FAILED", error: "Evolution não configurado" };
+    if (!env.wahaApiUrl || !env.wahaApiKey) {
+      wahaLog("status -> WAHA não configurado");
+      return { status: "FAILED", error: "WAHA não configurado" };
     }
     try {
-      const res = await evoFetch(`/instance/connectionState/${INSTANCE_NAME}`);
+      const res = await wahaFetch(`/api/sessions/${SESSION_NAME}`);
       if (!res.ok) {
+        if (res.status === 404) {
+          wahaLog("status -> sessão não existe (404)");
+          return { status: "STOPPED" };
+        }
         const body = await res.text().catch(() => "");
-        evoLog(`status -> ERRO: HTTP ${res.status} - ${body.slice(0, 200)}`);
-        return { status: "STOPPED", error: `HTTP ${res.status} - ${body}` };
+        wahaLog(`status -> ERRO: HTTP ${res.status} - ${body.slice(0, 200)}`);
+        return { status: "FAILED", error: `HTTP ${res.status} - ${body}` };
       }
-      const data = (await res.json()) as EvolutionInstanceResponse;
-      const rawState = data.instance?.state || data.instance?.status || data.instance?.connectionStatus || "";
-      evoLog(`status -> ${rawState}`);
+      const data = (await res.json()) as WahaSessionResponse;
+      const rawStatus = data.status || "STOPPED";
+      wahaLog(`status -> ${rawStatus}`);
       
-      // Mapeia estados da Evolution para nossos estados
+      // Mapeia estados do WAHA para nossos estados
       const statusMap: Record<string, string> = {
-        "open": "WORKING",
-        "connecting": "STARTING",
-        "close": "STOPPED",
-        "qrcode": "SCAN_QR_CODE",
+        "WORKING": "WORKING",
+        "CONNECTED": "WORKING",
+        "STARTING": "STARTING",
+        "SCAN_QR_CODE": "SCAN_QR_CODE",
+        "STOPPED": "STOPPED",
+        "FAILED": "FAILED",
       };
       
-      return { status: statusMap[rawState] || rawState || "STOPPED" };
+      return { status: statusMap[rawStatus] || rawStatus };
     } catch (e: any) {
-      return { status: "FAILED", error: e.message || "Servidor Evolution indisponível" };
+      return { status: "FAILED", error: e.message || "Servidor WAHA indisponível" };
     }
   }),
 
   startSession: publicQuery.mutation(async () => {
-    if (!env.evolutionApiUrl || !env.evolutionApiKey) {
-      return { ok: false, error: "Evolution não configurado. Verifique as variáveis de ambiente." };
+    if (!env.wahaApiUrl || !env.wahaApiKey) {
+      return { ok: false, error: "WAHA não configurado. Verifique as variáveis de ambiente." };
     }
     try {
-      // 1. Verifica se instância existe
-      const existsRes = await evoFetch(`/instance/fetchInstances`);
-      let instanceExists = false;
-      
-      if (existsRes.ok) {
-        const instances = (await existsRes.json()) as any[];
-        instanceExists = instances.some(i => i.instanceName === INSTANCE_NAME || i.name === INSTANCE_NAME);
-        evoLog(`startSession -> instância ${instanceExists ? "existe" : "não existe"}`);
-      }
+      // 1. Verifica se sessão existe
+      const existsRes = await wahaFetch(`/api/sessions/${SESSION_NAME}`);
+      let sessionExists = existsRes.ok && existsRes.status !== 404;
+      wahaLog(`startSession -> sessão ${sessionExists ? "existe" : "não existe"}`);
 
       // 2. Se não existe, cria
-      if (!instanceExists) {
-        evoLog("startSession -> POST /instance/create");
-        const createRes = await evoFetch("/instance/create", {
+      if (!sessionExists) {
+        wahaLog("startSession -> POST /api/sessions/start");
+        const createRes = await wahaFetch("/api/sessions/start", {
           method: "POST",
-          body: JSON.stringify({
-            instanceName: INSTANCE_NAME,
-            token: "",
-            qrcode: true,
-            integration: "EVOLUTION",
-            webhook: "",
-            webhook_by_events: false,
-            events: [],
-          }),
+          body: JSON.stringify({ name: SESSION_NAME }),
         });
         if (!createRes.ok) {
           const errText = await createRes.text().catch(() => "");
-          let err: { message?: string } = {};
-          try { err = JSON.parse(errText); } catch {}
-          evoLog(`startSession -> ERRO criar instância: HTTP ${createRes.status} - ${errText}`);
-          return { ok: false, error: err.message || `Falha ao criar instância (HTTP ${createRes.status}: ${errText.slice(0, 200)})` };
+          wahaLog(`startSession -> ERRO criar sessão: HTTP ${createRes.status} - ${errText}`);
+          return { ok: false, error: `Falha ao criar sessão (HTTP ${createRes.status}: ${errText.slice(0, 200)})` };
         }
-        evoLog("startSession -> instância criada");
+        wahaLog("startSession -> sessão criada");
       }
 
-      // 3. Busca QR Code (a instância já inicia automaticamente ao criar)
+      // 3. Aguarda inicialização
       await new Promise(r => setTimeout(r, 2000));
       
       // 4. Verifica status final
-      const finalRes = await evoFetch(`/instance/connectionState/${INSTANCE_NAME}`);
+      const finalRes = await wahaFetch(`/api/sessions/${SESSION_NAME}`);
       if (finalRes.ok) {
-        const data = (await finalRes.json()) as EvolutionInstanceResponse;
-        const rawState = data.instance?.state || data.instance?.status || data.instance?.connectionStatus || "";
+        const data = (await finalRes.json()) as WahaSessionResponse;
+        const rawStatus = data.status || "STARTING";
         const statusMap: Record<string, string> = {
-          "open": "WORKING",
-          "connecting": "STARTING",
-          "close": "STOPPED",
-          "qrcode": "SCAN_QR_CODE",
+          "WORKING": "WORKING",
+          "CONNECTED": "WORKING",
+          "STARTING": "STARTING",
+          "SCAN_QR_CODE": "SCAN_QR_CODE",
+          "STOPPED": "STOPPED",
         };
-        const mappedStatus = statusMap[rawState] || "STARTING";
-        evoLog(`startSession -> status final: ${mappedStatus}`);
+        const mappedStatus = statusMap[rawStatus] || "STARTING";
+        wahaLog(`startSession -> status final: ${mappedStatus}`);
         return { ok: true, status: mappedStatus };
       }
 
       return { ok: true, status: "STARTING" };
     } catch (e: any) {
-      return { ok: false, error: e.message || "Falha ao iniciar instância" };
+      return { ok: false, error: e.message || "Falha ao iniciar sessão" };
     }
   }),
 
   getQRCode: publicQuery.query(async () => {
-    if (!env.evolutionApiUrl || !env.evolutionApiKey) {
-      evoLog("getQRCode -> Evolution não configurado");
-      return { qrCode: null, error: "Evolution não configurado" };
+    if (!env.wahaApiUrl || !env.wahaApiKey) {
+      wahaLog("getQRCode -> WAHA não configurado");
+      return { qrCode: null, error: "WAHA não configurado" };
     }
     try {
-      // Evolution retorna QR Code no endpoint de conexão
-      evoLog("getQRCode -> GET /instance/connect/" + INSTANCE_NAME);
-      const res = await evoFetch(`/instance/connect/${INSTANCE_NAME}`, {
+      // WAHA retorna QR Code como PNG binário no endpoint /auth/qr
+      wahaLog("getQRCode -> GET /api/" + SESSION_NAME + "/auth/qr");
+      const res = await wahaFetch(`/api/${SESSION_NAME}/auth/qr`, {
         method: "GET",
-        headers: { "Accept": "application/json" },
       });
 
       if (res.ok) {
-        const data = (await res.json()) as EvolutionQRResponse;
-        evoLog(`getQRCode -> base64=${data.base64 ? "sim" : "não"}, code=${data.code ? "sim" : "não"}`);
-        if (data.base64) {
-          return { qrCode: `data:image/png;base64,${data.base64}` };
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("image/png")) {
+          const buffer = await res.arrayBuffer();
+          const base64 = Buffer.from(buffer).toString("base64");
+          wahaLog("getQRCode -> PNG recebido, convertido para base64");
+          return { qrCode: `data:image/png;base64,${base64}` };
         }
-        if (data.code) {
-          return { qrCode: null, pairingCode: data.code };
+        // Pode retornar JSON com erro
+        const data = await res.json().catch(() => ({})) as { error?: string; session?: string; status?: string };
+        if (data.error) {
+          wahaLog(`getQRCode -> erro: ${data.error}`);
+          return { qrCode: null, error: data.error };
         }
       }
 
       const errText = await res.text().catch(() => "");
-      evoLog(`getQRCode -> ERRO: HTTP ${res.status} - ${errText.slice(0, 200)}`);
+      wahaLog(`getQRCode -> ERRO: HTTP ${res.status} - ${errText.slice(0, 200)}`);
       return { qrCode: null, error: `Não foi possível gerar QR Code (HTTP ${res.status}: ${errText.slice(0, 200)})` };
     } catch (e: any) {
-      evoLog(`getQRCode -> ERRO: ${e.message || "desconhecido"}`);
+      wahaLog(`getQRCode -> ERRO: ${e.message || "desconhecido"}`);
       return { qrCode: null, error: e.message || "Falha ao gerar QR Code" };
     }
   }),
 
   logout: publicQuery.mutation(async () => {
-    if (!env.evolutionApiUrl || !env.evolutionApiKey) {
-      return { ok: false, error: "Evolution não configurado" };
+    if (!env.wahaApiUrl || !env.wahaApiKey) {
+      return { ok: false, error: "WAHA não configurado" };
     }
-    evoLog(`logout -> Evolution configurada: ${env.evolutionApiKey ? "sim (key presente)" : "não"}`);
     try {
-      evoLog("logout -> DELETE /instance/logout/" + INSTANCE_NAME);
-      const res = await evoFetch(`/instance/logout/${INSTANCE_NAME}`, {
-        method: "DELETE",
+      wahaLog("logout -> POST /api/sessions/" + SESSION_NAME + "/stop");
+      const res = await wahaFetch(`/api/sessions/${SESSION_NAME}/stop`, {
+        method: "POST",
       });
       if (!res.ok && res.status !== 404) {
         const err = await res.json().catch(() => ({})) as { message?: string };
@@ -226,46 +213,43 @@ export const whatsappRouter = createRouter({
   }),
 
   stopSession: publicQuery.mutation(async () => {
-    if (!env.evolutionApiUrl || !env.evolutionApiKey) {
-      return { ok: false, error: "Evolution não configurado" };
+    if (!env.wahaApiUrl || !env.wahaApiKey) {
+      return { ok: false, error: "WAHA não configurado" };
     }
     try {
-      // Evolution não tem "stop" separado — logout é o equivalente
-      evoLog("stopSession -> DELETE /instance/logout/" + INSTANCE_NAME);
-      const res = await evoFetch(`/instance/logout/${INSTANCE_NAME}`, {
-        method: "DELETE",
+      wahaLog("stopSession -> POST /api/sessions/" + SESSION_NAME + "/stop");
+      const res = await wahaFetch(`/api/sessions/${SESSION_NAME}/stop`, {
+        method: "POST",
       });
       if (!res.ok && res.status !== 404) {
         const err = await res.json().catch(() => ({})) as { message?: string };
-        return { ok: false, error: err.message || "Falha ao parar instância" };
+        return { ok: false, error: err.message || "Falha ao parar sessão" };
       }
       return { ok: true };
     } catch (e: any) {
-      return { ok: false, error: e.message || "Falha ao parar instância" };
+      return { ok: false, error: e.message || "Falha ao parar sessão" };
     }
   }),
 
   sendMessage: publicQuery
     .input(z.object({ phone: z.string(), text: z.string() }))
     .mutation(async ({ input }) => {
-      if (!env.evolutionApiUrl || !env.evolutionApiKey) {
-        return { ok: false, error: "Evolution não configurado" };
+      if (!env.wahaApiUrl || !env.wahaApiKey) {
+        return { ok: false, error: "WAHA não configurado" };
       }
       if (!isValidPhone(input.phone)) {
         return { ok: false, error: "Telefone inválido. Use formato: (DD) 9XXXX-XXXX" };
       }
       try {
         const number = normalizePhone(input.phone);
-        evoLog(`sendMessage -> POST /message/sendText/${INSTANCE_NAME}`);
-        const res = await evoFetch(`/message/sendText/${INSTANCE_NAME}`, {
+        const chatId = `${number}@c.us`;
+        wahaLog(`sendMessage -> POST /api/${SESSION_NAME}/messages/send`);
+        const res = await wahaFetch(`/api/sendText`, {
           method: "POST",
           body: JSON.stringify({
-            number,
+            session: SESSION_NAME,
+            chatId,
             text: input.text,
-            options: {
-              delay: 1200,
-              presence: "composing",
-            },
           }),
         });
         if (!res.ok) {

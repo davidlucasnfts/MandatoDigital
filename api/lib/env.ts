@@ -121,7 +121,5 @@ export const env = {
   supabaseServiceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
   wahaApiUrl: validateWahaUrl(process.env.WAHA_API_URL),
   wahaApiKey: process.env.WAHA_API_KEY,
-  evolutionApiUrl: validateEvolutionUrl(process.env.EVOLUTION_API_URL),
-  evolutionApiKey: process.env.EVOLUTION_API_KEY,
-  evolutionInstanceName: process.env.EVOLUTION_INSTANCE_NAME || "mandato",
+  wahaSessionName: process.env.WAHA_SESSION_NAME || "default",
 };

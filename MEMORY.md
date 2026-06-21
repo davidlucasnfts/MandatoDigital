@@ -55,7 +55,7 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **WhatsApp restaurado na Comunicação** — WhatsAppStatusCard com QR Code, polling, auto-renovação, envio real via WAHA API; aba WhatsApp removida das Configurações | **16/06** |
 | **Correção do fluxo de conexão WhatsApp** — startSession usa POST /api/sessions/default/start, fallback de screenshot no QR Code, logs seguros no backend, frontend lida com estado STARTING | **17/06** |
 | **Migração WAHA → Evolution API** — Backend reescrito (`api/whatsapp-router.ts`), novas variáveis de ambiente (`api/lib/env.ts`, `.env.example`), roteiro de instalação criado (`docs/ROTEIRO-MIGRACAO-EVOLUTION.md`), interface pública mantida (frontend não quebra) | **18/06** |
-| **Evolution API v2.2.3 instalada na VPS** — PostgreSQL reconfigurado (localhost only, senha forte), container rodando com `network_mode: host`, instância `mandato` criada e funcional, envio de mensagem testado | **19/06** |
+| **Migração Evolution → WAHA API** — Evolution v2.1.1/v2.2.3/v2.3.7 não geram QR code via REST (bugs conhecidos). Retornamos à WAHA API (WEBJS) que funciona. Backend reescrito (`api/whatsapp-router.ts`), `env.ts` atualizado, type check passa. | **19/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
