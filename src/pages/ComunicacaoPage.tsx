@@ -243,9 +243,7 @@ export default function ComunicacaoPage() {
       </div>
 
       {/* WhatsApp */}
-      <div className="max-w-md">
-        <WhatsAppStatusCard />
-      </div>
+      <WhatsAppStatusCard layout="horizontal" />
 
       {/* SearchFilterBar */}
       <SearchFilterBar
