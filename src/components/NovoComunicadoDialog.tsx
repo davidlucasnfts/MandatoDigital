@@ -23,17 +23,7 @@ interface Props {
   onInsert?: (campanha: Campanha) => void;
 }
 
-function aplicarTemplate(conteudo: string, eleitor: Eleitor, comunidades: { id: string; nome: string }[]): string {
-  const comunidade = comunidades.find(c => c.id === eleitor.comunidade_id);
-  return conteudo
-    .replace(/{{nome}}/g, eleitor.nome?.split(' ')[0] || '')
-    .replace(/{{nome_completo}}/g, eleitor.nome || '')
-    .replace(/{{cidade}}/g, eleitor.cidade || '')
-    .replace(/{{bairro}}/g, eleitor.bairro || '')
-    .replace(/{{comunidade}}/g, comunidade?.nome || '')
-    .replace(/{{telefone}}/g, eleitor.telefone || '')
-    .replace(/{{endereco}}/g, eleitor.endereco || '');
-}
+import { aplicarTemplate } from '@/lib/templateUtils';
 
 export default function NovoComunicadoDialog({ open, onClose, campanhaEditando, templatePreSelecionado, templates: templatesProp, onSuccess, onInsert }: Props) {
   const { data: eleitores } = useEleitores();

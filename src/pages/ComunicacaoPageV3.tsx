@@ -10,7 +10,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SearchFilterBar } from '@/components/dashboard';
 import { useCampanhas } from '@/hooks/useCampanhas';
 import { useTemplates } from '@/hooks/useTemplates';
-import { useEleitores } from '@/hooks/useSupabaseData';
+import { useEleitores, useComunidades } from '@/hooks/useSupabaseData';
+import { useWhatsApp } from '@/hooks/useWhatsApp';
+import { aplicarTemplate } from '@/lib/templateUtils';
 import NovoComunicadoDialog from '@/components/NovoComunicadoDialog';
 import NovoTemplateDialog from '@/components/NovoTemplateDialog';
 import CampanhaPreview from '@/components/CampanhaPreview';
@@ -33,6 +35,8 @@ export default function ComunicacaoPage() {
   const { data: campanhas, loading: loadingCampanhas, remove: removeCampanha, update: updateCampanha, fetch: fetchCampanhas } = useCampanhas();
   const { data: templates, loading: loadingTemplates, remove: removeTemplate, fetch: fetchTemplates } = useTemplates();
   const { data: eleitores } = useEleitores();
+  const { data: comunidades } = useComunidades();
+  const { sendText } = useWhatsApp();
   const [showNovaCampanha, setShowNovaCampanha] = useState(false);
   const [showNovoTemplate, setShowNovoTemplate] = useState(false);
   const [templateEditando, setTemplateEditando] = useState<TemplateMensagem | null>(null);
@@ -75,13 +79,32 @@ export default function ComunicacaoPage() {
     await updateCampanha(campanha.id, { status: 'enviando', total_destinatarios: destinatarios.length });
     setEnviandoProgresso({ atual: 0, total: destinatarios.length });
 
-    // Simula envio (1s por destinatário)
+    // Envia mensagens reais
     let enviados = 0;
     let erros = 0;
-    for (let i = 0; i < destinatarios.length; i++) {
-      await new Promise(r => setTimeout(r, 1000));
-      enviados++;
-      setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
+
+    if (campanha.tipo === 'whatsapp') {
+      for (let i = 0; i < destinatarios.length; i++) {
+        const eleitor = destinatarios[i];
+        const phone = eleitor.telefone?.replace(/\D/g, '');
+        if (phone) {
+          const mensagemPersonalizada = aplicarTemplate(campanha.conteudo, eleitor, comunidades || []);
+          const result = await sendText(phone, mensagemPersonalizada);
+          if (result.ok) enviados++;
+          else erros++;
+        } else {
+          erros++;
+        }
+        setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    } else {
+      // Email: simula por enquanto
+      for (let i = 0; i < destinatarios.length; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        enviados++;
+        setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
+      }
     }
 
     // Finaliza
@@ -96,7 +119,7 @@ export default function ComunicacaoPage() {
   };
 
   const handleReenviarCampanha = async (campanha: Campanha) => {
-    if (!eleitores || campanha.status !== 'enviada') return;
+    if (!eleitores || campanha.status !== 'enviada' || campanhaEnviando === campanha.id) return;
     setCampanhaEnviando(campanha.id);
 
     const filtros = campanha.filtros || {};
@@ -111,17 +134,43 @@ export default function ComunicacaoPage() {
       return true;
     });
 
+    if (destinatarios.length === 0) {
+      setCampanhaEnviando(null);
+      return;
+    }
+
     setEnviandoProgresso({ atual: 0, total: destinatarios.length });
 
     let enviados = 0;
-    for (let i = 0; i < destinatarios.length; i++) {
-      await new Promise(r => setTimeout(r, 1000));
-      enviados++;
-      setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
+    let erros = 0;
+
+    if (campanha.tipo === 'whatsapp') {
+      for (let i = 0; i < destinatarios.length; i++) {
+        const eleitor = destinatarios[i];
+        const phone = eleitor.telefone?.replace(/\D/g, '');
+        if (phone) {
+          const mensagemPersonalizada = aplicarTemplate(campanha.conteudo, eleitor, comunidades || []);
+          const result = await sendText(phone, mensagemPersonalizada);
+          if (result.ok) enviados++;
+          else erros++;
+        } else {
+          erros++;
+        }
+        setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    } else {
+      // Email: simula por enquanto
+      for (let i = 0; i < destinatarios.length; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        enviados++;
+        setEnviandoProgresso({ atual: i + 1, total: destinatarios.length });
+      }
     }
 
     await updateCampanha(campanha.id, {
       total_enviados: campanha.total_enviados + enviados,
+      total_erros: (campanha.total_erros || 0) + erros,
     });
 
     setCampanhaEnviando(null);

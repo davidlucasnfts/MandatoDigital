@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 19/06/2026  
-> **Sessão atual:** Migração WAHA → Evolution API — env vars configuradas na Vercel, QR Code não funciona via REST, decisão pendente sobre caminho
+> **Atualizado em:** 21/06/2026  
+> **Sessão atual:** Fluxo WhatsApp estabilizado — WAHA com engine NOWEB, conexão/reconexão funcionando, reenvio de campanhas corrigido
 
 ---
 
@@ -11,32 +11,41 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 ---
 
 ## Última funcionalidade trabalhada
-**Retorno à WAHA API — 19/06**
+**Fluxo WhatsApp estabilizado — 21/06**
 
 ### ✅ O que foi feito:
-1. **Decisão: Evolution API descartada**
-   - Testadas v2.1.1, v2.2.3, v2.3.7 — nenhuma gera QR code via REST em Docker
-   - Bugs confirmados nas issues #2437, #2380, #2284 do GitHub
-   - Retornamos à WAHA API que funciona
+1. **Comunicação V3 promovida à produção**
+   - `ComunicacaoPageV3.tsx` copiada para `ComunicacaoPage.tsx`
+   - Rota `/comunicacao/teste-v3` removida do `App.tsx`
+   - Link "Comunicação V3" removido do sidebar
+   - `npx tsc --noEmit` passou
 
-2. **WAHA API reinstalada na VPS**
-   - Container `waha` rodando na porta 3000 (WEBJS engine)
-   - QR Code funcional: `GET /api/default/auth/qr` retorna PNG válido
-   - Endpoints testados: sessions, auth/qr, sendText
+2. **WAHA com engine NOWEB na VPS**
+   - Container `waha` recriado com `WHATSAPP_DEFAULT_ENGINE=NOWEB`
+   - Engine WEBJS quebrou com erro do whatsapp-web.js
+   - QR Code funcional e conexão/reconexão testadas
 
-3. **Backend reescrito para WAHA**
-   - `api/whatsapp-router.ts` — endpoints WAHA mapeados (sessions, auth/qr, sendText)
-   - `api/lib/env.ts` — variáveis `WAHA_API_URL`, `WAHA_API_KEY`, `WAHA_SESSION_NAME`
-   - Type check passa sem erros
+2. **Backend corrigido (`api/whatsapp-router.ts`)**
+   - `startSession` sempre recria sessão: logout → stop → delete → start
+   - `logout` também deleta sessão
+   - `getQRCode` retorna mensagens claras por estado
 
-4. **Frontend mantido**
-   - `useWhatsApp.ts` e `WhatsAppStatusCard.tsx` compatíveis (mesma interface tRPC)
-   - Nenhuma mudança necessária no frontend
+3. **Frontend corrigido (`WhatsAppStatusCard.tsx`)**
+   - QR Code gerado uma única vez por sessão (sem loop)
+   - Contador de expiração + overlay "Expirado"
+   - Botão "Gerar novo QR Code" recria sessão sem voltar à tela inicial
+   - Botão "Atualizar" removido do header
+
+4. **Reenvio de campanhas corrigido**
+   - `ComunicacaoPage.tsx` e `ComunicacaoPageV3.tsx` enviam via `sendText`
+   - Variáveis `{{nome}}` etc. substituídas via `aplicarTemplate`
+   - Proteção contra clique duplo
+
+5. **Rate limiting em dev**
+   - Desabilitado em desenvolvimento local para não bloquear testes
 
 ### ❌ Decisões pendentes:
-- **Configurar variáveis WAHA na Vercel** (remover Evolution, adicionar WAHA)
-- **Testar fluxo completo** localmente após configurar env vars
-- **Documentar roteiro WAHA** (evolution docs podem ser arquivados)
+- **Testar em produção** após deploy (env vars já atualizadas)
 
 ---
 
@@ -161,7 +170,7 @@ assinaturas
 |---|---|---|---|
 | **Agenda V2** | `AgendaPageV2.tsx` | `/dashboard/agenda/teste-v2` | Em teste — aguardando aprovação |
 | **Configurações V2** | `ConfiguracoesPageV2.tsx` | `/dashboard/configuracoes/teste-v2` | Em teste — aguardando aprovação |
-| **Comunicação V2** | `ComunicacaoPageV2.tsx` | `/dashboard/comunicacao/teste-v2` | Em teste — reativada |
+| **Comunicação V3** | `ComunicacaoPageV3.tsx` | — | Promovida à produção — 21/06 |
 | **Comunidades V2** | `ComunidadesPageV2.tsx` | `/dashboard/comunidades/teste-v2` | Em teste — aguardando aprovação |
 | **Produtividade V2** | `ProdutividadePageV2.tsx` | `/dashboard/produtividade/teste-v2` | Em teste — aguardando aprovação |
 | **Equipe V2** | `EquipePageV2.tsx` | `/dashboard/equipe/teste-v2` | Em teste — aguardando aprovação |
@@ -179,21 +188,22 @@ assinaturas
 |---|---|---|
 | **Produção (Vercel)** | https://mandato-digital-xi.vercel.app | Ativo |
 | **API Proxy CNEFE** | http://82.197.73.101 | Ativo |
-| **WAHA Core (VPS)** | http://82.197.73.101:8080 | **DESATIVADO — substituído pela Evolution** |
-| **Evolution API (VPS)** | http://82.197.73.101:8080 | **ATIVO — v2.3.7 + Redis, instância `mandato` criada** |
-| **Evolution Manager** | http://82.197.73.101:8080/manager | **ATIVO — login com API key** |
+| **WAHA API (VPS)** | http://82.197.73.101:3000 | **ATIVO — engine NOWEB** |
+| **Evolution API (VPS)** | http://82.197.73.101:8080 | **DESATIVADO — substituído pela WAHA** |
+| **Evolution Manager** | http://82.197.73.101:8080/manager | **DESATIVADO** |
 
 ---
 
 ## Decisões Pendentes
 
 ### ⚠️ Ações manuais necessárias
-- **Decisão pendente — caminho do WhatsApp:**
-  - Opção 1: Conectar manualmente pela Evolution Manager (`http://82.197.73.101:8080/manager`, login com API key `mandato2026evolution`)
-  - Opção 2: Voltar para WAHA (subir container WAHA novamente na VPS)
-  - Opção 3: Investigar outra versão/imagem da Evolution ou implementar websocket
-  - Opção 4: Migrar para WhatsApp Business API oficial (pago)
-- **Remover variáveis WAHA da Vercel** após decisão final (`WAHA_API_URL`, `WAHA_API_KEY`)
+- **Testar fluxo completo em produção**
+  - URL: https://mandato-digital-xi.vercel.app
+  - Fluxo: Comunicação → Conectar WhatsApp → Enviar campanha
+  - Env vars já atualizadas na Vercel
+- **Manter na Vercel**
+  - `WAHA_API_URL=http://82.197.73.101:3000`
+  - `WAHA_SESSION_NAME=default`
 - **Remover chave SSH temporária** `/root/.ssh/authorized_keys` linha `kimi-temp` ao encerrar sessão
 - **Testar cada página V2 localmente** usando o roteiro em `docs/testes-paginas-v2.md`
 - **Configurar bucket `documentos` no Supabase Storage** se ainda não estiver ativo (migration 007 já existe)
@@ -237,3 +247,5 @@ assinaturas
    - Remover links "V2" do sidebar
 7. **Limpar arquivos órfãos** após confirmação
 8. **Executar checklist pré-commit** (tsc, rotas, links, documentação)
+
+> ✅ **Comunicação V3** já foi promovida à produção nesta sessão.

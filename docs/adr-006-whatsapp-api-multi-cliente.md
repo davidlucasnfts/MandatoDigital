@@ -278,26 +278,73 @@ Justificativa: Custo baixo, zero manutenção, rápido de implementar.
 
 ---
 
-## Notas de Implementação (08/06/2026)
+## Notas de Implementação (21/06/2026) — Fluxo de Conexão que Funcionou
 
-### QR Code — Tempo de Expiração
+Após múltiplas iterações, o fluxo abaixo se estabilizou para conexão/reconexão do WhatsApp via WAHA.
 
-O QR Code do WhatsApp Web é **atualizado automaticamente** pela WAHA a cada ~15 segundos. Isso é exigência do próprio WhatsApp, não da WAHA.
+### Decisões Críticas
 
-**Como funciona:**
-1. Usuário clica "Conectar WhatsApp"
-2. Backend chama `POST /api/sessions/default/start`
-3. Status muda para `SCAN_QR_CODE`
-4. Frontend busca QR Code via `GET /api/default/auth/qr`
-5. A cada **8 segundos**, o frontend busca um QR Code novo (polling)
-6. Usuário escaneia com o celular
-7. Se demorar mais que ~15s, o QR Code expira — usuário clica "Atualizar QR Code"
+1. **Engine: NOWEB** (`WHATSAPP_DEFAULT_ENGINE=NOWEB`)
+   - A engine WEBJS quebrou com `Cannot read properties of undefined (reading 'Cmd')` — bug do whatsapp-web.js com versão atual do WhatsApp Web.
+   - A engine NOWEB (Baileys) gerou QR Code funcional e conectou consistentemente.
 
-**Por que 8 segundos?**
-- QR Code expira a cada ~15s
-- Polling a cada 8s garante que o usuário sempre tenha um QR Code válido
-- Não pode ser muito frequente (sobrecarrega a API)
-- Não pode ser muito raro (usuário fica com QR Code expirado)
+2. **Sessão única `default`, recriada do zero a cada conexão**
+   - Para forçar novo QR Code e evitar conexão automática no WhatsApp anterior, o backend sempre:
+     - `POST /api/sessions/{name}/logout`
+     - `POST /api/sessions/{name}/stop`
+     - `DELETE /api/sessions/{name}`
+     - `POST /api/sessions/start` com `{ name: "default" }`
+
+3. **QR Code expira em ~30 segundos na NOWEB**
+   - Não adianta buscar QR novo da mesma sessão — o WhatsApp invalida o anterior.
+   - É obrigatório **recriar a sessão** para gerar QR Code novo válido.
+
+### Fluxo Frontend/BACKEND Estável
+
+```
+Usuário clica "Conectar WhatsApp"
+  ↓
+Backend: logout → stop → delete → start
+  ↓
+Backend retorna status (STARTING ou SCAN_QR_CODE)
+  ↓
+Se SCAN_QR_CODE: busca QR Code imediatamente (GET /api/default/auth/qr)
+Se STARTING: aguarda status virar SCAN_QR_CODE (polling curto)
+  ↓
+Exibe QR Code + contador regressivo "Válido por Xs"
+  ↓
+QR expira → overlay "Expirado" + botão "Gerar novo QR Code"
+  ↓
+Clique em "Gerar novo QR Code" repete o fluxo de recriação de sessão
+```
+
+### Regras de UX
+
+- **Nunca atualizar QR Code em loop automático** — o WhatsApp invalida o QR anterior.
+- **Manter área do QR visível** mesmo quando a sessão vai para STOPPED/FAILED após expiração.
+- **Botão "Gerar novo QR Code"** deve recriar a sessão completamente, não apenas buscar QR novo.
+- **Mostrar contador de expiração** (~30s) para o usuário escanear a tempo.
+- **Desabilitar rate limiting em desenvolvimento** para não bloquear os testes de polling.
+
+### Regras de Backend
+
+```typescript
+// startSession sempre recria a sessão
+if (sessionExists) {
+  await logout();
+  await stop();
+  await deleteSession();
+}
+await start();
+```
+
+```typescript
+// getQRCode retorna mensagens claras por estado
+STARTING  → "Sessão iniciando, aguarde..."
+STOPPED   → "QR Code expirado. Clique em 'Gerar novo QR Code'."
+FAILED    → "Sessão falhou. Clique em 'Conectar WhatsApp'."
+WORKING   → "Sessão já conectada"
+```
 
 ### Limitação de Sessão Única
 

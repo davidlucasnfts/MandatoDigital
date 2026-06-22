@@ -11,7 +11,7 @@ export default defineConfig({
     devServer({ entry: "api/boot.ts", exclude: [/^\/(?!api\/).*$/] }),
     inspectAttr(), react()],
   server: {
-    port: 3000,
+    port: 5173,
   },
   resolve: {
     alias: {

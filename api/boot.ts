@@ -51,6 +51,7 @@ app.use(
       return ip;
     },
     skipSuccessfulRequests: false,
+    skip: () => isDev, // Desabilita rate limiting em desenvolvimento
   })
 );
 

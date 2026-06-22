@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, Scan, RotateCcw, Link2, AlertCircle } from '@/lib/icons';
+import { MessageSquare, Scan, Link2, AlertCircle } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
@@ -13,11 +13,95 @@ export default function WhatsAppStatusCard() {
   const [wahaMe, setWahaMe] = useState<{ id: string; pushName: string } | null>(null);
   const [wahaError, setWahaError] = useState<string | null>(null);
   const [qrError, setQrError] = useState<string | null>(null);
+  const [qrGeneratedAt, setQrGeneratedAt] = useState<number | null>(null);
+  const [qrAgeSeconds, setQrAgeSeconds] = useState(0);
+  const [isRegeneratingQR, setIsRegeneratingQR] = useState(false);
 
-  // Verificar status ao montar o componente
+  // Atualiza idade do QR Code a cada segundo
   useEffect(() => {
-    checkStatus();
-  }, []);
+    if (!qrGeneratedAt) {
+      setQrAgeSeconds(0);
+      return;
+    }
+    const updateAge = () => {
+      setQrAgeSeconds(Math.floor((Date.now() - qrGeneratedAt) / 1000));
+    };
+    updateAge();
+    const interval = setInterval(updateAge, 1000);
+    return () => clearInterval(interval);
+  }, [qrGeneratedAt]);
+
+  // Polling automático: verifica status quando está conectando
+  // Desabilitado durante regeneração manual para evitar race condition
+  useEffect(() => {
+    if (isRegeneratingQR) return;
+    if (wahaStatus === 'SCAN_QR_CODE' || wahaStatus === 'STARTING') {
+      let isActive = true;
+      
+      const check = async () => {
+        if (!isActive) return;
+        try {
+          const session = await getSession();
+          if (session?.status && isActive) {
+            setWahaStatus(session.status);
+            if (session.status === 'WORKING') {
+              setWahaMe(session.me || null);
+              setWahaQR(null);
+              setQrError(null);
+              setIsRegeneratingQR(false);
+            }
+            if (session.status === 'FAILED') {
+              setIsRegeneratingQR(false);
+            }
+          }
+        } catch {
+          // Ignora erros de polling
+        }
+      };
+      
+      check();
+      const interval = setInterval(check, 8000);
+      
+      return () => {
+        isActive = false;
+        clearInterval(interval);
+      };
+    }
+  }, [wahaStatus, getSession]);
+
+  // Busca QR Code automaticamente quando entra em SCAN_QR_CODE
+  // Não dispara durante regeneração manual (o botão cuida disso)
+  useEffect(() => {
+    if (isRegeneratingQR) return;
+    if (wahaStatus === 'SCAN_QR_CODE' && !wahaQR && !qrError) {
+      let isActive = true;
+      
+      const fetchQR = async () => {
+        if (!isActive) return;
+        try {
+          const { qrCode, error } = await getQRCode();
+          if (qrCode && isActive) {
+            setWahaQR(qrCode);
+            setQrGeneratedAt(Date.now());
+            setQrError(null);
+            setIsRegeneratingQR(false);
+          } else if (error && isActive) {
+            setQrError(error);
+            setIsRegeneratingQR(false);
+          }
+        } catch {
+          setQrError('Não foi possível gerar o QR Code. Tente novamente.');
+          setIsRegeneratingQR(false);
+        }
+      };
+      
+      fetchQR();
+      
+      return () => {
+        isActive = false;
+      };
+    }
+  }, [wahaStatus, getQRCode, wahaQR, qrError]);
 
   const checkStatus = async () => {
     setWahaLoading(true);
@@ -36,8 +120,11 @@ export default function WhatsAppStatusCard() {
     setWahaLoading(true);
     setWahaError(null);
     setQrError(null);
+    setWahaQR(null);
     try {
+      console.log('[WhatsAppStatusCard] Iniciando sessão...');
       const result = await startSession();
+      console.log('[WhatsAppStatusCard] Resultado:', result);
       if (!result.ok) {
         setWahaError(result.error || 'Falha ao iniciar sessão. Tente novamente.');
         setWahaLoading(false);
@@ -46,8 +133,21 @@ export default function WhatsAppStatusCard() {
 
       const nextStatus = result.status || 'STARTING';
       setWahaStatus(nextStatus);
+      
+      // Se já está em SCAN_QR_CODE, busca QR Code imediatamente
+      if (nextStatus === 'SCAN_QR_CODE') {
+        console.log('[WhatsAppStatusCard] Buscando QR Code...');
+        const { qrCode } = await getQRCode();
+        console.log('[WhatsAppStatusCard] QR Code:', qrCode ? 'encontrado' : 'não encontrado');
+        if (qrCode) {
+          setWahaQR(qrCode);
+        }
+      }
+      // Se está STARTING, o polling automático cuidará do resto
+      
       setWahaLoading(false);
     } catch (e) {
+      console.error('[WhatsAppStatusCard] Erro:', e);
       setWahaError('Erro ao conectar. Verifique o console.');
       setWahaLoading(false);
     }
@@ -72,7 +172,7 @@ export default function WhatsAppStatusCard() {
     FAILED: { label: 'Falhou', color: 'text-red-700', bg: 'bg-red-50', dot: 'bg-red-500' },
   };
 
-  const showQRArea = wahaStatus === 'SCAN_QR_CODE' || wahaStatus === 'STARTING';
+  const showQRArea = wahaStatus === 'SCAN_QR_CODE' || wahaStatus === 'STARTING' || isRegeneratingQR || !!wahaQR;
   const current = statusLabels[wahaStatus] || statusLabels.STOPPED;
 
   return (
@@ -112,16 +212,7 @@ export default function WhatsAppStatusCard() {
                   Desconectar
                 </Button>
               )}
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 text-xs"
-                onClick={checkStatus}
-                disabled={wahaLoading}
-              >
-                <RotateCcw className={`w-3 h-3 mr-1 ${wahaLoading ? 'animate-spin' : ''}`} />
-                Atualizar
-              </Button>
+
             </div>
           </div>
 
@@ -166,40 +257,125 @@ export default function WhatsAppStatusCard() {
                 </ol>
               </div>
 
-              {/* Botão Mostrar QR Code */}
+              {/* Botão Mostrar/Atualizar QR Code */}
               <Button
                 variant="outline"
                 size="sm"
+                disabled={isRegeneratingQR}
                 onClick={async () => {
+                  // Para gerar QR Code NOVO, precisamos recriar a sessão
+                  // (o QR da sessão atual expira em ~30s na engine NOWEB)
+                  setIsRegeneratingQR(true);
                   setQrError(null);
-                  const qr = await getQRCode();
-                  if (qr) {
-                    setWahaQR(qr);
-                  } else {
-                    setQrError('Não foi possível gerar o QR Code. Tente novamente.');
+                  // NÃO limpa wahaQR: mantém o QR antigo visível (escurecido) enquanto gera novo
+                  try {
+                    const result = await startSession();
+                    if (!result.ok) {
+                      setQrError(result.error || 'Falha ao reiniciar sessão');
+                      setIsRegeneratingQR(false);
+                      return;
+                    }
+
+                    const nextStatus = result.status || 'STARTING';
+                    setWahaStatus(nextStatus);
+
+                    // Se já está em SCAN_QR_CODE, busca QR imediatamente
+                    if (nextStatus === 'SCAN_QR_CODE') {
+                      const { qrCode, error } = await getQRCode();
+                      if (qrCode) {
+                        setWahaQR(qrCode);
+                        setQrGeneratedAt(Date.now());
+                      } else {
+                        setQrError(error || 'Não foi possível gerar QR Code');
+                      }
+                      setIsRegeneratingQR(false);
+                      return;
+                    }
+
+                    // Se está STARTING, aguarda virar SCAN_QR_CODE (máx 15s)
+                    if (nextStatus === 'STARTING') {
+                      let attempts = 0;
+                      const maxAttempts = 15;
+                      const interval = setInterval(async () => {
+                        attempts++;
+                        try {
+                          const session = await getSession();
+                          if (session?.status) {
+                            setWahaStatus(session.status);
+                            if (session.status === 'SCAN_QR_CODE') {
+                              clearInterval(interval);
+                              const { qrCode, error } = await getQRCode();
+                              if (qrCode) {
+                                setWahaQR(qrCode);
+                                setQrGeneratedAt(Date.now());
+                              } else {
+                                setQrError(error || 'Não foi possível gerar QR Code');
+                              }
+                              setIsRegeneratingQR(false);
+                            } else if (session.status === 'WORKING') {
+                              clearInterval(interval);
+                              setWahaMe(session.me || null);
+                              setWahaQR(null);
+                              setIsRegeneratingQR(false);
+                            } else if (session.status === 'FAILED' || attempts >= maxAttempts) {
+                              clearInterval(interval);
+                              setQrError('Sessão falhou ao gerar QR Code. Tente novamente.');
+                              setIsRegeneratingQR(false);
+                            }
+                          }
+                        } catch {
+                          clearInterval(interval);
+                          setQrError('Erro ao aguardar QR Code');
+                          setIsRegeneratingQR(false);
+                        }
+                      }, 1000);
+                    }
+                  } catch {
+                    setQrError('Erro ao reiniciar sessão');
+                    setIsRegeneratingQR(false);
                   }
                 }}
               >
-                <Scan className="w-4 h-4 mr-1" /> Mostrar QR Code
+                <Scan className="w-4 h-4 mr-1" /> {isRegeneratingQR ? 'Gerando...' : (wahaQR ? 'Gerar novo QR Code' : 'Mostrar QR Code')}
               </Button>
 
               {qrError && <p className="text-xs text-red-600">{qrError}</p>}
 
               {wahaQR && (
                 <div className="max-w-[240px] mx-auto">
-                  <img
-                    src={wahaQR}
-                    alt="Tela de login WhatsApp Web - escaneie o QR Code"
-                    className="w-full h-auto border rounded-lg bg-white"
-                    onError={() => {
-                      setQrError('Erro ao exibir QR Code. Tente novamente.');
-                    }}
-                  />
+                  <div className="relative">
+                    <img
+                      src={wahaQR}
+                      alt="Tela de login WhatsApp Web - escaneie o QR Code"
+                      className={`w-full h-auto border rounded-lg bg-white transition-opacity duration-300 ${qrAgeSeconds > 30 || isRegeneratingQR ? 'opacity-40' : ''}`}
+                      onError={() => {
+                        setQrError('Erro ao exibir QR Code. Tente novamente.');
+                      }}
+                    />
+                    {qrAgeSeconds > 30 && !isRegeneratingQR && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="bg-red-600 text-white text-xs font-medium px-3 py-1 rounded-full shadow">
+                          Expirado
+                        </span>
+                      </div>
+                    )}
+                    {isRegeneratingQR && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 rounded-lg">
+                        <div className="w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-2" />
+                        <span className="text-slate-700 text-xs font-medium">Gerando novo QR...</span>
+                      </div>
+                    )}
+                  </div>
                   <p className="text-[10px] text-slate-400 mt-1">
                     <span className="text-amber-600 font-medium">
                       Aponte a câmera do celular
                     </span>
                   </p>
+                  {qrGeneratedAt && (
+                    <p className={`text-[10px] ${qrAgeSeconds > 25 ? 'text-red-500 font-medium' : 'text-slate-400'}`}>
+                      {qrAgeSeconds > 30 ? 'QR Code expirado — clique em "Gerar novo QR Code"' : `Válido por ${Math.max(0, 30 - qrAgeSeconds)}s`}
+                    </p>
+                  )}
                 </div>
               )}
 

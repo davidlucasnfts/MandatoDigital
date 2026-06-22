@@ -21,9 +21,11 @@ export function useWhatsApp() {
   const getSession = useCallback(async () => {
     try {
       const result = await statusQuery.refetch();
+      console.log('[WhatsApp] status result:', result.data);
       return result.data;
-    } catch {
-      return { status: 'FAILED', error: 'Servidor indisponível' };
+    } catch (e: any) {
+      console.error('[WhatsApp] status error:', e);
+      return { status: 'FAILED', error: e?.message || 'Servidor indisponível' };
     }
   }, [statusQuery]);
 
@@ -32,9 +34,11 @@ export function useWhatsApp() {
     setError(null);
     try {
       const result = await startMutation.mutateAsync();
+      console.log('[WhatsApp] startSession result:', result);
       setLoading(false);
       return result;
     } catch (e: any) {
+      console.error('[WhatsApp] startSession error:', e);
       setError('Falha ao iniciar sessão');
       setLoading(false);
       return { ok: false, error: 'Falha ao iniciar sessão' };
@@ -69,12 +73,15 @@ export function useWhatsApp() {
     }
   }, [stopMutation]);
 
-  const getQRCode = useCallback(async (): Promise<string | null> => {
+  const getQRCode = useCallback(async (): Promise<{ qrCode: string | null; error: string | null }> => {
     try {
       const result = await qrQuery.refetch();
-      return result.data?.qrCode || null;
+      return {
+        qrCode: result.data?.qrCode || null,
+        error: result.data?.error || null,
+      };
     } catch (e: any) {
-      return null;
+      return { qrCode: null, error: e?.message || 'Falha ao buscar QR Code' };
     }
   }, [qrQuery]);
 

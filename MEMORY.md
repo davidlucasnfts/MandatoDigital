@@ -56,6 +56,8 @@ CRM político. React + TS + Vite + Tailwind + shadcn/ui + Supabase + Drizzle (Po
 | **Correção do fluxo de conexão WhatsApp** — startSession usa POST /api/sessions/default/start, fallback de screenshot no QR Code, logs seguros no backend, frontend lida com estado STARTING | **17/06** |
 | **Migração WAHA → Evolution API** — Backend reescrito (`api/whatsapp-router.ts`), novas variáveis de ambiente (`api/lib/env.ts`, `.env.example`), roteiro de instalação criado (`docs/ROTEIRO-MIGRACAO-EVOLUTION.md`), interface pública mantida (frontend não quebra) | **18/06** |
 | **Migração Evolution → WAHA API** — Evolution v2.1.1/v2.2.3/v2.3.7 não geram QR code via REST (bugs conhecidos). Retornamos à WAHA API (WEBJS) que funciona. Backend reescrito (`api/whatsapp-router.ts`), `env.ts` atualizado, type check passa. | **19/06** |
+| **Fluxo de Conexão WhatsApp estabilizado** — Engine NOWEB na WAHA, recriação completa de sessão (logout/stop/delete/start), QR Code com contador de expiração, botão "Gerar novo QR Code" sem voltar à tela inicial, rate limit desabilitado em dev. | **21/06** |
+| **Comunicação V3 — Promovida à produção** — `ComunicacaoPageV3.tsx` copiada para `ComunicacaoPage.tsx`, rota `/comunicacao/teste-v3` e link do sidebar removidos, `npx tsc --noEmit` passou. | **21/06** |
 | Documentação toolkit + guia do projeto | 07/05 |
 | TypeScript strict, testes Vitest + cobertura 80% | 07/05 |
 | Rate limiting + headers de segurança (CSP, HSTS) | 07/05 |
@@ -142,6 +144,50 @@ Continuidade da integração WhatsApp na página de Comunicação. O problema pe
 ### Pendências para próxima sessão
 - Validar na VPS/Vercel: o backend serverless precisa acessar a WAHA em um endereço público (IP:8080 temporário ou domínio via proxy).
 - Verificar logs da Vercel após clicar "Conectar WhatsApp".
+
+---
+
+## 📝 Resumo da Sessão 21/06 — Fluxo de Conexão WhatsApp Estabilizado
+
+### Contexto
+Retomada do fluxo WhatsApp após múltiplas tentativas. O problema era: QR Code não gerava automaticamente, não conectava, e ao expirar não era possível gerar novo QR sem voltar à tela inicial.
+
+### Decisões e correções aplicadas
+| # | Arquivo | Mudança |
+|---|---------|---------|
+| 1 | `api/whatsapp-router.ts` | `startSession` sempre recria sessão: logout → stop → delete → start |
+| 2 | `api/whatsapp-router.ts` | `logout` também deleta a sessão para garantir novo QR na reconexão |
+| 3 | `api/whatsapp-router.ts` | `getQRCode` retorna mensagens claras por estado (STARTING, STOPPED, FAILED, WORKING) |
+| 4 | `api/boot.ts` | Rate limiting desabilitado em desenvolvimento local (`skip: () => isDev`) |
+| 5 | `src/components/WhatsAppStatusCard.tsx` | QR Code gerado uma única vez por sessão (sem loop automático) |
+| 6 | `src/components/WhatsAppStatusCard.tsx` | Contador de expiração + overlay "Expirado" após ~30s |
+| 7 | `src/components/WhatsAppStatusCard.tsx` | Botão "Gerar novo QR Code" recria sessão e mantém mesma tela |
+| 8 | VPS HostUp | Container WAHA recriado com engine NOWEB (`WHATSAPP_DEFAULT_ENGINE=NOWEB`) |
+| 9 | `.env` local | `WAHA_API_KEY` atualizada para nova key gerada pelo container |
+| 10 | `docs/adr-006-whatsapp-api-multi-cliente.md` | Documentado fluxo funcional e lições aprendidas |
+| 11 | `src/pages/ComunicacaoPage.tsx` | Promovida versão V3 para produção (cópia de `ComunicacaoPageV3.tsx`) |
+| 12 | `src/App.tsx` | Removida rota `/comunicacao/teste-v3` |
+| 13 | `src/components/DashboardLayout.tsx` | Removido link "Comunicação V3" do sidebar |
+
+### Erros / Aprendizados
+| # | Erro/Causa | Correção/Prevenção |
+|---|------------|-------------------|
+| 046 | Engine WEBJS da WAHA quebrou com `Cannot read properties of undefined (reading 'Cmd')` | Usar engine NOWEB (`WHATSAPP_DEFAULT_ENGINE=NOWEB`) |
+| 047 | QR Code expirado não atualizava ao clicar "Atualizar" | Recriar sessão completa (logout/stop/delete/start) para forçar QR novo |
+| 048 | Polling automático de QR invalidava o código anterior | Buscar QR apenas uma vez por sessão; não atualizar em loop |
+| 049 | Rate limiter bloqueava testes locais | Desabilitar em desenvolvimento (`skip: () => isDev`) |
+| 050 | Tela voltava para "Conectar WhatsApp" quando QR expirava | Manter área do QR visível mesmo com status STOPPED/FAILED |
+
+### Validação
+- `npx tsc --noEmit` passou sem erros.
+- Fluxo testado localmente: conectar → desconectar → reconectar → QR expirar → gerar novo QR.
+
+### Pendências resolvidas
+- ✅ `WAHA_API_KEY` atualizada na Vercel (nova key: `34a12dc0b829496597fe469d63019992`)
+- ✅ Variáveis Evolution removidas da Vercel (`EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`)
+
+### Pendências
+- Testar fluxo completo em produção após deploy
 
 ---
 
