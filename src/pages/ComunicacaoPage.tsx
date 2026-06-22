@@ -214,37 +214,37 @@ export default function ComunicacaoPage() {
         </div>
       </motion.div>
 
-      {/* Stats com WhatsApp */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-2.5 lg:gap-4">
-        <div className="lg:col-span-1">
-          <WhatsAppStatusCard />
-        </div>
-        <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
-          {[
-            { label: 'Comunicados', value: stats.total, icon: BarChart3, color: 'blue' },
-            { label: 'Enviadas', value: stats.enviadas, icon: CheckCircle2, color: 'green' },
-            { label: 'Em andamento', value: stats.enviando, icon: Send, color: 'amber' },
-            { label: 'Total de envios', value: stats.totalEnvios, icon: Users, color: 'purple' },
-          ].map((s, i) => (
-            <motion.div
-              key={s.label}
-              custom={i + 1}
-              variants={fadeIn}
-              initial="hidden"
-              animate="visible"
-            >
-              <Card className="border-t-[3px]" style={{ borderTopColor: s.color === 'blue' ? '#2563EB' : s.color === 'green' ? '#16a34a' : s.color === 'amber' ? '#d97706' : '#7c3aed' }}>
-                <CardContent className="p-3 lg:p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <s.icon className={`w-4 h-4 ${s.color === 'blue' ? 'text-blue-600' : s.color === 'green' ? 'text-green-600' : s.color === 'amber' ? 'text-amber-600' : 'text-purple-600'}`} />
-                  </div>
-                  <p className="text-xl lg:text-2xl font-bold text-slate-800">{s.value}</p>
-                  <p className="text-[10px] lg:text-xs text-slate-500 mt-0.5">{s.label}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
+        {[
+          { label: 'Comunicados', value: stats.total, icon: BarChart3, color: 'blue' },
+          { label: 'Enviadas', value: stats.enviadas, icon: CheckCircle2, color: 'green' },
+          { label: 'Em andamento', value: stats.enviando, icon: Send, color: 'amber' },
+          { label: 'Total de envios', value: stats.totalEnvios, icon: Users, color: 'purple' },
+        ].map((s, i) => (
+          <motion.div
+            key={s.label}
+            custom={i + 1}
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+          >
+            <Card className="border-t-[3px]" style={{ borderTopColor: s.color === 'blue' ? '#2563EB' : s.color === 'green' ? '#16a34a' : s.color === 'amber' ? '#d97706' : '#7c3aed' }}>
+              <CardContent className="p-3 lg:p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <s.icon className={`w-4 h-4 ${s.color === 'blue' ? 'text-blue-600' : s.color === 'green' ? 'text-green-600' : s.color === 'amber' ? 'text-amber-600' : 'text-purple-600'}`} />
+                </div>
+                <p className="text-xl lg:text-2xl font-bold text-slate-800">{s.value}</p>
+                <p className="text-[10px] lg:text-xs text-slate-500 mt-0.5">{s.label}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* WhatsApp */}
+      <div className="max-w-md">
+        <WhatsAppStatusCard />
       </div>
 
       {/* SearchFilterBar */}
