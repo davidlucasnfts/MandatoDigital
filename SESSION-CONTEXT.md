@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 21/06/2026  
-> **Sessão atual:** Fluxo WhatsApp estabilizado — WAHA com engine NOWEB, conexão/reconexão funcionando, reenvio de campanhas corrigido
+> **Atualizado em:** 22/06/2026  
+> **Sessão atual:** Encerrada — Fluxo WhatsApp estabilizado, Comunicação V3 em produção, layout horizontal do card de WhatsApp aprovado
 
 ---
 
@@ -44,8 +44,14 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Supabase (Post
 5. **Rate limiting em dev**
    - Desabilitado em desenvolvimento local para não bloquear testes
 
+### ✅ Sessão encerrada
+- Comunicação V3 promovida à produção
+- Layout horizontal do card de WhatsApp aplicado
+- Commits: `01646d1`, `dbceb77`, `8037935`
+
 ### ❌ Decisões pendentes:
 - **Testar em produção** após deploy (env vars já atualizadas)
+- **Proteger WAHA atrás de proxy/Cloudflare Tunnel** (porta 3000 atualmente exposta na internet)
 
 ---
 

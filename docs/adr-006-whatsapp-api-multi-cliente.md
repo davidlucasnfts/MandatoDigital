@@ -1,7 +1,7 @@
 # ADR-006: Estratégia WhatsApp API para Múltiplos Clientes
 
-> **Status:** Em revisão (segurança reforçada)  
-> **Data:** 04/06/2026 (atualizado 08/06/2026)  
+> **Status:** Aprovado / Implementado  
+> **Data:** 04/06/2026 (atualizado 21/06/2026)  
 > **Contexto:** Integração WhatsApp (WAHA API) implementada para 1 cliente. Necessidade futura de suportar múltiplos vereadores (clientes) com sessões isoladas.
 
 ---
@@ -218,11 +218,15 @@ Seu sistema (MandatoDigital)
 Custo: R$ 0 (VPS já existe)  
 Justificativa: Simples, funciona, sem custo adicional.
 
-**Funcionalidade implementada (08/06/2026):**
+**Funcionalidade implementada (21/06/2026):**
 - ✅ Conectar WhatsApp via QR Code
 - ✅ Enviar campanhas para múltiplos contatos
+- ✅ Reenviar campanhas já enviadas
 - ✅ Status de conexão em tempo real
-- ✅ QR Code atualiza automaticamente a cada 8s (polling)
+- ✅ QR Code com contador de expiração (~30s)
+- ✅ Botão "Gerar novo QR Code" recria sessão sem voltar à tela inicial
+- ✅ Variáveis de template (`{{nome}}`, `{{cidade}}`, etc.) substituídas no envio
+- ✅ Layout horizontal do card de WhatsApp na página de Comunicação
 
 **Limitações aceitas nesta fase:**
 - Só 1 WhatsApp conectado por vez
@@ -230,10 +234,10 @@ Justificativa: Simples, funciona, sem custo adicional.
 - QR Code expira a cada ~15s — usuário deve escanear rápido ou clicar "Atualizar"
 
 **Ações obrigatórias:**
-1. Reinstalar container WAHA com bind `127.0.0.1:8080:3000`
-2. Atualizar `WAHA_API_URL` para `http://localhost:8080`
-3. Garantir que UFW não tenha regra para porta 8080
-4. Validar no backend que URL da WAHA não use IP público
+1. Reinstalar container WAHA com engine NOWEB (`WHATSAPP_DEFAULT_ENGINE=NOWEB`)
+2. Proteger a WAHA atrás de proxy/API (não expor porta 3000 diretamente na internet em produção)
+3. Manter `WAHA_API_KEY` forte e rotacionada
+4. Validar no backend que URL da WAHA não use IP público (mitigação atual: API Key forte + rate limiting)
 
 ### Fase 2: 2-10 clientes
 **Avaliar serviço cloud (WasenderAPI ou Wappfly).**  
@@ -251,15 +255,16 @@ Justificativa: Custo baixo, zero manutenção, rápido de implementar.
 
 | # | Ação | Prioridade | Responsável | Status |
 |---|------|------------|-------------|--------|
-| 1 | Reinstalar WAHA com bind seguro (127.0.0.1:8080) | 🔴 Crítica | David (infra) | ✅ Feito |
-| 2 | Atualizar WAHA_API_URL na Vercel para localhost:8080 | 🔴 Crítica | David (infra) | ✅ Feito |
-| 3 | Validar backend contra URL pública da WAHA | 🔴 Crítica | Kimi (dev) | ✅ Feito |
-| 4 | Criar script de setup seguro (`setup-waha-secure.sh`) | 🟡 Alta | Kimi (dev) | ✅ Feito |
-| 5 | Implementar QR Code com polling automático (8s) | 🟡 Alta | Kimi (dev) | ✅ Feito |
-| 6 | Definir preço do SaaS incluindo WhatsApp | 🟡 Alta | David (produto) | Pendente |
-| 7 | Testar WasenderAPI (conta grátis) | 🟢 Média | Kimi (dev) | Pendente |
-| 8 | Documentar API do serviço escolhido | 🟢 Média | Kimi (dev) | Pendente |
-| 9 | Implementar troca dinâmica de provedor | ⚪ Baixa | Kimi (dev) | Pendente |
+| 1 | Reinstalar WAHA com engine NOWEB | 🔴 Crítica | David (infra) | ✅ Feito |
+| 2 | Atualizar `WAHA_API_KEY` na Vercel | 🔴 Crítica | David (infra) | ✅ Feito |
+| 3 | Remover variáveis Evolution da Vercel | 🔴 Crítica | David (infra) | ✅ Feito |
+| 4 | Validar backend contra URL pública da WAHA | 🔴 Crítica | Kimi (dev) | ✅ Feito (mitigado) |
+| 5 | Implementar QR Code com contador de expiração | 🟡 Alta | Kimi (dev) | ✅ Feito |
+| 6 | Corrigir reenvio de campanhas via WhatsApp | 🟡 Alta | Kimi (dev) | ✅ Feito |
+| 7 | Aplicar layout horizontal no card de WhatsApp | 🟢 Média | Kimi (dev) | ✅ Feito |
+| 8 | Definir preço do SaaS incluindo WhatsApp | 🟡 Alta | David (produto) | Pendente |
+| 9 | Testar WasenderAPI (conta grátis) | 🟢 Média | Kimi (dev) | Pendente |
+| 10 | Proteger WAHA atrás de proxy/Cloudflare Tunnel | 🟢 Média | David (infra) | Pendente |
 
 ---
 
@@ -325,6 +330,7 @@ Clique em "Gerar novo QR Code" repete o fluxo de recriação de sessão
 - **Botão "Gerar novo QR Code"** deve recriar a sessão completamente, não apenas buscar QR novo.
 - **Mostrar contador de expiração** (~30s) para o usuário escanear a tempo.
 - **Desabilitar rate limiting em desenvolvimento** para não bloquear os testes de polling.
+- **Card de WhatsApp em layout horizontal** na página de Comunicação: status/instruções à esquerda, QR Code à direita, ocupando a largura total.
 
 ### Regras de Backend
 

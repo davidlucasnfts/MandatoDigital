@@ -191,6 +191,26 @@ Retomada do fluxo WhatsApp após múltiplas tentativas. O problema era: QR Code 
 
 ---
 
+## 📝 Resumo do Encerramento — 21/06
+
+### Contexto
+Sessão encerrada com o fluxo WhatsApp estabilizado, Comunicação V3 em produção e layout horizontal do card de WhatsApp aprovado.
+
+### Ações executadas
+| # | Ação | Resultado |
+|---|------|-----------|
+| 1 | Comunicação V3 promovida à produção | `ComunicacaoPage.tsx` atualizado, rota de teste e link do sidebar removidos |
+| 2 | WhatsApp separado dos stats | Card posicionado abaixo dos stats na página de Comunicação |
+| 3 | Layout horizontal do card de WhatsApp | Status/instruções à esquerda, QR Code à direita, componente `WhatsAppQRCode.tsx` extraído |
+| 4 | ADR-006 atualizado | Status alterado para "Aprovado / Implementado", ações pendentes revisadas |
+| 5 | Commits realizados | `01646d1`, `dbceb77`, `8037935` |
+
+### Pendências para próxima sessão
+- Testar fluxo completo em produção após deploy na Vercel
+- Proteger WAHA atrás de proxy/Cloudflare Tunnel (porta 3000 atualmente exposta)
+
+---
+
 ## 📝 Resumo da Sessão 19/06 — Instalação Evolution API na VPS
 
 ### Contexto
