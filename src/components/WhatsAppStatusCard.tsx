@@ -306,7 +306,7 @@ export default function WhatsAppStatusCard({ layout = 'vertical' }: WhatsAppStat
                       onRegenerate={handleRegenerateQR}
                       onCheckStatus={checkStatus}
                       showInstructions
-                      showQR={false}
+                      showQR
                     />
                   )}
                 </div>
